@@ -3,6 +3,22 @@ class BasicItem {
   var _price = 0.0;
   var _quantity = 0.0;
 
+  String get description {
+    return _description;
+  }
+
+  double get price {
+    return _price;
+  }
+
+  double get quantity {
+    return _quantity;
+  }
+
+  double get total {
+    return _price * _quantity;
+  }
+
   BasicItem(
       {required String description,
       required double price,

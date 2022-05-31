@@ -1,4 +1,5 @@
 import 'package:eleventa/modules/sales/domain/entity/sale.dart';
+import 'package:eleventa/modules/sales/domain/service/opened_sales.dart';
 
 class CreateSaleRequest {
   int cashierId = 0;
@@ -16,6 +17,7 @@ class CreateSale {
 
     try {
       sale = Sale();
+      OpenedSales.add(sale);
     } catch (e) {
       rethrow;
     }

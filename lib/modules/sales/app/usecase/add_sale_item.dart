@@ -1,17 +1,24 @@
-import 'package:eleventa/modules/sales/domain/entity/basic_item.dart';
+import 'package:eleventa/modules/sales/app/dto/basic_item.dart';
+import 'package:eleventa/modules/sales/app/mapper/basic_item_mapper.dart';
+import 'package:eleventa/modules/sales/domain/entity/sale.dart';
+import 'package:eleventa/modules/sales/domain/service/opened_sales.dart';
 
 class AddSaleItemRequest {
-  String ventaUUID = '';
-  late BasicItem item;
+  String uid = '';
+  late BasicItemDTO item;
 }
 
 class AddSaleItem {
   var request = AddSaleItemRequest();
 
-  void exec() {
-    //debe agregar el item a la lista de items de la venta
-    try {} catch (e) {}
+  int exec() {
+    Sale? sale;
 
-    //debe recalcular el total de la venta
+    try {
+      sale = OpenedSales.get(request.uid);
+      sale.addItem(BasicItemMapper.fromDtoToDomain(request.item));
+    } catch (e) {}
+
+    return (sale != null) ? sale.itemsCount : 0;
   }
 }

@@ -5,13 +5,17 @@ class OpenedSales {
 
   OpenedSales();
 
-  void add(Sale sale) {
+  static void add(Sale sale) {
     _sales.add(sale);
   }
 
-  void remove(String uuid) {
-    var saleToRemove = _sales.firstWhere((element) => element.uuid == uuid);
+  static void remove(String uuid) {
+    var saleToRemove = _sales.firstWhere((sale) => sale.uuid == uuid);
 
     _sales.remove(saleToRemove);
+  }
+
+  static Sale get(String uid) {
+    return _sales.firstWhere((sale) => sale.uuid == uid);
   }
 }
