@@ -16,6 +16,16 @@ class Migration1 extends Migration {
 
     await db.command(sql: command);
 
+    command = 'create table items('
+        'id integer primary key autoincrement,'
+        'uid varchar(50) unique,'
+        'description varchar(255) null,'
+        'sku varchar(50) null,'
+        'price decimal(10,4) null'
+        ');';
+
+    await db.command(sql: command);
+
     command = 'create table crdt('
         'hlc varchar(40),'
         'dataset varchar(100),'

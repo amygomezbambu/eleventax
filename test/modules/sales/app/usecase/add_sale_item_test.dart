@@ -15,7 +15,8 @@ void main() {
   });
 
   group('Agregar articulo a venta', () {
-    test('debe agregar el articulo a la lista de articulos de la venta', () {
+    test('debe agregar el articulo a la lista de articulos de la venta',
+        () async {
       //having
       var createSale = CreateSale();
       var addItem = AddSaleItem(SaleRepository());
@@ -31,13 +32,13 @@ void main() {
       addItem.request.uid = uid;
       addItem.request.item = basicItem;
 
-      var itemsCount = addItem.exec();
+      var itemsCount = await addItem.exec();
 
       //then
       expect(itemsCount, 1);
     });
 
-    test('debe calcular el total correctamente', () {
+    test('debe calcular el total correctamente', () async {
       var usecase = CreateSale();
       var addItem = AddSaleItem(SaleRepository());
       var basicItem = BasicItemDTO();
@@ -51,7 +52,7 @@ void main() {
       addItem.request.uid = uid;
       addItem.request.item = basicItem;
 
-      addItem.exec();
+      await addItem.exec();
 
       var sale = OpenedSales.get(uid);
 
