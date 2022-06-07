@@ -12,9 +12,15 @@ class GetSale {
 
   GetSale(this.repo);
 
-  SaleDTO exec() {
-    var sale = repo.get(request.uid);
+  Future<SaleDTO> exec() async {
+    var sale = await repo.get(request.uid);
 
-    return SaleMapper.fromDomainToDTO(sale);
+    if (sale == null) {
+      throw Exception('No existe la venta');
+    }
+
+    var dto = SaleMapper.fromDomainToDTO(sale);
+
+    return dto;
   }
 }

@@ -9,13 +9,13 @@ class OpenedSales {
     _sales.add(sale);
   }
 
-  static void remove(String uuid) {
-    var saleToRemove = _sales.firstWhere((sale) => sale.uuid == uuid);
+  static void remove(String uid) {
+    var saleToRemove = _sales.firstWhere((sale) => sale.uid == uid);
 
     _sales.remove(saleToRemove);
   }
 
   static Sale get(String uid) {
-    return _sales.firstWhere((sale) => sale.uuid == uid);
+    return _sales.firstWhere((sale) => sale.uid == uid);
   }
 }

@@ -18,17 +18,18 @@ class SaleRepository implements ISaleRepository {
   }
 
   @override
-  Future<Sale> get(String uid) async {
+  Future<Sale?> get(String uid) async {
     var query = 'SELECT id,uid,name,total FROM sales';
 
     var result = await _db.query(sql: query);
-    Sale sale = Sale();
+    Sale? sale;
 
     for (var row in result) {
-      sale.total = row['total'] as double;
-      sale.name = row['name'] as String;
-      sale.uid = row['uid'] as String;
+      sale = Sale.load(row['uid'] as String, row['name'] as String,
+          row['total'] as double, null);
     }
+
+    return sale;
   }
 
   @override

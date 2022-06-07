@@ -23,6 +23,6 @@ class CreateSale {
     }
 
     //retornar el id a la ui
-    return sale.uuid;
+    return sale.uid;
   }
 }
