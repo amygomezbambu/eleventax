@@ -68,6 +68,7 @@ printDivider
 print "Instalando Flutter"
 printStep "Flutter" "brew install --cask flutter"
 printStep "Extensiones de Dart y Flutter..." "code --install-extension dart-code.dart-code --install-extension dart-code.flutter"
+printStep "LiveSharing" "code --install-extension ms-vsliveshare.vsliveshare"
 printDivider
 
 # Instalar tweaks de sistema

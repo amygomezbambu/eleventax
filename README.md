@@ -1,16 +1,18 @@
 # eleventa
 
-A new Flutter project.
+el mejor punto de venta multi plataforma.
 
-## Getting Started
+## Configurar ambiente de desarrollo
 
-This project is a starting point for a Flutter application.
+De momento el desarrollo de la aplicación se realiza principalmente en pair/mob programming sessions bajo MacOS. Para configurar tu computadora debes hacer lo siguiente:
 
-A few resources to get you started if this is your first Flutter project:
+1. Hacer el script ejecutable:
+   `chmod +x ./tools/setup_new_mac.sh`
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+2. Ejecutar el script:
+   `./tools/setup_new_mac.sh`
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+3. Algunas instalaciones requerirán tu contraseña
+
+Posteriormente configura la extensión de Live Sharing accediendo a tu cuenta de GitHub:
+https://docs.microsoft.com/en-us/visualstudio/liveshare/use/install-live-share-visual-studio-code#sign-in-to-live-share
