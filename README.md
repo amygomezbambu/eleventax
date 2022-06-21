@@ -1,6 +1,6 @@
 # eleventa
 
-el mejor punto de venta multi plataforma.
+El mejor punto de venta multi plataforma.
 
 ## Configurar ambiente de desarrollo
 
