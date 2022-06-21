@@ -16,3 +16,15 @@ jobs:
         run: flutter pub get
       - name: Compilar binarios
         run: flutter build windows --release
+      - name: Archivar los binarios
+        uses: thedoctor0/zip-release@master
+        with:
+          type: "zip"
+          filename: eleventa-${{github.ref_name}}-windows.zip
+          directory: build/windows/runner/Release
+      - name: Crear Windows Release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: build/windows/runner/Release/eleventa-${{github.ref_name}}-windows.zip
