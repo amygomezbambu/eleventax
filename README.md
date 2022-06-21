@@ -19,8 +19,17 @@ https://docs.microsoft.com/en-us/visualstudio/liveshare/use/install-live-share-v
 
 ## Pendientes para el MVP
 
-- [ ] Conectar la UI con el backend: ventas, productos.
-- [ ] Flujo CI/CD.
+- [x] Conectar la UI con el backend: ventas, productos.
+- [x] Flujo CI/CD.
+- [ ] Generar UI "final" y refactorizar.
+- [ ] Enlazar productos + debug multiplataforma.
+
+## Pendientes Arquitectura
+
+- [ ] Decidir lenguaje Ubicuo?
+- [ ] Decidir si nos vamos por UUID v4.
+- [ ] Definir metodologia y/o paquete para manejo de estado (Riverpod).
+- [ ] Definir Design System.
 
 ## Pendientes para entrar en flujo de trabajo "normal"
 
@@ -29,11 +38,9 @@ https://docs.microsoft.com/en-us/visualstudio/liveshare/use/install-live-share-v
 - [ ] Publicar en tiendas versiones beta automaticamente.
 - [ ] Internacionalización.
 - [ ] Logeo de eventos / auditoria.
-- [ ] Definir Design System.
-- [ ] Definir metodologia y/o paquete para manejo de estado (Riverpod).
 
 ## Convenciones
 
-## Averiguar
+## Definir flujo de trabajo
 
 - [ ]
