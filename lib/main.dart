@@ -1,4 +1,9 @@
+import 'package:eleventa/modules/common/exception/exception.dart';
+import 'package:eleventa/modules/sales/app/dto/basic_item.dart';
+import 'package:eleventa/modules/sales/app/usecase/add_sale_item.dart';
+import 'package:eleventa/modules/sales/app/usecase/create_sale.dart';
 import 'package:flutter/material.dart';
+import 'package:eleventa/dependencies.dart';
 import 'dart:math';
 
 void main() {
@@ -41,12 +46,12 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class Item {
+class ItemUI {
   final String code;
   final String description;
   final String price;
 
-  Item({required this.code, required this.description, required this.price});
+  ItemUI({required this.code, required this.description, required this.price});
 }
 
 class SalesContainer extends StatefulWidget {
@@ -59,20 +64,60 @@ class SalesContainer extends StatefulWidget {
 }
 
 class _SalesContainerState extends State<SalesContainer> {
-  List<Item> items = [];
+  List<ItemUI> items = [];
   String code = '';
   String price = '';
   String description = '';
-  Item? selectedItem;
+  ItemUI? selectedItem;
 
-  void handleSubmit(String value) {
+  var itemCount = 0;
+  var saleUID = '';
+
+  Future<void> addItem() async {
+    CreateSale createSale = CreateSale();
+    AddSaleItem addSaleItem = AddSaleItem(Dependencies.sales.saleRepository());
+
+    if (itemCount == 0) {
+      print('Creando venta...');
+      saleUID = await createSale.exec();
+    }
+
+    var item = BasicItemDTO();
+    item.description = description;
+    // TBD: Validar excepciones de conversion de cadena
+    item.price = double.parse(price);
+    item.quantity = 1;
+    print('Guardando item...');
+
+    addSaleItem.request.saleUid = saleUID;
+    addSaleItem.request.item = item;
+
+    var saleItemCount = await addSaleItem.exec();
+    print('Item guardado $saleItemCount');
+
+    itemCount++;
+  }
+
+  void handleSubmit(String value) async {
     print(value);
     price = value;
 
-    setState(() {
-      items.add(Item(code: code, description: description, price: price));
-      selectedItem = items.last;
-    });
+    try {
+      await addItem();
+
+      setState(() {
+        items.add(ItemUI(code: code, description: description, price: price));
+        selectedItem = items.last;
+        print('selectedItem establecido');
+        print('La UI debe de estar actualizada');
+      });
+    } catch (e) {
+      if (e is DomainException) {
+        print((e as DomainException).message);
+      }
+
+      print(e.toString());
+    }
   }
 
   void _setCode(String value) {
@@ -99,7 +144,9 @@ class _SalesContainerState extends State<SalesContainer> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: SizedBox(
-                        child: TextField(onChanged: _setDescription),
+                        child: TextField(
+                          onChanged: _setDescription,
+                        ),
                         width: 200,
                       ),
                     ),

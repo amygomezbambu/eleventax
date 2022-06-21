@@ -1,4 +1,4 @@
-import 'package:eleventa/container.dart';
+import 'package:eleventa/dependencies.dart';
 import 'package:eleventa/modules/common/app/interface/database.dart';
 import 'package:eleventa/modules/migrations/migrate_db.dart';
 
@@ -7,7 +7,7 @@ import 'package:eleventa/modules/migrations/migrate_db.dart';
 /// carga todos los objetos y datos necesarios para que la aplicación
 /// funcione correctamente
 class Loader {
-  IDatabaseAdapter dbAdapter = Container.infra.database();
+  IDatabaseAdapter dbAdapter = Dependencies.infra.database();
 
   Future<void> init() async {
     //Conectar adaptador de base de datos.

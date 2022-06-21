@@ -1,7 +1,7 @@
-import 'package:eleventa/container.dart';
+import 'package:eleventa/dependencies.dart';
 
 class MigrationRepository {
-  static final _db = Container.infra.database();
+  static final _db = Dependencies.infra.database();
   //static final _logger = Container.infra.logger();
 
   static Future<void> createTableMigrationsIfDontExists() async {

@@ -1,3 +1,5 @@
+import 'package:eleventa/modules/common/exception/exception.dart';
+
 class BasicItem {
   var _description = '';
   var _price = 0.0;
@@ -30,7 +32,7 @@ class BasicItem {
 
   void _setDescription(String value) {
     if (value.isEmpty) {
-      throw Exception('La descripcion no puede estar vacia');
+      throw DomainException('La descripcion no puede estar vacia');
     }
 
     _description = value;
@@ -38,7 +40,7 @@ class BasicItem {
 
   void _setPrice(double value) {
     if (value <= 0) {
-      throw Exception('El precio no pude ser cero');
+      throw DomainException('El precio no pude ser cero');
     }
 
     _price = value;
@@ -46,7 +48,7 @@ class BasicItem {
 
   void _setQuantity(double value) {
     if (value <= 0) {
-      throw Exception('La cantidad no pude ser cero');
+      throw DomainException('La cantidad no pude ser cero');
     }
 
     _quantity = value;

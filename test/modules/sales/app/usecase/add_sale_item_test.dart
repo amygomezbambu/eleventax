@@ -29,7 +29,7 @@ void main() {
       basicItem.price = 10.00;
       basicItem.quantity = 2;
 
-      addItem.request.uid = uid;
+      addItem.request.saleUid = uid;
       addItem.request.item = basicItem;
 
       var itemsCount = await addItem.exec();
@@ -49,7 +49,7 @@ void main() {
       basicItem.price = 10.49;
       basicItem.quantity = 2;
 
-      addItem.request.uid = uid;
+      addItem.request.saleUid = uid;
       addItem.request.item = basicItem;
 
       await addItem.exec();
@@ -73,7 +73,7 @@ void main() {
       basicItem.price = 10.49;
       basicItem.quantity = 2;
 
-      addItem.request.uid = uid;
+      addItem.request.saleUid = uid;
       addItem.request.item = basicItem;
 
       await addItem.exec();

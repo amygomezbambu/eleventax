@@ -1,7 +1,7 @@
-import 'package:eleventa/container.dart';
+import 'package:eleventa/dependencies.dart';
 
 class Migration {
-  var db = Container.infra.database();
+  var db = Dependencies.infra.database();
   //var logger = Container.infra.logger();
 
   late var version = 0;

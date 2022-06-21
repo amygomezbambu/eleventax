@@ -5,24 +5,29 @@ import 'package:eleventa/modules/sales/domain/entity/sale.dart';
 import 'package:eleventa/modules/sales/domain/service/opened_sales.dart';
 
 class AddSaleItemRequest {
-  String uid = '';
+  String saleUid = '';
   late BasicItemDTO item;
 }
 
 class AddSaleItem {
   var request = AddSaleItemRequest();
-  ISaleRepository repo;
+  ISaleRepository _repo;
 
-  AddSaleItem(this.repo);
+  AddSaleItem(this._repo);
 
+  /// Ejecuta el caso de uso
+  ///
+  /// Retorna el numero de items de la venta despues de agregar
   Future<int> exec() async {
     Sale? sale;
 
     try {
-      sale = OpenedSales.get(request.uid);
+      sale = OpenedSales.get(request.saleUid);
       sale.addItem(BasicItemMapper.fromDtoToDomain(request.item));
-      await repo.add(sale);
-    } catch (e) {}
+      await _repo.add(sale);
+    } catch (e) {
+      rethrow;
+    }
 
     return (sale != null) ? sale.itemsCount : 0;
   }
