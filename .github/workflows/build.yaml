@@ -24,6 +24,7 @@ jobs:
           directory: build/windows/runner/Release
       - name: Crear Windows Release
         uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -48,7 +49,7 @@ jobs:
         with:
           type: "zip"
           filename: eleventa-${{github.ref_name}}-macos-x64.zip
-          directory: build/macos/Build/Products/Release/eleventa
+          directory: build/macos/Build/Products/Release/eleventa.app
       - name: macOS Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
@@ -56,3 +57,72 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: build/macos/Build/Products/Release/eleventa-${{github.ref_name}}-macos-x64.zip
+
+  build-and-release-ios:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          architecture: x64
+          flutter-version: "3.0.2"
+      - name: Install project dependencies
+        run: flutter pub get
+      # - name: Generate intermediates
+      #   run: flutter pub run build_runner build --delete-conflicting-outputs
+
+      - name: Build artifacts
+        run: flutter build ios --release --no-codesign
+      - name: Archive Release
+        uses: thedoctor0/zip-release@master
+        with:
+          type: "zip"
+          filename: eleventa-${{github.ref_name}}-ios.zip
+          directory: build/ios/iphoneos/
+      - name: iOS Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: build/ios/iphoneos/eleventa-${{github.ref_name}}-ios.zip
+
+  build-and-release-android:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v2
+        with:
+          distribution: "zulu"
+          java-version: "11"
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          architecture: x64
+          flutter-version: "3.0.2"
+      - name: Install project dependencies
+        run: flutter pub get
+      # - name: Do testing
+      #   run: flutter test
+      # - name: Generate intermediates
+      #   run: flutter pub run build_runner build --delete-conflicting-outputs
+      # - name: Build APK artifact
+      #   run: flutter build apk --release
+      - name: Build AppBundle Artifact
+        run: flutter build appbundle --release
+      - name: Archive Release
+        uses: thedoctor0/zip-release@master
+        with:
+          type: "zip"
+          filename: eleventa-${{github.ref_name}}-android.zip
+          directory: build/app/outputs/bundle/release/
+      - name: Android Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: build/app/outputs/bundle/release/eleventa-${{github.ref_name}}-android.zip
