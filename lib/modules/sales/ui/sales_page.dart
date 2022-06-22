@@ -19,6 +19,7 @@ class _SalesPageState extends State<SalesPage> {
         body: Column(
       children: [
         AppBar(
+          toolbarHeight: 60,
           title: Text(
             'Ventas',
             style: GoogleFonts.openSans(),
@@ -98,49 +99,93 @@ class _SaleItemsContainerState extends State<SaleItemsContainer> {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: ListView.separated(
-        scrollDirection: Axis.vertical,
-        shrinkWrap: true,
-        itemCount: items.length,
-        itemBuilder: (BuildContext context, int index) {
-          return ListTile(
-              dense: false, // TBD: Poner denso solo en pantallas chicas
-              leading: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.network(
-                    'https://source.unsplash.com/random/200×200/?' +
-                        items[index].description,
-                    height: 50,
-                    width: 50,
-                    fit: BoxFit.cover,
-                  )),
-              subtitle: Text(items[index].code),
-              title: Text(
-                items[index].description,
-                style: GoogleFonts.openSans(
-                    fontSize: ui.defaultFontSize, fontWeight: FontWeight.w500),
+      child: Column(
+        children: [
+          Card(
+              margin: const EdgeInsets.all(0),
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: ui.neutral300,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: TextField(
+                    obscureText: false,
+                    autofocus: true,
+                    // focusNode: myFocusNode,
+                    // controller: myController,
+                    // onSubmitted: _handleSubmission,
+                    // ignore: unnecessary_const
+                    autocorrect: false,
+
+                    decoration: const InputDecoration(
+                        prefixIcon: Icon(
+                          Icons.qr_code_scanner,
+                          color: ui.neutral600,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: ui.neutral300, width: 1.0),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red, width: 5.0),
+                        ),
+                        hintText: "Escanea o ingresa un código de producto...",
+                        hintStyle: const TextStyle(
+                            fontSize: 15, color: ui.neutral600)),
+                  ),
+                ),
+              )),
+          Expanded(
+            child: ListView.separated(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              itemCount: items.length,
+              itemBuilder: (BuildContext context, int index) {
+                return ListTile(
+                    dense: false, // TBD: Poner denso solo en pantallas chicas
+                    leading: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.network(
+                          'https://source.unsplash.com/random/200×200/?' +
+                              items[index].description,
+                          height: 50,
+                          width: 50,
+                          fit: BoxFit.cover,
+                        )),
+                    subtitle: Text(items[index].code),
+                    title: Text(
+                      items[index].description,
+                      style: GoogleFonts.openSans(
+                          fontSize: ui.defaultFontSize,
+                          fontWeight: FontWeight.w500),
+                    ),
+                    trailing: Wrap(
+                        spacing:
+                            MediaQuery.of(context).size.width > 800 ? 80 : 31,
+                        children: const <Widget>[
+                          //Text('3', style: TextStyle(fontSize: 16)),
+                          Text(
+                            '12.50',
+                            style: TextStyle(
+                                fontSize: 18,
+                                //letterSpacing: -0.6,
+                                color: Color.fromARGB(255, 38, 119, 181),
+                                fontWeight: FontWeight.w600),
+                          )
+                        ]));
+              },
+              separatorBuilder: (context, index) => Padding(
+                padding: const EdgeInsets.only(left: 80, right: 15),
+                child: Divider(
+                    height: 0,
+                    color: Color.fromARGB(255, 208, 208, 208),
+                    thickness: 0.5),
               ),
-              trailing: Wrap(
-                  spacing: MediaQuery.of(context).size.width > 800 ? 80 : 31,
-                  children: const <Widget>[
-                    //Text('3', style: TextStyle(fontSize: 16)),
-                    Text(
-                      '\$12.50',
-                      style: TextStyle(
-                          fontSize: 18,
-                          //letterSpacing: -0.6,
-                          color: Color.fromARGB(255, 38, 119, 181),
-                          fontWeight: FontWeight.w600),
-                    )
-                  ]));
-        },
-        separatorBuilder: (context, index) => Padding(
-          padding: const EdgeInsets.only(left: 80, right: 15),
-          child: Divider(
-              height: 0,
-              color: Color.fromARGB(255, 208, 208, 208),
-              thickness: 0.5),
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }
