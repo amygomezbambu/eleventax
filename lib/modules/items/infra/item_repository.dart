@@ -44,7 +44,7 @@ class ItemRepository implements IItemRepository {
 
     for (var row in result) {
       item = Item.load(row['uid'] as String, row['sku'] as String,
-          row['description'] as String, row['price'] as double);
+          row['description'] as String, double.parse(row['price'].toString()));
     }
 
     return item;

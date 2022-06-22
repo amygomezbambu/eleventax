@@ -1,6 +1,6 @@
 # eleventa
 
-el mejor punto de venta multi plataforma.
+El mejor punto de venta multi plataforma.
 
 ## Configurar ambiente de desarrollo
 
@@ -19,4 +19,29 @@ https://docs.microsoft.com/en-us/visualstudio/liveshare/use/install-live-share-v
 
 ## Arquitectura de la aplicación
 
-- [ ] Documentar la arquitectura limpia, etc.
+- [x] Conectar la UI con el backend: ventas, productos.
+- [x] Flujo CI/CD.
+- [ ] Generar UI "final" y refactorizar.
+- [ ] Enlazar productos + debug multiplataforma.
+
+## Pendientes Arquitectura
+
+- [ ] Definir esquema de migraciones, si basado en timestamp o version, etc.
+- [ ] Decidir lenguaje Ubicuo?
+- [ ] Decidir si nos vamos por UUID v4.
+- [ ] Definir metodologia y/o paquete para manejo de estado (Riverpod).
+- [ ] Definir Design System.
+
+## Pendientes para entrar en flujo de trabajo "normal"
+
+- [ ] Logeo.
+- [ ] Transacciones.
+- [ ] Publicar en tiendas versiones beta automaticamente.
+- [ ] Internacionalización.
+- [ ] Logeo de eventos / auditoria.
+
+## Convenciones
+
+## Definir flujo de trabajo
+
+- [ ]
