@@ -15,7 +15,9 @@ class SalesDependencies {
   ISaleRepository saleRepository() {
     return SaleRepository();
   }
+}
 
+class ItemsDependencies {
   IItemRepository itemRepository() {
     return ItemRepository();
   }
@@ -24,4 +26,5 @@ class SalesDependencies {
 class Dependencies {
   static final InfraStructureDependencies infra = InfraStructureDependencies();
   static final SalesDependencies sales = SalesDependencies();
+  static final ItemsDependencies items = ItemsDependencies();
 }

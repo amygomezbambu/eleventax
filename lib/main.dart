@@ -1,12 +1,20 @@
 import 'package:eleventa/modules/common/exception/exception.dart';
+import 'package:eleventa/modules/items/app/dto/item_dto.dart';
+import 'package:eleventa/modules/items/app/usecase/get_item.dart';
+import 'package:eleventa/modules/items/items_module.dart';
 import 'package:eleventa/modules/sales/app/dto/basic_item.dart';
 import 'package:eleventa/modules/sales/app/usecase/add_sale_item.dart';
 import 'package:eleventa/modules/sales/app/usecase/create_sale.dart';
+import 'package:eleventa/modules/sales/sales_module.dart';
 import 'package:flutter/material.dart';
 import 'package:eleventa/dependencies.dart';
+import 'package:eleventa/loader.dart';
 import 'dart:math';
 
 void main() {
+  var loader = Loader();
+  loader.init();
+
   runApp(const MyApp());
 }
 
@@ -73,9 +81,31 @@ class _SalesContainerState extends State<SalesContainer> {
   var itemCount = 0;
   var saleUID = '';
 
+  Future<void> getItem() async {
+    GetItem getItem = ItemsModule.getItem();
+    late ItemDTO item;
+
+    getItem.request.sku = description;
+
+    try {
+      item = await getItem.exec();
+
+      setState(() {
+        items.add(ItemUI(
+            code: item.sku,
+            description: item.description,
+            price: item.price.toString()));
+
+        selectedItem = items.last;
+      });
+    } on Exception catch (e) {
+      print(e.toString());
+    }
+  }
+
   Future<void> addItem() async {
-    CreateSale createSale = CreateSale();
-    AddSaleItem addSaleItem = AddSaleItem(Dependencies.sales.saleRepository());
+    CreateSale createSale = SalesModule.createSale();
+    AddSaleItem addSaleItem = SalesModule.addSaleItem();
 
     if (itemCount == 0) {
       print('Creando venta...');
@@ -99,25 +129,26 @@ class _SalesContainerState extends State<SalesContainer> {
   }
 
   void handleSubmit(String value) async {
-    print(value);
-    price = value;
+    await getItem();
+    // print(value);
+    // price = value;
 
-    try {
-      await addItem();
+    // try {
+    //   await addItem();
 
-      setState(() {
-        items.add(ItemUI(code: code, description: description, price: price));
-        selectedItem = items.last;
-        print('selectedItem establecido');
-        print('La UI debe de estar actualizada');
-      });
-    } catch (e) {
-      if (e is DomainException) {
-        print((e as DomainException).message);
-      }
+    //   setState(() {
+    //     items.add(ItemUI(code: code, description: description, price: price));
+    //     selectedItem = items.last;
+    //     print('selectedItem establecido');
+    //     print('La UI debe de estar actualizada');
+    //   });
+    // } catch (e) {
+    //   if (e is DomainException) {
+    //     print((e as DomainException).message);
+    //   }
 
-      print(e.toString());
-    }
+    //   print(e.toString());
+    // }
   }
 
   void _setCode(String value) {

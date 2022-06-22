@@ -1,6 +1,7 @@
 import 'package:eleventa/dependencies.dart';
 import 'package:eleventa/modules/common/app/interface/database.dart';
 import 'package:eleventa/modules/migrations/migrate_db.dart';
+import 'package:flutter/material.dart';
 
 /// Inicializador de la aplicacion
 ///
@@ -10,6 +11,7 @@ class Loader {
   IDatabaseAdapter dbAdapter = Dependencies.infra.database();
 
   Future<void> init() async {
+    WidgetsFlutterBinding.ensureInitialized();
     //Conectar adaptador de base de datos.
     await dbAdapter.connect();
 

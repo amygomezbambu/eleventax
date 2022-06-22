@@ -1,3 +1,5 @@
+import 'package:eleventa/modules/common/exception/exception.dart';
+
 import '../dto/item_dto.dart';
 import '../interface/item_repository.dart';
 import '../../domain/entity/item.dart';
@@ -17,7 +19,7 @@ class GetItem {
     Item? item = await _repo.getBySku(request.sku);
 
     if (item == null) {
-      throw Exception('Codigo de producto invalido');
+      throw AppException('Codigo de producto invalido');
     }
 
     return ItemMapper.fromDomainToDTO(item);

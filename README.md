@@ -26,6 +26,7 @@ https://docs.microsoft.com/en-us/visualstudio/liveshare/use/install-live-share-v
 
 ## Pendientes Arquitectura
 
+- [ ] Definir esquema de migraciones, si basado en timestamp o version, etc.
 - [ ] Decidir lenguaje Ubicuo?
 - [ ] Decidir si nos vamos por UUID v4.
 - [ ] Definir metodologia y/o paquete para manejo de estado (Riverpod).
