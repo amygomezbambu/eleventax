@@ -17,30 +17,6 @@ De momento el desarrollo de la aplicación se realiza principalmente en pair/mob
 Posteriormente configura la extensión de Live Sharing accediendo a tu cuenta de GitHub:
 https://docs.microsoft.com/en-us/visualstudio/liveshare/use/install-live-share-visual-studio-code#sign-in-to-live-share
 
-## Pendientes para el MVP
+## Arquitectura de la aplicación
 
-- [x] Conectar la UI con el backend: ventas, productos.
-- [x] Flujo CI/CD.
-- [ ] Generar UI "final" y refactorizar.
-- [ ] Enlazar productos + debug multiplataforma.
-
-## Pendientes Arquitectura
-
-- [ ] Decidir lenguaje Ubicuo?
-- [ ] Decidir si nos vamos por UUID v4.
-- [ ] Definir metodologia y/o paquete para manejo de estado (Riverpod).
-- [ ] Definir Design System.
-
-## Pendientes para entrar en flujo de trabajo "normal"
-
-- [ ] Logeo.
-- [ ] Transacciones.
-- [ ] Publicar en tiendas versiones beta automaticamente.
-- [ ] Internacionalización.
-- [ ] Logeo de eventos / auditoria.
-
-## Convenciones
-
-## Definir flujo de trabajo
-
-- [ ]
+- [ ] Documentar la arquitectura limpia, etc.
