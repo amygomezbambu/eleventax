@@ -13,6 +13,8 @@ import 'dart:math';
 import 'package:flutter/services.dart';
 import 'modules/sales/ui/sales_page.dart';
 import 'package:google_fonts/google_fonts.dart';
+import './modules/common/ui/ui_consts.dart' as ui;
+import 'package:flutter_tailwindcss_defaults/colors.dart';
 
 void main() {
   runApp(const EleventaApp());
@@ -29,7 +31,8 @@ class EleventaApp extends StatelessWidget {
       theme: ThemeData(
           //colorSchemeSeed: Colors.red,
           fontFamily: 'Open Sans',
-          scaffoldBackgroundColor: const Color(0xFFF2F3F6),
+          scaffoldBackgroundColor:
+              TailwindColors.blueGray[50], //const Color(0xFFF2F3F6),
           //useMaterial3: true,
           // Deshabilitamos el efecto "Splash" de Material
           splashColor: Colors.transparent,

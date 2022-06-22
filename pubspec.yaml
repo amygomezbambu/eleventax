@@ -42,6 +42,7 @@ dependencies:
   path:
   path_provider:
   google_fonts: ^3.0.1
+  flutter_tailwindcss_defaults: ^0.2.0
 
 dev_dependencies:
   integration_test:

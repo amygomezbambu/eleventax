@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../common/ui/ui_consts.dart' as ui;
 import '../../common/ui/primary_button.dart';
+import 'package:flutter_tailwindcss_defaults/colors.dart';
+import 'sale_items_actions.dart';
 
 class SalesPage extends StatefulWidget {
   const SalesPage({Key? key, required this.title}) : super(key: key);
@@ -19,9 +21,11 @@ class _SalesPageState extends State<SalesPage> {
         body: Column(
       children: [
         AppBar(
-          toolbarHeight: 60,
+          toolbarHeight: 50,
           title: Text(
-            'Ventas',
+            MediaQuery.of(context).size.width > 800
+                ? 'eleventa desktop'
+                : 'eleventa móvil',
             style: GoogleFonts.openSans(),
           ),
           backgroundColor: ui.backgroundColor,
@@ -37,13 +41,7 @@ class _SalesPageState extends State<SalesPage> {
           ],
           leading: const Icon(Icons.menu),
         ),
-        SaleItemsContainer(),
-        Container(
-          margin: const EdgeInsets.all(10),
-          height: 60,
-          child: const PrimaryButton(
-              'Cobrar \$12,445.50', Icons.attach_money_outlined),
-        )
+        SaleItemsContainer()
       ],
     ));
   }
@@ -98,16 +96,73 @@ class _SaleItemsContainerState extends State<SaleItemsContainer> {
 
   @override
   Widget build(BuildContext context) {
+    return MediaQuery.of(context).size.width > 800
+        ? Expanded(
+            child: Row(
+              children: [
+                SaleItemsList(items: items),
+                Container(
+                  width: 400,
+                  //height: double.maxFinite,
+                  padding: EdgeInsets.fromLTRB(1, 5, 10, 5),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: SaleItemsActions(),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.fromLTRB(3, 10, 5, 10),
+                        height: 60,
+                        child: const PrimaryButton(
+                            'Cobrar 12,445.50', Icons.attach_money_outlined),
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
+          )
+        : Expanded(
+            child: Column(
+              children: [
+                SaleItemsList(items: items),
+                Container(
+                  margin: EdgeInsets.all(10),
+                  height: 60,
+                  child: const PrimaryButton(
+                      'Cobrar \$12,445.50', Icons.attach_money_outlined),
+                )
+              ],
+            ),
+          );
+  }
+}
+
+class SaleItemsList extends StatelessWidget {
+  const SaleItemsList({
+    Key? key,
+    required this.items,
+  }) : super(key: key);
+
+  final List<Item> items;
+
+  @override
+  Widget build(BuildContext context) {
     return Expanded(
       child: Column(
         children: [
           Card(
               margin: const EdgeInsets.all(0),
               child: Padding(
-                padding: const EdgeInsets.all(10.0),
+                padding: const EdgeInsets.all(12.0),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: ui.neutral300,
+                    color: TailwindColors.blueGray[200], //ui.neutral300,
                     borderRadius: BorderRadius.circular(5),
                   ),
                   child: TextField(
@@ -119,18 +174,19 @@ class _SaleItemsContainerState extends State<SaleItemsContainer> {
                     // ignore: unnecessary_const
                     autocorrect: false,
 
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                         prefixIcon: Icon(
                           Icons.qr_code_scanner,
                           color: ui.neutral600,
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: ui.neutral300, width: 1.0),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.red, width: 5.0),
-                        ),
+                        border: InputBorder.none,
+                        // focusedBorder: OutlineInputBorder(
+                        //   borderSide: BorderSide(
+                        //       color: TailwindColors.blueGray[200]!, width: 1.0),
+                        // ),
+                        // enabledBorder: OutlineInputBorder(
+                        //   borderSide: BorderSide(color: Colors.red, width: 5.0),
+                        // ),
                         hintText: "Escanea o ingresa un código de producto...",
                         hintStyle: const TextStyle(
                             fontSize: 15, color: ui.neutral600)),
