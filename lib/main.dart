@@ -99,7 +99,9 @@ class _SalesContainerState extends State<SalesContainer> {
         selectedItem = items.last;
       });
     } on Exception catch (e) {
-      print(e.toString());
+      if (e is AppException) {
+        print((e as AppException).message);
+      }
     }
   }
 
@@ -266,8 +268,8 @@ class TopNavigation extends StatelessWidget {
       children: [
         Expanded(
             child: Container(
-          color: Colors.blue,
-          height: 60,
+          color: Colors.green,
+          height: 100,
           child: Row(
             children: [
               const Padding(
