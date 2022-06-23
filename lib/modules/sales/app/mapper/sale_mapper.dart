@@ -9,6 +9,9 @@ class SaleMapper {
     dto.name = sale.name;
     dto.total = sale.total;
     dto.uid = sale.uid;
+    dto.paymentMethod = sale.paymentMethod;
+    dto.paymentTimeStamp = sale.paymentTimeStamp;
+    dto.status = sale.status;
 
     dto.saleItems = <BasicItemDTO>[];
 

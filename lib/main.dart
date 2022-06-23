@@ -7,9 +7,7 @@ import 'package:eleventa/modules/sales/app/usecase/add_sale_item.dart';
 import 'package:eleventa/modules/sales/app/usecase/create_sale.dart';
 import 'package:eleventa/modules/sales/sales_module.dart';
 import 'package:flutter/material.dart';
-import 'package:eleventa/dependencies.dart';
 import 'package:eleventa/loader.dart';
-import 'dart:math';
 
 void main() {
   var loader = Loader();

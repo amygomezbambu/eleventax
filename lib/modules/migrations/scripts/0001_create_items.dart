@@ -11,7 +11,10 @@ class Migration1 extends Migration {
         'id integer primary key autoincrement,'
         'uid varchar(50) unique,'
         'name varchar(100) null,'
-        'total decimal(10,4) null'
+        'total decimal(10,4) null,'
+        'status integer null,'
+        'paymentMethod integer null,'
+        'paymentTimeStamp integer null'
         ');';
 
     await db.command(sql: command);
