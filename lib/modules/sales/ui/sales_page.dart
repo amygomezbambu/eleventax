@@ -1,11 +1,25 @@
+import 'package:eleventa/modules/sales/domain/entity/sale.dart';
+import 'package:eleventa/modules/sales/sales_module.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tailwindcss_defaults/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../common/ui/ui_consts.dart' as ui;
 import '../../common/ui/primary_button.dart';
+import '../app/dto/sale_dto.dart';
 import 'sale_items_actions.dart';
 import 'ui_sale_item.dart';
-import 'sale_items_list.dart';
+import 'sale_item_list_view.dart';
+import 'package:eleventa/modules/common/exception/exception.dart';
+import 'package:eleventa/modules/items/app/dto/item_dto.dart';
+import 'package:eleventa/modules/items/app/usecase/get_item.dart';
+import 'package:eleventa/modules/items/items_module.dart';
+import 'package:eleventa/modules/sales/sales_module.dart';
+import 'package:eleventa/modules/sales/domain/entity/sale.dart';
+import 'package:eleventa/modules/sales/app/usecase/charge_sale.dart';
+import 'package:eleventa/modules/sales/app/usecase/create_sale.dart';
+import 'package:eleventa/modules/sales/app/usecase/add_sale_item.dart';
+import 'sale_item_list_view.dart';
 
 class SalesPage extends StatefulWidget {
   final String title;
@@ -28,8 +42,8 @@ class _SalesPageState extends State<SalesPage> {
           children: [
             Container(
               color: ui.backgroundColor,
-              width: 65,
-              padding: EdgeInsets.only(top: 10),
+              width: 70,
+              padding: EdgeInsets.only(top: 27),
               child: Column(children: [
                 NavigationButton(Icons.shopping_cart_outlined),
                 NavigationButton(Icons.person),
@@ -111,10 +125,100 @@ class SaleItemsContainer extends StatefulWidget {
 class _SaleItemsContainerState extends State<SaleItemsContainer> {
   double saleTotal = 0.0;
   String currentSaleId = '';
+  FocusNode myFocusNode = FocusNode();
+  TextEditingController myController = TextEditingController();
 
-  void itemAdded() {}
+  Future<void> addItemBySku(String value) async {
+    // Obtenemos los Use cases...
+    GetItem getItem = ItemsModule.getItem();
+    //ChargeSale chargeSale = SalesModule.chargeSale();
+    CreateSale createSale = SalesModule.createSale();
+    AddSaleItem addItem = SalesModule.addSaleItem();
 
-  void saleCreated(String saleUid) {}
+    late ItemDTO item;
+
+    // Checamos tener una venta
+    if (UiCart.saleUid == '') {
+      UiCart.saleUid = createSale.exec();
+      print('Nueva venta creada $UiCart.saleUid');
+    }
+
+    getItem.request.sku = value;
+
+    try {
+      item = await getItem.exec();
+
+      // Agregamos el articulo a la venta
+      addItem.request.item.description = item.description;
+      addItem.request.item.price = item.price;
+      addItem.request.item.quantity = 1;
+      addItem.request.saleUid = UiCart.saleUid;
+
+      print('Agregando ${item.description} a venta ${UiCart.saleUid}');
+      var sale = await addItem.exec();
+
+      setState(() {
+        // Si tuvimos exito, lo agregamos a la UI
+        UiCart.items.add(UiSaleItem(
+            code: item.sku,
+            description: item.description,
+            price: item.price.toString()));
+
+        UiCart.selectedItem = UiCart.items.last;
+        UiCart.total = sale.total;
+
+        saleTotal = sale.total;
+      });
+    } on Exception catch (e) {
+      if (e is AppException) {
+        print((e as AppException).message);
+      }
+    }
+
+    myController.clear();
+    myFocusNode.requestFocus();
+  }
+
+  void selectItem(int itemIndex) {
+    setState(() {
+      UiCart.selectedItem = UiCart.items[itemIndex];
+    });
+
+    myFocusNode.requestFocus();
+  }
+
+  void chargeButtonClick() async {
+    print('Cobrando!');
+
+    var chargeSale = SalesModule.chargeSale();
+
+    chargeSale.request.paymentMethod = SalePaymentMethod.cash;
+    chargeSale.request.saleUid = UiCart.saleUid;
+
+    await chargeSale.exec();
+
+    setState(() {
+      saleTotal = 0.0;
+    });
+
+    UiCart.items.clear();
+    UiCart.saleUid = '';
+
+    myController.clear();
+    myFocusNode.requestFocus();
+
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Gracias por su compra, ¡Vuelva pronto!'),
+      width: 300,
+      //margin: EdgeInsets.only(bottom: -100),
+      padding: EdgeInsets.symmetric(
+        vertical: 20,
+        horizontal: 30.0, // Inner padding for SnackBar content.
+      ),
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    ));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -123,14 +227,17 @@ class _SaleItemsContainerState extends State<SaleItemsContainer> {
         ? Expanded(
             child: Row(
               children: [
-                SaleItemsList(),
+                Expanded(
+                  child: saleControls(),
+                ),
                 Container(
                   width: 400,
-                  padding: const EdgeInsets.fromLTRB(1, 5, 10, 5),
+                  padding: const EdgeInsets.fromLTRB(1, 5, 7, 5),
                   child: Column(
                     children: [
                       const Expanded(
                         child: Card(
+                          elevation: 1,
                           child: Padding(
                             padding: EdgeInsets.all(5.0),
                             child: SaleItemsActions(),
@@ -140,9 +247,8 @@ class _SaleItemsContainerState extends State<SaleItemsContainer> {
                       Container(
                         margin: const EdgeInsets.fromLTRB(3, 10, 5, 10),
                         height: 60,
-                        child: PrimaryButton(
-                            'Cobrar ${UiCart.total.toString()}',
-                            Icons.attach_money_outlined),
+                        child: PrimaryButton('Cobrar \$${saleTotal}',
+                            Icons.attach_money_outlined, chargeButtonClick),
                       )
                     ],
                   ),
@@ -153,15 +259,53 @@ class _SaleItemsContainerState extends State<SaleItemsContainer> {
         : Expanded(
             child: Column(
               children: [
-                SaleItemsList(),
+                Expanded(child: saleControls()),
                 Container(
                   margin: const EdgeInsets.all(10),
                   height: 60,
-                  child: PrimaryButton('Cobrar ${UiCart.total.toString()}',
-                      Icons.attach_money_outlined),
+                  child: PrimaryButton('Cobrar \$${saleTotal}',
+                      Icons.attach_money_outlined, chargeButtonClick),
                 )
               ],
             ),
           );
+  }
+
+  Column saleControls() {
+    return Column(
+      children: [
+        Card(
+            margin: const EdgeInsets.all(0),
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: TailwindColors.blueGray[200], //ui.neutral300,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: TextField(
+                  obscureText: false,
+                  autofocus: true,
+                  focusNode: myFocusNode,
+                  controller: myController,
+                  onSubmitted: addItemBySku,
+                  autocorrect: false,
+                  decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        CupertinoIcons.barcode_viewfinder,
+                        color: TailwindColors.blueGray[300],
+                      ),
+                      border: InputBorder.none,
+                      hintText: "Escanea o ingresa un código de producto...",
+                      hintStyle: TextStyle(
+                          fontSize: 15, color: TailwindColors.blueGray[400])),
+                ),
+              ),
+            )),
+        Expanded(
+            child:
+                ItemsListView(items: UiCart.items, onSelectItem: selectItem)),
+      ],
+    );
   }
 }

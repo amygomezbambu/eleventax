@@ -4,10 +4,12 @@ import 'package:google_fonts/google_fonts.dart';
 class PrimaryButton extends StatelessWidget {
   final String _label;
   final IconData _icon;
+  final VoidCallback onTap;
 
   const PrimaryButton(
     this._label,
-    this._icon, {
+    this._icon,
+    this.onTap, {
     Key? key,
   }) : super(key: key);
 
@@ -22,7 +24,7 @@ class PrimaryButton extends StatelessWidget {
             primary: const Color(0xFF3973CE)
             //minimumSize: Size(350, 70)
             ),
-        onPressed: () {},
+        onPressed: onTap,
         child: Row(
           //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           //crossAxisAlignment: CrossAxisAlignment.center,
