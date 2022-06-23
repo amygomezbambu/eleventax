@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tailwindcss_defaults/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../common/ui/ui_consts.dart' as ui;
 import '../../common/ui/primary_button.dart';
@@ -28,6 +29,12 @@ class _SalesPageState extends State<SalesPage> {
             Container(
               color: ui.backgroundColor,
               width: 65,
+              padding: EdgeInsets.only(top: 10),
+              child: Column(children: [
+                NavigationButton(Icons.shopping_cart_outlined),
+                NavigationButton(Icons.person),
+                NavigationButton(Icons.inventory_2)
+              ]),
             ),
             Expanded(
               child: Row(
@@ -72,6 +79,26 @@ class _SalesPageState extends State<SalesPage> {
   }
 }
 
+class NavigationButton extends StatelessWidget {
+  IconData icon;
+
+  NavigationButton(
+    this.icon, {
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 20),
+      child: Icon(
+        icon,
+        color: TailwindColors.blueGray.shade200,
+      ),
+    );
+  }
+}
+
 class SaleItemsContainer extends StatefulWidget {
   const SaleItemsContainer({
     Key? key,
@@ -82,6 +109,13 @@ class SaleItemsContainer extends StatefulWidget {
 }
 
 class _SaleItemsContainerState extends State<SaleItemsContainer> {
+  double saleTotal = 0.0;
+  String currentSaleId = '';
+
+  void itemAdded() {}
+
+  void saleCreated(String saleUid) {}
+
   @override
   Widget build(BuildContext context) {
     // TBD: Sacar el breakpoint para desktop de estandares o un paquete auxilair
@@ -89,16 +123,16 @@ class _SaleItemsContainerState extends State<SaleItemsContainer> {
         ? Expanded(
             child: Row(
               children: [
-                const SaleItemsList(),
+                SaleItemsList(),
                 Container(
                   width: 400,
                   padding: const EdgeInsets.fromLTRB(1, 5, 10, 5),
                   child: Column(
                     children: [
-                      Expanded(
+                      const Expanded(
                         child: Card(
                           child: Padding(
-                            padding: const EdgeInsets.all(5.0),
+                            padding: EdgeInsets.all(5.0),
                             child: SaleItemsActions(),
                           ),
                         ),
@@ -119,7 +153,7 @@ class _SaleItemsContainerState extends State<SaleItemsContainer> {
         : Expanded(
             child: Column(
               children: [
-                const SaleItemsList(),
+                SaleItemsList(),
                 Container(
                   margin: const EdgeInsets.all(10),
                   height: 60,

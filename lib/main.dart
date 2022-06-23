@@ -18,6 +18,7 @@ class EleventaApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'eleventa',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
           //colorSchemeSeed: Colors.red,
           fontFamily: 'Open Sans',
