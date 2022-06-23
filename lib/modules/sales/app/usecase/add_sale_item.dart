@@ -6,7 +6,7 @@ import 'package:eleventa/modules/sales/domain/service/opened_sales.dart';
 
 class AddSaleItemRequest {
   String saleUid = '';
-  late BasicItemDTO item;
+  BasicItemDTO item = BasicItemDTO();
 }
 
 class AddSaleItem {
