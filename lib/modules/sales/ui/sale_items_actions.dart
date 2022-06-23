@@ -44,7 +44,7 @@ class SaleItemsActions extends StatelessWidget {
             ),
             Row(
               children: [
-                SaleItemActionButton('test', CupertinoIcons.add),
+                SaleItemActionButton('Aplicar Descuento', CupertinoIcons.add),
                 SaleItemActionButton('test', CupertinoIcons.add)
               ],
             )
