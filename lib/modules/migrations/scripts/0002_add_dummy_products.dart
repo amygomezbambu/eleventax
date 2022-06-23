@@ -9,17 +9,17 @@ class Migration2 extends Migration {
   @override
   Future<void> operation() async {
     var command = 'insert into items(uid,description,sku,price) '
-        'values(?, "coca cola", "0001", 10.5)';
+        'values(?, "Coke 20oz", "1", 10.5)';
 
     await db.command(sql: command, params: [const Uuid().v4()]);
 
     command = 'insert into items(uid,description,sku,price) '
-        'values(?, "sabritas 250 grs", "0002", 10.0)';
+        'values(?, "Starbucks Coffee", "2", 10.0)';
 
     await db.command(sql: command, params: [const Uuid().v4()]);
 
     command = 'insert into items(uid,description,sku,price) '
-        'values(?, "atun tuny 200 grs", "0003", 12.00)';
+        'values(?, "Tuna Sandwich", "3", 12.00)';
 
     await db.command(sql: command, params: [const Uuid().v4()]);
   }
