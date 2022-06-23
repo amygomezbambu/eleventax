@@ -27,7 +27,7 @@ class _SalesPageState extends State<SalesPage> {
           children: [
             Container(
               color: ui.backgroundColor,
-              width: 60,
+              width: 65,
             ),
             Expanded(
               child: Row(

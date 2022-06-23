@@ -4,6 +4,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'ui_sale_item.dart';
 import 'package:flutter/cupertino.dart';
 import '../../common/ui/ui_consts.dart' as ui;
+import 'package:eleventa/modules/common/exception/exception.dart';
+import 'package:eleventa/modules/items/app/dto/item_dto.dart';
+import 'package:eleventa/modules/items/app/usecase/get_item.dart';
+import 'package:eleventa/modules/items/items_module.dart';
+import 'package:eleventa/loader.dart';
 
 class SaleItemsList extends StatefulWidget {
   const SaleItemsList({
@@ -21,16 +26,43 @@ class _SaleItemsListState extends State<SaleItemsList> {
   String price = '';
   String description = '';
 
-  void _handleSubmit(String value) {
-    print(value);
-    price = value;
+  // void _handleSubmit(String value) {
+  //   print(value);
+  //   price = value;
 
-    setState(() {
-      UiCart.items.add(UiSaleItem(
-          code: '1234', description: 'My description', price: '12.90'));
-      UiCart.selectedItem = UiCart.items.last;
-      UiCart.total += 1;
-    });
+  //   setState(() {
+  //     UiCart.items.add(UiSaleItem(
+  //         code: '1234', description: 'My description', price: '12.90'));
+  //     UiCart.selectedItem = UiCart.items.last;
+  //     UiCart.total += 1;
+  //   });
+
+  //   myController.clear();
+  //   myFocusNode.requestFocus();
+  // }
+
+  Future<void> addItemBySku(String value) async {
+    GetItem getItem = ItemsModule.getItem();
+    late ItemDTO item;
+
+    getItem.request.sku = value;
+
+    try {
+      item = await getItem.exec();
+
+      setState(() {
+        UiCart.items.add(UiSaleItem(
+            code: item.sku,
+            description: item.description,
+            price: item.price.toString()));
+
+        UiCart.selectedItem = UiCart.items.last;
+      });
+    } on Exception catch (e) {
+      if (e is AppException) {
+        print((e as AppException).message);
+      }
+    }
 
     myController.clear();
     myFocusNode.requestFocus();
@@ -63,7 +95,7 @@ class _SaleItemsListState extends State<SaleItemsList> {
                     autofocus: true,
                     focusNode: myFocusNode,
                     controller: myController,
-                    onSubmitted: _handleSubmit,
+                    onSubmitted: addItemBySku,
                     autocorrect: false,
                     decoration: InputDecoration(
                         prefixIcon: Icon(
@@ -102,7 +134,8 @@ class ItemsListView extends StatelessWidget {
       itemCount: items.length,
       itemBuilder: (BuildContext context, int index) {
         return ListTile(
-            dense: false, // TBD: Poner denso solo en pantallas chicas
+            dense: MediaQuery.of(context).size.width <
+                800, // TBD: Poner denso solo en pantallas chicas
             leading: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Image.network(
@@ -115,7 +148,7 @@ class ItemsListView extends StatelessWidget {
             subtitle: Text(items[index].code),
             selected: UiCart.isSelectedItem(items[index]),
             selectedColor: Colors.white,
-            selectedTileColor: TailwindColors.coolGray[700],
+            selectedTileColor: TailwindColors.coolGray[500],
             title: Text(
               items[index].description,
               style: GoogleFonts.openSans(
