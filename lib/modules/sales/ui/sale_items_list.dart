@@ -1,3 +1,4 @@
+import 'package:eleventa/modules/sales/app/usecase/add_sale_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tailwindcss_defaults/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -8,10 +9,14 @@ import 'package:eleventa/modules/common/exception/exception.dart';
 import 'package:eleventa/modules/items/app/dto/item_dto.dart';
 import 'package:eleventa/modules/items/app/usecase/get_item.dart';
 import 'package:eleventa/modules/items/items_module.dart';
+import 'package:eleventa/modules/sales/sales_module.dart';
+import 'package:eleventa/modules/sales/domain/entity/sale.dart';
+import 'package:eleventa/modules/sales/app/usecase/charge_sale.dart';
+import 'package:eleventa/modules/sales/app/usecase/create_sale.dart';
 import 'package:eleventa/loader.dart';
 
 class SaleItemsList extends StatefulWidget {
-  const SaleItemsList({
+  SaleItemsList({
     Key? key,
   }) : super(key: key);
 
@@ -20,37 +25,47 @@ class SaleItemsList extends StatefulWidget {
 }
 
 class _SaleItemsListState extends State<SaleItemsList> {
+  //Function(String) saleCreated;
   FocusNode myFocusNode = FocusNode();
   TextEditingController myController = TextEditingController();
-  String code = '';
-  String price = '';
-  String description = '';
 
-  // void _handleSubmit(String value) {
-  //   print(value);
-  //   price = value;
-
-  //   setState(() {
-  //     UiCart.items.add(UiSaleItem(
-  //         code: '1234', description: 'My description', price: '12.90'));
-  //     UiCart.selectedItem = UiCart.items.last;
-  //     UiCart.total += 1;
-  //   });
-
-  //   myController.clear();
-  //   myFocusNode.requestFocus();
-  // }
+  @override
+  void initState() {
+    super.initState();
+    print("initState() called");
+  }
 
   Future<void> addItemBySku(String value) async {
+    // Obtenemos los Use cases...
     GetItem getItem = ItemsModule.getItem();
+    //ChargeSale chargeSale = SalesModule.chargeSale();
+    CreateSale createSale = SalesModule.createSale();
+    AddSaleItem addItem = SalesModule.addSaleItem();
+
     late ItemDTO item;
+
+    // Checamos tener una venta
+    if (UiCart.saleUid == '') {
+      UiCart.saleUid = createSale.exec();
+      print('Nueva venta creada $UiCart.saleUid');
+    }
 
     getItem.request.sku = value;
 
     try {
       item = await getItem.exec();
 
+      // Agregamos el articulo a la venta
+      addItem.request.item.description = item.description;
+      addItem.request.item.price = item.price;
+      addItem.request.item.quantity = 1;
+      addItem.request.saleUid = UiCart.saleUid;
+
+      print('Agregando ${item.description} a venta ${UiCart.saleUid}');
+      await addItem.exec();
+
       setState(() {
+        // Si tuvimos exito, lo agregamos a la UI
         UiCart.items.add(UiSaleItem(
             code: item.sku,
             description: item.description,
@@ -128,6 +143,10 @@ class ItemsListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final targetPlatform = Theme.of(context).platform;
+    final touchBasedInput = (targetPlatform == TargetPlatform.android ||
+        targetPlatform == TargetPlatform.iOS);
+
     return ListView.separated(
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
@@ -146,7 +165,7 @@ class ItemsListView extends StatelessWidget {
                   fit: BoxFit.cover,
                 )),
             subtitle: Text(items[index].code),
-            selected: UiCart.isSelectedItem(items[index]),
+            selected: !touchBasedInput && UiCart.isSelectedItem(items[index]),
             selectedColor: Colors.white,
             selectedTileColor: TailwindColors.coolGray[500],
             title: Text(
@@ -161,13 +180,14 @@ class ItemsListView extends StatelessWidget {
                     '12.50',
                     style: TextStyle(
                         fontSize: 18,
-                        color: UiCart.isSelectedItem(items[index])
+                        color: !touchBasedInput &&
+                                UiCart.isSelectedItem(items[index])
                             ? Colors.white
                             : Color.fromARGB(255, 38, 119, 181),
                         fontWeight: FontWeight.w600),
                   )
                 ]),
-            onTap: () => {onSelectItem(index)});
+            onTap: () => {!touchBasedInput ? onSelectItem(index) : true});
       },
       separatorBuilder: (context, index) => const Padding(
         padding: EdgeInsets.only(left: 80, right: 15),

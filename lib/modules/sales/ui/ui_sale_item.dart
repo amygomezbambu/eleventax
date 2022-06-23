@@ -8,6 +8,7 @@ class UiSaleItem {
 }
 
 class UiCart {
+  static var saleUid = '';
   static final List<UiSaleItem> items = [];
   static var total = 12.50;
   static late UiSaleItem selectedItem;
