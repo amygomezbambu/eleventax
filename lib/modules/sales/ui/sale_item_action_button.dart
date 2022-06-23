@@ -18,7 +18,7 @@ class SaleItemActionButton extends StatelessWidget {
         height: 130,
         child: Card(
           elevation: 0,
-          margin: EdgeInsets.all(7),
+          margin: const EdgeInsets.all(7),
           color: TailwindColors.blueGray[200],
           shape: RoundedRectangleBorder(
               side: BorderSide(color: TailwindColors.blueGray[200]!, width: 1),
@@ -26,8 +26,7 @@ class SaleItemActionButton extends StatelessWidget {
           child: InkWell(
             hoverColor: TailwindColors.blueGray[300],
             borderRadius: BorderRadius.circular(5.0),
-            //highlightColor: Colors.red,
-            onTap: () => {print('Hello')},
+            onTap: () => {print('Se hizo clic en accion')},
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,

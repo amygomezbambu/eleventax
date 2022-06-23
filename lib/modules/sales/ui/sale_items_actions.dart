@@ -5,16 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:cupertino_icons/cupertino_icons.dart';
 
 class SaleItemsActions extends StatelessWidget {
-  final List<String> _actions = [
-    'Venta rápida',
-    'Aumentar',
-    'Disminuir',
-    'Aplicar descuento',
-    'Asignar cliente',
-    'Asignar precio'
-  ];
-
-  SaleItemsActions({
+  const SaleItemsActions({
     Key? key,
   }) : super(key: key);
 
@@ -22,34 +13,33 @@ class SaleItemsActions extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         child: Padding(
-      padding: EdgeInsets.symmetric(horizontal: 5.0),
-      child: Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                SaleItemActionButton('Aumentar', CupertinoIcons.add_circled),
-                SaleItemActionButton('Disminuir', CupertinoIcons.minus_circle)
-              ],
-            ),
-            Row(
-              children: [
-                SaleItemActionButton(
-                    'Venta Rápida', CupertinoIcons.bag_badge_plus),
-                SaleItemActionButton(
-                    'Asignar Cliente', CupertinoIcons.person_badge_plus)
-              ],
-            ),
-            Row(
-              children: [
-                SaleItemActionButton('Aplicar Descuento', CupertinoIcons.add),
-                SaleItemActionButton('test', CupertinoIcons.add)
-              ],
-            )
-          ],
-        ),
+      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Row(
+            children: const [
+              SaleItemActionButton('Aumentar', CupertinoIcons.add_circled),
+              SaleItemActionButton('Disminuir', CupertinoIcons.minus_circle)
+            ],
+          ),
+          Row(
+            children: const [
+              SaleItemActionButton(
+                  'Venta Rápida', CupertinoIcons.bag_badge_plus),
+              SaleItemActionButton(
+                  'Asignar Cliente', CupertinoIcons.person_badge_plus)
+            ],
+          ),
+          Row(
+            children: const [
+              SaleItemActionButton('Aplicar Descuento', CupertinoIcons.percent),
+              SaleItemActionButton(
+                  'Convertir a cotización', CupertinoIcons.doc_checkmark)
+            ],
+          )
+        ],
       ),
     ));
   }
