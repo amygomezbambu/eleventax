@@ -14,12 +14,9 @@ import 'package:eleventa/modules/common/exception/exception.dart';
 import 'package:eleventa/modules/items/app/dto/item_dto.dart';
 import 'package:eleventa/modules/items/app/usecase/get_item.dart';
 import 'package:eleventa/modules/items/items_module.dart';
-import 'package:eleventa/modules/sales/sales_module.dart';
-import 'package:eleventa/modules/sales/domain/entity/sale.dart';
 import 'package:eleventa/modules/sales/app/usecase/charge_sale.dart';
 import 'package:eleventa/modules/sales/app/usecase/create_sale.dart';
 import 'package:eleventa/modules/sales/app/usecase/add_sale_item.dart';
-import 'sale_item_list_view.dart';
 
 class SalesPage extends StatefulWidget {
   final String title;
@@ -43,7 +40,7 @@ class _SalesPageState extends State<SalesPage> {
             Container(
               color: ui.backgroundColor,
               width: 70,
-              padding: EdgeInsets.only(top: 27),
+              padding: EdgeInsets.only(top: 20),
               child: Column(children: [
                 NavigationButton(Icons.shopping_cart_outlined),
                 NavigationButton(Icons.person),
@@ -231,7 +228,7 @@ class _SaleItemsContainerState extends State<SaleItemsContainer> {
                   child: saleControls(),
                 ),
                 Container(
-                  width: 400,
+                  width: 350,
                   padding: const EdgeInsets.fromLTRB(1, 5, 7, 5),
                   child: Column(
                     children: [
@@ -247,8 +244,10 @@ class _SaleItemsContainerState extends State<SaleItemsContainer> {
                       Container(
                         margin: const EdgeInsets.fromLTRB(3, 10, 5, 10),
                         height: 60,
-                        child: PrimaryButton('Cobrar \$${saleTotal}',
-                            Icons.attach_money_outlined, chargeButtonClick),
+                        child: PrimaryButton(
+                            'Cobrar \$${saleTotal.toStringAsFixed(2)}',
+                            Icons.attach_money_outlined,
+                            chargeButtonClick),
                       )
                     ],
                   ),
@@ -263,8 +262,10 @@ class _SaleItemsContainerState extends State<SaleItemsContainer> {
                 Container(
                   margin: const EdgeInsets.all(10),
                   height: 60,
-                  child: PrimaryButton('Cobrar \$${saleTotal}',
-                      Icons.attach_money_outlined, chargeButtonClick),
+                  child: PrimaryButton(
+                      'Cobrar \$${saleTotal.toStringAsFixed(2)}',
+                      Icons.attach_money_outlined,
+                      chargeButtonClick),
                 )
               ],
             ),

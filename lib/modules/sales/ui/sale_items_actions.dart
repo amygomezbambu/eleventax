@@ -36,7 +36,7 @@ class SaleItemsActions extends StatelessWidget {
             children: const [
               SaleItemActionButton('Aplicar Descuento', CupertinoIcons.percent),
               SaleItemActionButton(
-                  'Convertir a cotización', CupertinoIcons.doc_checkmark)
+                  'Convertir a \n cotización', CupertinoIcons.doc_checkmark)
             ],
           )
         ],

@@ -50,7 +50,7 @@ class ItemsListView extends StatelessWidget {
                 spacing: MediaQuery.of(context).size.width > 800 ? 80 : 31,
                 children: <Widget>[
                   Text(
-                    '\$${items[index].price}',
+                    '\$${double.parse(items[index].price).toStringAsFixed(2)}',
                     style: TextStyle(
                         fontSize: 18,
                         color: !touchBasedInput &&

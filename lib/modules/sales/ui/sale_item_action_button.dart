@@ -25,6 +25,7 @@ class SaleItemActionButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(5.0)),
           child: InkWell(
             hoverColor: TailwindColors.blueGray[300],
+            highlightColor: TailwindColors.blueGray[400],
             borderRadius: BorderRadius.circular(5.0),
             onTap: () => {print('Se hizo clic en accion')},
             child: Column(
@@ -41,7 +42,7 @@ class SaleItemActionButton extends StatelessWidget {
                   _label,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      fontSize: 14, color: TailwindColors.blueGray[600]),
+                      fontSize: 13, color: TailwindColors.blueGray[600]),
                 )
               ],
             ),
