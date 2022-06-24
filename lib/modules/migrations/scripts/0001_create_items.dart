@@ -9,7 +9,7 @@ class Migration1 extends Migration {
   Future<void> operation() async {
     var command = 'create table sales('
         'id integer primary key autoincrement,'
-        'uid varchar(50) unique,'
+        'uid varchar(50) ,' //unique
         'name varchar(100) null,'
         'total decimal(10,4) null,'
         'status integer null,'

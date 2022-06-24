@@ -17,7 +17,7 @@ De momento el desarrollo de la aplicación se realiza principalmente en pair/mob
 Posteriormente configura la extensión de Live Sharing accediendo a tu cuenta de GitHub:
 https://docs.microsoft.com/en-us/visualstudio/liveshare/use/install-live-share-visual-studio-code#sign-in-to-live-share
 
-## Pendientes para el MVP
+## Arquitectura de la aplicación
 
 - [x] Conectar la UI con el backend: ventas, productos.
 - [x] Flujo CI/CD.

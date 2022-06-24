@@ -1,6 +1,9 @@
+import 'package:eleventa/modules/common/exception/exception.dart';
 import 'package:eleventa/modules/sales/app/dto/basic_item.dart';
+import 'package:eleventa/modules/sales/app/dto/sale_dto.dart';
 import 'package:eleventa/modules/sales/app/interface/sale_repository.dart';
 import 'package:eleventa/modules/sales/app/mapper/basic_item_mapper.dart';
+import 'package:eleventa/modules/sales/app/mapper/sale_mapper.dart';
 import 'package:eleventa/modules/sales/domain/entity/sale.dart';
 import 'package:eleventa/modules/sales/domain/service/opened_sales.dart';
 
@@ -11,14 +14,14 @@ class AddSaleItemRequest {
 
 class AddSaleItem {
   var request = AddSaleItemRequest();
-  ISaleRepository _repo;
+  final ISaleRepository _repo;
 
   AddSaleItem(this._repo);
 
   /// Ejecuta el caso de uso
   ///
-  /// Retorna el numero de items de la venta despues de agregar
-  Future<int> exec() async {
+  /// Retorna los datos de la venta o una excepción en caso de que no exista la venta
+  Future<SaleDTO> exec() async {
     Sale? sale;
 
     try {
@@ -29,6 +32,10 @@ class AddSaleItem {
       rethrow;
     }
 
-    return (sale != null) ? sale.itemsCount : 0;
+    if (sale == null) {
+      throw AppException('La venta no existe');
+    }
+
+    return SaleMapper.fromDomainToDTO(sale);
   }
 }
