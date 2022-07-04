@@ -8,7 +8,7 @@
 PRODUCT_NAME = eleventa
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.eleventa
+PRODUCT_BUNDLE_IDENTIFIER = com.bambucode.eleventa
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2022 com.example. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2007 - 2022 BAMBU CODE S.A. DE C.V. Todos los derechos reservados.

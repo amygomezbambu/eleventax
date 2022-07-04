@@ -1,4 +1,4 @@
-package com.example.eleventa
+package com.bambucode.eleventa
 
 import io.flutter.embedding.android.FlutterActivity
 

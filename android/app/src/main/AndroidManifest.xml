@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.eleventa">
+    package="com.bambucode.eleventa">
    <application
         android:label="eleventa"
         android:name="${applicationName}"
