@@ -21,7 +21,7 @@ class Migration {
 
         throw Exception('Migración $version no se ejecutó correctamente');
       }
-    } catch (error, stackTrace) {
+    } catch (error) {
       await db.rollback();
 
       // var err = InfrastructureError(error.toString(), stackTrace.toString());

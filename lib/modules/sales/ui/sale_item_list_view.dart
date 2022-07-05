@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tailwindcss_defaults/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'ui_sale_item.dart';
-import 'package:flutter/cupertino.dart';
 import '../../common/ui/ui_consts.dart' as ui;
-import 'package:eleventa/loader.dart';
 
 class ItemsListView extends StatelessWidget {
   final List<UiSaleItem> items;
@@ -56,7 +54,7 @@ class ItemsListView extends StatelessWidget {
                         color: !touchBasedInput &&
                                 UiCart.isSelectedItem(items[index])
                             ? Colors.white
-                            : Color.fromARGB(255, 38, 119, 181),
+                            : const Color.fromARGB(255, 38, 119, 181),
                         fontWeight: FontWeight.w600),
                   )
                 ]),

@@ -1,4 +1,3 @@
-import 'package:eleventa/modules/common/exception/exception.dart';
 import 'package:eleventa/modules/sales/app/dto/basic_item.dart';
 import 'package:eleventa/modules/sales/app/dto/sale_dto.dart';
 import 'package:eleventa/modules/sales/app/interface/sale_repository.dart';
@@ -30,10 +29,6 @@ class AddSaleItem {
       await _repo.add(sale);
     } catch (e) {
       rethrow;
-    }
-
-    if (sale == null) {
-      throw AppException('La venta no existe');
     }
 
     return SaleMapper.fromDomainToDTO(sale);

@@ -9,7 +9,7 @@ class ChargeSaleRequest {
 
 class ChargeSale {
   var request = ChargeSaleRequest();
-  ISaleRepository _repo;
+  final ISaleRepository _repo;
 
   ChargeSale(this._repo);
 

@@ -52,7 +52,6 @@ class ItemRepository implements IItemRepository {
 
   @override
   List<Item> getAll() {
-    // TODO: implement getAll
     throw UnimplementedError();
   }
 }

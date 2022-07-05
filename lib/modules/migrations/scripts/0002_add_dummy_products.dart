@@ -1,5 +1,6 @@
+// ignore_for_file: file_names
 import 'package:eleventa/modules/migrations/migration.dart';
-import 'package:uuid/uuid.dart';
+import 'package:eleventa/utils/utils.dart';
 
 class Migration2 extends Migration {
   Migration2() : super() {
@@ -11,17 +12,17 @@ class Migration2 extends Migration {
     var command = 'insert into items(uid,description,sku,price) '
         'values(?, "Coke 20oz", "1", 10.5)';
 
-    await db.command(sql: command, params: [const Uuid().v4()]);
+    await db.command(sql: command, params: [Utils.uid.generate()]);
 
     command = 'insert into items(uid,description,sku,price) '
         'values(?, "Starbucks Coffee", "2", 10.0)';
 
-    await db.command(sql: command, params: [const Uuid().v4()]);
+    await db.command(sql: command, params: [Utils.uid.generate()]);
 
     command = 'insert into items(uid,description,sku,price) '
         'values(?, "Tuna Sandwich", "3", 12.00)';
 
-    await db.command(sql: command, params: [const Uuid().v4()]);
+    await db.command(sql: command, params: [Utils.uid.generate()]);
   }
 
   @override

@@ -1,5 +1,4 @@
 import 'package:eleventa/loader.dart';
-import 'package:eleventa/modules/sales/app/usecase/charge_sale.dart';
 import 'package:eleventa/modules/sales/domain/entity/sale.dart';
 import 'package:eleventa/modules/sales/sales_module.dart';
 import 'package:flutter_test/flutter_test.dart';

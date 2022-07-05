@@ -95,7 +95,6 @@ class SaleRepository implements ISaleRepository {
 
   @override
   List<Sale> getAll() {
-    // TODO: implement getAll
     throw UnimplementedError();
   }
 }

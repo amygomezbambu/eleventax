@@ -27,7 +27,7 @@ class SaleItemActionButton extends StatelessWidget {
             hoverColor: TailwindColors.blueGray[300],
             highlightColor: TailwindColors.blueGray[400],
             borderRadius: BorderRadius.circular(5.0),
-            onTap: () => {print('Se hizo clic en accion')},
+            onTap: () => {debugPrint('Se hizo clic en accion')},
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,

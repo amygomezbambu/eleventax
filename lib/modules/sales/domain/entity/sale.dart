@@ -1,12 +1,12 @@
 import 'package:eleventa/modules/sales/domain/entity/basic_item.dart';
-import 'package:uuid/uuid.dart';
+import 'package:eleventa/utils/utils.dart';
 
 enum SaleStatus { open, paid, cancelled }
 
 enum SalePaymentMethod { cash, credit, creditCard, bankTransfer, voucher }
 
 class Sale {
-  String _uid = const Uuid().v4();
+  String _uid = Utils.uid.generate();
   var _name = '';
   var _total = 0.0;
   final _saleItems = <BasicItem>[];

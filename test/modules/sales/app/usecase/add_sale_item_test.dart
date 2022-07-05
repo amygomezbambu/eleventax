@@ -32,10 +32,10 @@ void main() {
       addItem.request.saleUid = uid;
       addItem.request.item = basicItem;
 
-      var itemsCount = await addItem.exec();
+      var saleDTO = await addItem.exec();
 
       //then
-      expect(itemsCount, 1);
+      expect(saleDTO.saleItems.length, 1);
     });
 
     test('debe calcular el total correctamente', () async {

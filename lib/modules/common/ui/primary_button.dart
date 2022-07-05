@@ -30,7 +30,8 @@ class PrimaryButton extends StatelessWidget {
           //crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(_icon, color: Color.fromARGB(255, 137, 196, 251), size: 30),
+            Icon(_icon,
+                color: const Color.fromARGB(255, 137, 196, 251), size: 30),
             Text(_label,
                 style: GoogleFonts.openSans(
                   color: Colors.white,

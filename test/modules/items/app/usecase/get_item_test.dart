@@ -19,12 +19,14 @@ void main() {
       createItem.request.sku = sku;
       createItem.request.description = 'Coca Cola 600ml';
       createItem.request.price = 10.50;
+
       var uid = await createItem.exec();
 
       getItem.request.sku = sku;
       final item = await getItem.exec();
 
       expect(item.sku, sku);
+      expect(item.uid, uid);
     });
 
     test('Debe lanzar excepcion cuando proporcionemos un SKU inválido',

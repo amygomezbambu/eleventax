@@ -6,7 +6,6 @@ import 'package:flutter_tailwindcss_defaults/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../common/ui/ui_consts.dart' as ui;
 import '../../common/ui/primary_button.dart';
-import '../app/dto/sale_dto.dart';
 import 'sale_items_actions.dart';
 import 'ui_sale_item.dart';
 import 'sale_item_list_view.dart';
@@ -14,7 +13,6 @@ import 'package:eleventa/modules/common/exception/exception.dart';
 import 'package:eleventa/modules/items/app/dto/item_dto.dart';
 import 'package:eleventa/modules/items/app/usecase/get_item.dart';
 import 'package:eleventa/modules/items/items_module.dart';
-import 'package:eleventa/modules/sales/app/usecase/charge_sale.dart';
 import 'package:eleventa/modules/sales/app/usecase/create_sale.dart';
 import 'package:eleventa/modules/sales/app/usecase/add_sale_item.dart';
 
@@ -40,8 +38,8 @@ class _SalesPageState extends State<SalesPage> {
             Container(
               color: ui.backgroundColor,
               width: 70,
-              padding: EdgeInsets.only(top: 20),
-              child: Column(children: [
+              padding: const EdgeInsets.only(top: 20),
+              child: Column(children: const [
                 NavigationButton(Icons.shopping_cart_outlined),
                 NavigationButton(Icons.person),
                 NavigationButton(Icons.inventory_2)
@@ -49,7 +47,7 @@ class _SalesPageState extends State<SalesPage> {
             ),
             Expanded(
               child: Row(
-                children: [
+                children: const [
                   SaleItemsContainer(),
                 ],
               ),
@@ -82,7 +80,7 @@ class _SalesPageState extends State<SalesPage> {
               ],
               leading: const Icon(Icons.menu),
             ),
-            SaleItemsContainer()
+            const SaleItemsContainer()
           ],
         ));
       }
@@ -91,9 +89,9 @@ class _SalesPageState extends State<SalesPage> {
 }
 
 class NavigationButton extends StatelessWidget {
-  IconData icon;
+  final IconData icon;
 
-  NavigationButton(
+  const NavigationButton(
     this.icon, {
     Key? key,
   }) : super(key: key);
@@ -101,7 +99,7 @@ class NavigationButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 20),
+      padding: const EdgeInsets.symmetric(vertical: 20),
       child: Icon(
         icon,
         color: TailwindColors.blueGray.shade200,
@@ -137,7 +135,7 @@ class _SaleItemsContainerState extends State<SaleItemsContainer> {
     // Checamos tener una venta
     if (UiCart.saleUid == '') {
       UiCart.saleUid = createSale.exec();
-      print('Nueva venta creada $UiCart.saleUid');
+      debugPrint('Nueva venta creada $UiCart.saleUid');
     }
 
     getItem.request.sku = value;
@@ -151,7 +149,7 @@ class _SaleItemsContainerState extends State<SaleItemsContainer> {
       addItem.request.item.quantity = 1;
       addItem.request.saleUid = UiCart.saleUid;
 
-      print('Agregando ${item.description} a venta ${UiCart.saleUid}');
+      debugPrint('Agregando ${item.description} a venta ${UiCart.saleUid}');
       var sale = await addItem.exec();
 
       setState(() {
@@ -168,7 +166,7 @@ class _SaleItemsContainerState extends State<SaleItemsContainer> {
       });
     } on Exception catch (e) {
       if (e is AppException) {
-        print((e as AppException).message);
+        debugPrint(e.message);
       }
     }
 
@@ -185,7 +183,7 @@ class _SaleItemsContainerState extends State<SaleItemsContainer> {
   }
 
   void chargeButtonClick() async {
-    print('Cobrando!');
+    debugPrint('Cobrando!');
 
     var chargeSale = SalesModule.chargeSale();
 
@@ -205,10 +203,10 @@ class _SaleItemsContainerState extends State<SaleItemsContainer> {
     myFocusNode.requestFocus();
 
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text('Gracias por su compra, ¡Vuelva pronto!'),
+      content: const Text('Gracias por su compra, ¡Vuelva pronto!'),
       width: 300,
       //margin: EdgeInsets.only(bottom: -100),
-      padding: EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
         vertical: 20,
         horizontal: 30.0, // Inner padding for SnackBar content.
       ),

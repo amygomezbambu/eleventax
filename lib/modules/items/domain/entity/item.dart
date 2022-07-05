@@ -1,10 +1,10 @@
-import 'package:uuid/uuid.dart';
+import 'package:eleventa/utils/utils.dart';
 
 class Item {
   var _description = '';
   var _price = 0.0;
   var _sku = '';
-  var _uid = const Uuid().v4();
+  var _uid = Utils.uid.generate();
 
   String get uid => _uid;
 

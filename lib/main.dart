@@ -29,7 +29,7 @@ class EleventaApp extends StatelessWidget {
           splashColor: Colors.transparent,
           highlightColor: Colors.transparent,
           hoverColor: Colors.transparent),
-      home: SafeArea(child: const SalesPage(title: 'Ventas')),
+      home: const SafeArea(child: SalesPage(title: 'Ventas')),
     );
   }
 }
