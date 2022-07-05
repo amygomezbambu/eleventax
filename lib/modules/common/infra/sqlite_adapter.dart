@@ -34,7 +34,7 @@ class SQLiteAdapter implements IDatabaseAdapter {
     } else {
       dbPath = (await getApplicationDocumentsDirectory()).path;
       dbPath = join(dbPath, 'eleventa.db');
-      print('Conectado a BD: $dbPath'); //prueba
+      debugPrint('Conectado a BD: $dbPath');
     }
 
     if (defaultTargetPlatform == TargetPlatform.windows) {
