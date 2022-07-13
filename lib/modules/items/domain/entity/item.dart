@@ -1,12 +1,12 @@
-import 'package:eleventa/utils/utils.dart';
+import 'package:eleventa/modules/common/domain/valueObject/uid.dart';
 
 class Item {
   var _description = '';
   var _price = 0.0;
   var _sku = '';
-  var _uid = Utils.uid.generate();
+  var _uid = UID();
 
-  String get uid => _uid;
+  UID get uid => _uid;
 
   String get description {
     return _description;
@@ -29,7 +29,7 @@ class Item {
     _setSku(sku);
   }
 
-  Item.load(String uid, String sku, String description, double price) {
+  Item.load(UID uid, String sku, String description, double price) {
     _uid = uid;
     _sku = sku;
     _description = description;

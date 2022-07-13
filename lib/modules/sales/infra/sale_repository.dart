@@ -1,7 +1,11 @@
 import 'package:eleventa/modules/common/app/interface/database.dart';
+import 'package:eleventa/modules/common/domain/valueObject/uid.dart';
+import 'package:eleventa/modules/common/exception/exception.dart';
 import 'package:eleventa/modules/common/infra/sqlite_adapter.dart';
 import 'package:eleventa/modules/sales/app/interface/sale_repository.dart';
 import 'package:eleventa/modules/sales/domain/entity/sale.dart';
+import 'package:eleventa/modules/sales/domain/entity/sale_item.dart';
+import 'package:eleventa/utils/utils.dart';
 
 class SaleRepository implements ISaleRepository {
   late IDatabaseAdapter _db;
@@ -14,9 +18,28 @@ class SaleRepository implements ISaleRepository {
   Future<void> add(Sale sale) async {
     var command = 'INSERT INTO sales(uid, name, total, status) VALUES(?,?,?,?)';
 
-    await _db.command(
-        sql: command,
-        params: [sale.uid, sale.name, sale.total, sale.status.index]);
+    await _db.command(sql: command, params: [
+      sale.uid.toString(),
+      sale.name,
+      sale.total,
+      sale.status.index
+    ]);
+  }
+
+  @override
+  Future<void> addSaleItem(SaleItem item) async {
+    var command =
+        'INSERT INTO sale_items(sales_uid, items_uid, quantity) VALUES(?,?,?)';
+
+    try {
+      await _db.command(sql: command, params: [
+        item.saleUid.toString(),
+        item.itemUid.toString(),
+        item.quantity
+      ]);
+    } catch (e) {
+      throw InfrastructureError(e.toString(), '');
+    }
   }
 
   @override
@@ -37,38 +60,42 @@ class SaleRepository implements ISaleRepository {
       sale.paymentMethod!.index,
       sale.status.index,
       sale.paymentTimeStamp!,
-      sale.uid,
+      sale.uid.toString(),
     ]);
   }
 
   @override
   Future<void> update(Sale sale) async {
     var command =
-        'UPDATE sales set name = ?, total = ?, paymentMethod = ?, status = ?, paymentTimeStamp = ?'
-        'WHERE uid = ?';
+        'UPDATE sales set name = ?, total = ?, status = ?, paymentMethod = ?, paymentTimeStamp = ? '
+        ' WHERE uid = ?';
 
-    if (sale.paymentMethod == null) {
-      throw Exception('No esta establecido el metodo de pago');
+    var params = <Object>[];
+    params.add(sale.name);
+    params.add(sale.total);
+    params.add(sale.status.index);
+
+    if (sale.paymentMethod != null) {
+      params.add(sale.paymentMethod!.index);
+    } else {
+      params.add(SalePaymentMethod.notDefined.index);
     }
 
-    if (sale.paymentTimeStamp == null) {
-      throw Exception('No esta establecida la fecha del pago');
+    if (sale.paymentTimeStamp != null) {
+      params.add(sale.paymentTimeStamp!);
+    } else {
+      params.add(Utils.db.nullTimeStamp);
     }
 
-    await _db.command(sql: command, params: [
-      sale.name,
-      sale.total,
-      sale.paymentMethod!.index,
-      sale.status.index,
-      sale.paymentTimeStamp!,
-      sale.uid,
-    ]);
+    params.add(sale.uid.toString());
+
+    await _db.command(sql: command, params: params);
   }
 
   @override
   Future<Sale?> get(String uid) async {
     var query =
-        'SELECT id,uid,name,total,status,paymentMethod,paymentTimeStamp FROM sales '
+        'SELECT uid,name,total,status,paymentMethod,paymentTimeStamp FROM sales '
         'WHERE uid = ?';
 
     var result = await _db.query(sql: query, params: [uid]);
@@ -78,7 +105,7 @@ class SaleRepository implements ISaleRepository {
       var statusIndex = row['status'] as int;
 
       sale = Sale.load(
-          uid: row['uid'] as String,
+          uid: UID(row['uid'] as String),
           name: row['name'] as String,
           total: row['total'] as double,
           status: SaleStatus.values[statusIndex],

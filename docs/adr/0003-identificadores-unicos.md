@@ -1,4 +1,4 @@
-**Status:** En espera de revisión
+**Status:** Aceptado
 <br>
 **Modulo Afectado:** Todos
 
@@ -7,6 +7,12 @@
 Necesitamos generar identificadores unicos para las entidades, esto con el fin de no depender
 de identificadores auto-incrementales ya que eleventa es un sistema distribuido y es bien
 conocido que en este tipo de sistemas los indetificadores auto-incrementales tienes varios problemas.
+
+# Opciones evaluadas
+
+- UUID v4
+- UUID v7
+- NanoID
 
 # Decisión
 

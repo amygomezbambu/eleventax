@@ -1,39 +1,46 @@
-import 'package:eleventa/modules/sales/domain/entity/basic_item.dart';
-import 'package:eleventa/utils/utils.dart';
+import 'package:eleventa/modules/common/domain/valueObject/uid.dart';
+import 'package:eleventa/modules/sales/domain/entity/sale_item.dart';
 
 enum SaleStatus { open, paid, cancelled }
 
-enum SalePaymentMethod { cash, credit, creditCard, bankTransfer, voucher }
+enum SalePaymentMethod {
+  notDefined,
+  cash,
+  credit,
+  creditCard,
+  bankTransfer,
+  voucher
+}
 
 class Sale {
-  String _uid = Utils.uid.generate();
+  UID _uid = UID();
   var _name = '';
   var _total = 0.0;
-  final _saleItems = <BasicItem>[];
+  final _saleItems = <SaleItem>[];
   SalePaymentMethod? _paymentMethod;
   int? _paymentTimeStamp;
   SaleStatus _status = SaleStatus.open;
 
-  String get uid => _uid;
+  UID get uid => _uid;
   double get total => _total;
   String get name => _name;
   SalePaymentMethod? get paymentMethod => _paymentMethod;
   int? get paymentTimeStamp => _paymentTimeStamp;
   SaleStatus get status => _status;
 
-  List<BasicItem> get saleItems => List.unmodifiable(_saleItems);
+  List<SaleItem> get saleItems => List.unmodifiable(_saleItems);
   int get itemsCount => _saleItems.length;
 
   Sale();
 
   Sale.load(
-      {required String uid,
+      {required UID uid,
       required String name,
       required double total,
       required SaleStatus status,
       SalePaymentMethod? paymentMethod,
       int? paymentTimeStamp,
-      List<BasicItem>? items}) {
+      List<SaleItem>? items}) {
     _uid = uid;
     _name = name;
     _total = total;
@@ -42,7 +49,7 @@ class Sale {
     _paymentTimeStamp = paymentTimeStamp;
   }
 
-  void addItem(BasicItem item) {
+  void addItem(SaleItem item) {
     _saleItems.add(item);
 
     calculateTotal();

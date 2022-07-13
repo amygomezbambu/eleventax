@@ -21,6 +21,6 @@ class CreateItem {
 
     await _repo.add(item);
 
-    return item.uid;
+    return item.uid.toString();
   }
 }

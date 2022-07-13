@@ -4,5 +4,5 @@ abstract class IItemRepository {
   Future<void> add(Item item);
   Future<Item?> get(String uid);
   Future<Item?> getBySku(String sku);
-  List<Item> getAll();
+  Future<List<Item>> getAll();
 }

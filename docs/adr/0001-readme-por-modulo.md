@@ -1,4 +1,4 @@
-**Status:** En espera de revisión
+**Status:** Aceptado
 <br>
 **Modulo Afectado:** Todos
 

@@ -8,10 +8,9 @@ class Migration1 extends Migration {
 
   @override
   Future<void> operation() async {
-    var command = 'create table sales('
-        'id integer primary key autoincrement,'
-        'uid varchar(50) ,' //unique
-        'name varchar(100) null,'
+    var command = 'CREATE TABLE sales('
+        'uid text primary key,' //unique
+        'name text null,'
         'total decimal(10,4) null,'
         'status integer null,'
         'paymentMethod integer null,'
@@ -20,31 +19,23 @@ class Migration1 extends Migration {
 
     await db.command(sql: command);
 
-    command = 'create table items('
-        'id integer primary key autoincrement,'
-        'uid varchar(50) unique,'
-        'description varchar(255) null,'
-        'sku varchar(50) null,'
-        'price decimal(10,4) null'
-        ');';
+    command = '''
+        CREATE TABLE sale_items(
+          sales_uid TEXT NOT NULL,
+          items_uid TEXT NOT NULL, 
+          quantity DECIMAL NOT NULL,
+          PRIMARY KEY (sales_uid, items_uid)          
+        );
+      ''';
 
     await db.command(sql: command);
 
-    command = 'create table crdt('
-        'hlc varchar(40),'
-        'dataset varchar(100),'
-        'rowId varchar(50),'
-        'column varchar(50),'
-        'value text,'
-        'type char,' //S: string, N: number, B: Bool
-        'isLocal integer,'
-        'sended integer,'
-        'applied integer'
+    command = 'CREATE TABLE items('
+        'uid TEXT PRIMARY KEY,'
+        'description TEXT NULL,'
+        'sku TEXT,'
+        'price DECIMAL NULL'
         ');';
-
-    await db.command(sql: command);
-
-    command = 'create table syncConfig(hlc varchar(40));';
 
     await db.command(sql: command);
   }

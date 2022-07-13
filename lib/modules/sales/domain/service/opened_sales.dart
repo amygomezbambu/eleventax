@@ -10,12 +10,12 @@ class OpenedSales {
   }
 
   static void remove(String uid) {
-    var saleToRemove = _sales.firstWhere((sale) => sale.uid == uid);
+    var saleToRemove = _sales.firstWhere((sale) => sale.uid.toString() == uid);
 
     _sales.remove(saleToRemove);
   }
 
   static Sale get(String uid) {
-    return _sales.firstWhere((sale) => sale.uid == uid);
+    return _sales.firstWhere((sale) => sale.uid.toString() == uid);
   }
 }

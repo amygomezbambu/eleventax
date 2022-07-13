@@ -7,7 +7,7 @@ class ItemMapper {
     dto.description = item.description;
     dto.price = item.price;
     dto.sku = item.sku;
-    dto.uid = item.uid;
+    dto.uid = item.uid.toString();
 
     return dto;
   }

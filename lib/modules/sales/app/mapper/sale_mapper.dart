@@ -1,4 +1,4 @@
-import 'package:eleventa/modules/sales/app/dto/basic_item.dart';
+import 'package:eleventa/modules/sales/app/dto/sale_item.dart';
 import 'package:eleventa/modules/sales/app/dto/sale_dto.dart';
 import 'package:eleventa/modules/sales/app/mapper/basic_item_mapper.dart';
 import 'package:eleventa/modules/sales/domain/entity/sale.dart';
@@ -8,15 +8,15 @@ class SaleMapper {
     var dto = SaleDTO();
     dto.name = sale.name;
     dto.total = sale.total;
-    dto.uid = sale.uid;
+    dto.uid = sale.uid.toString();
     dto.paymentMethod = sale.paymentMethod;
     dto.paymentTimeStamp = sale.paymentTimeStamp;
     dto.status = sale.status;
 
-    dto.saleItems = <BasicItemDTO>[];
+    dto.saleItems = <SaleItemDTO>[];
 
     for (var item in sale.saleItems) {
-      dto.saleItems.add(BasicItemMapper.fromDomainToDTO(item));
+      dto.saleItems.add(SaleItemMapper.fromDomainToDTO(item));
     }
 
     return dto;
