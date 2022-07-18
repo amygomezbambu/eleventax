@@ -1,4 +1,4 @@
-import 'package:eleventa/modules/sales/app/dto/basic_item.dart';
+import 'package:eleventa/modules/sales/app/dto/sale_item.dart';
 
 import '../../domain/entity/sale.dart';
 
@@ -9,5 +9,5 @@ class SaleDTO {
   var status = SaleStatus.open;
   SalePaymentMethod? paymentMethod;
   int? paymentTimeStamp;
-  var saleItems = <BasicItemDTO>[];
+  var saleItems = <SaleItemDTO>[];
 }

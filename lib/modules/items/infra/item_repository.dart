@@ -1,4 +1,6 @@
 import 'package:eleventa/modules/common/app/interface/database.dart';
+import 'package:eleventa/modules/common/domain/valueObject/uid.dart';
+import 'package:eleventa/modules/common/exception/exception.dart';
 import 'package:eleventa/modules/common/infra/sqlite_adapter.dart';
 import 'package:eleventa/modules/items/app/interface/item_repository.dart';
 import 'package:eleventa/modules/items/domain/entity/item.dart';
@@ -15,9 +17,16 @@ class ItemRepository implements IItemRepository {
     var command =
         'INSERT INTO items(uid, sku, description, price) VALUES(?,?,?,?)';
 
-    await _db.command(
-        sql: command,
-        params: [item.uid, item.sku, item.description, item.price]);
+    try {
+      await _db.command(sql: command, params: [
+        item.uid.toString(),
+        item.sku,
+        item.description,
+        item.price
+      ]);
+    } catch (e) {
+      throw InfrastructureError(e.toString(), '');
+    }
   }
 
   @override
@@ -28,7 +37,7 @@ class ItemRepository implements IItemRepository {
     Item? item;
 
     for (var row in result) {
-      item = Item.load(row['uid'] as String, row['sku'] as String,
+      item = Item.load(UID(row['uid'] as String), row['sku'] as String,
           row['description'] as String, row['price'] as double);
     }
 
@@ -43,7 +52,7 @@ class ItemRepository implements IItemRepository {
     Item? item;
 
     for (var row in result) {
-      item = Item.load(row['uid'] as String, row['sku'] as String,
+      item = Item.load(UID(row['uid'] as String), row['sku'] as String,
           row['description'] as String, double.parse(row['price'].toString()));
     }
 
@@ -51,7 +60,17 @@ class ItemRepository implements IItemRepository {
   }
 
   @override
-  List<Item> getAll() {
-    throw UnimplementedError();
+  Future<List<Item>> getAll() async {
+    var query = 'SELECT uid, sku, description, price FROM items';
+
+    var result = await _db.query(sql: query);
+    var items = <Item>[];
+
+    for (var row in result) {
+      items.add(Item.load(UID(row['uid'] as String), row['sku'] as String,
+          row['description'] as String, double.parse(row['price'].toString())));
+    }
+
+    return items;
   }
 }

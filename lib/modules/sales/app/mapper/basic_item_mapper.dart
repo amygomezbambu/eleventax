@@ -1,17 +1,22 @@
-import 'package:eleventa/modules/sales/app/dto/basic_item.dart';
-import 'package:eleventa/modules/sales/domain/entity/basic_item.dart';
+import 'package:eleventa/modules/common/domain/valueObject/uid.dart';
+import 'package:eleventa/modules/sales/app/dto/sale_item.dart';
+import 'package:eleventa/modules/sales/domain/entity/sale_item.dart';
 
-class BasicItemMapper {
-  static BasicItem fromDtoToDomain(BasicItemDTO item) {
-    return BasicItem(
+class SaleItemMapper {
+  static SaleItem fromDtoToDomain(SaleItemDTO item) {
+    return SaleItem(
+        itemUid: item.itemUid != null ? UID(item.itemUid!) : null,
+        saleUid: UID(item.saleUid),
         description: item.description,
         price: item.price,
         quantity: item.quantity);
   }
 
-  static BasicItemDTO fromDomainToDTO(BasicItem item) {
-    var dto = BasicItemDTO();
-    dto.description = item.description;
+  static SaleItemDTO fromDomainToDTO(SaleItem item) {
+    var dto = SaleItemDTO();
+    dto.saleUid = item.saleUid.toString();
+    // ignore: prefer_null_aware_operators
+    dto.itemUid = item.itemUid != null ? item.itemUid.toString() : null;
     dto.price = item.price;
     dto.quantity = item.quantity;
 

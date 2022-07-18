@@ -23,6 +23,6 @@ class CreateSale {
     }
 
     //retornar el id a la ui
-    return sale.uid;
+    return sale.uid.toString();
   }
 }
