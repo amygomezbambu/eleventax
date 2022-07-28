@@ -1,0 +1,36 @@
+name: Deploy Android
+
+on:
+  push:
+    branches:
+      - feat/despliegue-continuo
+
+jobs:
+  build-and-deploy-android:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Bajamos el codigo
+      - uses: actions/checkout@v3
+
+      - name: Instalamos Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: "zulu"
+          java-version: "11"
+
+      - name: Obtenemos la version de Flutter de pubspec.yaml
+        id: get-flutter-version
+        uses: zgosalvez/github-actions-get-flutter-version-env@v1
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          architecture: x64
+          flutter-version: ${{ steps.get-flutter-version.outputs.version }}
+
+      - name: Instalar dependencias
+        run: flutter pub get
+
+      - name: Compilar binario AppBundle de Android
+        run: flutter build appbundle --release
