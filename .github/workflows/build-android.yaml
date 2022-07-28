@@ -8,6 +8,7 @@ on:
 jobs:
   build-and-deploy-android:
     runs-on: ubuntu-latest
+    #timeout-minutes: 5
 
     steps:
       - name: Bajamos el codigo            
@@ -31,6 +32,20 @@ jobs:
 
       - name: Instalar dependencias
         run: flutter pub get
+
+      - name: Descargar certificado JKS de Android
+        id: android_keystore
+        uses: timheuer/base64-to-file@v1.0.3
+        with:
+          fileName: key.jks
+          encodedString: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          
+      - name: Creamos el archivo key.propierties para el firmado del binario
+        run: |
+          echo "keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}" >> android/key.properties
+          echo "storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" >> android/key.properties
+          echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/key.properties
+          echo "storeFile=${{ steps.android_keystore.outputs.filePath }}" >> android/key.properties
 
       - name: Compilar binario AppBundle de Android
         run: flutter build appbundle --release
