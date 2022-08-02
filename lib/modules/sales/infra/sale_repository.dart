@@ -1,24 +1,20 @@
-import 'package:eleventa/modules/common/app/interface/database.dart';
 import 'package:eleventa/modules/common/domain/valueObject/uid.dart';
 import 'package:eleventa/modules/common/exception/exception.dart';
-import 'package:eleventa/modules/common/infra/sqlite_adapter.dart';
+
 import 'package:eleventa/modules/sales/app/interface/sale_repository.dart';
 import 'package:eleventa/modules/sales/domain/entity/sale.dart';
 import 'package:eleventa/modules/sales/domain/entity/sale_item.dart';
 import 'package:eleventa/utils/utils.dart';
+import '../../common/infra/repository.dart';
 
-class SaleRepository implements ISaleRepository {
-  late IDatabaseAdapter _db;
-
-  SaleRepository() {
-    _db = SQLiteAdapter();
-  }
+class SaleRepository extends Repository implements ISaleRepository {
+  SaleRepository() : super();
 
   @override
   Future<void> add(Sale sale) async {
     var command = 'INSERT INTO sales(uid, name, total, status) VALUES(?,?,?,?)';
 
-    await _db.command(sql: command, params: [
+    await db.command(sql: command, params: [
       sale.uid.toString(),
       sale.name,
       sale.total,
@@ -32,7 +28,7 @@ class SaleRepository implements ISaleRepository {
         'INSERT INTO sale_items(sales_uid, items_uid, quantity) VALUES(?,?,?)';
 
     try {
-      await _db.command(sql: command, params: [
+      await db.command(sql: command, params: [
         item.saleUid.toString(),
         item.itemUid.toString(),
         item.quantity
@@ -56,7 +52,7 @@ class SaleRepository implements ISaleRepository {
       throw Exception('No esta establecida la fecha del pago');
     }
 
-    await _db.command(sql: command, params: [
+    await db.command(sql: command, params: [
       sale.paymentMethod!.index,
       sale.status.index,
       sale.paymentTimeStamp!,
@@ -89,7 +85,7 @@ class SaleRepository implements ISaleRepository {
 
     params.add(sale.uid.toString());
 
-    await _db.command(sql: command, params: params);
+    await db.command(sql: command, params: params);
   }
 
   @override
@@ -98,7 +94,7 @@ class SaleRepository implements ISaleRepository {
         'SELECT uid,name,total,status,paymentMethod,paymentTimeStamp FROM sales '
         'WHERE uid = ?';
 
-    var result = await _db.query(sql: query, params: [uid]);
+    var result = await db.query(sql: query, params: [uid]);
     Sale? sale;
 
     for (var row in result) {

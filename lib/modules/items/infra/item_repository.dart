@@ -1,16 +1,11 @@
-import 'package:eleventa/modules/common/app/interface/database.dart';
 import 'package:eleventa/modules/common/domain/valueObject/uid.dart';
 import 'package:eleventa/modules/common/exception/exception.dart';
-import 'package:eleventa/modules/common/infra/sqlite_adapter.dart';
 import 'package:eleventa/modules/items/app/interface/item_repository.dart';
 import 'package:eleventa/modules/items/domain/entity/item.dart';
+import '../../common/infra/repository.dart';
 
-class ItemRepository implements IItemRepository {
-  late IDatabaseAdapter _db;
-
-  ItemRepository() {
-    _db = SQLiteAdapter();
-  }
+class ItemRepository extends Repository implements IItemRepository {
+  ItemRepository() : super();
 
   @override
   Future<void> add(Item item) async {
@@ -18,7 +13,7 @@ class ItemRepository implements IItemRepository {
         'INSERT INTO items(uid, sku, description, price) VALUES(?,?,?,?)';
 
     try {
-      await _db.command(sql: command, params: [
+      await db.command(sql: command, params: [
         item.uid.toString(),
         item.sku,
         item.description,
@@ -33,7 +28,7 @@ class ItemRepository implements IItemRepository {
   Future<Item?> get(String uid) async {
     var query = 'SELECT uid, sku, description, price FROM items WHERE uid = ?';
 
-    var result = await _db.query(sql: query, params: [uid]);
+    var result = await db.query(sql: query, params: [uid]);
     Item? item;
 
     for (var row in result) {
@@ -48,7 +43,7 @@ class ItemRepository implements IItemRepository {
   Future<Item?> getBySku(String sku) async {
     var query = 'SELECT uid, sku, description, price FROM items WHERE sku = ?';
 
-    var result = await _db.query(sql: query, params: [sku]);
+    var result = await db.query(sql: query, params: [sku]);
     Item? item;
 
     for (var row in result) {
@@ -63,7 +58,7 @@ class ItemRepository implements IItemRepository {
   Future<List<Item>> getAll() async {
     var query = 'SELECT uid, sku, description, price FROM items';
 
-    var result = await _db.query(sql: query);
+    var result = await db.query(sql: query);
     var items = <Item>[];
 
     for (var row in result) {

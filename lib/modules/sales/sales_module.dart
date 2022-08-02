@@ -1,4 +1,4 @@
-import 'package:eleventa/container.dart';
+import 'package:eleventa/dependencies.dart';
 import 'package:eleventa/modules/sales/app/usecase/add_sale_item.dart';
 import 'package:eleventa/modules/sales/app/usecase/charge_sale.dart';
 import 'package:eleventa/modules/sales/app/usecase/create_sale.dart';

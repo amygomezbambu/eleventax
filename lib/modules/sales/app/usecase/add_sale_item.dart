@@ -1,3 +1,4 @@
+import 'package:eleventa/modules/common/app/usecase/usecase.dart';
 import 'package:eleventa/modules/sales/app/dto/sale_dto.dart';
 import 'package:eleventa/modules/sales/app/dto/sale_item.dart';
 import 'package:eleventa/modules/sales/app/interface/sale_repository.dart';
@@ -11,35 +12,33 @@ class AddSaleItemRequest {
   var item = SaleItemDTO();
 }
 
-class AddSaleItem {
+class AddSaleItem extends Usecase<SaleDTO> {
   var request = AddSaleItemRequest();
   final ISaleRepository _repo;
 
-  AddSaleItem(this._repo);
+  AddSaleItem(this._repo) : super(_repo) {
+    operation = _doOperation;
+  }
 
   /// Ejecuta el caso de uso
   ///
   /// Retorna los datos actualizados de la venta o una excepción en caso de que no exista la venta
-  Future<SaleDTO> exec() async {
+  Future<SaleDTO> _doOperation() async {
     Sale? sale;
 
-    try {
-      sale = OpenedSales.get(request.saleUid);
+    sale = OpenedSales.get(request.saleUid);
 
-      var saleItem = SaleItemMapper.fromDtoToDomain(request.item);
+    var saleItem = SaleItemMapper.fromDtoToDomain(request.item);
 
-      sale.addItem(saleItem);
+    sale.addItem(saleItem);
 
-      if (await saleExists(sale.uid.toString())) {
-        await _repo.update(sale);
-      } else {
-        await _repo.add(sale);
-      }
-
-      await _repo.addSaleItem(saleItem);
-    } catch (e) {
-      rethrow;
+    if (await saleExists(sale.uid.toString())) {
+      await _repo.update(sale);
+    } else {
+      await _repo.add(sale);
     }
+
+    await _repo.addSaleItem(saleItem);
 
     return SaleMapper.fromDomainToDTO(sale);
   }
