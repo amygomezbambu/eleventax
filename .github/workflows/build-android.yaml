@@ -53,7 +53,7 @@ jobs:
       - name: Instalar Bundle y gems necesarios
         run: |
           gem install bundler:2.3.17
-          bundle config path vendor/bundle
+          cd android
           bundle install
 
       - name: Publicamos a Google Play (Internal)
