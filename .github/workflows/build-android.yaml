@@ -30,9 +30,6 @@ jobs:
           architecture: x64
           flutter-version: ${{ steps.get-flutter-version.outputs.version }}
 
-      - name: Instalar dependencias
-        run: flutter pub get
-
       - name: Descargar certificado JKS de Android
         id: android_keystore
         uses: timheuer/base64-to-file@v1.0.3
@@ -47,5 +44,27 @@ jobs:
           echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/key.properties
           echo "storeFile=${{ steps.android_keystore.outputs.filePath }}" >> android/key.properties
 
-      - name: Compilar binario AppBundle de Android
-        run: flutter build appbundle --release
+      - name: Instalar Ruby
+        uses: actions/setup-ruby@v1
+        with:
+          ruby-version: '3.0.0'
+
+      - name: Hacemos cache de las dependencias de Ruby
+        uses: actions/cache@v2
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}          
+          restore-keys: ${{ runner.os }}-gems-
+      
+      - name: Instalar Bundle y gems necesarios
+        run: |
+          gem install bundler:2.3.17
+          bundle config path vendor/bundle
+          bundle install
+
+      - name: Publicamos a Google Play (Internal)
+        env:
+          SUPPLY_JSON_KEY_DATA: ${{ secrets.ANDROID_GOOGLE_SERVICE_ACCOUNT_KEY }}
+        # Las acciones de "publish_to_internal" de Fastlane se definen en android/Fastfile
+        run: |
+          bundle exec fastlane publish_to_internal
