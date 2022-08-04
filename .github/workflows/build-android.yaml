@@ -43,11 +43,6 @@ jobs:
           echo "storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" >> android/key.properties
           echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/key.properties
           echo "storeFile=${{ steps.android_keystore.outputs.filePath }}" >> android/key.properties
-
-      - name: Instalar Ruby
-        uses: actions/setup-ruby@v1
-        with:
-          ruby-version: '3.0'
           
       - name: Instalar Ruby y fastlane
         uses: ruby/setup-ruby@d5ee2364f01b3ef4a4740e4a4d3005051e122356
