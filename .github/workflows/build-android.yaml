@@ -47,14 +47,8 @@ jobs:
       - name: Instalar Ruby
         uses: actions/setup-ruby@v1
         with:
-          ruby-version: '3.0.0'
-
-      - name: Hacemos cache de las dependencias de Ruby
-        uses: actions/cache@v2
-        with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}          
-          restore-keys: ${{ runner.os }}-gems-
+          ruby-version: '3.0'
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically      
       
       - name: Instalar Bundle y gems necesarios
         run: |
