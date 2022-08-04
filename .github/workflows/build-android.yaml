@@ -61,4 +61,5 @@ jobs:
           SUPPLY_JSON_KEY_DATA: ${{ secrets.ANDROID_GOOGLE_SERVICE_ACCOUNT_KEY }}
         # Las acciones de "publish_to_internal" de Fastlane se definen en android/Fastfile
         run: |
+          cd android
           bundle exec fastlane publish_to_internal
