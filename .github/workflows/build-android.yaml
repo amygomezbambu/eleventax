@@ -49,24 +49,17 @@ jobs:
         with:
           ruby-version: '3.0'
           
-      - name: Hacemos cache de las dependencias de Ruby
-        uses: actions/cache@v2
+      - name: Instalar Ruby y fastlane
+        uses: ruby/setup-ruby@d5ee2364f01b3ef4a4740e4a4d3005051e122356
         with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}          
-          restore-keys: ${{ runner.os }}-gems-
-      
-      - name: Instalar Bundle y gems necesarios
-        run: |
-          gem install bundler:2.3.17
-          bundle config path vendor/bundle
-          cd android
-          bundle install
+          ruby-version: "2.6"
+          bundler-cache: true
+          working-directory: android
 
       - name: Publicamos a Google Play (Internal)
         env:
           SUPPLY_JSON_KEY_DATA: ${{ secrets.ANDROID_GOOGLE_SERVICE_ACCOUNT_KEY }}
         # Las acciones de "publish_to_internal" de Fastlane se definen en android/Fastfile
         run: |
-          cd android
           bundle exec fastlane publish_to_internal
+        working-directory: android
