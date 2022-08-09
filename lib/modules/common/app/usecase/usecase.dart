@@ -28,9 +28,9 @@ class Usecase<T> {
       //Operacion Real
       result = await operation();
       await repo.commit();
-    } catch (e) {
+    } catch (e, stackTrace) {
       await repo.rollback();
-      logger.error(EleventaError((e as Exception).toString(), ''));
+      logger.error(EleventaError((e as Exception).toString(), stackTrace));
       rethrow;
     }
 
