@@ -53,6 +53,8 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
+  cider: 0.1.1 # [ADR-0005]
+
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
@@ -100,3 +102,10 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+# Configuración del historial de cambios por medio de Cider
+# "The %from%, %to%, and %tag% placeholders will be replaced with the corresponding version tags."
+cider:
+  link_template:
+    tag: https://github.com/bambucode/eleventax/releases/tag/%tag% # initial release link template
+    diff: https://github.com/bambucode/eleventax/compare/%from%...%to% # subsequent releases link template
