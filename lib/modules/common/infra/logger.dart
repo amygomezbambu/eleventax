@@ -1,5 +1,5 @@
 import 'package:eleventa/modules/common/app/interface/logger.dart';
-import 'package:eleventa/modules/common/error/error.dart';
+import 'package:eleventa/modules/common/exception/exception.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart' as log;
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -57,7 +57,7 @@ class Logger implements ILogger {
   }
 
   @override
-  void error(EleventaError ex) {
+  void error(EleventaException ex) {
     _logger.severe(ex.message, ex, ex.stackTrace);
   }
 

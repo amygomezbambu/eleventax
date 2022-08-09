@@ -4,23 +4,23 @@ class EleventaException implements Exception {
   String? where;
   String? why;
   String? solution;
-  String stackTrace;
+  StackTrace? stackTrace;
   bool compactLogging = false;
 
   EleventaException(this.message, this.stackTrace);
 }
 
 class DomainException extends EleventaException {
-  DomainException(String message) : super(message, '') {
+  DomainException(String message) : super(message, null) {
     compactLogging = true;
   }
 }
 
 class AppException extends EleventaException {
-  AppException(String message) : super(message, '');
+  AppException(String message) : super(message, null);
 }
 
 class InfrastructureError extends EleventaException {
-  InfrastructureError(String message, String stackTrace)
+  InfrastructureError(String message, StackTrace stackTrace)
       : super(message, stackTrace);
 }

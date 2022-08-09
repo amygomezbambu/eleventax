@@ -1,4 +1,4 @@
-import 'package:eleventa/modules/common/error/error.dart';
+import 'package:eleventa/modules/common/exception/exception.dart';
 
 abstract class ILogger {
   /// Metodo que inicializa el logger
@@ -8,6 +8,6 @@ abstract class ILogger {
   void info(String message);
   void warn(String message);
   void debug(String message);
-  void error(EleventaError ex);
+  void error(EleventaException ex);
   Future<void> captureException(error, stackTrace);
 }

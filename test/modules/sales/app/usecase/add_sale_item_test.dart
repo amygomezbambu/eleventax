@@ -13,6 +13,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   setUpAll(() async {
+    //En TEST no se carga WidgetsFlutterBinding sino TestWidgetsFlutterBinding
+    TestWidgetsFlutterBinding.ensureInitialized();
     Loader loader = Loader();
     await loader.init();
   });
