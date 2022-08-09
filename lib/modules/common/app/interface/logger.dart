@@ -9,4 +9,5 @@ abstract class ILogger {
   void warn(String message);
   void debug(String message);
   void error(EleventaError ex);
+  Future<void> captureException(error, stackTrace);
 }

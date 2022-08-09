@@ -4,7 +4,7 @@ class EleventaError implements Exception {
   String? where;
   String? why;
   String? solution;
-  String stackTrace;
+  StackTrace stackTrace;
   bool compactLogging = false;
 
   EleventaError(this.message, this.stackTrace);

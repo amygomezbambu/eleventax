@@ -42,9 +42,9 @@ dependencies:
   google_fonts: ^3.0.1
   flutter_tailwindcss_defaults: ^0.2.0
   xid: ^1.0.7 # [ADR-0003]
-  logging: ^1.0.2
-  sentry_flutter: ^6.9.0 
-  sentry_logging: ^6.9.0
+  logging: ^1.0.2 # [ADR-0004]
+  sentry_flutter: ^6.9.0 # [ADR-0004]
+  sentry_logging: ^6.9.0 # [ADR-0004]
 
 
 dev_dependencies:

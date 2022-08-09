@@ -25,6 +25,14 @@ class Logger implements ILogger {
   /* #endregion */
 
   @override
+  Future<void> captureException(error, stackTrace) async {
+    await Sentry.captureException(
+      error,
+      stackTrace: stackTrace,
+    );
+  }
+
+  @override
   Future<void> init() async {
     await SentryFlutter.init(
       (options) {
@@ -50,7 +58,7 @@ class Logger implements ILogger {
 
   @override
   void error(EleventaError ex) {
-    _logger.severe(ex.message);
+    _logger.severe(ex.message, ex, ex.stackTrace);
   }
 
   @override
