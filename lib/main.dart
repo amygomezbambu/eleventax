@@ -3,9 +3,9 @@ import 'modules/sales/ui/sales_page.dart';
 import 'package:flutter_tailwindcss_defaults/colors.dart';
 import 'package:eleventa/loader.dart';
 
-void main() {
+void main() async {
   var loader = Loader();
-  loader.init();
+  await loader.init();
 
   runApp(const EleventaApp());
 }

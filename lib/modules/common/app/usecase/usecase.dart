@@ -31,6 +31,7 @@ class Usecase<T> {
     } catch (e) {
       await repo.rollback();
       logger.error(EleventaError((e as Exception).toString(), ''));
+
       rethrow;
     }
 
