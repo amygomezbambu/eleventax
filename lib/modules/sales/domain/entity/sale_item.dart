@@ -1,4 +1,4 @@
-import 'package:eleventa/modules/common/domain/valueObject/uid.dart';
+import 'package:eleventa/modules/common/utils/uid.dart';
 import 'package:eleventa/modules/common/exception/exception.dart';
 import 'package:meta/meta.dart';
 

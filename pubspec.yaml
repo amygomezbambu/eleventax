@@ -41,6 +41,9 @@ dependencies:
   path_provider:
   google_fonts: ^3.0.1
   flutter_tailwindcss_defaults: ^0.2.0
+  any_base: ^2.0.0
+  murmurhash: ^1.0.1
+  hlc: ^1.0.3
   xid: ^1.0.7 # [ADR-0003]
   logging: ^1.0.2 # [ADR-0004]
   sentry_flutter: ^6.9.0 # [ADR-0004]

@@ -23,6 +23,6 @@ class AppException extends EleventaException {
 }
 
 class InfrastructureException extends EleventaException {
-  InfrastructureException(String message, Exception ex, StackTrace stackTrace)
+  InfrastructureException(String message, Exception ex, StackTrace? stackTrace)
       : super(message: message, innerException: ex, stackTrace: stackTrace);
 }

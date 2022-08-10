@@ -1,0 +1,7 @@
+{   
+    // Perimitimos que los demas puedan correr pruebas, el proyecto, etc.
+    "liveshare.allowGuestDebugControl": true,
+    "liveshare.allowGuestTaskControl": false,
+    "liveshare.codeLens": true
+
+}

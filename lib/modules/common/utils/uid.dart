@@ -1,4 +1,3 @@
-import 'package:eleventa/modules/common/exception/exception.dart';
 import 'package:xid/xid.dart';
 
 class UID {
@@ -11,7 +10,7 @@ class UID {
       if (isValid(uid)) {
         _identifier = uid;
       } else {
-        throw DomainException('El uid proporcionado es invalido: $uid');
+        throw Exception('El uid proporcionado es invalido: $uid');
       }
     }
   }
