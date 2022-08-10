@@ -4,7 +4,6 @@ import 'package:eleventa/modules/common/app/interface/database.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-//import 'package:sqflite/sqflite.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 import 'package:sqlcipher_library_windows/sqlcipher_library_windows.dart';
@@ -31,6 +30,8 @@ class SQLiteAdapter implements IDatabaseAdapter {
 
   void _sqliteInit() {
     if (Platform.isWindows) {
+      // Para Windows hacemos uso de la funcion especial
+      // proveida por "sqlcipher_library_windows"
       open.overrideFor(OperatingSystem.windows, openSQLCipherOnWindows);
     } else {
       open.overrideForAll(_sqlcipherOpen);
@@ -38,9 +39,10 @@ class SQLiteAdapter implements IDatabaseAdapter {
   }
 
   DynamicLibrary _sqlcipherOpen() {
-    // Taken from https://github.com/simolus3/sqlite3.dart/blob/e66702c5bec7faec2bf71d374c008d5273ef2b3b/sqlite3/lib/src/load_library.dart#L24
+    // Basado en https://github.com/simolus3/sqlite3.dart/blob/e66702c5bec7faec2bf71d374c008d5273ef2b3b/sqlite3/lib/src/load_library.dart#L24
     if (Platform.isLinux || Platform.isAndroid) {
       try {
+        // Leemos nuestra propia libreria embebida con soporte para SQLCipher
         return DynamicLibrary.open('libsqlcipher.so');
       } catch (_) {
         if (Platform.isAndroid) {
@@ -66,7 +68,8 @@ class SQLiteAdapter implements IDatabaseAdapter {
       return DynamicLibrary.process();
     }
 
-    throw UnsupportedError('Unsupported platform: ${Platform.operatingSystem}');
+    throw UnsupportedError(
+        'SQLite, plataforma no soportada: ${Platform.operatingSystem}');
   }
 
   @override
@@ -76,11 +79,11 @@ class SQLiteAdapter implements IDatabaseAdapter {
         createDatabaseFactoryFfi(ffiInit: _sqliteInit);
 
     if (Platform.environment.containsKey('FLUTTER_TEST')) {
-      // dbPath = inMemoryDatabasePath;
-      // databaseFactory = databaseFactoryFfi;
+      dbPath = inMemoryDatabasePath;
+      debugPrint('Conectado a BD: MEMORIA');
     } else {
       dbPath = (await getApplicationDocumentsDirectory()).path;
-      dbPath = join(dbPath, 'eleventa-enc3.db');
+      dbPath = join(dbPath, 'eleventa-enc5.db');
       debugPrint('Conectado a BD: $dbPath');
     }
 
@@ -92,11 +95,16 @@ class SQLiteAdapter implements IDatabaseAdapter {
           // This is the part where we pass the "password"
           await db.rawQuery("PRAGMA KEY='1234'");
         },
-        // onCreate: (db, version) async {
-        //   db.execute("CREATE TABLE t (i INTEGER)");
-        // },
+        onCreate: (db, version) async {
+          debugPrint('Creando base de datos ${version.toString()}');
+          //db.execute("CREATE TABLE t (i INTEGER)");
+        },
       ),
     );
+
+    if (_db != null) {
+      _db!.getVersion().then((value) => {debugPrint(value.toString())});
+    }
   }
 
   @override

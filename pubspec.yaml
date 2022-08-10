@@ -32,7 +32,6 @@ dependencies:
     sdk: flutter
 
   # sqflite:
-  # sqflite_common_ffi:
   sqflite_common_ffi: ^2.1.1+1
   # Incluye la libreria de sqlite compilada con SQLCiper para iOS, Android y Mac
   sqlcipher_flutter_libs: ^0.5.1
