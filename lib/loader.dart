@@ -12,6 +12,16 @@ class Loader {
   IDatabaseAdapter dbAdapter = Dependencies.infra.database();
   ILogger logger = Dependencies.infra.logger();
 
+  /* #region Singleton */
+  static final Loader _instance = Loader._internal();
+
+  factory Loader() {
+    return _instance;
+  }
+
+  Loader._internal();
+  /* #endregion */
+
   Future<void> init() async {
     WidgetsFlutterBinding.ensureInitialized();
 

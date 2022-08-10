@@ -6,6 +6,9 @@ import 'package:eleventa/modules/items/app/usecase/get_item.dart';
 
 void main() {
   setUpAll(() async {
+    //En TEST no se carga WidgetsFlutterBinding sino TestWidgetsFlutterBinding
+    TestWidgetsFlutterBinding.ensureInitialized();
+
     Loader loader = Loader();
     await loader.init();
   });
