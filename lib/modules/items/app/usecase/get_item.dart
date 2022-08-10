@@ -19,7 +19,7 @@ class GetItem {
     Item? item = await _repo.getBySku(request.sku);
 
     if (item == null) {
-      throw AppException('Codigo de producto invalido');
+      throw AppException('Codigo de producto invalido: ${request.sku}');
     }
 
     return ItemMapper.fromDomainToDTO(item);

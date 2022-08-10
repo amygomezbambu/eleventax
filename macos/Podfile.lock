@@ -1,8 +1,5 @@
 PODS:
   - FlutterMacOS (1.0.0)
-  - FMDB (2.7.5):
-    - FMDB/standard (= 2.7.5)
-  - FMDB/standard (2.7.5)
   - package_info_plus_macos (0.0.1):
     - FlutterMacOS
   - path_provider_macos (0.0.1):
@@ -14,21 +11,26 @@ PODS:
     - Flutter
     - FlutterMacOS
     - Sentry (~> 7.22.0)
-  - sqflite (0.0.2):
+  - SQLCipher (4.5.0):
+    - SQLCipher/standard (= 4.5.0)
+  - SQLCipher/common (4.5.0)
+  - SQLCipher/standard (4.5.0):
+    - SQLCipher/common
+  - sqlcipher_flutter_libs (0.0.1):
     - FlutterMacOS
-    - FMDB (>= 2.7.5)
+    - SQLCipher (~> 4.5.0)
 
 DEPENDENCIES:
   - FlutterMacOS (from `Flutter/ephemeral`)
   - package_info_plus_macos (from `Flutter/ephemeral/.symlinks/plugins/package_info_plus_macos/macos`)
   - path_provider_macos (from `Flutter/ephemeral/.symlinks/plugins/path_provider_macos/macos`)
   - sentry_flutter (from `Flutter/ephemeral/.symlinks/plugins/sentry_flutter/macos`)
-  - sqflite (from `Flutter/ephemeral/.symlinks/plugins/sqflite/macos`)
+  - sqlcipher_flutter_libs (from `Flutter/ephemeral/.symlinks/plugins/sqlcipher_flutter_libs/macos`)
 
 SPEC REPOS:
   trunk:
-    - FMDB
     - Sentry
+    - SQLCipher
 
 EXTERNAL SOURCES:
   FlutterMacOS:
@@ -39,18 +41,18 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/path_provider_macos/macos
   sentry_flutter:
     :path: Flutter/ephemeral/.symlinks/plugins/sentry_flutter/macos
-  sqflite:
-    :path: Flutter/ephemeral/.symlinks/plugins/sqflite/macos
+  sqlcipher_flutter_libs:
+    :path: Flutter/ephemeral/.symlinks/plugins/sqlcipher_flutter_libs/macos
 
 SPEC CHECKSUMS:
   FlutterMacOS: 57701585bf7de1b3fc2bb61f6378d73bbdea8424
-  FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   package_info_plus_macos: f010621b07802a241d96d01876d6705f15e77c1c
   path_provider_macos: 3c0c3b4b0d4a76d2bf989a913c2de869c5641a19
   Sentry: 30b51086ca9aac23337880152e95538f7e177f7f
   sentry_flutter: eaca55af5c951f4be6c4b1daddce1744c37d8476
-  sqflite: a5789cceda41d54d23f31d6de539d65bb14100ea
+  SQLCipher: 98dc22f27c0b1790d39e710d440f22a466ebdb59
+  sqlcipher_flutter_libs: 38ad87bfba1bc2f3813513b7d3996fb6bd49fed6
 
 PODFILE CHECKSUM: 6eac6b3292e5142cfc23bdeb71848a40ec51c14c
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.11.2

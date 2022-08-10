@@ -1,3 +1,4 @@
+import 'package:eleventa/modules/common/infra/logger.dart';
 import 'package:eleventa/modules/sales/domain/entity/sale.dart';
 import 'package:eleventa/modules/sales/sales_module.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,6 +16,8 @@ import 'package:eleventa/modules/items/app/usecase/get_item.dart';
 import 'package:eleventa/modules/items/items_module.dart';
 import 'package:eleventa/modules/sales/app/usecase/create_sale.dart';
 import 'package:eleventa/modules/sales/app/usecase/add_sale_item.dart';
+import 'package:eleventa/modules/common/app/interface/logger.dart';
+import 'package:eleventa/dependencies.dart';
 
 class SalesPage extends StatefulWidget {
   final String title;
@@ -122,6 +125,14 @@ class _SaleItemsContainerState extends State<SaleItemsContainer> {
   String currentSaleId = '';
   FocusNode myFocusNode = FocusNode();
   TextEditingController myController = TextEditingController();
+  @protected
+  late final ILogger logger;
+
+  @override
+  initState() {
+    super.initState();
+    logger = Dependencies.infra.logger();
+  }
 
   Future<void> addItemBySku(String value) async {
     // Obtenemos los Use cases...
@@ -135,38 +146,44 @@ class _SaleItemsContainerState extends State<SaleItemsContainer> {
     // Checamos tener una venta
     if (UiCart.saleUid == '') {
       UiCart.saleUid = createSale.exec();
-      debugPrint('Nueva venta creada $UiCart.saleUid');
+      logger.info('Nueva venta creada $UiCart.saleUid');
     }
 
-    getItem.request.sku = value;
+    for (var i = 1; i < 10; i++) {
+      getItem.request.sku = i.toString();
 
-    try {
-      item = await getItem.exec();
+      try {
+        item = await getItem.exec();
 
-      // Agregamos el articulo a la venta
-      addItem.request.item.description = item.description;
-      addItem.request.item.price = item.price;
-      addItem.request.item.quantity = 1;
-      addItem.request.saleUid = UiCart.saleUid;
+        // Agregamos el articulo a la venta
+        addItem.request.item.description = item.description;
+        addItem.request.item.price = item.price;
+        addItem.request.item.quantity = 1;
+        addItem.request.saleUid = UiCart.saleUid;
 
-      debugPrint('Agregando ${item.description} a venta ${UiCart.saleUid}');
-      var sale = await addItem.exec();
+        logger.info('Agregando ${item.description} a venta ${UiCart.saleUid}');
+        var sale = await addItem.exec();
 
-      setState(() {
-        // Si tuvimos exito, lo agregamos a la UI
-        UiCart.items.add(UiSaleItem(
-            code: item.sku,
-            description: item.description,
-            price: item.price.toString()));
+        // Solo re-construimos la UI en el ultimo elemento
+        //if (i == 1000) {
+        setState(() {
+          // Si tuvimos exito, lo agregamos a la UI
+          UiCart.items.add(UiSaleItem(
+              code: item.sku,
+              description: item.description,
+              price: item.price.toString()));
 
-        UiCart.selectedItem = UiCart.items.last;
-        UiCart.total = sale.total;
+          UiCart.selectedItem = UiCart.items.last;
+          UiCart.total = sale.total;
 
-        saleTotal = sale.total;
-      });
-    } on Exception catch (e) {
-      if (e is AppException) {
-        debugPrint(e.message);
+          saleTotal = sale.total;
+        });
+        //}
+      } on Exception catch (e) {
+        if (e is AppException) {
+          // ToDO: Mostramos mensaje de que no se encontró producto
+          logger.warn(e.message);
+        }
       }
     }
 
@@ -283,6 +300,7 @@ class _SaleItemsContainerState extends State<SaleItemsContainer> {
                   borderRadius: BorderRadius.circular(5),
                 ),
                 child: TextField(
+                  key: const Key("skuField"),
                   obscureText: false,
                   autofocus: true,
                   focusNode: myFocusNode,

@@ -33,6 +33,8 @@ class ItemsListView extends StatelessWidget {
                       items[index].description,
                   height: 50,
                   width: 50,
+                  cacheHeight: 50,
+                  cacheWidth: 50,
                   fit: BoxFit.cover,
                 )),
             subtitle: Text(items[index].code),
