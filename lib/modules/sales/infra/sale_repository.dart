@@ -34,7 +34,11 @@ class SaleRepository extends Repository implements ISaleRepository {
         item.quantity
       ]);
     } catch (error, stack) {
-      throw InfrastructureError(error.toString(), stack);
+      throw InfrastructureException(
+        error.toString(),
+        error as Exception,
+        stack,
+      );
     }
   }
 

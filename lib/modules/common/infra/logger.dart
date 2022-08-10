@@ -7,6 +7,7 @@ import 'package:sentry_logging/sentry_logging.dart';
 
 class Logger implements ILogger {
   final _logger = log.Logger('Main');
+  late LoggerOptions _options;
 
   /* #region Singleton */
   static final Logger _instance = Logger._internal();
@@ -33,10 +34,12 @@ class Logger implements ILogger {
   }
 
   @override
-  Future<void> init() async {
+  Future<void> init({required LoggerOptions options}) async {
+    _options = options;
+
     await SentryFlutter.init(
       (options) {
-        // ToDO: Sacar el DSN a variable de entorno
+        // TODO: Sacar el DSN a variable de entorno
         options.dsn =
             'https://6a10edb2c5694e23a193d9feddc8df5e@o76265.ingest.sentry.io/6635342';
         // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
@@ -44,7 +47,11 @@ class Logger implements ILogger {
         options.tracesSampleRate = 1.0;
 
         // Agregamos soporte para logeo via Sentry
-        options.addIntegration(LoggingIntegration());
+        options.addIntegration(
+          LoggingIntegration(
+              minBreadcrumbLevel: log.Level.INFO,
+              minEventLevel: log.Level.INFO),
+        );
       },
     );
 
@@ -57,17 +64,36 @@ class Logger implements ILogger {
   }
 
   @override
-  void error(EleventaException ex) {
-    _logger.severe(ex.message, ex, ex.stackTrace);
+  void error(Exception ex) {
+    if (ex is EleventaException) {
+      _logger.severe(ex.message, ex.innerException, ex.stackTrace);
+    } else {
+      _logger.severe(ex.toString(), ex);
+    }
   }
 
   @override
-  void info(String message) {
-    _logger.info(message);
+  void info(String message) async {
+    if (_options.remoteLevels.contains(LoggerLevels.info) ||
+        _options.remoteLevels.contains(LoggerLevels.all)) {
+      await Sentry.captureMessage(message);
+    }
+
+    if (_options.consoleLevels.contains(LoggerLevels.info) ||
+        _options.consoleLevels.contains(LoggerLevels.all)) {
+      debugPrint(message);
+    }
+
+    if (_options.fileLevels.contains(LoggerLevels.info) ||
+        _options.fileLevels.contains(LoggerLevels.all)) {
+      _addLogTofile(message);
+    }
   }
 
   @override
   void warn(String message) {
     _logger.warning(message);
   }
+
+  void _addLogTofile(String message) {}
 }

@@ -20,7 +20,8 @@ class ItemRepository extends Repository implements IItemRepository {
         item.price
       ]);
     } catch (error, stack) {
-      throw InfrastructureError(error.toString(), stack);
+      throw InfrastructureException(
+          error.toString(), error as Exception, stack);
     }
   }
 

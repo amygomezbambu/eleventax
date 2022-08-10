@@ -21,8 +21,12 @@ class GetItem {
     Item? item = await _repo.getBySku(request.sku);
 
     if (item == null) {
-      _logger.error(EleventaException('Codigo de producto invalido', null));
-      throw AppException('Codigo de producto invalido');
+      final errorMessage =
+          'El Codigo de producto ${request.sku} no se encontró';
+
+      _logger.error(AppException(errorMessage));
+
+      throw AppException(errorMessage);
     }
 
     return ItemMapper.fromDomainToDTO(item);

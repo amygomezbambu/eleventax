@@ -26,7 +26,13 @@ class Loader {
     WidgetsFlutterBinding.ensureInitialized();
 
     //Inicializar Logger
-    await logger.init();
+    await logger.init(
+      options: LoggerOptions(
+        remoteLevels: [LoggerLevels.error],
+        fileLevels: [LoggerLevels.error, LoggerLevels.warning],
+        consoleLevels: [LoggerLevels.all],
+      ),
+    );
 
     //Conectar adaptador de base de datos.
     await dbAdapter.connect();
