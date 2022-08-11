@@ -38,6 +38,10 @@ class SQLiteAdapter implements IDatabaseAdapter {
     }
   }
 
+  bool _debugCheckHasCipher(Database database) {
+    return database.rawQuery('PRAGMA cipher_version;').toString().isNotEmpty;
+  }
+
   DynamicLibrary _sqlcipherOpen() {
     // Basado en https://github.com/simolus3/sqlite3.dart/blob/e66702c5bec7faec2bf71d374c008d5273ef2b3b/sqlite3/lib/src/load_library.dart#L24
     if (Platform.isLinux || Platform.isAndroid) {
@@ -94,6 +98,7 @@ class SQLiteAdapter implements IDatabaseAdapter {
         onConfigure: (db) async {
           // This is the part where we pass the "password"
           await db.rawQuery("PRAGMA KEY='1234'");
+          assert(_debugCheckHasCipher(db));
         },
         onCreate: (db, version) async {
           debugPrint('Creando base de datos ${version.toString()}');
@@ -104,6 +109,9 @@ class SQLiteAdapter implements IDatabaseAdapter {
 
     if (_db != null) {
       _db!.getVersion().then((value) => {debugPrint(value.toString())});
+
+      print(await _db!.rawQuery("PRAGMA cipher_version"));
+      //print(await _db!.rawQuery("SELECT * FROM sqlite_master"));
     }
   }
 
