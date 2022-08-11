@@ -1,5 +1,6 @@
 import 'package:eleventa/dependencies.dart';
 import 'package:eleventa/modules/common/app/interface/database.dart';
+import 'package:eleventa/modules/common/app/interface/logger.dart';
 import 'package:eleventa/modules/migrations/migrate_db.dart';
 import 'package:flutter/material.dart';
 
@@ -9,9 +10,14 @@ import 'package:flutter/material.dart';
 /// funcione correctamente
 class Loader {
   IDatabaseAdapter dbAdapter = Dependencies.infra.database();
+  ILogger logger = Dependencies.infra.logger();
 
   Future<void> init() async {
     WidgetsFlutterBinding.ensureInitialized();
+
+    //Inicializar Logger
+    await logger.init();
+
     //Conectar adaptador de base de datos.
     await dbAdapter.connect();
 

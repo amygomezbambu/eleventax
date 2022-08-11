@@ -1,7 +1,7 @@
 import 'package:eleventa/dependencies.dart';
 import 'package:eleventa/modules/common/app/interface/logger.dart';
 import 'package:eleventa/modules/common/app/interface/repository.dart';
-import 'package:eleventa/modules/common/error/error.dart';
+import 'package:eleventa/modules/common/exception/exception.dart';
 import 'package:meta/meta.dart';
 
 class Usecase<T> {
@@ -28,9 +28,9 @@ class Usecase<T> {
       //Operacion Real
       result = await operation();
       await repo.commit();
-    } catch (e) {
+    } catch (e, stackTrace) {
       await repo.rollback();
-      logger.error(EleventaError((e as Exception).toString(), ''));
+      logger.error(EleventaException((e as Exception).toString(), stackTrace));
       rethrow;
     }
 
