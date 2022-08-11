@@ -3,7 +3,7 @@ name: Deploy Android
 on:
   push:
     branches:
-      - feat/despliegue-continuo
+      - feat/ninguno
 
 jobs:
   build-and-deploy-android:
