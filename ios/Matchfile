@@ -1,4 +1,4 @@
-git_url("https://github.com/bambucode/eleventax-ios-certificates")
+git_url("https://github.com/bambucode/eleventax-ios-certificates.git")
 
 storage_mode("git")
 
