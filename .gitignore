@@ -46,3 +46,6 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 android/fastlane/report.xml
+*.p8
+ios/fastlane/fastlane_api.json
+ios/fastlane/report.xml
