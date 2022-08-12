@@ -27,9 +27,10 @@ class SyncServer {
 
     if (response.statusCode != 200) {
       throw InfrastructureException(
-        'Error en el envio de cambios a nube',
-        Exception(response.body),
-        null,
+        message: 'Error en el envio de cambios a nube',
+        innerException: Exception(response.body),
+        stackTrace: StackTrace.current,
+        input: json,
       );
     } else {
       var data = jsonDecode(response.body);
@@ -64,9 +65,10 @@ class SyncServer {
 
     if (response.statusCode != 200) {
       throw InfrastructureException(
-        'Error en el envio de cambios a nube',
-        Exception(response.body),
-        null,
+        message: 'Error en el envio de cambios a nube',
+        innerException: Exception(response.body),
+        stackTrace: StackTrace.current,
+        input: json,
       );
     }
   }

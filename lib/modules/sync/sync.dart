@@ -1,15 +1,19 @@
+import 'package:eleventa/modules/common/app/interface/sync.dart';
 import 'package:eleventa/modules/sync/adapter/sync_repository.dart';
 import 'package:eleventa/modules/sync/app/usecase/add_local_changes.dart';
 import 'package:eleventa/modules/sync/app/usecase/obtain_remote_changes.dart';
 import 'package:eleventa/modules/sync/change.dart';
+import 'package:eleventa/modules/sync/error.dart';
 import 'package:eleventa/modules/sync/sync_config.dart';
 import 'package:hlc/hlc.dart';
 
 /// Clase principal de Sincronización
 ///
 /// A travez de esta clase se accede a todos los servicios de sincronización
-class Sync {
+class Sync implements ISync {
   late SyncConfig _config;
+
+  var _initialized = false;
 
   final _repo = SyncRepository();
   final _obtainRemoteChanges = ObtainRemoteChanges();
@@ -18,12 +22,20 @@ class Sync {
   // #region singleton
   static final Sync _instance = Sync._internal();
 
-  factory Sync({required SyncConfig syncConfig}) {
+  factory Sync.create({required SyncConfig syncConfig}) {
     var instance = _instance;
-
     instance._config = syncConfig;
+    instance._initialized = true;
 
     return instance;
+  }
+
+  factory Sync.get() {
+    if (!_instance._initialized) {
+      throw SyncError('No se ha inicializado el modulo de Sincronización', '');
+    }
+
+    return _instance;
   }
 
   Sync._internal();
@@ -34,6 +46,7 @@ class Sync {
   /// Para cada columna en [columns] y su respectivo valor en [values]
   /// aplica los cambios a la base de datos local en la tabla [dataset] y
   /// el row [rowID] y posteriormente los envia al servidor remoto de sincronización
+  @override
   Future<void> syncChanges(
       {required String dataset,
       required String rowID,
@@ -63,13 +76,15 @@ class Sync {
   }
 
   /// Inicia la escucha de nuevos cambios en el servidor remoto
+  @override
   Future<void> initListening() async {
     _obtainRemoteChanges.request.interval = _config.pullInterval;
     await _obtainRemoteChanges.exec();
   }
 
   /// Detiene la escucha de nuevos cambios en el servidor remoto
-  stopListening() {
+  @override
+  void stopListening() {
     _obtainRemoteChanges.stop();
   }
 }

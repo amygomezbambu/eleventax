@@ -6,23 +6,45 @@ class EleventaException implements Exception {
   String? solution;
   StackTrace? stackTrace;
   Exception? innerException;
-  bool compactLogging = false;
 
-  EleventaException(
-      {required this.message, this.innerException, this.stackTrace});
-}
+  /// representa los datos que fueron proporcionados al metodo que causo el error
+  String? input;
 
-class DomainException extends EleventaException {
-  DomainException(String message) : super(message: message) {
-    compactLogging = true;
+  EleventaException({
+    required this.message,
+    this.innerException,
+    this.stackTrace,
+    this.input,
+  }) {
+    stackTrace ??= StackTrace.current;
+  }
+
+  @override
+  String toString() {
+    return '${runtimeType.toString()}: $message\n'
+        '[Tech Info]: ${innerException?.toString()}';
   }
 }
 
+class DomainException extends EleventaException {
+  DomainException(String message) : super(message: message);
+}
+
 class AppException extends EleventaException {
-  AppException(String message) : super(message: message);
+  AppException({required String message, String? input})
+      : super(message: message, input: input);
 }
 
 class InfrastructureException extends EleventaException {
-  InfrastructureException(String message, Exception ex, StackTrace? stackTrace)
-      : super(message: message, innerException: ex, stackTrace: stackTrace);
+  InfrastructureException({
+    required String message,
+    required Exception innerException,
+    StackTrace? stackTrace,
+    String? input,
+  }) : super(
+          message: message,
+          innerException: innerException,
+          stackTrace: stackTrace,
+          input: input,
+        );
 }

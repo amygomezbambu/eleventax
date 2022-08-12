@@ -25,8 +25,8 @@ class Usecase<T> {
     await repo.transaction();
 
     try {
-      //Operacion Real
       result = await operation();
+
       await repo.commit();
     } catch (ex, stackTrace) {
       await repo.rollback();
@@ -43,9 +43,9 @@ class Usecase<T> {
     if (ex is DomainException) {
       logger.info(ex.message);
     } else if (ex is InfrastructureException) {
-      logger.error(ex);
+      logger.error(ex: ex);
     } else {
-      logger.error(ex as Exception);
+      logger.error(ex: ex as Exception, stackTrace: stack);
     }
   }
 }

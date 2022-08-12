@@ -1,13 +1,16 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:eleventa/modules/common/app/interface/logger.dart';
 import 'package:eleventa/modules/common/exception/exception.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart' as log;
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:sentry_logging/sentry_logging.dart';
+import 'package:path_provider/path_provider.dart';
 
 class Logger implements ILogger {
   final _logger = log.Logger('Main');
-  late LoggerOptions _options;
+  late LoggerConfig _config;
 
   /* #region Singleton */
   static final Logger _instance = Logger._internal();
@@ -26,16 +29,8 @@ class Logger implements ILogger {
   /* #endregion */
 
   @override
-  Future<void> captureException(error, stackTrace) async {
-    await Sentry.captureException(
-      error,
-      stackTrace: stackTrace,
-    );
-  }
-
-  @override
-  Future<void> init({required LoggerOptions options}) async {
-    _options = options;
+  Future<void> init({required LoggerConfig config}) async {
+    _config = config;
 
     await SentryFlutter.init(
       (options) {
@@ -45,13 +40,7 @@ class Logger implements ILogger {
         // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
         // We recommend adjusting this value in production.
         options.tracesSampleRate = 1.0;
-
-        // Agregamos soporte para logeo via Sentry
-        options.addIntegration(
-          LoggingIntegration(
-              minBreadcrumbLevel: log.Level.INFO,
-              minEventLevel: log.Level.INFO),
-        );
+        options.beforeSend = _beforeRemoteSend;
       },
     );
 
@@ -59,41 +48,166 @@ class Logger implements ILogger {
   }
 
   @override
-  void debug(String message) {
-    _logger.fine(message);
+  void debug(
+      {required String message, Exception? ex, StackTrace? stackTrace}) async {
+    var logEntry = LogEntry();
+    logEntry.message = message;
+    logEntry.exception = ex;
+    logEntry.stackTrace = stackTrace;
+
+    await _handleException(entry: logEntry, level: LoggerLevels.debug);
   }
 
   @override
-  void error(Exception ex) {
+  void error({required Exception ex, StackTrace? stackTrace}) async {
+    var logEntry = LogEntry();
+
+    //TODO: obtener datos reales de contexto
+    logEntry.deviceId = '818181718781787178-Caja Principal';
+    logEntry.userId = 'y84784787474-Cajero1';
+
     if (ex is EleventaException) {
-      _logger.severe(ex.message, ex.innerException, ex.stackTrace);
+      logEntry.exception = ex;
+      logEntry.stackTrace = ex.stackTrace;
+      logEntry.message = ex.message;
+      logEntry.input = ex.input;
+
+      await _handleException(entry: logEntry, level: LoggerLevels.error);
     } else {
-      _logger.severe(ex.toString(), ex);
+      logEntry.exception = ex;
+      logEntry.stackTrace = stackTrace;
+      logEntry.message = '';
+
+      await _handleException(entry: logEntry, level: LoggerLevels.error);
     }
   }
 
   @override
   void info(String message) async {
-    if (_options.remoteLevels.contains(LoggerLevels.info) ||
-        _options.remoteLevels.contains(LoggerLevels.all)) {
-      await Sentry.captureMessage(message);
-    }
+    var logEntry = LogEntry();
+    logEntry.message = message;
 
-    if (_options.consoleLevels.contains(LoggerLevels.info) ||
-        _options.consoleLevels.contains(LoggerLevels.all)) {
-      debugPrint(message);
-    }
-
-    if (_options.fileLevels.contains(LoggerLevels.info) ||
-        _options.fileLevels.contains(LoggerLevels.all)) {
-      _addLogTofile(message);
-    }
+    await _handleException(entry: logEntry, level: LoggerLevels.info);
   }
 
   @override
-  void warn(String message) {
-    _logger.warning(message);
+  void warn(EleventaException ex) async {
+    var logEntry = LogEntry();
+    logEntry.message = ex.message;
+    logEntry.exception = ex;
+    logEntry.stackTrace = ex.stackTrace;
+
+    await _handleException(entry: logEntry, level: LoggerLevels.warning);
   }
 
-  void _addLogTofile(String message) {}
+  Future<void> _handleException({
+    required LogEntry entry,
+    required LoggerLevels level,
+  }) async {
+    if (_config.remoteLevels.contains(level) ||
+        _config.remoteLevels.contains(LoggerLevels.all)) {
+      final eleventaContext = {
+        'input': entry.input,
+        'user': entry.userId,
+        'device': entry.deviceId,
+      };
+      Sentry.configureScope(
+          (scope) => scope.setContexts('eleventa_Context', eleventaContext));
+
+      await Sentry.captureException(entry.exception,
+          stackTrace: entry.stackTrace);
+    }
+
+    if (_config.consoleLevels.contains(level) ||
+        _config.consoleLevels.contains(LoggerLevels.all)) {
+      _printCosoleLog(entry, level);
+    }
+
+    if (_config.fileLevels.contains(level) ||
+        _config.fileLevels.contains(LoggerLevels.all)) {
+      _addLogTofile(entry, level);
+    }
+  }
+
+  void _printCosoleLog(LogEntry entry, LoggerLevels level) {
+    switch (level) {
+      case LoggerLevels.debug:
+        _logger.fine(entry.message, entry.exception, entry.stackTrace);
+        break;
+      case LoggerLevels.error:
+        _logger.severe(entry.message, entry.exception, entry.stackTrace);
+        break;
+      case LoggerLevels.info:
+        _logger.info(entry.message);
+        break;
+      case LoggerLevels.warning:
+        _logger.warning(entry.message, entry.exception, entry.stackTrace);
+        break;
+      default:
+        _logger.fine(entry.message, entry.exception, entry.stackTrace);
+    }
+  }
+
+  void _addLogTofile(LogEntry entry, LoggerLevels level) async {
+    var path = (await getApplicationSupportDirectory()).path;
+    _logger.info('$path/eleventa.log');
+
+    var file = File('$path/eleventa.log');
+    var levelName = '';
+
+    switch (level) {
+      case LoggerLevels.debug:
+        levelName = 'DEBUG';
+        break;
+      case LoggerLevels.error:
+        levelName = 'ERROR';
+        break;
+      case LoggerLevels.info:
+        levelName = 'INFO';
+        break;
+      case LoggerLevels.warning:
+        levelName = 'WARNING';
+        break;
+      default:
+    }
+
+    final content = '$levelName: ${DateTime.now().toUtc()}: ${entry.message}\n'
+        '${entry.exception.toString()}\n'
+        '${entry.stackTrace}\n'
+        '_________________________________________________\n';
+
+    await file.writeAsString(content, mode: FileMode.append);
+  }
+
+  FutureOr<SentryEvent?> _beforeRemoteSend(SentryEvent event,
+      {dynamic hint}) async {
+    var contexts = Contexts(
+        device: event.contexts.device,
+        operatingSystem: event.contexts.operatingSystem);
+
+    var modifiedEvent = SentryEvent(
+      breadcrumbs: event.breadcrumbs,
+      contexts: contexts,
+      culprit: event.culprit,
+      dist: event.dist,
+      environment: event.environment,
+      eventId: event.eventId,
+      exceptions: event.exceptions,
+      extra: event.extra,
+      fingerprint: event.fingerprint,
+      level: event.level,
+      logger: event.logger,
+      message: event.message,
+      platform: event.platform,
+      request: event.request,
+      tags: event.tags,
+      throwable: event.throwable,
+      timestamp: event.timestamp,
+      transaction: event.transaction,
+      type: event.type,
+      user: event.user,
+    );
+
+    return modifiedEvent;
+  }
 }

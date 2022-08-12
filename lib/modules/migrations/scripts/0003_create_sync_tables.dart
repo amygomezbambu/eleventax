@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:eleventa/modules/migrations/migration.dart';
 
 class Migration3 extends Migration {

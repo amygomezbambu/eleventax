@@ -31,7 +31,7 @@ class Loader {
 
     //Inicializar Logger
     await logger.init(
-      options: LoggerOptions(
+      config: LoggerConfig(
         remoteLevels: [LoggerLevels.error],
         fileLevels: [LoggerLevels.error, LoggerLevels.warning],
         consoleLevels: [LoggerLevels.all],
@@ -48,10 +48,9 @@ class Loader {
     await migrateDB.exec();
 
     //Inicializar sincronizacion
-
     var randomGen = Random();
 
-    var sync_ = Sync(
+    var sync_ = Sync.create(
       syncConfig: SyncConfig.create(
           dbVersionTable: 'migrations',
           dbVersionField: 'version',

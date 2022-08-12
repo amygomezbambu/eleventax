@@ -24,9 +24,9 @@ class GetItem {
       final errorMessage =
           'El Codigo de producto ${request.sku} no se encontró';
 
-      _logger.error(AppException(errorMessage));
+      _logger.error(ex: AppException(message: errorMessage));
 
-      throw AppException(errorMessage);
+      throw AppException(message: errorMessage);
     }
 
     return ItemMapper.fromDomainToDTO(item);

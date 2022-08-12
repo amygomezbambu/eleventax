@@ -1,3 +1,5 @@
+import 'package:eleventa/modules/common/exception/exception.dart';
+
 ///Buenas practicas:
 ///1.Generar el log en JSON u otro formato que se pueda manejar mas facil que el texto plano
 ///2.Agregar contexto, dispositivo, usuario, request, caso de uso, si es una falla de infraestructura
@@ -8,18 +10,21 @@ class LogEntry {
   var timestamp = 0;
   var userId = '';
   var deviceId = '';
-  var useCaseRequest = '';
+  String? input = '';
+  var message = '';
+  Exception? exception;
+  StackTrace? stackTrace;
 }
 
 enum LoggerLevels { info, debug, error, warning, all }
 
-class LoggerOptions {
+class LoggerConfig {
   var remoteLevels = <LoggerLevels>[];
   var fileLevels = <LoggerLevels>[];
   var consoleLevels = <LoggerLevels>[];
   var fileMaxSizeInMB = 1000;
 
-  LoggerOptions(
+  LoggerConfig(
       {required this.remoteLevels,
       required this.fileLevels,
       required this.consoleLevels,
@@ -30,10 +35,13 @@ abstract class ILogger {
   /// Metodo que inicializa el logger
   ///
   /// Debe ser llamado antes de utilizar cualquier metodo de logeo
-  Future<void> init({required LoggerOptions options});
+  Future<void> init({required LoggerConfig config});
   void info(String message);
-  void warn(String message);
-  void debug(String message);
-  void error(Exception ex);
-  Future<void> captureException(error, stackTrace);
+
+  /// Logea un warning
+  ///
+  /// recibe [EleventaException] debido a que un warn siempre se lanza manualmente
+  void warn(EleventaException ex);
+  void debug({required String message, Exception? ex, StackTrace? stackTrace});
+  void error({required Exception ex, StackTrace? stackTrace});
 }

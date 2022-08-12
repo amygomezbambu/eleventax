@@ -15,12 +15,6 @@ class SyncConfig {
   var _pullInterval = 30000;
   var _syncMethod = SyncMethod.pull;
 
-  _validateEndpoint(String value) {
-    if (value == '') {
-      throw SyncError('El valor de un endpoint no puede ser vacio', '');
-    }
-  }
-
   _validatePullInterval(int value) {
     if (value < 1000) {
       throw SyncError(

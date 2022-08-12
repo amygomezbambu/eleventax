@@ -1,53 +1,28 @@
-import 'dart:math';
-
+import 'package:eleventa/modules/common/app/interface/database.dart';
+import 'package:eleventa/modules/common/app/interface/sync.dart';
 import 'package:eleventa/modules/common/utils/uid.dart';
-import 'package:eleventa/modules/common/exception/exception.dart';
 import 'package:eleventa/modules/items/app/interface/item_repository.dart';
 import 'package:eleventa/modules/items/domain/entity/item.dart';
-import 'package:eleventa/modules/sync/sync.dart';
-import 'package:eleventa/modules/sync/sync_config.dart';
 import '../../common/infra/repository.dart';
 
 class ItemRepository extends Repository implements IItemRepository {
-  ItemRepository() : super();
+  ItemRepository({ISync? sync, IDatabaseAdapter? db}) : super(sync, db);
 
   @override
   Future<void> add(Item item) async {
-    var randomGen = Random();
+    // throw InfrastructureException(
+    //   message:
+    //       'Ocurrio un error an intentar guardar el producto en la base de datos',
+    //   innerException: Exception('No se encuentra el archivo de base de datos'),
+    //   stackTrace: StackTrace.current,
+    //   input: item.toString(),
+    // );
 
-    var sync_ = Sync(
-      syncConfig: SyncConfig.create(
-          dbVersionTable: 'migrations',
-          dbVersionField: 'version',
-          groupId: 'CH0001',
-          deviceId: randomGen.nextInt(1000).toString(),
-          addChangesEndpoint:
-              'https://qgfy59gc83.execute-api.us-west-1.amazonaws.com/dev/sync',
-          getChangesEndpoint:
-              'https://qgfy59gc83.execute-api.us-west-1.amazonaws.com/dev/sync-get-changes',
-          deleteChangesEndpoint: 'http://localhost:3000/sync-delete-changes'),
-    );
-
-    await sync_.syncChanges(
+    await sync.syncChanges(
         dataset: 'items',
         rowID: item.uid.toString(),
         columns: ['sku', 'description', 'price'],
         values: [item.sku, item.description, item.price]);
-
-    // var command =
-    //     'INSERT INTO items(uid, sku, description, price) VALUES(?,?,?,?)';
-
-    // try {
-    //   await db.command(sql: command, params: [
-    //     item.uid.toString(),
-    //     item.sku,
-    //     item.description,
-    //     item.price
-    //   ]);
-    // } catch (error, stack) {
-    //   throw InfrastructureException(
-    //       error.toString(), error as Exception, stack);
-    // }
   }
 
   @override

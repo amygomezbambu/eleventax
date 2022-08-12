@@ -1,3 +1,5 @@
+import 'package:eleventa/modules/common/app/interface/database.dart';
+import 'package:eleventa/modules/common/app/interface/sync.dart';
 import 'package:eleventa/modules/common/utils/uid.dart';
 import 'package:eleventa/modules/common/exception/exception.dart';
 
@@ -8,7 +10,7 @@ import 'package:eleventa/utils/utils.dart';
 import '../../common/infra/repository.dart';
 
 class SaleRepository extends Repository implements ISaleRepository {
-  SaleRepository() : super();
+  SaleRepository({ISync? sync, IDatabaseAdapter? db}) : super(sync, db);
 
   @override
   Future<void> add(Sale sale) async {
@@ -35,9 +37,11 @@ class SaleRepository extends Repository implements ISaleRepository {
       ]);
     } catch (error, stack) {
       throw InfrastructureException(
-        error.toString(),
-        error as Exception,
-        stack,
+        message:
+            'Ocurrio un error al intentar almacenar el articulo de venta en la base de datos.',
+        innerException: error as Exception,
+        stackTrace: stack,
+        input: item.toString(),
       );
     }
   }
