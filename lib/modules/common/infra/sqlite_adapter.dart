@@ -10,6 +10,7 @@ import 'package:sqlcipher_library_windows/sqlcipher_library_windows.dart';
 import 'package:sqlite3/open.dart';
 import 'dart:ffi';
 import 'dart:math';
+import 'environment.dart';
 
 class SQLiteAdapter implements IDatabaseAdapter {
   Database? _db;
@@ -82,35 +83,40 @@ class SQLiteAdapter implements IDatabaseAdapter {
     final DatabaseFactory dbFactory =
         createDatabaseFactoryFfi(ffiInit: _sqliteInit);
 
-    if (Platform.environment.containsKey('FLUTTER_TEST')) {
+    if (Platform.environment.containsKey('FLUTTER_TEST1') &&
+        !Platform.environment.containsKey('PERFORMANCE_TEST')) {
       dbPath = inMemoryDatabasePath;
       debugPrint('Conectado a BD: MEMORIA');
     } else {
       dbPath = (await getApplicationDocumentsDirectory()).path;
-      dbPath = join(dbPath, 'eleventa-enc5.db');
+      dbPath = join(dbPath, 'eleventa-enc6.db');
       debugPrint('Conectado a BD: $dbPath');
     }
+
+    debugPrint("PRAGMA KEY='${Environment.databasePassword}'");
 
     _db = await dbFactory.openDatabase(
       dbPath,
       options: OpenDatabaseOptions(
         version: 1,
         onConfigure: (db) async {
-          // This is the part where we pass the "password"
-          await db.rawQuery("PRAGMA KEY='1234'");
+          await db.rawQuery("PRAGMA KEY='${Environment.databasePassword}'");
+          // Verificamos que al preguntarle SQLite nos confirme que
+          // estamos usando una conexion con SQLCipher
           assert(_debugCheckHasCipher(db));
         },
         onCreate: (db, version) async {
-          debugPrint('Creando base de datos ${version.toString()}');
-          //db.execute("CREATE TABLE t (i INTEGER)");
+          debugPrint(
+              'No hay base de datos, crenado con user version ${version.toString()}');
         },
       ),
     );
 
     if (_db != null) {
       _db!.getVersion().then((value) => {debugPrint(value.toString())});
-
-      print(await _db!.rawQuery("PRAGMA cipher_version"));
+      await _db!.rawQuery("PRAGMA cipher_version").then((value) {
+        debugPrint(value.toString());
+      });
       //print(await _db!.rawQuery("SELECT * FROM sqlite_master"));
     }
   }
