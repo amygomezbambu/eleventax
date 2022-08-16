@@ -1,4 +1,4 @@
-import 'package:eleventa/modules/common/domain/valueObject/uid.dart';
+import 'package:eleventa/modules/common/utils/uid.dart';
 
 class Item {
   var _description = '';

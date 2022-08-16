@@ -123,7 +123,8 @@ void main() {
       addItem.request.saleUid = uid;
       addItem.request.item = dto;
 
-      await expectLater(addItem.exec(), throwsA(isA<InfrastructureError>()));
+      await expectLater(
+          addItem.exec(), throwsA(isA<InfrastructureException>()));
 
       getSale.request.uid = uid;
       var sale = await getSale.exec();

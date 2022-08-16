@@ -1,9 +1,9 @@
 // ignore_for_file: file_names
 import 'package:eleventa/modules/migrations/migration.dart';
 
-class Migration3 extends Migration {
-  Migration3() : super() {
-    version = 3;
+class Migration4 extends Migration {
+  Migration4() : super() {
+    version = 4;
   }
 
   @override

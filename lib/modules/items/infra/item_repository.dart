@@ -1,27 +1,28 @@
-import 'package:eleventa/modules/common/domain/valueObject/uid.dart';
-import 'package:eleventa/modules/common/exception/exception.dart';
+import 'package:eleventa/modules/common/app/interface/database.dart';
+import 'package:eleventa/modules/common/app/interface/sync.dart';
+import 'package:eleventa/modules/common/utils/uid.dart';
 import 'package:eleventa/modules/items/app/interface/item_repository.dart';
 import 'package:eleventa/modules/items/domain/entity/item.dart';
 import '../../common/infra/repository.dart';
 
 class ItemRepository extends Repository implements IItemRepository {
-  ItemRepository() : super();
+  ItemRepository({ISync? sync, IDatabaseAdapter? db}) : super(sync, db);
 
   @override
   Future<void> add(Item item) async {
-    var command =
-        'INSERT INTO items(uid, sku, description, price) VALUES(?,?,?,?)';
+    // throw InfrastructureException(
+    //   message:
+    //       'Ocurrio un error an intentar guardar el producto en la base de datos',
+    //   innerException: Exception('No se encuentra el archivo de base de datos'),
+    //   stackTrace: StackTrace.current,
+    //   input: item.toString(),
+    // );
 
-    try {
-      await db.command(sql: command, params: [
-        item.uid.toString(),
-        item.sku,
-        item.description,
-        item.price
-      ]);
-    } catch (error, stack) {
-      throw InfrastructureError(error.toString(), stack);
-    }
+    await sync.syncChanges(
+        dataset: 'items',
+        rowID: item.uid.toString(),
+        columns: ['sku', 'description', 'price'],
+        values: [item.sku, item.description, item.price]);
   }
 
   @override

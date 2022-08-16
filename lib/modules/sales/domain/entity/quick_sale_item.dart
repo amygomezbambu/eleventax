@@ -1,5 +1,5 @@
 import 'package:eleventa/modules/sales/domain/entity/sale_item.dart';
-import '../../../common/domain/valueObject/uid.dart';
+import '../../../common/utils/uid.dart';
 
 class QuickSaleItem extends SaleItem {
   QuickSaleItem(

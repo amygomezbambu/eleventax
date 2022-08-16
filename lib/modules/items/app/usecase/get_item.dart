@@ -1,3 +1,4 @@
+import 'package:eleventa/dependencies.dart';
 import 'package:eleventa/modules/common/exception/exception.dart';
 
 import '../dto/item_dto.dart';
@@ -10,6 +11,7 @@ class GetItemRequest {
 }
 
 class GetItem {
+  final _logger = Dependencies.infra.logger();
   final IItemRepository _repo;
   GetItemRequest request = GetItemRequest();
 
@@ -19,7 +21,12 @@ class GetItem {
     Item? item = await _repo.getBySku(request.sku);
 
     if (item == null) {
-      throw AppException('Codigo de producto invalido');
+      final errorMessage =
+          'El Codigo de producto ${request.sku} no se encontró';
+
+      _logger.error(ex: AppException(message: errorMessage));
+
+      throw AppException(message: errorMessage);
     }
 
     return ItemMapper.fromDomainToDTO(item);

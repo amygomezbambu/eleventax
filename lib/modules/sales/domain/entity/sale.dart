@@ -1,4 +1,4 @@
-import 'package:eleventa/modules/common/domain/valueObject/uid.dart';
+import 'package:eleventa/modules/common/utils/uid.dart';
 import 'package:eleventa/modules/sales/domain/entity/sale_item.dart';
 
 enum SaleStatus { open, paid, cancelled }

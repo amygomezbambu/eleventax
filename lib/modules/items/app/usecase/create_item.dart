@@ -1,3 +1,6 @@
+import 'package:eleventa/modules/common/app/usecase/usecase.dart';
+import 'package:eleventa/modules/common/utils/uid.dart';
+
 import '../interface/item_repository.dart';
 import '../../domain/entity/item.dart';
 
@@ -7,20 +10,23 @@ class CreateItemRequest {
   double price = 0.00;
 }
 
-class CreateItem {
+class CreateItem extends Usecase<UID> {
   final IItemRepository _repo;
   CreateItemRequest request = CreateItemRequest();
 
-  CreateItem(this._repo);
+  CreateItem(this._repo) : super(_repo) {
+    operation = _doOperation;
+  }
 
-  Future<String> exec() async {
+  Future<UID> _doOperation() async {
     Item item = Item(
-        sku: request.sku,
-        description: request.description,
-        price: request.price);
+      sku: request.sku,
+      description: request.description,
+      price: request.price,
+    );
 
     await _repo.add(item);
 
-    return item.uid.toString();
+    return item.uid;
   }
 }

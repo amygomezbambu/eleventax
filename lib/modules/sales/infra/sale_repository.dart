@@ -1,6 +1,7 @@
 import 'dart:convert';
-
-import 'package:eleventa/modules/common/domain/valueObject/uid.dart';
+import 'package:eleventa/modules/common/app/interface/database.dart';
+import 'package:eleventa/modules/common/app/interface/sync.dart';
+import 'package:eleventa/modules/common/utils/uid.dart';
 import 'package:eleventa/modules/common/exception/exception.dart';
 
 import 'package:eleventa/modules/sales/app/interface/sale_repository.dart';
@@ -11,7 +12,7 @@ import '../../common/infra/repository.dart';
 import '../sales_config.dart';
 
 class SaleRepository extends Repository implements ISaleRepository {
-  SaleRepository() : super();
+  SaleRepository({ISync? sync, IDatabaseAdapter? db}) : super(sync, db);
 
   @override
   Future<void> add(Sale sale) async {
@@ -37,7 +38,13 @@ class SaleRepository extends Repository implements ISaleRepository {
         item.quantity
       ]);
     } catch (error, stack) {
-      throw InfrastructureError(error.toString(), stack);
+      throw InfrastructureException(
+        message:
+            'Ocurrio un error al intentar almacenar el articulo de venta en la base de datos.',
+        innerException: error as Exception,
+        stackTrace: stack,
+        input: item.toString(),
+      );
     }
   }
 
@@ -144,7 +151,7 @@ class SaleRepository extends Repository implements ISaleRepository {
       return jsonDecode(dbResult.first['value'].toString());
     } else {
       throw EleventaException(
-          'No hay valores de configuración del módulo', null);
+          message: 'No hay valores de configuración del módulo');
     }
   }
 }

@@ -41,6 +41,9 @@ dependencies:
   path_provider:
   google_fonts: ^3.0.1
   flutter_tailwindcss_defaults: ^0.2.0
+  any_base: ^2.0.0
+  murmurhash: ^1.0.1
+  hlc: ^1.0.3
   xid: ^1.0.7 # [ADR-0003]
   logging: ^1.0.2 # [ADR-0004]
   sentry_flutter: ^6.9.0 # [ADR-0004]
@@ -52,6 +55,8 @@ dev_dependencies:
     sdk: flutter
   flutter_test:
     sdk: flutter
+
+  cider: 0.1.1 # [ADR-0005]
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -100,3 +105,10 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+# Configuración del historial de cambios por medio de Cider
+# "The %from%, %to%, and %tag% placeholders will be replaced with the corresponding version tags."
+cider:
+  link_template:
+    tag: https://github.com/bambucode/eleventax/releases/tag/%tag% # initial release link template
+    diff: https://github.com/bambucode/eleventax/compare/%from%...%to% # subsequent releases link template
