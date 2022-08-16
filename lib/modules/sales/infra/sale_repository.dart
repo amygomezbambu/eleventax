@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:eleventa/modules/common/domain/valueObject/uid.dart';
 import 'package:eleventa/modules/common/exception/exception.dart';
 
@@ -6,6 +8,7 @@ import 'package:eleventa/modules/sales/domain/entity/sale.dart';
 import 'package:eleventa/modules/sales/domain/entity/sale_item.dart';
 import 'package:eleventa/utils/utils.dart';
 import '../../common/infra/repository.dart';
+import '../sales_config.dart';
 
 class SaleRepository extends Repository implements ISaleRepository {
   SaleRepository() : super();
@@ -119,5 +122,29 @@ class SaleRepository extends Repository implements ISaleRepository {
   @override
   List<Sale> getAll() {
     throw UnimplementedError();
+  }
+
+  @override
+  Future<void> saveLocalConfig(SalesLocalConfig config) async {}
+
+  @override
+  Future<void> saveSharedConfig(SalesSharedConfig config) async {
+    var command = 'INSERT OR REPLACE INTO config(module, value) VALUES (?, ?);';
+
+    await db.command(sql: command, params: ['sales', jsonEncode(config)]);
+  }
+
+  @override
+  Future<SalesSharedConfig> getSharedConfig() async {
+    var query = 'SELECT uid,value FROM config WHERE module = ?';
+
+    var dbResult = await db.query(sql: query, params: ['sales']);
+
+    if (dbResult.length == 1) {
+      return jsonDecode(dbResult.first['value'].toString());
+    } else {
+      throw EleventaException(
+          'No hay valores de configuración del módulo', null);
+    }
   }
 }
