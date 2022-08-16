@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:eleventa/dependencies.dart';
@@ -26,22 +27,30 @@ class Loader {
   Loader._internal();
   /* #endregion */
 
-  Future<void> init() async {
-    WidgetsFlutterBinding.ensureInitialized();
+  Future<void> initLogging() async {
+    var remoteLoggingLevels = [LoggerLevels.error];
+    if (Platform.environment.containsKey('FLUTTER_TEST')) {
+      remoteLoggingLevels = [];
+    }
 
     //Inicializar Logger
     await logger.init(
       config: LoggerConfig(
-        remoteLevels: [LoggerLevels.error],
+        remoteLevels: remoteLoggingLevels,
         fileLevels: [LoggerLevels.error, LoggerLevels.warning],
         consoleLevels: [LoggerLevels.all],
       ),
     );
+  }
+
+  Future<void> init() async {
+    WidgetsFlutterBinding.ensureInitialized();
 
     //Conectar adaptador de base de datos.
     await dbAdapter.connect();
 
     //2.- Cargar la configuracion
+    await initLogging();
 
     //3.- Ejecutar Migraciones
     var migrateDB = MigrateDB();

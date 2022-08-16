@@ -32,17 +32,19 @@ class Logger implements ILogger {
   Future<void> init({required LoggerConfig config}) async {
     _config = config;
 
-    await SentryFlutter.init(
-      (options) {
-        // TODO: Sacar el DSN a variable de entorno
-        options.dsn =
-            'https://6a10edb2c5694e23a193d9feddc8df5e@o76265.ingest.sentry.io/6635342';
-        // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
-        // We recommend adjusting this value in production.
-        options.tracesSampleRate = 1.0;
-        options.beforeSend = _beforeRemoteSend;
-      },
-    );
+    if (config.remoteLevels.isNotEmpty) {
+      await SentryFlutter.init(
+        (options) {
+          // TODO: Sacar el DSN a variable de entorno
+          options.dsn =
+              'https://6a10edb2c5694e23a193d9feddc8df5e@o76265.ingest.sentry.io/6635342';
+          // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
+          // We recommend adjusting this value in production.
+          options.tracesSampleRate = 1.0;
+          options.beforeSend = _beforeRemoteSend;
+        },
+      );
+    }
 
     // or define SENTRY_DSN via Dart environment variable (--dart-define)
   }

@@ -143,15 +143,20 @@ class SaleRepository extends Repository implements ISaleRepository {
 
   @override
   Future<SalesSharedConfig> getSharedConfig() async {
+    SalesSharedConfig sharedConfig;
+
     var query = 'SELECT uid,value FROM config WHERE module = ?';
 
     var dbResult = await db.query(sql: query, params: ['sales']);
 
     if (dbResult.length == 1) {
-      return jsonDecode(dbResult.first['value'].toString());
+      var json = jsonDecode(dbResult.first['value'].toString());
+      sharedConfig = SalesSharedConfig.fromJson(json);
     } else {
       throw EleventaException(
           message: 'No hay valores de configuración del módulo');
     }
+
+    return sharedConfig;
   }
 }
