@@ -36,14 +36,16 @@ class SyncServer {
       var data = jsonDecode(response.body);
 
       if (data['changesCount'] != 0) {
-        for (var change in data['changes']) {
-          changes.add(Change.load(
-              column: change['column'],
-              value: change['value'],
-              dataset: change['dataset'],
-              rowId: change['rowId'],
-              hlc: change['hlc'],
-              version: int.parse(change['version'])));
+        if (data['changes'] != null) {
+          for (var change in data['changes']) {
+            changes.add(Change.load(
+                column: change['column'],
+                value: change['value'],
+                dataset: change['dataset'],
+                rowId: change['rowId'],
+                hlc: change['hlc'],
+                version: int.parse(change['version'])));
+          }
         }
       }
     }
