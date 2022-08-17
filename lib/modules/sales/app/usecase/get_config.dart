@@ -1,6 +1,6 @@
-import '../../../common/app/usecase/usecase.dart';
-import '../../sales_config.dart';
-import '../interface/sale_repository.dart';
+import 'package:eleventa/modules/common/app/usecase/usecase.dart';
+import 'package:eleventa/modules/sales/sales_config.dart';
+import 'package:eleventa/modules/sales/app/interface/sale_repository.dart';
 
 class GetConfig extends Usecase<SalesConfig> {
   final ISaleRepository _repo;

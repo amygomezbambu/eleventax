@@ -1,8 +1,8 @@
 import 'package:eleventa/modules/common/app/usecase/usecase.dart';
 import 'package:eleventa/modules/common/utils/uid.dart';
 
-import '../interface/item_repository.dart';
-import '../../domain/entity/item.dart';
+import 'package:eleventa/modules/items/app/interface/item_repository.dart';
+import 'package:eleventa/modules/items/domain/entity/item.dart';
 
 class CreateItemRequest {
   String sku = '';

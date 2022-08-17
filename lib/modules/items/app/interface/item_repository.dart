@@ -1,5 +1,5 @@
 import 'package:eleventa/modules/items/domain/entity/item.dart';
-import '../../../common/app/interface/repository.dart';
+import 'package:eleventa/modules/common/app/interface/repository.dart';
 
 abstract class IItemRepository extends IRepository {
   Future<void> add(Item item);

@@ -1,10 +1,10 @@
 import 'package:eleventa/dependencies.dart';
 import 'package:eleventa/modules/common/exception/exception.dart';
 
-import '../dto/item_dto.dart';
-import '../interface/item_repository.dart';
-import '../../domain/entity/item.dart';
-import '../mapper/item_mapper.dart';
+import 'package:eleventa/modules/items/app/dto/item_dto.dart';
+import 'package:eleventa/modules/items/app/interface/item_repository.dart';
+import 'package:eleventa/modules/items/domain/entity/item.dart';
+import 'package:eleventa/modules/items/app/mapper/item_mapper.dart';
 
 class GetItemRequest {
   String sku = '';

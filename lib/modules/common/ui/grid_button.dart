@@ -66,10 +66,10 @@ class GridButton extends StatefulWidget {
       : super(key: key);
 
   @override
-  _GridButtonState createState() => _GridButtonState();
+  GridButtonState createState() => GridButtonState();
 }
 
-class _GridButtonState extends State<GridButton> {
+class GridButtonState extends State<GridButton> {
   late BorderSide _borderSide;
 
   Widget _getButton(int row, int col) {

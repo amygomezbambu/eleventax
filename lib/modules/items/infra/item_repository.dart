@@ -3,7 +3,7 @@ import 'package:eleventa/modules/common/app/interface/sync.dart';
 import 'package:eleventa/modules/common/utils/uid.dart';
 import 'package:eleventa/modules/items/app/interface/item_repository.dart';
 import 'package:eleventa/modules/items/domain/entity/item.dart';
-import '../../common/infra/repository.dart';
+import 'package:eleventa/modules/common/infra/repository.dart';
 
 class ItemRepository extends Repository implements IItemRepository {
   ItemRepository({ISync? sync, IDatabaseAdapter? db}) : super(sync, db);

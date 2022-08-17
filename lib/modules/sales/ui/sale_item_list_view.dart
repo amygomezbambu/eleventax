@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tailwindcss_defaults/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'ui_sale_item.dart';
-import '../../common/ui/ui_consts.dart' as ui;
+import 'package:eleventa/modules/sales/ui/ui_sale_item.dart';
+import 'package:eleventa/modules/common/ui/ui_consts.dart' as ui;
 
 class ItemsListView extends StatelessWidget {
   final List<UiSaleItem> items;
@@ -29,8 +29,7 @@ class ItemsListView extends StatelessWidget {
             leading: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Image.network(
-                  'https://source.unsplash.com/random/200×200/?' +
-                      items[index].description,
+                  'https://source.unsplash.com/random/200×200/?${items[index].description}',
                   height: 50,
                   width: 50,
                   fit: BoxFit.cover,
