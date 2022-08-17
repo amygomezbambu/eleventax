@@ -7,6 +7,7 @@ import 'package:flutter_tailwindcss_defaults/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../common/ui/ui_consts.dart' as ui;
 import '../../common/ui/primary_button.dart';
+import '../domain/entity/sale.dart';
 import 'sale_items_actions.dart';
 import 'ui_sale_item.dart';
 import 'sale_item_list_view.dart';
@@ -115,10 +116,11 @@ class SaleItemsContainer extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<SaleItemsContainer> createState() => _SaleItemsContainerState();
+  State<SaleItemsContainer> createState() => SaleItemsContainerState();
 }
 
-class _SaleItemsContainerState extends State<SaleItemsContainer> {
+@visibleForTesting
+class SaleItemsContainerState extends State<SaleItemsContainer> {
   double saleTotal = 0.0;
   String currentSaleId = '';
   FocusNode myFocusNode = FocusNode();
@@ -197,8 +199,27 @@ class _SaleItemsContainerState extends State<SaleItemsContainer> {
     myFocusNode.requestFocus();
     var uid = await createItem.exec();
 
+    var chargeSale = SalesModule.chargeSale();
+
+    // To-DO: Creo que la UI no debe tener acceso a las clases del Entity no?
+    // aqui necesite agregar el import para tener acceso el enum
+    chargeSale.request.paymentMethod = SalePaymentMethod.cash;
+    chargeSale.request.saleUid = UiCart.saleUid;
+
+    await chargeSale.exec();
+
+    setState(() {
+      saleTotal = 0.0;
+    });
+
+    UiCart.items.clear();
+    UiCart.saleUid = '';
+
+    myController.clear();
+    myFocusNode.requestFocus();
+
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text('Producto creado: ' + uid.toString()),
+      content: const Text('Gracias por su compra, ¡Vuelva pronto!'),
       width: 300,
       //margin: EdgeInsets.only(bottom: -100),
       padding: const EdgeInsets.symmetric(
@@ -208,35 +229,6 @@ class _SaleItemsContainerState extends State<SaleItemsContainer> {
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     ));
-
-    // var chargeSale = SalesModule.chargeSale();
-
-    // chargeSale.request.paymentMethod = SalePaymentMethod.cash;
-    // chargeSale.request.saleUid = UiCart.saleUid;
-
-    // await chargeSale.exec();
-
-    // setState(() {
-    //   saleTotal = 0.0;
-    // });
-
-    // UiCart.items.clear();
-    // UiCart.saleUid = '';
-
-    // myController.clear();
-    // myFocusNode.requestFocus();
-
-    // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    //   content: const Text('Gracias por su compra, ¡Vuelva pronto!'),
-    //   width: 300,
-    //   //margin: EdgeInsets.only(bottom: -100),
-    //   padding: const EdgeInsets.symmetric(
-    //     vertical: 20,
-    //     horizontal: 30.0, // Inner padding for SnackBar content.
-    //   ),
-    //   behavior: SnackBarBehavior.floating,
-    //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-    // ));
   }
 
   @override
@@ -285,9 +277,11 @@ class _SaleItemsContainerState extends State<SaleItemsContainer> {
                   margin: const EdgeInsets.all(10),
                   height: 60,
                   child: PrimaryButton(
-                      'Cobrar \$${saleTotal.toStringAsFixed(2)}',
-                      Icons.attach_money_outlined,
-                      chargeButtonClick),
+                    'Cobrar \$${saleTotal.toStringAsFixed(2)}',
+                    Icons.attach_money_outlined,
+                    chargeButtonClick,
+                    key: const ValueKey('payButton'),
+                  ),
                 )
               ],
             ),
@@ -307,6 +301,7 @@ class _SaleItemsContainerState extends State<SaleItemsContainer> {
                   borderRadius: BorderRadius.circular(5),
                 ),
                 child: TextField(
+                  key: const ValueKey('skuField'),
                   obscureText: false,
                   autofocus: true,
                   focusNode: myFocusNode,
