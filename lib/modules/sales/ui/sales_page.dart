@@ -205,6 +205,10 @@ class SaleItemsContainerState extends State<SaleItemsContainer> {
     myController.clear();
     myFocusNode.requestFocus();
 
+    // Para evitar fallas al cerrar la app checamos que la app siga "viva"
+    // ref: https://dart-lang.github.io/linter/lints/use_build_context_synchronously.html
+    if (!mounted) return;
+
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: const Text('Gracias por su compra, ¡Vuelva pronto!'),
       width: 300,
