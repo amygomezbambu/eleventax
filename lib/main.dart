@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'modules/sales/ui/sales_page.dart';
+import 'package:eleventa/modules/sales/ui/sales_page.dart';
 import 'package:flutter_tailwindcss_defaults/colors.dart';
 import 'package:eleventa/loader.dart';
 

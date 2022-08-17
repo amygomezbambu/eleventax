@@ -1,16 +1,14 @@
-import 'dart:math';
-
 import 'package:eleventa/modules/sales/sales_module.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tailwindcss_defaults/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../common/ui/ui_consts.dart' as ui;
-import '../../common/ui/primary_button.dart';
-import '../domain/entity/sale.dart';
-import 'sale_items_actions.dart';
-import 'ui_sale_item.dart';
-import 'sale_item_list_view.dart';
+import 'package:eleventa/modules/common/ui/ui_consts.dart' as ui;
+import 'package:eleventa/modules/common/ui/primary_button.dart';
+import 'package:eleventa/modules/sales/domain/entity/sale.dart';
+import 'package:eleventa/modules/sales/ui/sale_items_actions.dart';
+import 'package:eleventa/modules/sales/ui/ui_sale_item.dart';
+import 'package:eleventa/modules/sales/ui/sale_item_list_view.dart';
 import 'package:eleventa/modules/common/exception/exception.dart';
 import 'package:eleventa/modules/items/app/dto/item_dto.dart';
 import 'package:eleventa/modules/items/app/usecase/get_item.dart';
@@ -188,17 +186,6 @@ class SaleItemsContainerState extends State<SaleItemsContainer> {
   void chargeButtonClick() async {
     debugPrint('Cobrando!');
 
-    var randomGenerator = Random();
-    var randomCode = randomGenerator.nextInt(1000).toString();
-    var createItem = ItemsModule.createItem();
-    createItem.request.description = 'Este es mi producto ' + randomCode;
-    createItem.request.price = randomGenerator.nextDouble();
-    createItem.request.sku = randomCode;
-
-    myController.clear();
-    myFocusNode.requestFocus();
-    var uid = await createItem.exec();
-
     var chargeSale = SalesModule.chargeSale();
 
     // To-DO: Creo que la UI no debe tener acceso a las clases del Entity no?
@@ -217,6 +204,10 @@ class SaleItemsContainerState extends State<SaleItemsContainer> {
 
     myController.clear();
     myFocusNode.requestFocus();
+
+    // Para evitar fallas al cerrar la app checamos que la app siga "viva"
+    // ref: https://dart-lang.github.io/linter/lints/use_build_context_synchronously.html
+    if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: const Text('Gracias por su compra, ¡Vuelva pronto!'),

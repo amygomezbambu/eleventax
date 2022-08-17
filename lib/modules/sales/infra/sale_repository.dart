@@ -8,8 +8,8 @@ import 'package:eleventa/modules/sales/app/interface/sale_repository.dart';
 import 'package:eleventa/modules/sales/domain/entity/sale.dart';
 import 'package:eleventa/modules/sales/domain/entity/sale_item.dart';
 import 'package:eleventa/utils/utils.dart';
-import '../../common/infra/repository.dart';
-import '../sales_config.dart';
+import 'package:eleventa/modules/common/infra/repository.dart';
+import 'package:eleventa/modules/sales/sales_config.dart';
 
 class SaleRepository extends Repository implements ISaleRepository {
   SaleRepository({ISync? sync, IDatabaseAdapter? db}) : super(sync, db);

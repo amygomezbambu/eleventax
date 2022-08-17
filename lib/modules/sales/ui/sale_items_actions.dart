@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'sale_item_action_button.dart';
+import 'package:eleventa/modules/sales/ui/sale_item_action_button.dart';
 
 class SaleItemsActions extends StatelessWidget {
   const SaleItemsActions({
