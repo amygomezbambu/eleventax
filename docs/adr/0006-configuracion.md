@@ -18,4 +18,4 @@ Se llevarán 3 tipos de configuración, la compartida, la local y la de aplicaci
 
 # Consecuencias
 
-TBD...
+Ninguna

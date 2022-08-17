@@ -43,20 +43,7 @@ class Loader {
     );
   }
 
-  Future<void> init() async {
-    WidgetsFlutterBinding.ensureInitialized();
-
-    //Conectar adaptador de base de datos.
-    await dbAdapter.connect();
-
-    //2.- Cargar la configuracion
-    await initLogging();
-
-    //3.- Ejecutar Migraciones
-    var migrateDB = MigrateDB();
-    await migrateDB.exec();
-
-    //Inicializar sincronizacion
+  Future<void> initSync() async {
     var randomGen = Random();
 
     var sync_ = Sync.create(
@@ -73,6 +60,22 @@ class Loader {
           pullInterval: 10000),
     );
 
-    await sync_.initListening();
+    if (!Platform.environment.containsKey('FLUTTER_TEST')) {
+      await sync_.initListening();
+    }
+  }
+
+  Future<void> init() async {
+    WidgetsFlutterBinding.ensureInitialized();
+
+    //Conectar adaptador de base de datos.
+    await dbAdapter.connect();
+
+    await initLogging();
+
+    var migrateDB = MigrateDB();
+    await migrateDB.exec();
+
+    await initSync();
   }
 }
