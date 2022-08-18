@@ -38,7 +38,6 @@ dependencies:
   sqflite:
   sqflite_common_ffi:
   path:
-  path_provider:
   google_fonts: ^3.0.1
   flutter_tailwindcss_defaults: ^0.2.0
   any_base: ^2.0.0
@@ -48,6 +47,8 @@ dependencies:
   logging: ^1.0.2 # [ADR-0004]
   sentry_flutter: ^6.9.0 # [ADR-0004]
   sentry_logging: ^6.9.0 # [ADR-0004]
+  path_provider_macos: ^2.0.6
+  path_provider: ^2.0.11
 
 
 dev_dependencies:

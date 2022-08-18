@@ -127,7 +127,7 @@ class Logger implements ILogger {
 
     if (_config.fileLevels.contains(level) ||
         _config.fileLevels.contains(LoggerLevels.all)) {
-      _addLogTofile(entry, level);
+      await _addLogTofile(entry, level);
     }
   }
 
@@ -150,35 +150,38 @@ class Logger implements ILogger {
     }
   }
 
-  void _addLogTofile(LogEntry entry, LoggerLevels level) async {
-    var path = (await getApplicationSupportDirectory()).path;
-    _logger.info('$path/eleventa.log');
+  Future<void> _addLogTofile(LogEntry entry, LoggerLevels level) async {
+    if (!Platform.environment.containsKey('FLUTTER_TEST')) {
+      var path = (await getApplicationSupportDirectory()).path;
+      _logger.info('$path/eleventa.log');
 
-    var file = File('$path/eleventa.log');
-    var levelName = '';
+      var file = File('$path/eleventa.log');
+      var levelName = '';
 
-    switch (level) {
-      case LoggerLevels.debug:
-        levelName = 'DEBUG';
-        break;
-      case LoggerLevels.error:
-        levelName = 'ERROR';
-        break;
-      case LoggerLevels.info:
-        levelName = 'INFO';
-        break;
-      case LoggerLevels.warning:
-        levelName = 'WARNING';
-        break;
-      default:
+      switch (level) {
+        case LoggerLevels.debug:
+          levelName = 'DEBUG';
+          break;
+        case LoggerLevels.error:
+          levelName = 'ERROR';
+          break;
+        case LoggerLevels.info:
+          levelName = 'INFO';
+          break;
+        case LoggerLevels.warning:
+          levelName = 'WARNING';
+          break;
+        default:
+      }
+
+      final content =
+          '$levelName: ${DateTime.now().toUtc()}: ${entry.message}\n'
+          '${entry.exception.toString()}\n'
+          '${entry.stackTrace}\n'
+          '_________________________________________________\n';
+
+      await file.writeAsString(content, mode: FileMode.append);
     }
-
-    final content = '$levelName: ${DateTime.now().toUtc()}: ${entry.message}\n'
-        '${entry.exception.toString()}\n'
-        '${entry.stackTrace}\n'
-        '_________________________________________________\n';
-
-    await file.writeAsString(content, mode: FileMode.append);
   }
 
   FutureOr<SentryEvent?> _beforeRemoteSend(SentryEvent event,

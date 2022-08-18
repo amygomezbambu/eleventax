@@ -53,7 +53,7 @@ class AddLocalChanges {
     if (request.waitForSync) {
       await sendChanges();
     } else {
-      sendChanges();
+      await sendChanges();
     }
   }
 

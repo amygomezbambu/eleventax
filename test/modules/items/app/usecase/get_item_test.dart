@@ -6,9 +6,6 @@ import 'package:eleventa/modules/items/app/usecase/get_item.dart';
 
 void main() {
   setUpAll(() async {
-    //En TEST no se carga WidgetsFlutterBinding sino TestWidgetsFlutterBinding
-    TestWidgetsFlutterBinding.ensureInitialized();
-
     Loader loader = Loader();
     await loader.init();
   });
@@ -29,7 +26,7 @@ void main() {
       final item = await getItem.exec();
 
       expect(item.sku, sku);
-      expect(item.uid, uid);
+      expect(item.uid, uid.toString());
     });
 
     test('Debe lanzar excepcion cuando proporcionemos un SKU inválido',
