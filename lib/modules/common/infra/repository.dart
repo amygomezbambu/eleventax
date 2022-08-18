@@ -1,10 +1,9 @@
 import 'package:eleventa/dependencies.dart';
-import 'package:eleventa/modules/common/app/interface/repository.dart';
 import 'package:eleventa/modules/common/app/interface/database.dart';
 import 'package:eleventa/modules/common/app/interface/sync.dart';
 import 'package:meta/meta.dart';
 
-class Repository implements IRepository {
+class Repository {
   @protected
   late IDatabaseAdapter db;
   @protected
@@ -24,17 +23,33 @@ class Repository implements IRepository {
     }
   }
 
-  @override
+  /// Obtiene un mapa con las diferencias entre la entidad modificada y la entidad en la db
+  ///
+  /// [inMemoryFields] representa representa el estado en memoria
+  /// [dbFields] representa el estado almacenado en la base de datos
+  Future<Map<String, Object?>> getDifferences(
+    Map<String, Object?> inMemoryFields,
+    Map<String, Object?> dbFields,
+  ) async {
+    Map<String, Object?> differences = {};
+
+    for (var field in dbFields.keys) {
+      if (inMemoryFields[field] != dbFields[field]) {
+        differences[field] = inMemoryFields[field];
+      }
+    }
+
+    return differences;
+  }
+
   Future<void> transaction() async {
     await db.transaction();
   }
 
-  @override
   Future<void> commit() async {
     await db.commit();
   }
 
-  @override
   Future<void> rollback() async {
     await db.rollback();
   }

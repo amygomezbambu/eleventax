@@ -1,4 +1,5 @@
 import 'package:eleventa/modules/common/app/usecase/usecase.dart';
+import 'package:eleventa/modules/common/utils/uid.dart';
 import 'package:eleventa/modules/sales/app/dto/sale_dto.dart';
 import 'package:eleventa/modules/sales/app/dto/sale_item.dart';
 import 'package:eleventa/modules/sales/app/interface/sale_repository.dart';
@@ -32,7 +33,7 @@ class AddSaleItem extends Usecase<SaleDTO> {
 
     sale.addItem(saleItem);
 
-    if (await saleExists(sale.uid.toString())) {
+    if (await saleExists(sale.uid)) {
       await _repo.update(sale);
     } else {
       await _repo.add(sale);
@@ -43,8 +44,8 @@ class AddSaleItem extends Usecase<SaleDTO> {
     return SaleMapper.fromDomainToDTO(sale);
   }
 
-  Future<bool> saleExists(String uid) async {
-    var sale = await _repo.get(uid);
+  Future<bool> saleExists(UID uid) async {
+    var sale = await _repo.getSingle(uid);
 
     if (sale != null) {
       return true;

@@ -51,7 +51,7 @@ class Sync implements ISync {
       {required String dataset,
       required String rowID,
       required List<String> columns,
-      required List<Object> values}) async {
+      required List<Object?> values}) async {
     var index = 0;
     var changes = <Change>[];
 
@@ -63,7 +63,7 @@ class Sync implements ISync {
           column: column,
           value: values[index],
           dataset: dataset,
-          rowId: rowID,
+          rowId: rowID.toString(),
           version: dbversion,
           hlc: hlc.pack()));
 

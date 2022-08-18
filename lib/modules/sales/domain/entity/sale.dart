@@ -1,3 +1,4 @@
+import 'package:eleventa/modules/common/domain/entity.dart';
 import 'package:eleventa/modules/common/utils/uid.dart';
 import 'package:eleventa/modules/sales/domain/entity/sale_item.dart';
 
@@ -5,7 +6,7 @@ enum SaleStatus { open, paid, cancelled }
 
 enum SalePaymentMethod { notDefined, cash }
 
-class Sale {
+class Sale extends Entity {
   UID _uid = UID();
   var _name = '';
   var _total = 0.0;

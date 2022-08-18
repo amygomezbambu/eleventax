@@ -1,6 +1,7 @@
+import 'package:eleventa/modules/common/domain/entity.dart';
 import 'package:eleventa/modules/common/utils/uid.dart';
 
-class Item {
+class Item extends Entity {
   var _description = '';
   var _price = 0.0;
   var _sku = '';

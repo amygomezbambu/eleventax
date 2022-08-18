@@ -35,7 +35,6 @@ void main() {
       final getItem = GetItem(ItemRepository());
 
       getItem.request.sku = sku;
-      //final item = await getItem.exec();
 
       expectLater(getItem.exec(), throwsA(isA<Exception>()));
     });

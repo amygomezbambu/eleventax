@@ -1,7 +1,9 @@
 import 'package:eleventa/modules/common/app/interface/database.dart';
 import 'package:eleventa/modules/common/app/interface/sync.dart';
+import 'package:eleventa/modules/common/exception/exception.dart';
 import 'package:eleventa/modules/common/utils/uid.dart';
 import 'package:eleventa/modules/items/app/interface/item_repository.dart';
+import 'package:eleventa/modules/items/app/mapper/item_mapper.dart';
 import 'package:eleventa/modules/items/domain/entity/item.dart';
 import 'package:eleventa/modules/common/infra/repository.dart';
 
@@ -26,10 +28,10 @@ class ItemRepository extends Repository implements IItemRepository {
   }
 
   @override
-  Future<Item?> get(String uid) async {
+  Future<Item?> getSingle(UID uid) async {
     var query = 'SELECT uid, sku, description, price FROM items WHERE uid = ?';
 
-    var result = await db.query(sql: query, params: [uid]);
+    var result = await db.query(sql: query, params: [uid.toString()]);
     Item? item;
 
     for (var row in result) {
@@ -68,5 +70,39 @@ class ItemRepository extends Repository implements IItemRepository {
     }
 
     return items;
+  }
+
+  @override
+  Future<void> delete(UID id) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> update(Item item) async {
+    var dbResult = await db.query(
+      sql: 'select description,price,sku,uid from items where uid = ?',
+      params: [item.uid.toString()],
+    );
+
+    if (dbResult.isNotEmpty) {
+      var row = dbResult[0];
+      var dbItem = ItemMapper.fromDatabaseToDomain(row);
+
+      var differences = await getDifferences(
+        ItemMapper.fromDomainToMap(item),
+        ItemMapper.fromDomainToMap(dbItem),
+      );
+
+      await sync.syncChanges(
+          dataset: 'items',
+          rowID: item.uid.toString(),
+          columns: [...(differences.keys)],
+          values: [...(differences.values)]);
+    } else {
+      throw EleventaException(
+        message: 'No existe la entidad en la base de datos',
+        input: item.toString(),
+      );
+    }
   }
 }

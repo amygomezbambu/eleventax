@@ -3,7 +3,7 @@ abstract class ISync {
     required String dataset,
     required String rowID,
     required List<String> columns,
-    required List<Object> values,
+    required List<Object?> values,
   });
   Future<void> initListening();
   void stopListening();
