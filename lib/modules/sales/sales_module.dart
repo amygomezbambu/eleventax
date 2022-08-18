@@ -4,8 +4,8 @@ import 'package:eleventa/modules/sales/app/usecase/charge_sale.dart';
 import 'package:eleventa/modules/sales/app/usecase/create_sale.dart';
 import 'package:eleventa/modules/sales/app/usecase/get_sale.dart';
 import 'package:eleventa/modules/sales/app/usecase/update_config.dart';
-import './sales_config.dart';
-import 'app/usecase/get_config.dart';
+import 'package:eleventa/modules/sales/sales_config.dart';
+import 'package:eleventa/modules/sales/app/usecase/get_config.dart';
 
 class SalesModule {
   static final config = SalesConfig();

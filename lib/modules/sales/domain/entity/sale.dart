@@ -3,14 +3,7 @@ import 'package:eleventa/modules/sales/domain/entity/sale_item.dart';
 
 enum SaleStatus { open, paid, cancelled }
 
-enum SalePaymentMethod {
-  notDefined,
-  cash,
-  credit,
-  creditCard,
-  bankTransfer,
-  voucher
-}
+enum SalePaymentMethod { notDefined, cash }
 
 class Sale {
   UID _uid = UID();
