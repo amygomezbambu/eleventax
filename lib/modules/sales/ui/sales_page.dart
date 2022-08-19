@@ -1,23 +1,20 @@
-import 'package:eleventa/modules/common/infra/logger.dart';
-import 'package:eleventa/modules/sales/domain/entity/sale.dart';
 import 'package:eleventa/modules/sales/sales_module.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tailwindcss_defaults/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../common/ui/ui_consts.dart' as ui;
-import '../../common/ui/primary_button.dart';
-import 'sale_items_actions.dart';
-import 'ui_sale_item.dart';
-import 'sale_item_list_view.dart';
+import 'package:eleventa/modules/common/ui/ui_consts.dart' as ui;
+import 'package:eleventa/modules/common/ui/primary_button.dart';
+import 'package:eleventa/modules/sales/domain/entity/sale.dart';
+import 'package:eleventa/modules/sales/ui/sale_items_actions.dart';
+import 'package:eleventa/modules/sales/ui/ui_sale_item.dart';
+import 'package:eleventa/modules/sales/ui/sale_item_list_view.dart';
 import 'package:eleventa/modules/common/exception/exception.dart';
 import 'package:eleventa/modules/items/app/dto/item_dto.dart';
 import 'package:eleventa/modules/items/app/usecase/get_item.dart';
 import 'package:eleventa/modules/items/items_module.dart';
 import 'package:eleventa/modules/sales/app/usecase/create_sale.dart';
 import 'package:eleventa/modules/sales/app/usecase/add_sale_item.dart';
-import 'package:eleventa/modules/common/app/interface/logger.dart';
-import 'package:eleventa/dependencies.dart';
 
 class SalesPage extends StatefulWidget {
   final String title;
@@ -117,22 +114,15 @@ class SaleItemsContainer extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<SaleItemsContainer> createState() => _SaleItemsContainerState();
+  State<SaleItemsContainer> createState() => SaleItemsContainerState();
 }
 
-class _SaleItemsContainerState extends State<SaleItemsContainer> {
+@visibleForTesting
+class SaleItemsContainerState extends State<SaleItemsContainer> {
   double saleTotal = 0.0;
   String currentSaleId = '';
   FocusNode myFocusNode = FocusNode();
   TextEditingController myController = TextEditingController();
-  @protected
-  late final ILogger logger;
-
-  @override
-  initState() {
-    super.initState();
-    logger = Dependencies.infra.logger();
-  }
 
   Future<void> addItemBySku(String value) async {
     // Obtenemos los Use cases...
@@ -146,44 +136,38 @@ class _SaleItemsContainerState extends State<SaleItemsContainer> {
     // Checamos tener una venta
     if (UiCart.saleUid == '') {
       UiCart.saleUid = createSale.exec();
-      logger.info('Nueva venta creada $UiCart.saleUid');
+      debugPrint('Nueva venta creada $UiCart.saleUid');
     }
 
-    for (var i = 1; i < 10; i++) {
-      getItem.request.sku = i.toString();
+    getItem.request.sku = value;
 
-      try {
-        item = await getItem.exec();
+    try {
+      item = await getItem.exec();
 
-        // Agregamos el articulo a la venta
-        addItem.request.item.description = item.description;
-        addItem.request.item.price = item.price;
-        addItem.request.item.quantity = 1;
-        addItem.request.saleUid = UiCart.saleUid;
+      // Agregamos el articulo a la venta
+      addItem.request.item.description = item.description;
+      addItem.request.item.price = item.price;
+      addItem.request.item.quantity = 1;
+      addItem.request.saleUid = UiCart.saleUid;
 
-        logger.info('Agregando ${item.description} a venta ${UiCart.saleUid}');
-        var sale = await addItem.exec();
+      debugPrint('Agregando ${item.description} a venta ${UiCart.saleUid}');
+      var sale = await addItem.exec();
 
-        // Solo re-construimos la UI en el ultimo elemento
-        //if (i == 1000) {
-        setState(() {
-          // Si tuvimos exito, lo agregamos a la UI
-          UiCart.items.add(UiSaleItem(
-              code: item.sku,
-              description: item.description,
-              price: item.price.toString()));
+      setState(() {
+        // Si tuvimos exito, lo agregamos a la UI
+        UiCart.items.add(UiSaleItem(
+            code: item.sku,
+            description: item.description,
+            price: item.price.toString()));
 
-          UiCart.selectedItem = UiCart.items.last;
-          UiCart.total = sale.total;
+        UiCart.selectedItem = UiCart.items.last;
+        UiCart.total = sale.total;
 
-          saleTotal = sale.total;
-        });
-        //}
-      } on Exception catch (e) {
-        if (e is AppException) {
-          // ToDO: Mostramos mensaje de que no se encontró producto
-          logger.warn(e.message);
-        }
+        saleTotal = sale.total;
+      });
+    } on Exception catch (e) {
+      if (e is AppException) {
+        debugPrint(e.message);
       }
     }
 
@@ -204,6 +188,8 @@ class _SaleItemsContainerState extends State<SaleItemsContainer> {
 
     var chargeSale = SalesModule.chargeSale();
 
+    // To-DO: Creo que la UI no debe tener acceso a las clases del Entity no?
+    // aqui necesite agregar el import para tener acceso el enum
     chargeSale.request.paymentMethod = SalePaymentMethod.cash;
     chargeSale.request.saleUid = UiCart.saleUid;
 
@@ -218,6 +204,10 @@ class _SaleItemsContainerState extends State<SaleItemsContainer> {
 
     myController.clear();
     myFocusNode.requestFocus();
+
+    // Para evitar fallas al cerrar la app checamos que la app siga "viva"
+    // ref: https://dart-lang.github.io/linter/lints/use_build_context_synchronously.html
+    if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: const Text('Gracias por su compra, ¡Vuelva pronto!'),
@@ -278,9 +268,11 @@ class _SaleItemsContainerState extends State<SaleItemsContainer> {
                   margin: const EdgeInsets.all(10),
                   height: 60,
                   child: PrimaryButton(
-                      'Cobrar \$${saleTotal.toStringAsFixed(2)}',
-                      Icons.attach_money_outlined,
-                      chargeButtonClick),
+                    'Cobrar \$${saleTotal.toStringAsFixed(2)}',
+                    Icons.attach_money_outlined,
+                    chargeButtonClick,
+                    key: const ValueKey('payButton'),
+                  ),
                 )
               ],
             ),
@@ -300,7 +292,7 @@ class _SaleItemsContainerState extends State<SaleItemsContainer> {
                   borderRadius: BorderRadius.circular(5),
                 ),
                 child: TextField(
-                  key: const Key("skuField"),
+                  key: const ValueKey('skuField'),
                   obscureText: false,
                   autofocus: true,
                   focusNode: myFocusNode,

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:eleventa/loader.dart';
 import 'package:eleventa/modules/common/exception/exception.dart';
 import 'package:eleventa/modules/items/items_module.dart';
@@ -15,6 +17,8 @@ void main() {
   setUpAll(() async {
     //En TEST no se carga WidgetsFlutterBinding sino TestWidgetsFlutterBinding
     TestWidgetsFlutterBinding.ensureInitialized();
+    DartPluginRegistrant.ensureInitialized();
+
     Loader loader = Loader();
     await loader.init();
   });
@@ -97,6 +101,8 @@ void main() {
     });
 
     test('debe revertir la transacción en caso de falla', () async {
+      DartPluginRegistrant.ensureInitialized();
+
       var createSale = CreateSale();
       var addItem = AddSaleItem(SaleRepository());
       var getItems = ItemsModule.getItems();
@@ -123,7 +129,8 @@ void main() {
       addItem.request.saleUid = uid;
       addItem.request.item = dto;
 
-      await expectLater(addItem.exec(), throwsA(isA<InfrastructureError>()));
+      await expectLater(
+          addItem.exec(), throwsA(isA<InfrastructureException>()));
 
       getSale.request.uid = uid;
       var sale = await getSale.exec();

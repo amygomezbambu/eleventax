@@ -1,0 +1,76 @@
+import 'package:eleventa/loader.dart';
+import 'package:eleventa/modules/common/ui/primary_button.dart';
+import 'package:eleventa/modules/sales/ui/sales_page.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
+import 'package:eleventa/main.dart' as app;
+
+void main() {
+  final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  // Definimos los keys que se usa en comun dentro de la prueba del módulo
+  const payButtonKey = ValueKey('payButton');
+  const skuFieldKey = ValueKey('skuField');
+
+  // Agregamos esta linea para que funcione las llamadas a enterText en dispositivos reales
+  // Ref: https://github.com/flutter/flutter/issues/87990#issuecomment-1003675826
+  binding.testTextInput.register();
+
+  group('Agregar articulos a venta', () {
+    setUp(() async {
+      var loader = Loader();
+      await loader.init();
+    });
+
+    testWidgets('Verificar que exista botón de cobrar',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(const app.EleventaApp());
+      await tester.pumpAndSettle();
+      expect(find.byKey(payButtonKey), findsWidgets);
+    });
+
+    testWidgets(
+        'Agregar articulo y el boton de cobrar refleje total actualizado',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(const app.EleventaApp());
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byKey(skuFieldKey), '1');
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+
+      // Verificamos que el botón de cobrar tenga el total actualizado
+      expect(
+          find.widgetWithText(PrimaryButton, 'Cobrar \$10.33'), findsOneWidget,
+          reason: 'No se actualizo el total de la venta');
+
+      await tester.tap(find.byKey(payButtonKey));
+      await tester.pumpAndSettle();
+      debugPrint('Se termino segunda prueba!');
+    });
+
+    testWidgets('Agregar articulo el total se actualice',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(const app.EleventaApp());
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byKey(skuFieldKey), '1');
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+
+      // Accedemos al estado de la vista de Ventas
+      // para poder consultar los valores nativos
+      final state = tester
+          .state<SaleItemsContainerState>(find.byType(SaleItemsContainer));
+
+      // Verificamos que la venta se haya actualizado consultando
+      // el estado del Widget de ventas
+      debugPrint(state.saleTotal.toString());
+      expect(state.saleTotal, equals(10.33),
+          reason: 'El total de la venta no se actualizo');
+
+      await tester.tap(find.byKey(payButtonKey));
+      await tester.pumpAndSettle();
+    });
+  });
+}

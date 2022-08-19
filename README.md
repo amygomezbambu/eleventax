@@ -17,31 +17,19 @@ De momento el desarrollo de la aplicación se realiza principalmente en pair/mob
 Posteriormente configura la extensión de Live Sharing accediendo a tu cuenta de GitHub:
 https://docs.microsoft.com/en-us/visualstudio/liveshare/use/install-live-share-visual-studio-code#sign-in-to-live-share
 
-## Arquitectura de la aplicación
+## Manejo de versionamiento
 
-- [x] Conectar la UI con el backend: ventas, productos.
-- [x] Flujo CI/CD.
-- [ ] Generar UI "final" y refactorizar.
-- [ ] Enlazar productos + debug multiplataforma.
+Para agregar una nueva mejora al (CHANGELOG.md)[/CHANGELOG.md] ejecutar en la terminal el comando `cider log` con las siguientes categorías:
 
-## Pendientes Arquitectura
+- `added` - Funcionalidad nueva
+- `changed`- Funcionalidad que cambió o se actualizó
+- `deprecated` - Funcionalidad que pronto dejará de operar y se recomienda dejar de usar.
+- `removed` - Funcionalidad que fue removida.
+- `fixed` - Corrección de bug.
+- `security`- Aspecto de seguridad corregido y de alta importancia.
 
-- [ ] Definir esquema de migraciones, si basado en timestamp o version, etc.
-- [ ] Decidir lenguaje Ubicuo?
-- [ ] Decidir si nos vamos por UUID v4.
-- [ ] Definir metodologia y/o paquete para manejo de estado (Riverpod).
-- [ ] Definir Design System.
+Ejemplo:
 
-## Pendientes para entrar en flujo de trabajo "normal"
-
-- [ ] Logeo.
-- [ ] Transacciones.
-- [ ] Publicar en tiendas versiones beta automaticamente.
-- [ ] Internacionalización.
-- [ ] Logeo de eventos / auditoria.
-
-## Convenciones
-
-## Definir flujo de trabajo
-
-- [ ]
+```bash
+cider log added "Se agrega una nueva funcionalidad"
+```

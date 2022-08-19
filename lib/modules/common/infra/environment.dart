@@ -3,5 +3,7 @@
 // flutter run -d macos --dart-define=DB_PASSWORD=debugmode
 // flutter build macos --dart-define=DB_PASSWORD=productionpassword
 class Environment {
-  static const databasePassword = String.fromEnvironment('DB_PASSWORD');
+  // En producción se compilará la app con una contraseña especifica, en modo dev será 123 siempre
+  static const databasePassword =
+      String.fromEnvironment('DB_PASSWORD', defaultValue: "123");
 }

@@ -1,5 +1,5 @@
 // ignore_for_file: file_names
-import 'package:eleventa/modules/common/domain/valueObject/uid.dart';
+import 'package:eleventa/modules/common/utils/uid.dart';
 import 'package:eleventa/modules/migrations/migration.dart';
 
 class Migration2 extends Migration {

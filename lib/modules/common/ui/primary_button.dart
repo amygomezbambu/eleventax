@@ -16,7 +16,7 @@ class PrimaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-        key: ValueKey('payButton'),
+        key: const ValueKey('payButton'),
         style: ElevatedButton.styleFrom(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
