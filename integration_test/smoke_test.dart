@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:eleventa/main.dart' as app;
 
-void main() async {
+void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   // Definimos los keys que se usa en comun dentro de la prueba del módulo
   const payButtonKey = ValueKey('payButton');

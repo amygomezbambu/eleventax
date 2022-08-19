@@ -252,7 +252,8 @@ class SaleItemsContainerState extends State<SaleItemsContainer> {
                         child: PrimaryButton(
                             'Cobrar \$${saleTotal.toStringAsFixed(2)}',
                             Icons.attach_money_outlined,
-                            chargeButtonClick),
+                            chargeButtonClick,
+                            key: const ValueKey('payButton')),
                       )
                     ],
                   ),
