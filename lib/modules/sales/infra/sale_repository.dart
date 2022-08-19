@@ -1,14 +1,18 @@
-import 'package:eleventa/modules/common/domain/valueObject/uid.dart';
+import 'dart:convert';
+import 'package:eleventa/modules/common/app/interface/database.dart';
+import 'package:eleventa/modules/common/app/interface/sync.dart';
+import 'package:eleventa/modules/common/utils/uid.dart';
 import 'package:eleventa/modules/common/exception/exception.dart';
 
 import 'package:eleventa/modules/sales/app/interface/sale_repository.dart';
 import 'package:eleventa/modules/sales/domain/entity/sale.dart';
 import 'package:eleventa/modules/sales/domain/entity/sale_item.dart';
 import 'package:eleventa/utils/utils.dart';
-import '../../common/infra/repository.dart';
+import 'package:eleventa/modules/common/infra/repository.dart';
+import 'package:eleventa/modules/sales/sales_config.dart';
 
 class SaleRepository extends Repository implements ISaleRepository {
-  SaleRepository() : super();
+  SaleRepository({ISync? sync, IDatabaseAdapter? db}) : super(sync, db);
 
   @override
   Future<void> add(Sale sale) async {
@@ -34,7 +38,13 @@ class SaleRepository extends Repository implements ISaleRepository {
         item.quantity
       ]);
     } catch (error, stack) {
-      throw InfrastructureError(error.toString(), stack);
+      throw InfrastructureException(
+        message:
+            'Ocurrio un error al intentar almacenar el articulo de venta en la base de datos.',
+        innerException: error as Exception,
+        stackTrace: stack,
+        input: item.toString(),
+      );
     }
   }
 
@@ -119,5 +129,34 @@ class SaleRepository extends Repository implements ISaleRepository {
   @override
   List<Sale> getAll() {
     throw UnimplementedError();
+  }
+
+  @override
+  Future<void> saveLocalConfig(SalesLocalConfig config) async {}
+
+  @override
+  Future<void> saveSharedConfig(SalesSharedConfig config) async {
+    var command = 'INSERT OR REPLACE INTO config(module, value) VALUES (?, ?);';
+
+    await db.command(sql: command, params: ['sales', jsonEncode(config)]);
+  }
+
+  @override
+  Future<SalesSharedConfig> getSharedConfig() async {
+    SalesSharedConfig sharedConfig;
+
+    var query = 'SELECT uid,value FROM config WHERE module = ?';
+
+    var dbResult = await db.query(sql: query, params: ['sales']);
+
+    if (dbResult.length == 1) {
+      var json = jsonDecode(dbResult.first['value'].toString());
+      sharedConfig = SalesSharedConfig.fromJson(json);
+    } else {
+      throw EleventaException(
+          message: 'No hay valores de configuración del módulo');
+    }
+
+    return sharedConfig;
   }
 }
