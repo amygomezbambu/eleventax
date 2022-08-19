@@ -1,0 +1,59 @@
+name: Deploy Android
+
+on:
+  workflow_dispatch:
+
+
+jobs:
+  build-and-deploy-android:
+    runs-on: ubuntu-latest
+    #timeout-minutes: 5
+
+    steps:
+      - name: Bajamos el codigo            
+        uses: actions/checkout@v3
+
+      - name: Instalamos Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: "zulu"
+          java-version: "11"
+
+      - name: Obtenemos la version de Flutter de pubspec.yaml
+        id: get-flutter-version
+        uses: zgosalvez/github-actions-get-flutter-version-env@v1
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          architecture: x64
+          flutter-version: ${{ steps.get-flutter-version.outputs.version }}
+
+      - name: Descargar certificado JKS de Android
+        id: android_keystore
+        uses: timheuer/base64-to-file@v1.0.3
+        with:
+          fileName: key.jks
+          encodedString: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          
+      - name: Creamos el archivo key.propierties para el firmado del binario
+        run: |
+          echo "keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}" >> android/key.properties
+          echo "storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" >> android/key.properties
+          echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/key.properties
+          echo "storeFile=${{ steps.android_keystore.outputs.filePath }}" >> android/key.properties
+          
+      - name: Instalar Ruby y fastlane
+        uses: ruby/setup-ruby@d5ee2364f01b3ef4a4740e4a4d3005051e122356
+        with:
+          ruby-version: "2.6"
+          bundler-cache: true
+          working-directory: android
+
+      - name: Publicamos a Google Play (Internal)
+        env:
+          SUPPLY_JSON_KEY_DATA: ${{ secrets.ANDROID_GOOGLE_SERVICE_ACCOUNT_KEY }}
+        # Las acciones de "publish_to_internal" de Fastlane se definen en android/Fastfile
+        run: |
+          bundle exec fastlane publish_to_internal
+        working-directory: android

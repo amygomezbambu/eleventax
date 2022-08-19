@@ -1,0 +1,64 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+
+platform :ios do
+  
+  private_lane :setup_api_key do
+    app_store_connect_api_key(
+       key_id: ENV["APPSTORE_API_KEY_ID"],
+       issuer_id: ENV["APPSTORE_API_ISSUER_ID"],
+       key_content: ENV["APPSTORE_API_KEY_CONTENTS"]
+    )     
+  end
+
+  desc "Deployment beta para app iOS"
+  lane :publish_to_testflight do
+    setup_api_key
+
+    # add actions here: https://docs.fastlane.tools/actions
+    match(type: "appstore", 
+          app_identifier: "com.bambucode.eleventa",
+          readonly: true)
+
+    build_app(
+      skip_build_archive: true,
+      archive_path: "../build/ios/archive/Runner.xcarchive",
+    )
+
+    upload_to_testflight()
+  end
+
+  lane:eliminar_certificados do
+    match_nuke(type: ["development", "appstore"],
+               app_identifier: "com.bambucode.eleventa",
+               team_id: "QELY82K52W",
+               api_key_path: "fastlane/fastlane_api.json",             
+               include_all_certificates: true)
+
+  end
+
+  lane:crear_certificados do
+    match(
+      team_name: "Bambu Code SA de CV",
+      type: ["development", "appstore"],
+      app_identifier: "com.bambucode.eleventa",
+      team_id: "QELY82K52W",
+      api_key_path: "fastlane/fastlane_api.json",            
+      generate_apple_certs: true)
+  end
+
+end

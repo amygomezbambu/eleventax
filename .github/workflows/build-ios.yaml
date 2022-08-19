@@ -1,0 +1,40 @@
+name: Deploy iOS
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-release-ios:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Obtenemos la version de Flutter de pubspec.yaml
+        id: get-flutter-version
+        uses: zgosalvez/github-actions-get-flutter-version-env@v1
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          architecture: x64
+          flutter-version: ${{ steps.get-flutter-version.outputs.version }}
+    
+      - name: Instalar dependencias
+        run: flutter pub get
+
+      - name: Instalar Ruby y fastlane
+        uses: ruby/setup-ruby@d5ee2364f01b3ef4a4740e4a4d3005051e122356
+        with:
+          ruby-version: "2.6"
+          bundler-cache: true
+          working-directory: ios
+
+    
+      - name: Publicamos a iOS (Testflight)
+        # Las acciones de "publish_to_testflight" de Fastlane se definen en ios/Fastfile
+        env:
+          APPSTORE_API_KEY_ID: ${{ secrets.IOS_APPSTORE_CONNECT_KEY_ID }}
+          APPSTORE_API_ISSUER_ID : ${{ secrets.IOS_APPSTORE_CONNECT_ISSUER_ID }}
+          APPSTORE_API_KEY_CONTENTS : ${{ secrets.IOS_APPSTORE_CONNECT_KEY_P8 }}
+        run: |
+          bundle exec fastlane publish_to_testflight
+        working-directory: ios
