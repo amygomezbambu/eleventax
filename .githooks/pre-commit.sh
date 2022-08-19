@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 # Buscamos ubicación de comando flutter 
-FLUTTER=`which flutter 2> /dev/null`
+USER=`whoami`
+export PATH="/usr/local/bin:/Users/$USER/fvm/default/bin:$PATH"
 
 printf "\e[33;1m%s\e[0m\n === Ejecutando Flutter Analyzer! ===\n"
 flutter analyze
