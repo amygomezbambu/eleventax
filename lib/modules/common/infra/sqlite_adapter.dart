@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+// ignore: implementation_imports
+import 'package:sqflite_common_ffi/src/sqflite_ffi_exception.dart';
 import 'package:flutter/foundation.dart';
 // ignore: depend_on_referenced_packages
 import 'package:sqflite_common/sqlite_api.dart';
@@ -19,6 +21,9 @@ import 'package:eleventa/modules/common/infra/environment.dart';
 class SQLiteAdapter implements IDatabaseAdapter {
   late final Database _db;
   final _logger = Dependencies.infra.logger();
+  // Codigos de error que queremos detectar de SQLite
+  // https://www.sqlite.org/rescode.html
+  static const sqliteNotADbError = 26;
 
   /* #region Singleton */
   static final SQLiteAdapter _instance = SQLiteAdapter._internal();
@@ -112,11 +117,13 @@ class SQLiteAdapter implements IDatabaseAdapter {
         }
       });
     } catch (ex) {
-      if (ex.toString().contains('(26)')) {
-        debugPrint('------------------------------------------');
-        debugPrint(
-            '** CONTRASEÑA INCORRECTA, ARCHIVO DE BD CORRUPTO O NO ENCRIPTADO **');
-        debugPrint('------------------------------------------');
+      if (ex is SqfliteFfiException) {
+        if (ex.getResultCode() == SQLiteAdapter.sqliteNotADbError) {
+          debugPrint('------------------------------------------');
+          debugPrint(
+              '** CONTRASEÑA INCORRECTA, ARCHIVO DE BD CORRUPTO O NO ENCRIPTADO **');
+          debugPrint('------------------------------------------');
+        }
       }
 
       rethrow;
