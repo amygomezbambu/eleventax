@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:eleventa/modules/common/app/interface/logger.dart';
 import 'package:eleventa/modules/common/exception/exception.dart';
+import 'package:eleventa/modules/config/config.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart' as log;
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -38,8 +39,6 @@ class Logger implements ILogger {
           // TODO: Sacar el DSN a variable de entorno
           options.dsn =
               'https://6a10edb2c5694e23a193d9feddc8df5e@o76265.ingest.sentry.io/6635342';
-          // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
-          // We recommend adjusting this value in production.
           options.tracesSampleRate = 1.0;
           options.beforeSend = _beforeRemoteSend;
         },
@@ -61,12 +60,11 @@ class Logger implements ILogger {
   }
 
   @override
-  void error({required Exception ex, StackTrace? stackTrace}) async {
+  void error({required Object ex, StackTrace? stackTrace}) async {
     var logEntry = LogEntry();
 
-    //TODO: obtener datos reales de contexto
-    logEntry.deviceId = '818181718781787178-Caja Principal';
-    logEntry.userId = 'y84784787474-Cajero1';
+    logEntry.deviceId = Config.deviceId;
+    logEntry.userId = Config.loggedUser;
 
     if (ex is EleventaException) {
       logEntry.exception = ex;
@@ -151,37 +149,34 @@ class Logger implements ILogger {
   }
 
   Future<void> _addLogTofile(LogEntry entry, LoggerLevels level) async {
-    if (!Platform.environment.containsKey('FLUTTER_TEST')) {
-      var path = (await getApplicationSupportDirectory()).path;
-      _logger.info('$path/eleventa.log');
+    var path = (await getApplicationSupportDirectory()).path;
+    _logger.info('$path/eleventa.log');
 
-      var file = File('$path/eleventa.log');
-      var levelName = '';
+    var file = File('$path/eleventa.log');
+    var levelName = '';
 
-      switch (level) {
-        case LoggerLevels.debug:
-          levelName = 'DEBUG';
-          break;
-        case LoggerLevels.error:
-          levelName = 'ERROR';
-          break;
-        case LoggerLevels.info:
-          levelName = 'INFO';
-          break;
-        case LoggerLevels.warning:
-          levelName = 'WARNING';
-          break;
-        default:
-      }
-
-      final content =
-          '$levelName: ${DateTime.now().toUtc()}: ${entry.message}\n'
-          '${entry.exception.toString()}\n'
-          '${entry.stackTrace}\n'
-          '_________________________________________________\n';
-
-      await file.writeAsString(content, mode: FileMode.append);
+    switch (level) {
+      case LoggerLevels.debug:
+        levelName = 'DEBUG';
+        break;
+      case LoggerLevels.error:
+        levelName = 'ERROR';
+        break;
+      case LoggerLevels.info:
+        levelName = 'INFO';
+        break;
+      case LoggerLevels.warning:
+        levelName = 'WARNING';
+        break;
+      default:
     }
+
+    final content = '$levelName: ${DateTime.now().toUtc()}: ${entry.message}\n'
+        '${entry.exception.toString()}\n'
+        '${entry.stackTrace}\n'
+        '_________________________________________________\n';
+
+    await file.writeAsString(content, mode: FileMode.append);
   }
 
   FutureOr<SentryEvent?> _beforeRemoteSend(SentryEvent event,

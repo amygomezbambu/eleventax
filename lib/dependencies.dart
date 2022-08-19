@@ -1,39 +1,61 @@
 import 'package:eleventa/modules/common/app/interface/database.dart';
 import 'package:eleventa/modules/common/app/interface/sync.dart';
-import 'package:eleventa/modules/sync/sync.dart';
 import 'package:eleventa/modules/common/app/interface/logger.dart';
-import 'package:eleventa/modules/common/infra/logger.dart';
-import 'package:eleventa/modules/common/infra/sqlite_adapter.dart';
 import 'package:eleventa/modules/items/app/interface/item_repository.dart';
-import 'package:eleventa/modules/items/infra/item_repository.dart';
 import 'package:eleventa/modules/sales/app/interface/sale_repository.dart';
-import 'package:eleventa/modules/sales/infra/sale_repository.dart';
 
-class InfraStructureDependencies {
-  IDatabaseAdapter database() {
-    return SQLiteAdapter();
-  }
+class _DependenciesModule {
+  final Map<String, Object Function()> _deps;
 
-  ILogger logger() {
-    return Logger();
-  }
+  _DependenciesModule(this._deps);
 
-  ISync sync() {
-    return Sync.get();
+  T obtainDependency<T>() {
+    if (_deps.containsKey((T).toString())) {
+      var concrete = _deps[(T).toString()]!();
+
+      return concrete as T;
+    } else {
+      throw AssertionError('No se encontró un registro para esta dependencia');
+    }
   }
 }
 
-class SalesDependencies {
+class InfraStructureDependencies extends _DependenciesModule {
+  InfraStructureDependencies(Map<String, Object Function()> deps) : super(deps);
+
+  IDatabaseAdapter database() {
+    return obtainDependency<IDatabaseAdapter>();
+  }
+
+  ILogger logger() {
+    return obtainDependency<ILogger>();
+  }
+
+  ISync syncAdapter() {
+    return obtainDependency<ISync>();
+  }
+}
+
+class SalesDependencies extends _DependenciesModule {
+  SalesDependencies(Map<String, Object Function()> deps) : super(deps);
+
   ISaleRepository saleRepository() {
-    return SaleRepository();
+    return obtainDependency<ISaleRepository>();
   }
 
   IItemRepository itemRepository() {
-    return ItemRepository();
+    return obtainDependency<IItemRepository>();
   }
 }
 
 class Dependencies {
-  static final InfraStructureDependencies infra = InfraStructureDependencies();
-  static final SalesDependencies sales = SalesDependencies();
+  static final _deps = <String, Object Function()>{};
+
+  static final InfraStructureDependencies infra =
+      InfraStructureDependencies(_deps);
+  static final SalesDependencies sales = SalesDependencies(_deps);
+
+  static register(String abstractName, Object Function() builder) {
+    _deps.putIfAbsent(abstractName, () => builder);
+  }
 }

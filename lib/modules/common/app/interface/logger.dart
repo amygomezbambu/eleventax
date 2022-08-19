@@ -12,7 +12,7 @@ class LogEntry {
   var deviceId = '';
   String? input = '';
   var message = '';
-  Exception? exception;
+  Object? exception;
   StackTrace? stackTrace;
 }
 
@@ -43,5 +43,5 @@ abstract class ILogger {
   /// recibe [EleventaException] debido a que un warn siempre se lanza manualmente
   void warn(EleventaException ex);
   void debug({required String message, Exception? ex, StackTrace? stackTrace});
-  void error({required Exception ex, StackTrace? stackTrace});
+  void error({required Object ex, StackTrace? stackTrace});
 }

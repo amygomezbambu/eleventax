@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:eleventa/dependencies.dart';
 import 'package:eleventa/modules/common/app/interface/database.dart';
 import 'package:eleventa/modules/common/app/interface/logger.dart';
@@ -18,18 +20,18 @@ import 'package:flutter/material.dart';
 ///
 /// carga todos los objetos y datos necesarios para que la aplicación
 /// funcione correctamente
-class Loader {
+class TestsLoader {
   late IDatabaseAdapter dbAdapter;
   late ILogger logger;
 
   /* #region Singleton */
-  static final Loader _instance = Loader._internal();
+  static final TestsLoader _instance = TestsLoader._internal();
 
-  factory Loader() {
+  factory TestsLoader() {
     return _instance;
   }
 
-  Loader._internal();
+  TestsLoader._internal();
   /* #endregion */
 
   Future<void> initLogging() async {
@@ -37,15 +39,15 @@ class Loader {
 
     await logger.init(
       config: LoggerConfig(
-        remoteLevels: [LoggerLevels.error],
-        fileLevels: [LoggerLevels.error, LoggerLevels.warning],
+        remoteLevels: [],
+        fileLevels: [],
         consoleLevels: [LoggerLevels.all],
       ),
     );
   }
 
   Future<void> initSync() async {
-    var sync_ = Sync.create(
+    Sync.create(
       syncConfig: SyncConfig.create(
         dbVersionTable: 'migrations',
         dbVersionField: 'version',
@@ -57,10 +59,9 @@ class Loader {
             'https://qgfy59gc83.execute-api.us-west-1.amazonaws.com/dev/sync-get-changes',
         deleteChangesEndpoint: 'http://localhost:3000/sync-delete-changes',
         pullInterval: 10000,
+        sendChangesInmediatly: false,
       ),
     );
-
-    await sync_.initListening();
   }
 
   void registerDependencies() {
@@ -95,7 +96,9 @@ class Loader {
   Future<void> init() async {
     WidgetsFlutterBinding.ensureInitialized();
 
-    //load Config
+    //TODO: cambiarlo cuando tengamos config real
+    Config.deviceId = Random().nextInt(1000).toString();
+    Config.loggedUser = 'Alejandro Gamboa';
 
     registerDependencies();
 

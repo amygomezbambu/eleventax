@@ -1,5 +1,6 @@
 import 'package:eleventa/modules/common/app/interface/sync.dart';
 import 'package:eleventa/modules/sync/adapter/sync_repository.dart';
+import 'package:eleventa/modules/sync/adapter/sync_server.dart';
 import 'package:eleventa/modules/sync/app/usecase/add_local_changes.dart';
 import 'package:eleventa/modules/sync/app/usecase/obtain_remote_changes.dart';
 import 'package:eleventa/modules/sync/change.dart';
@@ -16,6 +17,7 @@ class Sync implements ISync {
   var _initialized = false;
 
   final _repo = SyncRepository();
+  final _syncServer = SyncServer();
   final _obtainRemoteChanges = ObtainRemoteChanges();
   final _addLocalChanges = AddLocalChanges();
 
@@ -47,32 +49,34 @@ class Sync implements ISync {
   /// aplica los cambios a la base de datos local en la tabla [dataset] y
   /// el row [rowID] y posteriormente los envia al servidor remoto de sincronización
   @override
-  Future<void> syncChanges(
-      {required String dataset,
-      required String rowID,
-      required List<String> columns,
-      required List<Object?> values}) async {
-    var index = 0;
+  Future<void> syncChanges({
+    required String dataset,
+    required String rowID,
+    required Map<String, Object?> fields,
+  }) async {
     var changes = <Change>[];
 
     var dbversion = await _repo.dbVersion();
     var hlc = HLC.now(_config.deviceId);
 
-    for (var column in columns) {
+    for (var field in fields.keys) {
       changes.add(Change.create(
-          column: column,
-          value: values[index],
+          column: field,
+          value: fields[field],
           dataset: dataset,
           rowId: rowID.toString(),
           version: dbversion,
           hlc: hlc.pack()));
 
       hlc.increment();
-      index++;
     }
 
     _addLocalChanges.request.changes = changes;
     await _addLocalChanges.exec();
+
+    if (_config.sendChangesInmediatly) {
+      await _syncServer.send(changes);
+    }
   }
 
   /// Inicia la escucha de nuevos cambios en el servidor remoto

@@ -6,23 +6,19 @@ class CreateSaleRequest {
   int deviceId = 0;
 }
 
-class CreateSaleResponse {}
-
 class CreateSale {
-  var request = CreateSaleRequest();
+  final request = CreateSaleRequest();
 
   String exec() {
-    //crear una entidad Sale
     Sale sale;
 
     try {
-      sale = Sale();
+      sale = Sale.create();
       OpenedSales.add(sale);
     } catch (e) {
       rethrow;
     }
 
-    //retornar el id a la ui
     return sale.uid.toString();
   }
 }

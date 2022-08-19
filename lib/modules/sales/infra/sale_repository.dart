@@ -10,7 +10,8 @@ import 'package:eleventa/modules/common/infra/repository.dart';
 import 'package:eleventa/modules/sales/sales_config.dart';
 
 class SaleRepository extends Repository implements ISaleRepository {
-  SaleRepository({ISync? sync, IDatabaseAdapter? db}) : super(sync, db);
+  SaleRepository({required ISync syncAdapter, required IDatabaseAdapter db})
+      : super(syncAdapter, db);
 
   @override
   Future<void> add(Sale sale) async {

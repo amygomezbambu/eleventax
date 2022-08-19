@@ -7,7 +7,6 @@ enum SaleStatus { open, paid, cancelled }
 enum SalePaymentMethod { notDefined, cash }
 
 class Sale extends Entity {
-  UID _uid = UID();
   var _name = '';
   var _total = 0.0;
   final _saleItems = <SaleItem>[];
@@ -15,7 +14,6 @@ class Sale extends Entity {
   int? _paymentTimeStamp;
   SaleStatus _status = SaleStatus.open;
 
-  UID get uid => _uid;
   double get total => _total;
   String get name => _name;
   SalePaymentMethod? get paymentMethod => _paymentMethod;
@@ -25,17 +23,17 @@ class Sale extends Entity {
   List<SaleItem> get saleItems => List.unmodifiable(_saleItems);
   int get itemsCount => _saleItems.length;
 
-  Sale();
+  Sale.create() : super.create();
 
-  Sale.load(
-      {required UID uid,
-      required String name,
-      required double total,
-      required SaleStatus status,
-      SalePaymentMethod? paymentMethod,
-      int? paymentTimeStamp,
-      List<SaleItem>? items}) {
-    _uid = uid;
+  Sale.load({
+    required UID uid,
+    required String name,
+    required double total,
+    required SaleStatus status,
+    SalePaymentMethod? paymentMethod,
+    int? paymentTimeStamp,
+    List<SaleItem>? items,
+  }) : super.load(uid) {
     _name = name;
     _total = total;
     _status = status;

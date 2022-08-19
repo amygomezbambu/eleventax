@@ -8,23 +8,20 @@ import 'package:eleventa/modules/items/domain/entity/item.dart';
 import 'package:eleventa/modules/common/infra/repository.dart';
 
 class ItemRepository extends Repository implements IItemRepository {
-  ItemRepository({ISync? sync, IDatabaseAdapter? db}) : super(sync, db);
+  ItemRepository({required ISync syncAdapter, required IDatabaseAdapter db})
+      : super(syncAdapter, db);
 
   @override
   Future<void> add(Item item) async {
-    // throw InfrastructureException(
-    //   message:
-    //       'Ocurrio un error an intentar guardar el producto en la base de datos',
-    //   innerException: Exception('No se encuentra el archivo de base de datos'),
-    //   stackTrace: StackTrace.current,
-    //   input: item.toString(),
-    // );
-
-    await sync.syncChanges(
-        dataset: 'items',
-        rowID: item.uid.toString(),
-        columns: ['sku', 'description', 'price'],
-        values: [item.sku, item.description, item.price]);
+    await syncAdapter.syncChanges(
+      dataset: 'items',
+      rowID: item.uid.toString(),
+      fields: {
+        'sku': item.sku,
+        'description': item.description,
+        'price': item.price
+      },
+    );
   }
 
   @override
@@ -93,11 +90,11 @@ class ItemRepository extends Repository implements IItemRepository {
         ItemMapper.fromDomainToMap(dbItem),
       );
 
-      await sync.syncChanges(
-          dataset: 'items',
-          rowID: item.uid.toString(),
-          columns: [...(differences.keys)],
-          values: [...(differences.values)]);
+      await syncAdapter.syncChanges(
+        dataset: 'items',
+        rowID: item.uid.toString(),
+        fields: differences,
+      );
     } else {
       throw EleventaException(
         message: 'No existe la entidad en la base de datos',

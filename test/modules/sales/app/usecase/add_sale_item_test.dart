@@ -1,25 +1,19 @@
 import 'dart:ui';
 
-import 'package:eleventa/loader.dart';
 import 'package:eleventa/modules/common/exception/exception.dart';
 import 'package:eleventa/modules/items/items_module.dart';
 import 'package:eleventa/modules/sales/app/dto/sale_item.dart';
 import 'package:eleventa/modules/sales/app/dto/sale_dto.dart';
-import 'package:eleventa/modules/sales/app/usecase/add_sale_item.dart';
 import 'package:eleventa/modules/sales/app/usecase/create_sale.dart';
-import 'package:eleventa/modules/sales/app/usecase/get_sale.dart';
 import 'package:eleventa/modules/sales/domain/service/opened_sales.dart';
-import 'package:eleventa/modules/sales/infra/sale_repository.dart';
 import 'package:eleventa/modules/sales/sales_module.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../../loader_for_tests.dart';
+
 void main() {
   setUpAll(() async {
-    //En TEST no se carga WidgetsFlutterBinding sino TestWidgetsFlutterBinding
-    TestWidgetsFlutterBinding.ensureInitialized();
-    DartPluginRegistrant.ensureInitialized();
-
-    Loader loader = Loader();
+    TestsLoader loader = TestsLoader();
     await loader.init();
   });
 
@@ -28,7 +22,7 @@ void main() {
         () async {
       //having
       var createSale = CreateSale();
-      var addItem = AddSaleItem(SaleRepository());
+      var addItem = SalesModule.addSaleItem();
       var quickItem = SaleItemDTO();
 
       //when
@@ -49,7 +43,7 @@ void main() {
 
     test('debe calcular el total correctamente', () async {
       var usecase = CreateSale();
-      var addItem = AddSaleItem(SaleRepository());
+      var addItem = SalesModule.addSaleItem();
       var basicItem = SaleItemDTO();
 
       var uid = usecase.exec();
@@ -72,7 +66,7 @@ void main() {
 
     test('debe persistir la venta', () async {
       var createSale = CreateSale();
-      var addItem = AddSaleItem(SaleRepository());
+      var addItem = SalesModule.addSaleItem();
       var getItems = ItemsModule.getItems();
 
       var uid = createSale.exec();
@@ -91,7 +85,7 @@ void main() {
 
       await addItem.exec();
 
-      var getSale = GetSale(SaleRepository());
+      var getSale = SalesModule.getSale();
       getSale.request.uid = uid;
 
       SaleDTO sale = await getSale.exec();
@@ -104,7 +98,7 @@ void main() {
       DartPluginRegistrant.ensureInitialized();
 
       var createSale = CreateSale();
-      var addItem = AddSaleItem(SaleRepository());
+      var addItem = SalesModule.addSaleItem();
       var getItems = ItemsModule.getItems();
       var getSale = SalesModule.getSale();
 

@@ -19,7 +19,7 @@ class CreateItem extends Usecase<UID> {
   }
 
   Future<UID> _doOperation() async {
-    Item item = Item(
+    Item item = Item.create(
       sku: request.sku,
       description: request.description,
       price: request.price,

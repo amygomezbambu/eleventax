@@ -5,39 +5,33 @@ class Item extends Entity {
   var _description = '';
   var _price = 0.0;
   var _sku = '';
-  var _uid = UID();
 
-  UID get uid => _uid;
+  String get description => _description;
+  double get price => _price;
+  String get sku => _sku;
 
-  String get description {
-    return _description;
+  Item.create({
+    required String description,
+    required double price,
+    required String sku,
+  }) : super.create() {
+    _validateDescription(description);
+    _validatePrice(price);
+    _validateSku(sku);
   }
 
-  double get price {
-    return _price;
+  Item.load(
+    UID uid,
+    String sku,
+    String description,
+    double price,
+  ) : super.load(uid) {
+    _validateDescription(description);
+    _validatePrice(price);
+    _validateSku(sku);
   }
 
-  String get sku {
-    return _sku;
-  }
-
-  Item(
-      {required String description,
-      required double price,
-      required String sku}) {
-    _setDescription(description);
-    _setPrice(price);
-    _setSku(sku);
-  }
-
-  Item.load(UID uid, String sku, String description, double price) {
-    _uid = uid;
-    _sku = sku;
-    _description = description;
-    _price = price;
-  }
-
-  void _setDescription(String value) {
+  void _validateDescription(String value) {
     if (value.isEmpty) {
       throw Exception('La descripcion no puede estar vacia');
     }
@@ -45,7 +39,7 @@ class Item extends Entity {
     _description = value;
   }
 
-  void _setPrice(double value) {
+  void _validatePrice(double value) {
     if (value <= 0) {
       throw Exception('El precio no pude ser cero');
     }
@@ -53,7 +47,7 @@ class Item extends Entity {
     _price = value;
   }
 
-  void _setSku(String value) {
+  void _validateSku(String value) {
     if (value.isEmpty) {
       throw Exception('El sku no puede ser vacío');
     }
