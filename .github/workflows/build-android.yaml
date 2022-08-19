@@ -1,9 +1,8 @@
 name: Deploy Android
 
 on:
-  push:
-    branches:
-      - feat/ninguno
+  workflow_dispatch:
+
 
 jobs:
   build-and-deploy-android:

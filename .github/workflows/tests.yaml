@@ -1,0 +1,31 @@
+name: Testing
+
+on:
+  push:
+    branches:
+     - main
+
+jobs:
+  unit-tests:
+    name: Ejecutando pruebas unitarias en ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-18.04, windows-2019]
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Obtenemos la version de Flutter de pubspec.yaml
+        id: get-flutter-version
+        uses: zgosalvez/github-actions-get-flutter-version-env@v1
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          architecture: x64
+          flutter-version: ${{ steps.get-flutter-version.outputs.version }}
+    
+      - name: Instalar dependencias
+        run: flutter pub get
+
+      - name: Ejecutando pruebas unitarias
+        run: flutter test
