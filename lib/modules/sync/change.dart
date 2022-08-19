@@ -12,7 +12,7 @@ class Change {
   late String _dataset;
   late String _rowId;
   late String _column;
-  late Object _value;
+  late Object? _value;
   late String _hlc;
   late int _timestamp;
   late String _valueType;
@@ -22,7 +22,7 @@ class Change {
   String get rowId => _rowId;
   String get column => _column;
   //NOTA: que pasa aqui? estamos pasando un objeto, se pasa la referencia o se hace una copia?
-  Object get value => _value;
+  Object? get value => _value;
   String get valueType => _valueType;
   String get hlc => _hlc;
   int get timestamp => _timestamp;
@@ -40,7 +40,7 @@ class Change {
 
   Change.create(
       {required String column,
-      required Object value,
+      required Object? value,
       required String dataset,
       required String rowId,
       required int version,
@@ -58,7 +58,7 @@ class Change {
 
   Change.load(
       {required String column,
-      required Object value,
+      required Object? value,
       required String dataset,
       required String rowId,
       required String hlc,
@@ -89,7 +89,7 @@ class Change {
     _column = value;
   }
 
-  void _setValue(Object value) {
+  void _setValue(Object? value) {
     _value = value;
 
     _determineValueType(value);
@@ -111,8 +111,10 @@ class Change {
     _version = value;
   }
 
-  void _determineValueType(Object value) {
-    if (value.runtimeType.toString() == 'boolean') {
+  void _determineValueType(Object? value) {
+    if (value == null) {
+      _valueType = value.toString();
+    } else if (value.runtimeType.toString() == 'boolean') {
       _valueType = crdtBoolean;
     } else if (double.tryParse(value.toString()) != null) {
       _valueType = crdtNumber;

@@ -1,3 +1,4 @@
+import 'package:eleventa/modules/common/domain/entity.dart';
 import 'package:eleventa/modules/common/utils/uid.dart';
 import 'package:eleventa/modules/sales/domain/entity/sale_item.dart';
 
@@ -5,8 +6,7 @@ enum SaleStatus { open, paid, cancelled }
 
 enum SalePaymentMethod { notDefined, cash }
 
-class Sale {
-  UID _uid = UID();
+class Sale extends Entity {
   var _name = '';
   var _total = 0.0;
   final _saleItems = <SaleItem>[];
@@ -14,7 +14,6 @@ class Sale {
   int? _paymentTimeStamp;
   SaleStatus _status = SaleStatus.open;
 
-  UID get uid => _uid;
   double get total => _total;
   String get name => _name;
   SalePaymentMethod? get paymentMethod => _paymentMethod;
@@ -24,17 +23,17 @@ class Sale {
   List<SaleItem> get saleItems => List.unmodifiable(_saleItems);
   int get itemsCount => _saleItems.length;
 
-  Sale();
+  Sale.create() : super.create();
 
-  Sale.load(
-      {required UID uid,
-      required String name,
-      required double total,
-      required SaleStatus status,
-      SalePaymentMethod? paymentMethod,
-      int? paymentTimeStamp,
-      List<SaleItem>? items}) {
-    _uid = uid;
+  Sale.load({
+    required UID uid,
+    required String name,
+    required double total,
+    required SaleStatus status,
+    SalePaymentMethod? paymentMethod,
+    int? paymentTimeStamp,
+    List<SaleItem>? items,
+  }) : super.load(uid) {
     _name = name;
     _total = total;
     _status = status;

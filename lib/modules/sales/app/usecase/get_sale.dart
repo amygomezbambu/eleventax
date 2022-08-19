@@ -1,4 +1,5 @@
 import 'package:eleventa/modules/common/app/usecase/usecase.dart';
+import 'package:eleventa/modules/common/utils/uid.dart';
 import 'package:eleventa/modules/sales/app/dto/sale_dto.dart';
 import 'package:eleventa/modules/sales/app/interface/sale_repository.dart';
 import 'package:eleventa/modules/sales/app/mapper/sale_mapper.dart';
@@ -16,7 +17,7 @@ class GetSale extends Usecase<SaleDTO> {
   }
 
   Future<SaleDTO> _doOperation() async {
-    var sale = await _repo.get(request.uid);
+    var sale = await _repo.getSingle(UID(request.uid));
 
     if (sale == null) {
       throw Exception('No existe la venta');

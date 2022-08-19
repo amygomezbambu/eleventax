@@ -12,7 +12,7 @@ class ObtainRemoteChangesRequest {
 }
 
 class ObtainRemoteChanges {
-  var request = ObtainRemoteChangesRequest();
+  final request = ObtainRemoteChangesRequest();
 
   late Timer _timer;
   final _config = SyncConfig.get();
@@ -22,12 +22,14 @@ class ObtainRemoteChanges {
   final _crdt = CRDTAdapter();
 
   Future<void> exec() async {
-    _timer =
-        Timer.periodic(Duration(milliseconds: request.interval), (timer) async {
-      var changes = await _requestChangesFromServer();
-      await _persistChanges(changes);
-      await _crdt.applyPendingChanges();
-    });
+    _timer = Timer.periodic(
+      Duration(milliseconds: request.interval),
+      (timer) async {
+        var changes = await _requestChangesFromServer();
+        await _persistChanges(changes);
+        await _crdt.applyPendingChanges();
+      },
+    );
   }
 
   void stop() {

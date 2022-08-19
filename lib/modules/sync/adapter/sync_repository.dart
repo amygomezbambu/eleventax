@@ -15,7 +15,7 @@ class SyncRepository {
     }
   }
 
-  Future<void> executeCommand(String command, List<Object> params) async {
+  Future<void> executeCommand(String command, List<Object?> params) async {
     await _db.command(sql: command, params: params);
   }
 

@@ -75,3 +75,6 @@ printDivider
 echo "✔ Tweak: Deshabilitar los smart quotes que interfieren al teclear código"
 defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
 defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
+
+echo "✔ Instalando GitHooks locales"
+bash setup_githooks.sh

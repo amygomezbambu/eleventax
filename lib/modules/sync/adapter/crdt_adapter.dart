@@ -6,9 +6,8 @@ import 'package:hlc/hlc.dart';
 ///
 /// Decide si un cambio debe ser aplicado o descartado
 class CRDTAdapter {
-  var repo = SyncRepository();
-
-  final List<Change> pendingChanges = [];
+  final repo = SyncRepository();
+  final pendingChanges = <Change>[];
 
   CRDTAdapter();
 
@@ -29,7 +28,6 @@ class CRDTAdapter {
 
   Future<void> _applyChange(Change change) async {
     var command = '';
-    //ejecutar el update o create en caso de que no exista aun el rowId
     var rowExist = await repo.rowExist(change.dataset, change.rowId);
 
     if (!rowExist) {

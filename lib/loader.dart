@@ -1,10 +1,15 @@
-import 'dart:io';
-import 'dart:math';
-
 import 'package:eleventa/dependencies.dart';
 import 'package:eleventa/modules/common/app/interface/database.dart';
 import 'package:eleventa/modules/common/app/interface/logger.dart';
+import 'package:eleventa/modules/common/app/interface/sync.dart';
+import 'package:eleventa/modules/common/infra/logger.dart';
+import 'package:eleventa/modules/common/infra/sqlite_adapter.dart';
+import 'package:eleventa/modules/config/config.dart';
+import 'package:eleventa/modules/items/app/interface/item_repository.dart';
+import 'package:eleventa/modules/items/infra/item_repository.dart';
 import 'package:eleventa/modules/migrations/migrate_db.dart';
+import 'package:eleventa/modules/sales/app/interface/sale_repository.dart';
+import 'package:eleventa/modules/sales/infra/sale_repository.dart';
 import 'package:eleventa/modules/sync/sync.dart';
 import 'package:eleventa/modules/sync/sync_config.dart';
 import 'package:flutter/material.dart';
@@ -14,8 +19,8 @@ import 'package:flutter/material.dart';
 /// carga todos los objetos y datos necesarios para que la aplicación
 /// funcione correctamente
 class Loader {
-  IDatabaseAdapter dbAdapter = Dependencies.infra.database();
-  ILogger logger = Dependencies.infra.logger();
+  late IDatabaseAdapter dbAdapter;
+  late ILogger logger;
 
   /* #region Singleton */
   static final Loader _instance = Loader._internal();
@@ -28,15 +33,11 @@ class Loader {
   /* #endregion */
 
   Future<void> initLogging() async {
-    var remoteLoggingLevels = [LoggerLevels.error];
-    if (Platform.environment.containsKey('FLUTTER_TEST')) {
-      remoteLoggingLevels = [];
-    }
+    logger = Dependencies.infra.logger();
 
-    //Inicializar Logger
     await logger.init(
       config: LoggerConfig(
-        remoteLevels: remoteLoggingLevels,
+        remoteLevels: [LoggerLevels.error],
         fileLevels: [LoggerLevels.error, LoggerLevels.warning],
         consoleLevels: [LoggerLevels.all],
       ),
@@ -44,38 +45,62 @@ class Loader {
   }
 
   Future<void> initSync() async {
-    var randomGen = Random();
-
     var sync_ = Sync.create(
       syncConfig: SyncConfig.create(
-          dbVersionTable: 'migrations',
-          dbVersionField: 'version',
-          groupId: 'CH0001',
-          deviceId: randomGen.nextInt(1000).toString(),
-          addChangesEndpoint:
-              'https://qgfy59gc83.execute-api.us-west-1.amazonaws.com/dev/sync',
-          getChangesEndpoint:
-              'https://qgfy59gc83.execute-api.us-west-1.amazonaws.com/dev/sync-get-changes',
-          deleteChangesEndpoint: 'http://localhost:3000/sync-delete-changes',
-          pullInterval: 10000),
+        dbVersionTable: 'migrations',
+        dbVersionField: 'version',
+        groupId: 'CH0001',
+        deviceId: Config.deviceId,
+        addChangesEndpoint:
+            'https://qgfy59gc83.execute-api.us-west-1.amazonaws.com/dev/sync',
+        getChangesEndpoint:
+            'https://qgfy59gc83.execute-api.us-west-1.amazonaws.com/dev/sync-get-changes',
+        deleteChangesEndpoint: 'http://localhost:3000/sync-delete-changes',
+        pullInterval: 10000,
+      ),
     );
 
-    if (!Platform.environment.containsKey('FLUTTER_TEST')) {
-      await sync_.initListening();
-    }
+    await sync_.initListening();
+  }
+
+  void registerDependencies() {
+    Dependencies.register((ILogger).toString(), () => Logger());
+    Dependencies.register((IDatabaseAdapter).toString(), () => SQLiteAdapter());
+    Dependencies.register((ISync).toString(), () => Sync.get());
+
+    Dependencies.register(
+      (ISaleRepository).toString(),
+      () => SaleRepository(
+        syncAdapter: Dependencies.infra.syncAdapter(),
+        db: Dependencies.infra.database(),
+      ),
+    );
+    Dependencies.register(
+      (IItemRepository).toString(),
+      () => ItemRepository(
+        syncAdapter: Dependencies.infra.syncAdapter(),
+        db: Dependencies.infra.database(),
+      ),
+    );
+  }
+
+  Future<void> initDatabase() async {
+    dbAdapter = Dependencies.infra.database();
+    await dbAdapter.connect();
+
+    var migrateDB = MigrateDB();
+    await migrateDB.exec();
   }
 
   Future<void> init() async {
     WidgetsFlutterBinding.ensureInitialized();
 
-    //Conectar adaptador de base de datos.
-    await dbAdapter.connect();
+    //load Config
+
+    registerDependencies();
 
     await initLogging();
-
-    var migrateDB = MigrateDB();
-    await migrateDB.exec();
-
+    await initDatabase();
     await initSync();
   }
 }

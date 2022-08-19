@@ -1,12 +1,11 @@
-import 'package:eleventa/loader.dart';
 import 'package:eleventa/modules/sales/sales_module.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../../loader_for_tests.dart';
+
 void main() {
   setUpAll(() async {
-    //En TEST no se carga WidgetsFlutterBinding sino TestWidgetsFlutterBinding
-    TestWidgetsFlutterBinding.ensureInitialized();
-    Loader loader = Loader();
+    TestsLoader loader = TestsLoader();
     await loader.init();
   });
 

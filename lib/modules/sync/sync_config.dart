@@ -14,6 +14,7 @@ class SyncConfig {
   var _deviceId = '';
   var _pullInterval = 30000;
   var _syncMethod = SyncMethod.pull;
+  var _sendChangesInmediatly = true;
 
   _validatePullInterval(int value) {
     if (value < 1000) {
@@ -70,6 +71,7 @@ class SyncConfig {
   String get addChangesEndpoint => _addChangesEndpoint;
   String get getChangesEndpoint => _getChangesEndpoint;
   String get deleteChangesEndpoint => _deleteChangesEndpoint;
+  bool get sendChangesInmediatly => _sendChangesInmediatly;
 
   // #region singleton
   static final SyncConfig _instance = SyncConfig._internal();
@@ -93,16 +95,18 @@ class SyncConfig {
   ///
   /// [pullInterval] es el tiempo en milisegundos entre cada consulta al servidor
   /// por default 30000 (30 segundos)
-  factory SyncConfig.create(
-      {required String dbVersionTable,
-      required String dbVersionField,
-      required String groupId,
-      required String deviceId,
-      required String addChangesEndpoint,
-      required String getChangesEndpoint,
-      required String deleteChangesEndpoint,
-      int pullInterval = 30000,
-      SyncMethod syncMethod = SyncMethod.pull}) {
+  factory SyncConfig.create({
+    required String dbVersionTable,
+    required String dbVersionField,
+    required String groupId,
+    required String deviceId,
+    required String addChangesEndpoint,
+    required String getChangesEndpoint,
+    required String deleteChangesEndpoint,
+    int pullInterval = 30000,
+    SyncMethod syncMethod = SyncMethod.pull,
+    bool sendChangesInmediatly = true,
+  }) {
     var instance = _instance;
 
     instance._validateDbVersionField(dbVersionField);
@@ -116,6 +120,7 @@ class SyncConfig {
     instance._deleteChangesEndpoint = deleteChangesEndpoint;
 
     instance._syncMethod = syncMethod;
+    instance._sendChangesInmediatly = sendChangesInmediatly;
 
     return instance;
   }

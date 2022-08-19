@@ -8,28 +8,25 @@ import 'package:hlc/hlc.dart';
 
 class AddChangesRequest {
   List<Change> changes = [];
-  var waitForSync = false;
 }
 
 class AddLocalChanges {
   final _config = SyncConfig.get();
+  final changesRepo = SyncRepository();
+  final syncServer = SyncServer();
+  final crdtAdapter = CRDTAdapter();
+  final request = AddChangesRequest();
 
-  var changesRepo = SyncRepository();
-  var syncServer = SyncServer();
-  var crdtAdapter = CRDTAdapter();
-
-  var request = AddChangesRequest();
+  var merkle = Merkle();
+  var firstChange = true;
 
   late HLC hlc;
   late Change currentChange;
-  Merkle merkle = Merkle();
-
-  bool firstChange = true;
 
   Future<void> exec() async {
     var serializedMerkle = await changesRepo.getMerkle();
 
-    if (serializedMerkle == '') {
+    if (serializedMerkle.isEmpty) {
       merkle = Merkle();
     } else {
       merkle.deserialize(serializedMerkle);
@@ -49,12 +46,6 @@ class AddLocalChanges {
     }
 
     await persistMerkle();
-
-    if (request.waitForSync) {
-      await sendChanges();
-    } else {
-      await sendChanges();
-    }
   }
 
   Future<void> getHLC() async {
@@ -99,9 +90,5 @@ class AddLocalChanges {
 
   Future<void> applyChanges() async {
     await crdtAdapter.applyPendingChanges();
-  }
-
-  Future<void> sendChanges() async {
-    await syncServer.send(request.changes);
   }
 }

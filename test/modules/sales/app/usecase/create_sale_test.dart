@@ -1,10 +1,11 @@
-import 'package:eleventa/loader.dart';
 import 'package:eleventa/modules/sales/app/usecase/create_sale.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../../loader_for_tests.dart';
+
 void main() {
   setUpAll(() async {
-    Loader loader = Loader();
+    TestsLoader loader = TestsLoader();
     await loader.init();
   });
 

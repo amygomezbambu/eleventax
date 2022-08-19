@@ -1,4 +1,4 @@
-import 'package:eleventa/dependencies.dart';
+import 'package:eleventa/modules/common/app/usecase/usecase.dart';
 import 'package:eleventa/modules/common/exception/exception.dart';
 
 import 'package:eleventa/modules/items/app/dto/item_dto.dart';
@@ -10,21 +10,22 @@ class GetItemRequest {
   String sku = '';
 }
 
-class GetItem {
-  final _logger = Dependencies.infra.logger();
+class GetItem extends Usecase<ItemDTO> {
   final IItemRepository _repo;
-  GetItemRequest request = GetItemRequest();
+  final request = GetItemRequest();
 
-  GetItem(this._repo);
+  GetItem(this._repo) : super(_repo) {
+    operation = _doOperation;
+  }
 
-  Future<ItemDTO> exec() async {
+  Future<ItemDTO> _doOperation() async {
     Item? item = await _repo.getBySku(request.sku);
 
     if (item == null) {
       final errorMessage =
           'El Codigo de producto ${request.sku} no se encontró';
 
-      _logger.error(ex: AppException(message: errorMessage));
+      logger.error(ex: AppException(message: errorMessage));
 
       throw AppException(message: errorMessage);
     }

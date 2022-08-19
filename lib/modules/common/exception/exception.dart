@@ -5,7 +5,7 @@ class EleventaException implements Exception {
   String? why;
   String? solution;
   StackTrace? stackTrace;
-  Exception? innerException;
+  Object? innerException;
 
   /// representa los datos que fueron proporcionados al metodo que causo el error
   String? input;
@@ -38,7 +38,7 @@ class AppException extends EleventaException {
 class InfrastructureException extends EleventaException {
   InfrastructureException({
     required String message,
-    required Exception innerException,
+    required Object innerException,
     StackTrace? stackTrace,
     String? input,
   }) : super(

@@ -3,16 +3,15 @@ import 'package:eleventa/modules/common/app/interface/database.dart';
 import 'package:eleventa/modules/common/app/interface/sync.dart';
 import 'package:eleventa/modules/common/utils/uid.dart';
 import 'package:eleventa/modules/common/exception/exception.dart';
-
 import 'package:eleventa/modules/sales/app/interface/sale_repository.dart';
 import 'package:eleventa/modules/sales/domain/entity/sale.dart';
 import 'package:eleventa/modules/sales/domain/entity/sale_item.dart';
-import 'package:eleventa/utils/utils.dart';
 import 'package:eleventa/modules/common/infra/repository.dart';
 import 'package:eleventa/modules/sales/sales_config.dart';
 
 class SaleRepository extends Repository implements ISaleRepository {
-  SaleRepository({ISync? sync, IDatabaseAdapter? db}) : super(sync, db);
+  SaleRepository({required ISync syncAdapter, required IDatabaseAdapter db})
+      : super(syncAdapter, db);
 
   @override
   Future<void> add(Sale sale) async {
@@ -76,7 +75,7 @@ class SaleRepository extends Repository implements ISaleRepository {
         'UPDATE sales set name = ?, total = ?, status = ?, paymentMethod = ?, paymentTimeStamp = ? '
         ' WHERE uid = ?';
 
-    var params = <Object>[];
+    var params = <Object?>[];
     params.add(sale.name);
     params.add(sale.total);
     params.add(sale.status.index);
@@ -87,11 +86,7 @@ class SaleRepository extends Repository implements ISaleRepository {
       params.add(SalePaymentMethod.notDefined.index);
     }
 
-    if (sale.paymentTimeStamp != null) {
-      params.add(sale.paymentTimeStamp!);
-    } else {
-      params.add(Utils.db.nullTimeStamp);
-    }
+    params.add(sale.paymentTimeStamp);
 
     params.add(sale.uid.toString());
 
@@ -99,12 +94,12 @@ class SaleRepository extends Repository implements ISaleRepository {
   }
 
   @override
-  Future<Sale?> get(String uid) async {
+  Future<Sale?> getSingle(UID uid) async {
     var query =
         'SELECT uid,name,total,status,paymentMethod,paymentTimeStamp FROM sales '
         'WHERE uid = ?';
 
-    var result = await db.query(sql: query, params: [uid]);
+    var result = await db.query(sql: query, params: [uid.toString()]);
     Sale? sale;
 
     for (var row in result) {
@@ -127,7 +122,12 @@ class SaleRepository extends Repository implements ISaleRepository {
   }
 
   @override
-  List<Sale> getAll() {
+  Future<void> delete(UID id) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<Sale>> getAll() {
     throw UnimplementedError();
   }
 
