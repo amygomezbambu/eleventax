@@ -17,7 +17,7 @@ void main() {
   binding.testTextInput.register();
 
   group('Agregar articulos a venta', () {
-    setUp(() async {
+    setUpAll(() async {
       var loader = Loader();
       await loader.init();
     });
@@ -26,6 +26,7 @@ void main() {
         (WidgetTester tester) async {
       await tester.pumpWidget(const app.EleventaApp());
       await tester.pumpAndSettle();
+
       expect(find.byKey(payButtonKey), findsWidgets);
     });
 
@@ -57,6 +58,12 @@ void main() {
       await tester.enterText(find.byKey(skuFieldKey), '1');
       await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pumpAndSettle();
+
+      // Enumerate all states that exist in the app just to show we can
+      // debugPrint("All states: ");
+      // for (var s in tester.allStates) {
+      //   debugPrint(s.toString());
+      // }
 
       // Accedemos al estado de la vista de Ventas
       // para poder consultar los valores nativos

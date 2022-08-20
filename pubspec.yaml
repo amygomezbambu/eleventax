@@ -31,14 +31,16 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.2
+  # sqflite:
+  sqlite3: ^1.8.0 # [ARD-0007]
+  sqflite_common_ffi: ^2.1.1+1 # [ARD-0007]
+  # Incluye la libreria de sqlite compilada con SQLCiper para iOS, Android y Mac
+  sqlcipher_flutter_libs: ^0.5.1 # [ARD-0007]
+  # Incluye el DLL de sqlite compilado con SQLCipher para Windows (64 bits)
+  sqlcipher_library_windows: ^1.0.2 # [ARD-0007]
 
   meta: ^1.7.0
   http: ^0.13.5
-  sqflite:
-  sqflite_common_ffi:
   path:
   google_fonts: ^3.0.1
   flutter_tailwindcss_defaults: ^0.2.0
@@ -51,7 +53,6 @@ dependencies:
   sentry_logging: ^6.9.0 # [ADR-0004]
   path_provider_macos: ^2.0.6
   path_provider: ^2.0.11
-
 
 dev_dependencies:
   integration_test:

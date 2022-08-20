@@ -32,6 +32,10 @@ class ItemsListView extends StatelessWidget {
                   'https://source.unsplash.com/random/200×200/?${items[index].description}',
                   height: 50,
                   width: 50,
+                  // Le indicamos que que tamaño será la imagen para que consuma
+                  // menos memoria aunque la imagen original sea más grande
+                  cacheHeight: 50,
+                  cacheWidth: 50,
                   fit: BoxFit.cover,
                 )),
             subtitle: Text(items[index].code),
