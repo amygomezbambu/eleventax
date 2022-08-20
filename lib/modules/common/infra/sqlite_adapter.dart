@@ -58,7 +58,7 @@ class SQLiteAdapter implements IDatabaseAdapter {
   }
 
   static DynamicLibrary _sqlcipherOpen() {
-    if (Platform.isIOS || Platform.isMacOS) {
+    if (Platform.isIOS || Platform.isMacOS || Platform.isLinux) {
       return DynamicLibrary.process();
     }
 
