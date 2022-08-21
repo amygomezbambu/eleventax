@@ -31,12 +31,10 @@ jobs:
       - name: Copiamos DLLs de SQLite para que funcionen las pruebas (solo Windows)      
         if: runner.os == 'Windows'
         run: 
-          echo ${{ env.FLUTTER_ROOT }}
-          echo ${{ env.flutter }}
-          cp assets/windows/* ${RUNNER_TEMP}/flutter/cache\artifacts\engine\windows-x64\
+          cp ./assets/windows/* ${{ env.FLUTTER_ROOT }}/flutter/cache\artifacts\engine\windows-x64
 
-      - name: Instalar dependencias
-        run: flutter pub get
+      # - name: Instalar dependencias
+      #   run: flutter pub get
 
       - name: Ejecutando pruebas unitarias
         run: flutter test 
