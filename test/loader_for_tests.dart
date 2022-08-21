@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:math';
 
 import 'package:eleventa/dependencies.dart';
@@ -96,9 +95,6 @@ class TestsLoader {
 
   Future<void> init() async {
     WidgetsFlutterBinding.ensureInitialized();
-
-    String exeDirPath = File(Platform.resolvedExecutable).parent.path;
-    debugPrint('executableDirectoryPath: $exeDirPath');
 
     //TODO: cambiarlo cuando tengamos config real
     Config.deviceId = Random().nextInt(1000).toString();
