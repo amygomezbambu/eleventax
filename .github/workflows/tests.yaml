@@ -24,15 +24,22 @@ jobs:
           channel: "stable"
           architecture: x64
           flutter-version: ${{ steps.get-flutter-version.outputs.version }}
+        run: |
+          echo "flutter=$FLUTTER_ROOT" >> $GITHUB_ENV
 
       # Copiamos los DLLs a la carpeta donde se ejecutan las pruebas de unidad
       #
-      - name: Copiamos DLLs de SQLite para que funcionen las pruebas
+      - name: Copiamos DLLs de SQLite para que funcionen las pruebas (solo Windows)      
+        if: runner.os == 'Windows'
         run: 
-          cp assets/windows/* $FLUTTER_ROOT/cache\artifacts\engine\windows-x64\
+          echo ${{ env.FLUTTER_ROOT }}
+          echo ${{ env.flutter }}
+          cp assets/windows/* ${{ env.FLUTTER_ROOT }}/cache\artifacts\engine\windows-x64\
 
       - name: Instalar dependencias
         run: flutter pub get
 
       - name: Ejecutando pruebas unitarias
         run: flutter test 
+          
+        # echo "### Hello world! :rocket:" >> $GITHUB_STEP_SUMMARY
