@@ -31,7 +31,7 @@ jobs:
       - name: Copiamos DLLs de SQLite para que funcionen las pruebas (solo Windows)      
         if: runner.os == 'Windows'
         run: 
-          Copy-Item -Path "assets/windows/*" -Destination "${{ env.FLUTTER_ROOT }}/flutter/cache\artifacts\engine\windows-x64"
+          Copy-Item -Path "assets/windows/*" -Destination "${{ env.FLUTTER_ROOT }}\bin\cache\artifacts\engine\windows-x64"
 
       # - name: Instalar dependencias
       #   run: flutter pub get
