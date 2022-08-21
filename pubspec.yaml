@@ -36,9 +36,7 @@ dependencies:
   sqflite_common_ffi: ^2.1.1+1 # [ARD-0007]
   # Incluye la libreria de sqlite compilada con SQLCiper para iOS, Android y Mac
   sqlcipher_flutter_libs: ^0.5.1 # [ARD-0007]
-  # Incluye el DLL de sqlite compilado con SQLCipher para Windows (64 bits)
-  sqlcipher_library_windows: ^1.0.2 # [ARD-0007]
-
+  
   meta: ^1.7.0
   http: ^0.13.5
   path:
