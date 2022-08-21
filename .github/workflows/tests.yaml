@@ -29,10 +29,10 @@ jobs:
       #
       - name: Copiamos DLLs de SQLite para que funcionen las pruebas
         run: 
-          cp assets/windows/* ${{ github.workspace }}/cache/artifacts/engine/windows-x64/
+          cp assets/windows/* C:\hostedtoolcache\windows\flutter\cache\artifacts\engine\windows-x64\
 
       - name: Instalar dependencias
         run: flutter pub get
 
-      - name: Ejecutando pruebas unitarias (con orden aleatorio)
-        run: flutter test --test-randomize-ordering-seed=random -rexpanded
+      - name: Ejecutando pruebas unitarias
+        run: flutter test 
