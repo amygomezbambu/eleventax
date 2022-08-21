@@ -26,8 +26,7 @@ jobs:
           flutter-version: ${{ steps.get-flutter-version.outputs.version }}
         
 
-      # Copiamos los DLLs a la carpeta donde se ejecutan las pruebas de unidad
-      #
+      # Copiamos los DLLs a la carpeta donde se ejecutan las pruebas de unidad      
       - name: Copiamos DLLs de SQLite para que funcionen las pruebas (solo Windows)      
         if: runner.os == 'Windows'
         run: 
@@ -37,6 +36,4 @@ jobs:
       #   run: flutter pub get
 
       - name: Ejecutando pruebas unitarias
-        run: flutter test 
-          
-        # echo "### Hello world! :rocket:" >> $GITHUB_STEP_SUMMARY
+        run: flutter test        
