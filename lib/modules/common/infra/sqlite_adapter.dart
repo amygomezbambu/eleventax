@@ -12,7 +12,6 @@ import 'package:sqflite_common_ffi/src/sqflite_ffi_exception.dart';
 import 'package:flutter/foundation.dart';
 // ignore: depend_on_referenced_packages
 import 'package:sqflite_common/sqlite_api.dart';
-import 'package:sqlcipher_library_windows/sqlcipher_library_windows.dart';
 import 'package:sqlcipher_flutter_libs/sqlcipher_flutter_libs.dart';
 import 'package:sqlite3/open.dart';
 import 'dart:ffi';
@@ -21,6 +20,11 @@ import 'package:eleventa/modules/common/infra/environment.dart';
 class SQLiteAdapter implements IDatabaseAdapter {
   late final Database _db;
   final _logger = Dependencies.infra.logger();
+  // Librerias de las que se depende en Windows
+  static const libcryptoWindowsLibrary = 'libcrypto-1_1-x64.dll';
+  static const sslWindowsLibrary = 'libssl-1_1-x64.dll';
+  static const sqlcipherWindowsLibrary = 'sqlcipher.dll';
+
   // Codigos de error que queremos detectar de SQLite
   // https://www.sqlite.org/rescode.html
   static const sqliteNotADbError = 26;
@@ -39,17 +43,54 @@ class SQLiteAdapter implements IDatabaseAdapter {
     await _db.close();
   }
 
-  static void _sqliteInit() {
-    if (Platform.isAndroid) {
-      open.overrideFor(OperatingSystem.android, openCipherOnAndroid);
+  /// Lee la libreria de SQLite en Windows
+  ///
+  /// Se encarga de especificar la ruta de la libreria de SQLite
+  /// la cual debe estar presente en la carpeta donde esta el ejecutable
+  /// también es necesaria la prescencia de los archivos:
+  /// sqlcipher.dll, libcrypto-1_1-x64.dll, libssl-1_1-x64.dll
+  ///
+  /// Esta función y DLLs fueron tomados del paquete:
+  /// https://github.com/MobiliteDev/sqlcipher_library_windows
+  static DynamicLibrary _openSQLCipherOnWindows() {
+    late DynamicLibrary library;
+
+    // Verificamos que existan las librerias que necesitamos
+    if (!File(SQLiteAdapter.libcryptoWindowsLibrary).existsSync()) {
+      debugPrint(
+          'No existe libreria requerida: $SQLiteAdapter.libcryptoWindowsLibrary');
     }
 
-    if (Platform.isWindows) {
-      // Para Windows hacemos uso de la funcion especial
-      // proveida por "sqlcipher_library_windows"
-      open.overrideFor(OperatingSystem.windows, openSQLCipherOnWindows);
-    } else {
-      open.overrideForAll(_sqlcipherOpen);
+    if (!File(SQLiteAdapter.sslWindowsLibrary).existsSync()) {
+      debugPrint(
+          'No existe libreria requerida: $SQLiteAdapter.sslWindowsLibrary');
+    }
+
+    if (!File(SQLiteAdapter.sqlcipherWindowsLibrary).existsSync()) {
+      debugPrint(
+          'No existe libreria requerida: $SQLiteAdapter.sqlcipherWindowsLibrary');
+    }
+
+    library = DynamicLibrary.open(SQLiteAdapter.sqlcipherWindowsLibrary);
+
+    return library;
+  }
+
+  static void _sqliteInit() {
+    try {
+      if (Platform.isAndroid) {
+        open.overrideFor(OperatingSystem.android, openCipherOnAndroid);
+      }
+
+      if (Platform.isWindows) {
+        open.overrideFor(OperatingSystem.windows, _openSQLCipherOnWindows);
+      } else {
+        open.overrideForAll(_sqlcipherOpen);
+      }
+    } catch (ex) {
+      throw InfrastructureException(
+          message: 'No se pudo cargar SQLite ${ex.toString()}',
+          innerException: ex);
     }
   }
 

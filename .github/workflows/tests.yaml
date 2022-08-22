@@ -4,6 +4,7 @@ on:
   push:
     branches:
      - main
+  pull_request:
 
 jobs:
   unit-tests:
@@ -23,9 +24,16 @@ jobs:
           channel: "stable"
           architecture: x64
           flutter-version: ${{ steps.get-flutter-version.outputs.version }}
-    
-      - name: Instalar dependencias
-        run: flutter pub get
+        
+
+      # Copiamos los DLLs a la carpeta donde se ejecutan las pruebas de unidad      
+      - name: Copiamos DLLs de SQLite para que funcionen las pruebas (solo Windows)      
+        if: runner.os == 'Windows'
+        run: 
+          Copy-Item -Path "assets/windows/*" -Destination "${{ env.FLUTTER_ROOT }}\bin\cache\artifacts\engine\windows-x64"
+
+      # - name: Instalar dependencias
+      #   run: flutter pub get
 
       - name: Ejecutando pruebas unitarias
-        run: flutter test
+        run: flutter test        

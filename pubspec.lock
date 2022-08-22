@@ -463,13 +463,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.5.1"
-  sqlcipher_library_windows:
-    dependency: "direct main"
-    description:
-      name: sqlcipher_library_windows
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.2"
   sqlite3:
     dependency: "direct main"
     description:
