@@ -1,20 +1,52 @@
+// ignore_for_file: unnecessary_getters_setters
+
+import 'package:eleventa/modules/common/infra/local_config.dart';
+import 'package:eleventa/modules/common/utils/uid.dart';
+
 class SalesSharedConfig {
-  var allowQuickItem = true;
+  UID _uid = UID();
+  var _allowQuickItem = true;
+
+  UID get uid => _uid;
+  bool get allowQuickItem => _allowQuickItem;
+
+  set allowQuickItem(bool value) {
+    _allowQuickItem = value;
+  }
 
   SalesSharedConfig();
 
-  SalesSharedConfig.fromJson(Map<String, dynamic> json) {
-    allowQuickItem = json['allowQuickItem'];
-  }
+  SalesSharedConfig.load(UID uid, Map<String, dynamic> jsonValues)
+      : _allowQuickItem = jsonValues['allowQuickItem'],
+        _uid = uid;
 
-  Map<String, dynamic> toJson() => {'allowQuickItem': allowQuickItem};
+  Map<String, dynamic> toJson() => {'allowQuickItem': _allowQuickItem};
 }
 
-class SalesLocalConfig {
-  var allowDiscounts = true;
+class SalesLocalConfig extends LocalConfig {
+  var _allowDiscounts = true;
+
+  set allowDiscounts(bool value) {
+    _allowDiscounts = value;
+  }
+
+  bool get allowDiscounts => _allowDiscounts;
+
+  SalesLocalConfig() {
+    load();
+  }
+
+  load() {
+    readValue<bool?>('allowDiscounts')
+        .then((value) => value ?? _allowDiscounts);
+  }
+
+  Future<void> save() async {
+    await saveValue('allowDiscounts', _allowDiscounts);
+  }
 }
 
 class SalesConfig {
-  var shared = SalesSharedConfig();
-  var local = SalesLocalConfig();
+  SalesSharedConfig shared = SalesSharedConfig();
+  SalesLocalConfig local = SalesLocalConfig();
 }

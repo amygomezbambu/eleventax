@@ -11,7 +11,10 @@ class GetConfig extends Usecase<SalesConfig> {
 
   Future<SalesConfig> _doOperation() async {
     var config = SalesConfig();
+
     config.shared = await _repo.getSharedConfig();
+    await config.local.load();
+
     return config;
   }
 }

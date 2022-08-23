@@ -136,9 +136,16 @@ class SaleRepository extends Repository implements ISaleRepository {
 
   @override
   Future<void> saveSharedConfig(SalesSharedConfig config) async {
-    var command = 'INSERT OR REPLACE INTO config(module, value) VALUES (?, ?);';
+    //var command = 'INSERT OR REPLACE INTO config(uid,module, value) VALUES (?, ?);';
 
-    await db.command(sql: command, params: ['sales', jsonEncode(config)]);
+    //await db.command(sql: command, params: ['sales', jsonEncode(config)]);
+
+    await syncAdapter.syncChanges(
+      dataset: 'config',
+      rowID: config.uid.toString(),
+      // TODO: No hard codear sales
+      fields: {'module': 'sales', 'value': jsonEncode(config)},
+    );
   }
 
   @override
@@ -151,7 +158,10 @@ class SaleRepository extends Repository implements ISaleRepository {
 
     if (dbResult.length == 1) {
       var json = jsonDecode(dbResult.first['value'].toString());
-      sharedConfig = SalesSharedConfig.fromJson(json);
+      sharedConfig = SalesSharedConfig.load(
+        UID(dbResult.first['uid'].toString()),
+        json,
+      );
     } else {
       throw EleventaException(
           message: 'No hay valores de configuración del módulo');

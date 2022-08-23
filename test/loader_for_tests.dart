@@ -15,6 +15,7 @@ import 'package:eleventa/modules/sales/infra/sale_repository.dart';
 import 'package:eleventa/modules/sync/sync.dart';
 import 'package:eleventa/modules/sync/sync_config.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Inicializador de la aplicacion
 ///
@@ -93,6 +94,11 @@ class TestsLoader {
     await migrateDB.exec();
   }
 
+  void initLocalConfig() {
+    Map<String, Object> values = <String, Object>{'counter': 1};
+    SharedPreferences.setMockInitialValues(values);
+  }
+
   Future<void> init() async {
     WidgetsFlutterBinding.ensureInitialized();
 
@@ -105,5 +111,6 @@ class TestsLoader {
     await initLogging();
     await initDatabase();
     await initSync();
+    initLocalConfig();
   }
 }

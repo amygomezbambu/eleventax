@@ -1,3 +1,4 @@
+import 'package:eleventa/modules/sales/sales_config.dart';
 import 'package:eleventa/modules/sales/sales_module.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -17,11 +18,16 @@ void main() {
 
     updateConfig.request.config.shared.allowQuickItem = false;
 
+    await Future.delayed(const Duration(seconds: 3));
+
+    updateConfig.request.config.local.allowDiscounts = false;
+
     await updateConfig.exec();
 
     //leerlos u obtener y verificar que si se guardo la informacion
     var config = await getConfig.exec();
 
     expect(config.shared.allowQuickItem, false);
+    expect(config.local.allowDiscounts, false);
   });
 }

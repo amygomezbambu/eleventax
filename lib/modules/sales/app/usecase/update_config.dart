@@ -16,5 +16,6 @@ class UpdateConfig extends Usecase<void> {
 
   Future<void> _doOperation() async {
     await _repo.saveSharedConfig(request.config.shared);
+    await request.config.local.save();
   }
 }

@@ -54,6 +54,7 @@ class Sync implements ISync {
     required String rowID,
     required Map<String, Object?> fields,
   }) async {
+    // TODO: Refactorizar
     var changes = <Change>[];
 
     var dbversion = await _repo.dbVersion();
