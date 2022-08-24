@@ -49,11 +49,45 @@ class Sync implements ISync {
   /// aplica los cambios a la base de datos local en la tabla [dataset] y
   /// el row [rowID] y posteriormente los envia al servidor remoto de sincronización
   @override
-  Future<void> syncChanges({
+  Future<void> synchronize({
     required String dataset,
     required String rowID,
     required Map<String, Object?> fields,
   }) async {
+    var changes = await _generateChanges(dataset, rowID, fields);
+    await _applyChangesToLocalDatabase(changes);
+    await _sendChangesToRemoteServer(changes);
+  }
+
+  /// Inicia la escucha de nuevos cambios en el servidor remoto
+  @override
+  Future<void> initListening() async {
+    _obtainRemoteChanges.request.interval = _config.pullInterval;
+    await _obtainRemoteChanges.exec();
+  }
+
+  /// Detiene la escucha de nuevos cambios en el servidor remoto
+  @override
+  void stopListening() {
+    _obtainRemoteChanges.stop();
+  }
+
+  Future<void> _sendChangesToRemoteServer(List<Change> changes) async {
+    if (_config.sendChangesInmediatly) {
+      await _syncServer.send(changes);
+    }
+  }
+
+  Future<void> _applyChangesToLocalDatabase(List<Change> changes) async {
+    _addLocalChanges.request.changes = changes;
+    await _addLocalChanges.exec();
+  }
+
+  Future<List<Change>> _generateChanges(
+    String dataset,
+    String rowID,
+    Map<String, Object?> fields,
+  ) async {
     var changes = <Change>[];
 
     var dbversion = await _repo.dbVersion();
@@ -71,24 +105,6 @@ class Sync implements ISync {
       hlc.increment();
     }
 
-    _addLocalChanges.request.changes = changes;
-    await _addLocalChanges.exec();
-
-    if (_config.sendChangesInmediatly) {
-      await _syncServer.send(changes);
-    }
-  }
-
-  /// Inicia la escucha de nuevos cambios en el servidor remoto
-  @override
-  Future<void> initListening() async {
-    _obtainRemoteChanges.request.interval = _config.pullInterval;
-    await _obtainRemoteChanges.exec();
-  }
-
-  /// Detiene la escucha de nuevos cambios en el servidor remoto
-  @override
-  void stopListening() {
-    _obtainRemoteChanges.stop();
+    return changes;
   }
 }

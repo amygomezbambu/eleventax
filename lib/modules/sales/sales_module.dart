@@ -27,10 +27,16 @@ class SalesModule {
   }
 
   static GetConfig getConfig() {
-    return GetConfig(Dependencies.sales.saleRepository());
+    return GetConfig(
+      Dependencies.sales.saleRepository(),
+      Dependencies.sales.saleLocalConfigAdapter(),
+    );
   }
 
   static UpdateConfig updateConfig() {
-    return UpdateConfig(Dependencies.sales.saleRepository());
+    return UpdateConfig(
+      Dependencies.sales.saleRepository(),
+      Dependencies.sales.saleLocalConfigAdapter(),
+    );
   }
 }

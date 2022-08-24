@@ -8,7 +8,9 @@ import 'package:eleventa/modules/config/config.dart';
 import 'package:eleventa/modules/items/app/interface/item_repository.dart';
 import 'package:eleventa/modules/items/infra/item_repository.dart';
 import 'package:eleventa/modules/migrations/migrate_db.dart';
+import 'package:eleventa/modules/sales/app/interface/local_config_adapter.dart';
 import 'package:eleventa/modules/sales/app/interface/sale_repository.dart';
+import 'package:eleventa/modules/sales/infra/local_config_adapter.dart';
 import 'package:eleventa/modules/sales/infra/sale_repository.dart';
 import 'package:eleventa/modules/sync/sync.dart';
 import 'package:eleventa/modules/sync/sync_config.dart';
@@ -67,6 +69,8 @@ class Loader {
     Dependencies.register((ILogger).toString(), () => Logger());
     Dependencies.register((IDatabaseAdapter).toString(), () => SQLiteAdapter());
     Dependencies.register((ISync).toString(), () => Sync.get());
+    Dependencies.register(
+        (ISaleLocalConfigAdapter).toString(), () => SaleLocalConfigAdapter());
 
     Dependencies.register(
       (ISaleRepository).toString(),

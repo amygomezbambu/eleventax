@@ -6,7 +6,6 @@ import 'package:eleventa/modules/sales/sales_config.dart';
 abstract class ISaleRepository extends IRepository<Sale> {
   Future<void> addSaleItem(SaleItem item);
   Future<void> updateChargeData(Sale sale);
-  Future<void> saveLocalConfig(SalesLocalConfig config);
   Future<void> saveSharedConfig(SalesSharedConfig config);
   Future<SalesSharedConfig> getSharedConfig();
 }

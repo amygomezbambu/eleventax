@@ -14,7 +14,19 @@ Se evaluó cómo se llevará a cabo la configuración de la aplicación tanto lo
 
 # Decisión
 
-Se llevarán 3 tipos de configuración, la compartida, la local y la de aplicación. Para la configuración compartida se decidió utilizar una tabla en base de datos e ingresar los valores para cada módulo como un json. los datos sensibles como credenciales de recargas del usuario e información que NO DEBE SALIR del dispositivo se almacenará en la configuración local, los datos como credenciales, secrets, etc propios de eleventa (credenciales de sentry, APIs, etc) serán almacenados en la configuración de aplicación.
+Se llevarán 3 tipos de configuración, la compartida, la local y la de aplicación:
+
+- Para la configuración compartida se decidió utilizar una tabla en base de datos e ingresar los valores para cada módulo como un JSON.
+- Para la Configuración Local como preferencias personales por dispositivo, datos sensibles como credenciales de recargas del usuario e información que NO DEBE SALIR del dispositivo se almacenará en un archivo en el dispositivo local usando el paquete (shared_preferences)[https://pub.dev/packages/shared_preferences].
+- La configuración de aplicación como credenciales, secrets, etc propios de eleventa (credenciales de sentry, APIs, etc) serán ingresados en el archivo config.dart cuyos valores serán modificados para el ambiente de producción por el servicio de CI.
+
+Las rutas donde se guarda la configuración local son las siguientes:
+
+- _Android_ -> SharedPreferences
+- _iOS_ -> NSUserDefaults
+- _Linux_ -> Directorio XDG_DATA_HOME
+- _macOS_ -> NSUserDefaults
+- _Windows_ -> Directorio Roaming AppData
 
 # Consecuencias
 

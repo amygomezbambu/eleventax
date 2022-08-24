@@ -176,10 +176,11 @@ class SQLiteAdapter implements IDatabaseAdapter {
     required String sql,
     List<Object?>? params,
   }) async {
-    _logger.debug(message: '[SQL] $sql [PARAMS] $params');
     if (params != null) {
+      _logger.debug(message: '[SQL] $sql [PARAMS] $params');
       await _db.execute(sql, params);
     } else {
+      _logger.debug(message: '[SQL] $sql');
       await _db.execute(sql);
     }
   }
@@ -193,8 +194,10 @@ class SQLiteAdapter implements IDatabaseAdapter {
     List<Map<String, Object?>>? dbResult;
 
     if (params != null) {
+      _logger.debug(message: '[SQL] $sql [PARAMS] $params');
       dbResult = await _db.rawQuery(sql, params);
     } else {
+      _logger.debug(message: '[SQL] $sql');
       dbResult = await _db.rawQuery(sql);
     }
 

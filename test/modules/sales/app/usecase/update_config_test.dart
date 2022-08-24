@@ -15,7 +15,10 @@ void main() {
     var updateConfig = SalesModule.updateConfig();
     var getConfig = SalesModule.getConfig();
 
-    updateConfig.request.config.shared.allowQuickItem = false;
+    var configRequest = updateConfig.request.config;
+
+    configRequest.shared.allowQuickItem = false;
+    configRequest.local.allowDiscounts = false;
 
     await updateConfig.exec();
 
@@ -23,5 +26,6 @@ void main() {
     var config = await getConfig.exec();
 
     expect(config.shared.allowQuickItem, false);
+    expect(config.local.allowDiscounts, false);
   });
 }
