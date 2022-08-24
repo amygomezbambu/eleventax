@@ -32,17 +32,10 @@ class SalesLocalConfig extends LocalConfig {
 
   bool get allowDiscounts => _allowDiscounts;
 
-  SalesLocalConfig() {
-    load();
-  }
+  SalesLocalConfig();
 
-  load() {
-    readValue<bool?>('allowDiscounts')
-        .then((value) => value ?? _allowDiscounts);
-  }
-
-  Future<void> save() async {
-    await saveValue('allowDiscounts', _allowDiscounts);
+  Map<String, Object> toMap() {
+    return {'allowDiscounts': _allowDiscounts};
   }
 }
 

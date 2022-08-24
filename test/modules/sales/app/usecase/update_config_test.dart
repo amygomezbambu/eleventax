@@ -1,4 +1,3 @@
-import 'package:eleventa/modules/sales/sales_config.dart';
 import 'package:eleventa/modules/sales/sales_module.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -16,11 +15,10 @@ void main() {
     var updateConfig = SalesModule.updateConfig();
     var getConfig = SalesModule.getConfig();
 
-    updateConfig.request.config.shared.allowQuickItem = false;
+    var configRequest = updateConfig.request.config;
 
-    await Future.delayed(const Duration(seconds: 3));
-
-    updateConfig.request.config.local.allowDiscounts = false;
+    configRequest.shared.allowQuickItem = false;
+    configRequest.local.allowDiscounts = false;
 
     await updateConfig.exec();
 

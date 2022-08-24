@@ -10,6 +10,9 @@ import 'package:eleventa/modules/common/infra/repository.dart';
 import 'package:eleventa/modules/sales/sales_config.dart';
 
 class SaleRepository extends Repository implements ISaleRepository {
+  final syncModuleName = 'sales';
+  final tableName = 'sales';
+
   SaleRepository({required ISync syncAdapter, required IDatabaseAdapter db})
       : super(syncAdapter, db);
 
@@ -132,19 +135,15 @@ class SaleRepository extends Repository implements ISaleRepository {
   }
 
   @override
-  Future<void> saveLocalConfig(SalesLocalConfig config) async {}
-
-  @override
   Future<void> saveSharedConfig(SalesSharedConfig config) async {
     //var command = 'INSERT OR REPLACE INTO config(uid,module, value) VALUES (?, ?);';
 
     //await db.command(sql: command, params: ['sales', jsonEncode(config)]);
 
-    await syncAdapter.syncChanges(
+    await syncAdapter.synchronize(
       dataset: 'config',
       rowID: config.uid.toString(),
-      // TODO: No hard codear sales
-      fields: {'module': 'sales', 'value': jsonEncode(config)},
+      fields: {'module': syncModuleName, 'value': jsonEncode(config)},
     );
   }
 

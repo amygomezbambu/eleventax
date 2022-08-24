@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:eleventa/dependencies.dart';
 import 'package:eleventa/modules/common/app/interface/database.dart';
 import 'package:eleventa/modules/common/app/interface/logger.dart';
@@ -10,7 +8,9 @@ import 'package:eleventa/modules/config/config.dart';
 import 'package:eleventa/modules/items/app/interface/item_repository.dart';
 import 'package:eleventa/modules/items/infra/item_repository.dart';
 import 'package:eleventa/modules/migrations/migrate_db.dart';
+import 'package:eleventa/modules/sales/app/interface/local_config_adapter.dart';
 import 'package:eleventa/modules/sales/app/interface/sale_repository.dart';
+import 'package:eleventa/modules/sales/infra/local_config_adapter.dart';
 import 'package:eleventa/modules/sales/infra/sale_repository.dart';
 import 'package:eleventa/modules/sync/sync.dart';
 import 'package:eleventa/modules/sync/sync_config.dart';
@@ -69,6 +69,8 @@ class TestsLoader {
     Dependencies.register((ILogger).toString(), () => Logger());
     Dependencies.register((IDatabaseAdapter).toString(), () => SQLiteAdapter());
     Dependencies.register((ISync).toString(), () => Sync.get());
+    Dependencies.register(
+        (ISaleLocalConfigAdapter).toString(), () => SaleLocalConfigAdapter());
 
     Dependencies.register(
       (ISaleRepository).toString(),
@@ -102,9 +104,8 @@ class TestsLoader {
   Future<void> init() async {
     WidgetsFlutterBinding.ensureInitialized();
 
-    //TODO: cambiarlo cuando tengamos config real
-    Config.deviceId = Random().nextInt(1000).toString();
-    Config.loggedUser = 'Alejandro Gamboa';
+    Config.deviceId = Config.deviceId;
+    Config.loggedUser = Config.loggedUser;
 
     registerDependencies();
 

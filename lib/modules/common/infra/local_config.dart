@@ -16,44 +16,36 @@ abstract class LocalConfig {
   Future<void> saveValue(String name, Object value) async {
     prefs ??= await SharedPreferences.getInstance();
 
-    switch (value.runtimeType) {
-      case int:
-        await prefs?.setInt(name, value as int);
-        break;
-      case double:
-        await prefs?.setDouble(name, value as double);
-        break;
-      case bool:
-        await prefs?.setBool(name, value as bool);
-        break;
-      case String:
-        await prefs?.setString(name, value as String);
-        break;
-      default:
-        throw UnimplementedError(
-            'No implementado: ${value.runtimeType.toString()}');
+    if (value is bool) {
+      await prefs?.setBool(name, value);
+    } else if (value is int) {
+      await prefs?.setInt(name, value);
+    } else if (value is double) {
+      await prefs?.setDouble(name, value);
+    } else if (value is String) {
+      await prefs?.setString(name, value);
+    } else {
+      throw UnimplementedError('No implementado: ${(value).toString()}');
     }
   }
 
-  Future<T> readValue<T>(String name) async {
+  Future<T?> readValue<T>(String name) async {
     prefs ??= await SharedPreferences.getInstance();
 
-    T res;
-
-    if (T is bool?) {
-      res = prefs?.getBool(name) as T;
-    } else if (T is String?) {
-      res = prefs?.getString(name) as T;
-    } else if (T is int?) {
-      res = prefs?.getInt(name) as T;
-    } else if (T is double?) {
-      res = prefs?.getDouble(name) as T;
+    if (T == bool) {
+      return (prefs?.getBool(name) != null) ? prefs?.getBool(name) as T : null;
+    } else if (T == String) {
+      return (prefs?.getString(name) != null)
+          ? prefs?.getString(name) as T
+          : null;
+    } else if (T == int) {
+      return (prefs?.getInt(name) != null) ? prefs?.getInt(name) as T : null;
+    } else if (T == double) {
+      return (prefs?.getDouble(name) != null)
+          ? prefs?.getDouble(name) as T
+          : null;
     } else {
       throw UnimplementedError('No implementado: ${T.toString()}');
     }
-
-    return res;
   }
-
-  Future<void> init() async {}
 }

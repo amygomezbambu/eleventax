@@ -13,7 +13,7 @@ class ItemRepository extends Repository implements IItemRepository {
 
   @override
   Future<void> add(Item item) async {
-    await syncAdapter.syncChanges(
+    await syncAdapter.synchronize(
       dataset: 'items',
       rowID: item.uid.toString(),
       fields: {
@@ -90,7 +90,7 @@ class ItemRepository extends Repository implements IItemRepository {
         ItemMapper.fromDomainToMap(dbItem),
       );
 
-      await syncAdapter.syncChanges(
+      await syncAdapter.synchronize(
         dataset: 'items',
         rowID: item.uid.toString(),
         fields: differences,
