@@ -22,7 +22,7 @@ jobs:
         run: flutter pub get
 
       - name: Instalar Ruby y fastlane
-        uses: ruby/setup-ruby@d5ee2364f01b3ef4a4740e4a4d3005051e122356
+        uses: ruby/setup-ruby@0a29871fe2b0200a17a4497bae54fe5df0d973aa
         with:
           ruby-version: "2.6"
           bundler-cache: true
