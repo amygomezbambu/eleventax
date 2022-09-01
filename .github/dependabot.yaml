@@ -6,7 +6,20 @@
  version: 2
  enable-beta-ecosystems: true
  updates:
+   # Probamos las ultimas versiones de las dependencias de la app de Flutter
    - package-ecosystem: "pub" # See documentation for possible values
      directory: "/" # Location of package manifests
      schedule:
        interval: "weekly"
+       day: "monday"
+       time: "09:00"
+       timezone: America/Chihuahua
+     open-pull-requests-limit: 5
+   # Probamos también las ultimas versiones de los GitHub Actions que usamos
+   - package-ecosystem: github-actions
+     directory: "/"
+     schedule:
+       interval: weekly
+       day: "monday"
+       time: "09:00"
+       timezone: America/Chihuahua
