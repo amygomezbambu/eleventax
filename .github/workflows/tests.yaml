@@ -36,4 +36,4 @@ jobs:
       #   run: flutter pub get
 
       - name: Ejecutando pruebas unitarias
-        run: flutter test —test-randomize-ordering-seed=random -rexpanded       
+        run: flutter test --test-randomize-ordering-seed=random -rexpanded       
