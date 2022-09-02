@@ -14,7 +14,7 @@ fi
 printf "✅ ✔ Flutter Analyze ejecutado correctamente.\n"
 
 printf "\e[33;1m%s\e[0m\n === Ejecutando pruebas de unidad ===\n"
-flutter test
+flutter test --test-randomize-ordering-seed=random -rexpanded   
 
 if [ $? -ne 0 ]; then  
   exit 1
