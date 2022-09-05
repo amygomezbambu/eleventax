@@ -12,7 +12,7 @@
     // Agrega el "const" y recomendaciones del linter de forma automática
     "source.fixAll": true,
     // Ordena automáticamente los imports en base a las reglas de flutter lint.
-    "source.organizeImports": false    
+    "source.organizeImports": true    
   },
   // Agrega soporte para el REGION usando la extension 
   "maptz.regionfolder": {
