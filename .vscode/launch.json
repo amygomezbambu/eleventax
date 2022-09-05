@@ -5,9 +5,20 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Dart & Flutter",
+            "name": "flutter (dev)",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "program": "lib/main.dart",
+            "env": {
+                "ENVIRONMENT1": "development"
+            },
+            "toolArgs": [
+                "--dart-define",
+                // La clave de la base de datos en modo desarrollo es 12345
+                "DB_PASSWORD=12345",
+                "--dart-define",
+                "MY_OTHER_VAR=MY_OTHER_VALUE"
+            ]
         }
     ]
 }
