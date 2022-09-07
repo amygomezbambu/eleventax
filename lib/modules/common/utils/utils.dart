@@ -1,3 +1,5 @@
+import 'package:eleventa/modules/common/utils/db_utils.dart';
+
 class Utils {
-  //static final uid = UID();
+  static DBUtils db = DBUtils();
 }

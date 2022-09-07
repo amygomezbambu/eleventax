@@ -8,10 +8,10 @@ class Migration4 extends Migration {
 
   @override
   Future<void> operation() async {
-    var command = 'CREATE TABLE config('
+    var command = 'CREATE TABLE sales_config('
         'uid text primary key,' //unique
-        'module text null,'
-        'value text null'
+        'allowQuickItem bool null,'
+        'allowZeroCost bool null'
         ');';
 
     await db.command(sql: command);
@@ -20,7 +20,7 @@ class Migration4 extends Migration {
   @override
   Future<bool> validate() async {
     const query = 'select name from sqlite_master where type = ? and name = ?;';
-    var queryResult = await db.query(sql: query, params: ['table', 'config']);
+    var queryResult = await db.query(sql: query, params: ['table', 'sales_config']);
 
     if (queryResult.isNotEmpty) {
       return true;

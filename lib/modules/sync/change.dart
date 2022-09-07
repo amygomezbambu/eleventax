@@ -114,7 +114,7 @@ class Change {
   void _determineValueType(Object? value) {
     if (value == null) {
       _valueType = value.toString();
-    } else if (value.runtimeType.toString() == 'boolean') {
+    } else if (value.runtimeType.toString() == 'bool') {
       _valueType = crdtBoolean;
     } else if (double.tryParse(value.toString()) != null) {
       _valueType = crdtNumber;
