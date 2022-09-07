@@ -1,7 +1,34 @@
-{   
-    // Perimitimos que los demas puedan correr pruebas, el proyecto, etc.
-    "liveshare.allowGuestDebugControl": true,
-    "liveshare.allowGuestTaskControl": false,
-    "liveshare.codeLens": true
-
+{
+  // Perimitimos que los demas puedan correr pruebas, el proyecto, etc.
+  "liveshare.allowGuestDebugControl": true,
+  "liveshare.allowGuestTaskControl": true,
+  // Permitimos el code lens a los invitados
+  "liveshare.codeLens": true, 
+  // Auto guardamos al salir
+  "editor.formatOnSave": true,
+  // Deshabilitamos codeLens al hacer merge en VSCode
+  "diffEditor.codeLens": false,
+  "editor.codeActionsOnSave": {
+    // Agrega el "const" y recomendaciones del linter de forma automática
+    "source.fixAll": true,
+    // Ordena automáticamente los imports en base a las reglas de flutter lint.
+    "source.organizeImports": true    
+  },
+  // Agrega soporte para el REGION usando la extension 
+  "maptz.regionfolder": {
+      "[dart]": {        
+        "foldEnd": "/* #endregion */",
+        "foldEndRegex": "/\\*[\\s]*#endregion",
+        "foldStart": "/* #region [NAME] */",
+        "foldStartRegex": "^[\\s]*/\\*[\\s]*#region[\\s]*(.*)[\\s]*\\*/[\\s]*$",
+        "defaultFoldStartRegex": "^[\\s]*/\\*[\\s]*#region[\\s]*default\\s(.*)[\\s]*\\*/[\\s]*$",
+        "foldDefinitions": [
+          {
+            "foldEndRegex": "\\*+/[\\s]*$",
+            "foldStartRegex": "^[\\s]*/\\*\\*+" ,
+            "isFoldedByDefault": true
+          }
+        ]
+      }
+    }
 }
