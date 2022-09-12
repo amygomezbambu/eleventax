@@ -8,7 +8,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Obtenemos la version de Flutter de pubspec.yaml
         id: get-flutter-version
         uses: zgosalvez/github-actions-get-flutter-version-env@v1
@@ -38,7 +38,7 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Obtenemos la version de Flutter de pubspec.yaml
         id: get-flutter-version
         uses: zgosalvez/github-actions-get-flutter-version-env@v1

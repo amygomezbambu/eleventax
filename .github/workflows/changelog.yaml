@@ -8,7 +8,7 @@ jobs:
     name: Verificar que el changelog haya sido actualizado
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - name: Verificar modificación a Changelog.md
         uses: Zomzog/changelog-checker@v1.2.0
         with:
