@@ -20,8 +20,8 @@ class PrimaryButton extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
-            elevation: 4,
-            primary: const Color(0xFF3973CE)
+            backgroundColor: const Color(0xFF3973CE),
+            elevation: 4
             //minimumSize: Size(350, 70)
             ),
         onPressed: onTap,
