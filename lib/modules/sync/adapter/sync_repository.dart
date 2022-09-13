@@ -1,5 +1,6 @@
 import 'package:eleventa/dependencies.dart';
 import 'package:eleventa/modules/common/app/interface/database.dart';
+import 'package:eleventa/modules/common/utils/utils.dart';
 import 'package:eleventa/modules/sync/change.dart';
 import 'package:eleventa/modules/sync/sync_config.dart';
 
@@ -213,7 +214,7 @@ class SyncRepository {
           change.dataset,
           change.rowId,
           change.column,
-          change.value,
+          (change.value is bool) ? Utils.db.boolToInt(change.value as bool) : change.value,
           change.valueType,
           1,
           0,

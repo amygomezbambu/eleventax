@@ -6,9 +6,11 @@ import 'package:eleventa/modules/common/utils/uid.dart';
 class SalesSharedConfig {
   UID _uid = UID();
   var _allowQuickItem = true;
+  var _allowZeroCost = true;
 
   UID get uid => _uid;
   bool get allowQuickItem => _allowQuickItem;
+  bool get allowZeroCost => _allowZeroCost;
 
   set allowQuickItem(bool value) {
     _allowQuickItem = value;
@@ -16,11 +18,9 @@ class SalesSharedConfig {
 
   SalesSharedConfig();
 
-  SalesSharedConfig.load(UID uid, Map<String, dynamic> jsonValues)
-      : _allowQuickItem = jsonValues['allowQuickItem'],
-        _uid = uid;
-
-  Map<String, dynamic> toJson() => {'allowQuickItem': _allowQuickItem};
+  SalesSharedConfig.load({required UID uid, required bool allowQuickItem, required bool allowZeroCost})
+      : _uid = uid, _allowQuickItem = allowQuickItem, _allowZeroCost = allowZeroCost;
+      
 }
 
 class SalesLocalConfig extends LocalConfig {

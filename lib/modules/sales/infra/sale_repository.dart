@@ -1,8 +1,8 @@
-import 'dart:convert';
 import 'package:eleventa/modules/common/app/interface/database.dart';
 import 'package:eleventa/modules/common/app/interface/sync.dart';
 import 'package:eleventa/modules/common/utils/uid.dart';
 import 'package:eleventa/modules/common/exception/exception.dart';
+import 'package:eleventa/modules/common/utils/utils.dart';
 import 'package:eleventa/modules/sales/app/interface/sale_repository.dart';
 import 'package:eleventa/modules/sales/domain/entity/sale.dart';
 import 'package:eleventa/modules/sales/domain/entity/sale_item.dart';
@@ -141,9 +141,12 @@ class SaleRepository extends Repository implements ISaleRepository {
     //await db.command(sql: command, params: ['sales', jsonEncode(config)]);
 
     await syncAdapter.synchronize(
-      dataset: 'config',
+      dataset: 'sales_config',
       rowID: config.uid.toString(),
-      fields: {'module': syncModuleName, 'value': jsonEncode(config)},
+      fields: {
+        'allowQuickItem': config.allowQuickItem,
+        'allowZeroCost': config.allowZeroCost
+      },
     );
   }
 
@@ -151,16 +154,16 @@ class SaleRepository extends Repository implements ISaleRepository {
   Future<SalesSharedConfig> getSharedConfig() async {
     SalesSharedConfig sharedConfig;
 
-    var query = 'SELECT uid,value FROM config WHERE module = ?';
+    var query = 'SELECT * FROM sales_config';
 
-    var dbResult = await db.query(sql: query, params: ['sales']);
+    var dbResult = await db.query(sql: query);
 
     if (dbResult.length == 1) {
-      var json = jsonDecode(dbResult.first['value'].toString());
       sharedConfig = SalesSharedConfig.load(
-        UID(dbResult.first['uid'].toString()),
-        json,
-      );
+          uid: UID(dbResult.first['uid'].toString()),
+          allowQuickItem:
+              Utils.db.intToBool(dbResult.first['allowQuickItem'] as int),
+          allowZeroCost: Utils.db.intToBool(dbResult.first['allowZeroCost'] as int));
     } else {
       throw EleventaException(
           message: 'No hay valores de configuración del módulo');
