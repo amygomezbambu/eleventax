@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:eleventa/globals.dart';
 import 'package:eleventa/modules/common/app/interface/logger.dart';
 import 'package:eleventa/modules/common/exception/exception.dart';
-import 'package:eleventa/modules/config/config.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart' as log;
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -63,8 +63,8 @@ class Logger implements ILogger {
   void error({required Object ex, StackTrace? stackTrace}) async {
     var logEntry = LogEntry();
 
-    logEntry.deviceId = Config.deviceId;
-    logEntry.userId = Config.loggedUser;
+    logEntry.deviceId = appConfig.deviceId.toString();
+    logEntry.userId = appConfig.loggedUser;
 
     if (ex is EleventaException) {
       logEntry.exception = ex;

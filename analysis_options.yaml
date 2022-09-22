@@ -18,3 +18,5 @@ linter:
   rules:
     # Acordamos importar archivos siempre via rutas absolutas y package:
     - always_use_package_imports
+    # Advertir si ejecutamos Futures sin await
+    - unawaited_futures

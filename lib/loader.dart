@@ -1,10 +1,10 @@
 import 'package:eleventa/dependencies.dart';
+import 'package:eleventa/globals.dart';
 import 'package:eleventa/modules/common/app/interface/database.dart';
 import 'package:eleventa/modules/common/app/interface/logger.dart';
 import 'package:eleventa/modules/common/app/interface/sync.dart';
 import 'package:eleventa/modules/common/infra/logger.dart';
 import 'package:eleventa/modules/common/infra/sqlite_adapter.dart';
-import 'package:eleventa/modules/config/config.dart';
 import 'package:eleventa/modules/items/app/interface/item_repository.dart';
 import 'package:eleventa/modules/items/infra/item_repository.dart';
 import 'package:eleventa/modules/migrations/migrate_db.dart';
@@ -52,7 +52,7 @@ class Loader {
         dbVersionTable: 'migrations',
         dbVersionField: 'version',
         groupId: 'CH0001',
-        deviceId: Config.deviceId,
+        deviceId: appConfig.deviceId.toString(),
         addChangesEndpoint:
             'https://qgfy59gc83.execute-api.us-west-1.amazonaws.com/dev/sync',
         getChangesEndpoint:
@@ -99,9 +99,8 @@ class Loader {
   Future<void> init() async {
     WidgetsFlutterBinding.ensureInitialized();
 
-    //load Config
-
     registerDependencies();
+    await appConfig.load();
 
     await initLogging();
     await initDatabase();

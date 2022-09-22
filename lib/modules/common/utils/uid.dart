@@ -26,6 +26,12 @@ class UID {
   }
 
   @override
+  // ignore: hash_and_equals
+  bool operator ==(Object other) {
+    return other is UID && (toString() == other.toString());
+  }
+
+  @override
   String toString() {
     return _identifier;
   }

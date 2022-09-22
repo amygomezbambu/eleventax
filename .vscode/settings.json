@@ -9,9 +9,8 @@
   // Deshabilitamos codeLens al hacer merge en VSCode
   "diffEditor.codeLens": false,
   "editor.codeActionsOnSave": {
-   
     // Ordena automáticamente los imports en base a las reglas de flutter lint.
-    "source.organizeImports": true
+    "source.organizeImports": false
   },
   // Agrega soporte para el REGION usando la extension
   "maptz.regionfolder": {

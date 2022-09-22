@@ -35,7 +35,7 @@ void main() {
 
       getItem.request.sku = sku;
 
-      expectLater(getItem.exec(), throwsA(isA<Exception>()));
+      await expectLater(getItem.exec(), throwsA(isA<Exception>()));
     });
   });
 }
