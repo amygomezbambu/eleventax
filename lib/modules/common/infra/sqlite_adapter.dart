@@ -20,6 +20,9 @@ import 'package:eleventa/modules/common/infra/environment.dart';
 class SQLiteAdapter implements IDatabaseAdapter {
   late final Database _db;
   final _logger = Dependencies.infra.logger();
+
+  var _verbose = false;
+
   // Librerias de las que se depende en Windows
   static const libcryptoWindowsLibrary = 'libcrypto-1_1-x64.dll';
   static const sslWindowsLibrary = 'libssl-1_1-x64.dll';
@@ -108,7 +111,8 @@ class SQLiteAdapter implements IDatabaseAdapter {
   }
 
   @override
-  Future<void> connect() async {
+  Future<void> connect({bool verbose = false}) async {
+    _verbose = verbose;
     String dbPath = '';
 
     final DatabaseFactory dbFactory =
@@ -146,7 +150,7 @@ class SQLiteAdapter implements IDatabaseAdapter {
       });
 
       // Mostramos la versión de la base de datos (user version)
-      _db.getVersion().then(
+      await _db.getVersion().then(
           (value) => {_logger.info('Database Version: ${value.toString()}')});
 
       await _db.rawQuery("PRAGMA cipher_version").then((result) {
@@ -177,10 +181,14 @@ class SQLiteAdapter implements IDatabaseAdapter {
     List<Object?>? params,
   }) async {
     if (params != null) {
-      _logger.debug(message: '[SQL] $sql [PARAMS] $params');
+      if (_verbose) {
+        _logger.debug(message: '[SQL] $sql [PARAMS] $params');
+      }
       await _db.execute(sql, params);
     } else {
-      _logger.debug(message: '[SQL] $sql');
+      if (_verbose) {
+        _logger.debug(message: '[SQL] $sql');
+      }
       await _db.execute(sql);
     }
   }
@@ -194,10 +202,16 @@ class SQLiteAdapter implements IDatabaseAdapter {
     List<Map<String, Object?>>? dbResult;
 
     if (params != null) {
-      _logger.debug(message: '[SQL] $sql [PARAMS] $params');
+      if (_verbose) {
+        _logger.debug(message: '[SQL] $sql [PARAMS] $params');
+      }
+
       dbResult = await _db.rawQuery(sql, params);
     } else {
-      _logger.debug(message: '[SQL] $sql');
+      if (_verbose) {
+        _logger.debug(message: '[SQL] $sql');
+      }
+
       dbResult = await _db.rawQuery(sql);
     }
 

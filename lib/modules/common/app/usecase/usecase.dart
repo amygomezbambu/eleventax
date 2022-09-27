@@ -11,13 +11,13 @@ import 'package:meta/meta.dart';
 ///[T] es el tipo de dato que devuelve el caso de uso al ejecuta exec()
 class Usecase<T> {
   @protected
-  final IRepository<Entity> repo;
+  final IRepository<Entity>? repo;
   @protected
   late ILogger logger;
   @protected
   late final Future<T> Function() operation;
 
-  Usecase(this.repo, [ILogger? logger]) {
+  Usecase([this.repo, ILogger? logger]) {
     this.logger = (logger != null) ? logger : Dependencies.infra.logger();
   }
 
@@ -26,14 +26,14 @@ class Usecase<T> {
 
     late T result;
 
-    await repo.transaction();
+    await repo?.transaction();
 
     try {
       result = await operation();
 
-      await repo.commit();
+      await repo?.commit();
     } catch (ex, stackTrace) {
-      await repo.rollback();
+      await repo?.rollback();
 
       logException(ex, stackTrace);
 

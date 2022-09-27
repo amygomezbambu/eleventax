@@ -25,10 +25,14 @@ class MigrationRepository {
 
     if (version == 0) {
       await _db.command(
-          sql: 'insert into migrations(version) values(?)', params: [version]);
+        sql: 'insert into migrations(version) values(?);',
+        params: [version],
+      );
     } else {
-      await _db
-          .command(sql: 'update migrations set version = ?', params: [version]);
+      await _db.command(
+        sql: 'update migrations set version = ?;',
+        params: [version],
+      );
     }
   }
 

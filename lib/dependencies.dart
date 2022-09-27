@@ -16,7 +16,8 @@ class _DependenciesModule {
 
       return concrete as T;
     } else {
-      throw AssertionError('No se encontró un registro para esta dependencia');
+      throw AssertionError(
+          'No se encontró un registro para esta dependencia: ${T.toString()}');
     }
   }
 }

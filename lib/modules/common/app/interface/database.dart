@@ -1,6 +1,6 @@
 abstract class IDatabaseAdapter {
   /// Create a connection to the dabatase
-  Future<void> connect();
+  Future<void> connect({bool verbose = false});
   Future<void> command({
     required String sql,
     List<Object?>? params,
