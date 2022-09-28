@@ -12,7 +12,7 @@ jobs:
         os: [windows-latest]
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Obtenemos la version de Flutter de pubspec.yaml
         id: get-flutter-version
         uses: zgosalvez/github-actions-get-flutter-version-env@v1
@@ -21,16 +21,14 @@ jobs:
           channel: "stable"
           architecture: x64
           flutter-version: ${{ steps.get-flutter-version.outputs.version }}
-        
 
-      # Copiamos los DLLs a la carpeta donde se ejecutan las pruebas de unidad      
-      - name: Copiamos DLLs de SQLite para que funcionen las pruebas (solo Windows)      
+      # Copiamos los DLLs a la carpeta donde se ejecutan las pruebas de unidad
+      - name: Copiamos DLLs de SQLite para que funcionen las pruebas (solo Windows)
         if: runner.os == 'Windows'
-        run: 
-          Copy-Item -Path "assets/windows/*" -Destination "${{ env.FLUTTER_ROOT }}\bin\cache\artifacts\engine\windows-x64"
+        run: Copy-Item -Path "assets/windows/*" -Destination "${{ env.FLUTTER_ROOT }}\bin\cache\artifacts\engine\windows-x64"
 
       # - name: Instalar dependencias
       #   run: flutter pub get
 
       - name: Ejecutando pruebas unitarias
-        run: flutter test --test-randomize-ordering-seed=random -rexpanded       
+        run: flutter test --test-randomize-ordering-seed=random -rexpanded --dart-define=TELEMETRY_TOKEN=d3e87d780b5ab79cecdde683eeffbaa3 --dart-define=DB_PASSWORD=12345
