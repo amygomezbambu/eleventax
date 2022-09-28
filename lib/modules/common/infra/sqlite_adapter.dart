@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:eleventa/dependencies.dart';
+import 'package:eleventa/globals.dart';
 import 'package:eleventa/modules/common/app/interface/database.dart';
 import 'package:eleventa/modules/common/exception/exception.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,6 @@ import 'package:sqflite_common/sqlite_api.dart';
 import 'package:sqlcipher_flutter_libs/sqlcipher_flutter_libs.dart';
 import 'package:sqlite3/open.dart';
 import 'dart:ffi';
-import 'package:eleventa/modules/common/infra/environment.dart';
 
 class SQLiteAdapter implements IDatabaseAdapter {
   late final Database _db;
@@ -133,7 +133,8 @@ class SQLiteAdapter implements IDatabaseAdapter {
         options: OpenDatabaseOptions(
             version: 1,
             onConfigure: (db) async {
-              await db.rawQuery("PRAGMA KEY='${Environment.databasePassword}'");
+              await db.rawQuery(
+                  "PRAGMA KEY='${appConfig.secrets.databasePassword}'");
               // Verificamos que al preguntarle SQLite nos confirme que
               // estamos usando una conexion con SQLCipher
               assert(_debugCheckHasCipher(db));

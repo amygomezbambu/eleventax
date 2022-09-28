@@ -3,7 +3,23 @@ import 'package:eleventa/modules/common/utils/uid.dart';
 
 enum WindowMode { normal, maximized }
 
+class Secrets {
+  static String _databasePassword = '';
+  static String _telemetryToken = '';
+
+  String get databasePassword => _databasePassword;
+  String get telemetryToken => _telemetryToken;
+
+  Secrets() {
+    _telemetryToken = const String.fromEnvironment('TELEMETRY_TOKEN');
+    _databasePassword =
+        const String.fromEnvironment('DB_PASSWORD', defaultValue: "123");
+  }
+}
+
 class AppConfig extends LocalConfig {
+  final secrets = Secrets();
+
   WindowMode windowMode = WindowMode.normal;
   late UID deviceId;
   var loggedUser = 'Jhon Doe';

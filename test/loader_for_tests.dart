@@ -3,6 +3,7 @@ import 'package:eleventa/globals.dart';
 import 'package:eleventa/modules/common/app/interface/database.dart';
 import 'package:eleventa/modules/common/app/interface/logger.dart';
 import 'package:eleventa/modules/common/app/interface/sync.dart';
+import 'package:eleventa/modules/common/app/interface/telemetry.dart';
 import 'package:eleventa/modules/common/infra/logger.dart';
 import 'package:eleventa/modules/common/infra/sqlite_adapter.dart';
 import 'package:eleventa/modules/items/app/interface/item_repository.dart';
@@ -14,6 +15,7 @@ import 'package:eleventa/modules/sales/infra/local_config_adapter.dart';
 import 'package:eleventa/modules/sales/infra/sale_repository.dart';
 import 'package:eleventa/modules/sync/sync.dart';
 import 'package:eleventa/modules/sync/sync_config.dart';
+import 'package:eleventa/modules/common/infra/telemetry_adapter.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -71,6 +73,8 @@ class TestsLoader {
     Dependencies.register((ISync).toString(), () => Sync.get());
     Dependencies.register(
         (ISaleLocalConfigAdapter).toString(), () => SaleLocalConfigAdapter());
+    Dependencies.register(
+        (ITelemetryAdapter).toString(), () => TelemetryAdapter());
 
     Dependencies.register(
       (ISaleRepository).toString(),
@@ -100,9 +104,10 @@ class TestsLoader {
     WidgetsFlutterBinding.ensureInitialized();
     SharedPreferences.setMockInitialValues({});
 
+    await appConfig.load();
+
     registerDependencies();
 
-    await appConfig.load();
     await initLogging();
     await initDatabase();
     await initSync();
