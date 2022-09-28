@@ -37,6 +37,7 @@ class Logger implements ILogger {
       await SentryFlutter.init(
         (options) {
           // TODO: Sacar el DSN a variable de entorno
+          // TODO: Sacar los secrets de launch.json
           options.dsn =
               'https://6a10edb2c5694e23a193d9feddc8df5e@o76265.ingest.sentry.io/6635342';
           options.tracesSampleRate = 1.0;

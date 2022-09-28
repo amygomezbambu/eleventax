@@ -13,11 +13,12 @@
                 "ENVIRONMENT1": "development"
             },
             "toolArgs": [
-                "--dart-define",
+                //TODO: cambiar estos secrets 
+                //"--dart-define",
                 // La clave de la base de datos en modo desarrollo es 12345
-                "DB_PASSWORD=12345",
-                "--dart-define",
-                "MY_OTHER_VAR=MY_OTHER_VALUE"
+                //"DB_PASSWORD=12345",
+                //"--dart-define",
+                //"TELEMETRY_TOKEN=d3e87d780b5ab79cecdde683eeffbaa3"
             ]
         }
     ]

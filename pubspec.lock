@@ -262,6 +262,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.8.0"
+  mixpanel_analytics:
+    dependency: "direct main"
+    description:
+      name: mixpanel_analytics
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.1"
   murmurhash:
     dependency: "direct main"
     description:

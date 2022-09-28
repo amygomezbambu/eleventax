@@ -1,6 +1,7 @@
 import 'package:eleventa/modules/common/app/interface/database.dart';
 import 'package:eleventa/modules/common/app/interface/sync.dart';
 import 'package:eleventa/modules/common/app/interface/logger.dart';
+import 'package:eleventa/modules/common/app/interface/telemetry.dart';
 import 'package:eleventa/modules/items/app/interface/item_repository.dart';
 import 'package:eleventa/modules/sales/app/interface/local_config_adapter.dart';
 import 'package:eleventa/modules/sales/app/interface/sale_repository.dart';
@@ -35,6 +36,10 @@ class InfraStructureDependencies extends _DependenciesModule {
 
   ISync syncAdapter() {
     return obtainDependency<ISync>();
+  }
+
+  ITelemetryAdapter telemetryAdapter() {
+    return obtainDependency<ITelemetryAdapter>();
   }
 }
 
