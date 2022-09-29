@@ -80,14 +80,14 @@ class Loader {
     Dependencias.registrar(
       (IRepositorioDeVentas).toString(),
       () => RepositorioVentas(
-        syncAdapter: Dependencias.infra.adaptadorSync(),
+        syncAdapter: Dependencias.infra.sync(),
         db: Dependencias.infra.database(),
       ),
     );
     Dependencias.registrar(
       (IRepositorioArticulos).toString(),
       () => RepositorioProductos(
-        syncAdapter: Dependencias.infra.adaptadorSync(),
+        syncAdapter: Dependencias.infra.sync(),
         db: Dependencias.infra.database(),
       ),
     );

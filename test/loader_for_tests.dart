@@ -1,9 +1,11 @@
 import 'package:eleventa/dependencias.dart';
 import 'package:eleventa/globals.dart';
 import 'package:eleventa/modulos/common/app/interface/database.dart';
+import 'package:eleventa/modulos/common/app/interface/dispositivo.dart';
 import 'package:eleventa/modulos/common/app/interface/logger.dart';
 import 'package:eleventa/modulos/common/app/interface/sync.dart';
 import 'package:eleventa/modulos/common/app/interface/telemetria.dart';
+import 'package:eleventa/modulos/common/infra/adaptador_dispositivo.dart';
 import 'package:eleventa/modulos/common/infra/logger.dart';
 import 'package:eleventa/modulos/common/infra/adaptador_sqlite.dart';
 import 'package:eleventa/modulos/productos/app/interface/repositorio_productos.dart';
@@ -76,18 +78,20 @@ class TestsLoader {
         () => AdaptadorDeConfigLocalDeVentas());
     Dependencias.registrar(
         (IAdaptadorDeTelemetria).toString(), () => AdaptadorDeTelemetria());
+    Dependencias.registrar(
+        (IAdaptadorDeDispositivo).toString(), () => AdaptadorDeDispositivo());
 
     Dependencias.registrar(
       (IRepositorioDeVentas).toString(),
       () => RepositorioVentas(
-        syncAdapter: Dependencias.infra.adaptadorSync(),
+        syncAdapter: Dependencias.infra.sync(),
         db: Dependencias.infra.database(),
       ),
     );
     Dependencias.registrar(
       (IRepositorioArticulos).toString(),
       () => RepositorioProductos(
-        syncAdapter: Dependencias.infra.adaptadorSync(),
+        syncAdapter: Dependencias.infra.sync(),
         db: Dependencias.infra.database(),
       ),
     );

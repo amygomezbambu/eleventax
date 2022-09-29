@@ -54,6 +54,7 @@ dependencies:
   path_provider_macos: ^2.0.6
   path_provider: ^2.0.11
   mixpanel_analytics: ^2.1.1
+  device_info_plus: ^4.1.2
 
 dev_dependencies:
   integration_test:
