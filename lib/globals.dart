@@ -1,3 +1,3 @@
-import 'package:eleventa/modules/config/app_config.dart';
+import 'package:eleventa/modulos/config/app_config.dart';
 
 var appConfig = AppConfig();

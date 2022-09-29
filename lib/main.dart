@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:eleventa/modules/sales/ui/sales_page.dart';
+import 'package:eleventa/modulos/ventas/ui/sales_page.dart';
 import 'package:flutter_tailwindcss_defaults/colors.dart';
 import 'package:eleventa/loader.dart';
 
 void main() async {
   var loader = Loader();
-  await loader.init();
+  await loader.iniciar();
 
   runApp(const EleventaApp());
 }
@@ -29,7 +29,7 @@ class EleventaApp extends StatelessWidget {
           splashColor: Colors.transparent,
           highlightColor: Colors.transparent,
           hoverColor: Colors.transparent),
-      home: const SafeArea(child: SalesPage(title: 'Ventas')),
+      home: const SafeArea(child: PaginaVentas(title: 'Ventas')),
     );
   }
 }
