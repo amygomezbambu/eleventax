@@ -1,6 +1,6 @@
 import 'package:eleventa/loader.dart';
-import 'package:eleventa/modules/common/ui/primary_button.dart';
-import 'package:eleventa/modules/sales/ui/sales_page.dart';
+import 'package:eleventa/modulos/common/ui/primary_button.dart';
+import 'package:eleventa/modulos/ventas/ui/sales_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -19,7 +19,7 @@ void main() {
   group('Agregar articulos a venta', () {
     setUpAll(() async {
       var loader = Loader();
-      await loader.init();
+      await loader.iniciar();
     });
 
     testWidgets('Verificar que exista botón de cobrar',

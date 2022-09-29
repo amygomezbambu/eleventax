@@ -1,19 +1,21 @@
-import 'package:eleventa/dependencies.dart';
+import 'package:eleventa/dependencias.dart';
 import 'package:eleventa/globals.dart';
-import 'package:eleventa/modules/common/app/interface/database.dart';
-import 'package:eleventa/modules/common/app/interface/logger.dart';
-import 'package:eleventa/modules/common/app/interface/sync.dart';
-import 'package:eleventa/modules/common/infra/logger.dart';
-import 'package:eleventa/modules/common/infra/sqlite_adapter.dart';
-import 'package:eleventa/modules/items/app/interface/item_repository.dart';
-import 'package:eleventa/modules/items/infra/item_repository.dart';
-import 'package:eleventa/modules/migrations/migrate_db.dart';
-import 'package:eleventa/modules/sales/app/interface/local_config_adapter.dart';
-import 'package:eleventa/modules/sales/app/interface/sale_repository.dart';
-import 'package:eleventa/modules/sales/infra/local_config_adapter.dart';
-import 'package:eleventa/modules/sales/infra/sale_repository.dart';
-import 'package:eleventa/modules/sync/sync.dart';
-import 'package:eleventa/modules/sync/sync_config.dart';
+import 'package:eleventa/modulos/common/app/interface/database.dart';
+import 'package:eleventa/modulos/common/app/interface/logger.dart';
+import 'package:eleventa/modulos/common/app/interface/sync.dart';
+import 'package:eleventa/modulos/common/app/interface/telemetria.dart';
+import 'package:eleventa/modulos/common/infra/logger.dart';
+import 'package:eleventa/modulos/common/infra/adaptador_sqlite.dart';
+import 'package:eleventa/modulos/common/infra/adaptador_telemetria.dart';
+import 'package:eleventa/modulos/productos/app/interface/repositorio_productos.dart';
+import 'package:eleventa/modulos/productos/infra/repositorio_productos.dart';
+import 'package:eleventa/modulos/migraciones/migrar_db.dart';
+import 'package:eleventa/modulos/ventas/app/interface/adaptador_de_config_local.dart';
+import 'package:eleventa/modulos/ventas/app/interface/repositorio_ventas.dart';
+import 'package:eleventa/modulos/ventas/infra/adaptador_de_config_local.dart';
+import 'package:eleventa/modulos/ventas/infra/repositorio_ventas.dart';
+import 'package:eleventa/modulos/sync/sync.dart';
+import 'package:eleventa/modulos/sync/sync_config.dart';
 import 'package:flutter/material.dart';
 
 /// Inicializador de la aplicacion
@@ -21,7 +23,7 @@ import 'package:flutter/material.dart';
 /// carga todos los objetos y datos necesarios para que la aplicación
 /// funcione correctamente
 class Loader {
-  late IDatabaseAdapter dbAdapter;
+  late IAdaptadorDeBaseDeDatos adaptadorDB;
   late ILogger logger;
 
   /* #region Singleton */
@@ -34,19 +36,19 @@ class Loader {
   Loader._internal();
   /* #endregion */
 
-  Future<void> initLogging() async {
-    logger = Dependencies.infra.logger();
+  Future<void> iniciarLogging() async {
+    logger = Dependencias.infra.logger();
 
-    await logger.init(
+    await logger.iniciar(
       config: LoggerConfig(
-        remoteLevels: [LoggerLevels.error],
-        fileLevels: [LoggerLevels.error, LoggerLevels.warning],
-        consoleLevels: [LoggerLevels.all],
+        nivelesRemotos: [NivelDeLog.error],
+        nivelesDeArchivo: [NivelDeLog.error, NivelDeLog.warning],
+        nivelesDeConsola: [NivelDeLog.all],
       ),
     );
   }
 
-  Future<void> initSync() async {
+  Future<void> iniciarSync() async {
     var sync_ = Sync.create(
       syncConfig: SyncConfig.create(
         dbVersionTable: 'migrations',
@@ -65,45 +67,48 @@ class Loader {
     await sync_.initListening();
   }
 
-  void registerDependencies() {
-    Dependencies.register((ILogger).toString(), () => Logger());
-    Dependencies.register((IDatabaseAdapter).toString(), () => SQLiteAdapter());
-    Dependencies.register((ISync).toString(), () => Sync.get());
-    Dependencies.register(
-        (ISaleLocalConfigAdapter).toString(), () => SaleLocalConfigAdapter());
+  void registrarDependencias() {
+    Dependencias.registrar((ILogger).toString(), () => Logger());
+    Dependencias.registrar(
+        (IAdaptadorDeBaseDeDatos).toString(), () => AdaptadorSQLite());
+    Dependencias.registrar((ISync).toString(), () => Sync.get());
+    Dependencias.registrar((IAdaptadorDeConfigLocalDeVentas).toString(),
+        () => AdaptadorDeConfigLocalDeVentas());
+    Dependencias.registrar(
+        (IAdaptadorDeTelemetria).toString(), () => AdaptadorDeTelemetria());
 
-    Dependencies.register(
-      (ISaleRepository).toString(),
-      () => SaleRepository(
-        syncAdapter: Dependencies.infra.syncAdapter(),
-        db: Dependencies.infra.database(),
+    Dependencias.registrar(
+      (IRepositorioDeVentas).toString(),
+      () => RepositorioVentas(
+        syncAdapter: Dependencias.infra.adaptadorSync(),
+        db: Dependencias.infra.database(),
       ),
     );
-    Dependencies.register(
-      (IItemRepository).toString(),
-      () => ItemRepository(
-        syncAdapter: Dependencies.infra.syncAdapter(),
-        db: Dependencies.infra.database(),
+    Dependencias.registrar(
+      (IRepositorioArticulos).toString(),
+      () => RepositorioProductos(
+        syncAdapter: Dependencias.infra.adaptadorSync(),
+        db: Dependencias.infra.database(),
       ),
     );
   }
 
-  Future<void> initDatabase() async {
-    dbAdapter = Dependencies.infra.database();
-    await dbAdapter.connect();
+  Future<void> iniciarDB() async {
+    adaptadorDB = Dependencias.infra.database();
+    await adaptadorDB.conectar();
 
-    var migrateDB = MigrateDB();
-    await migrateDB.exec();
+    var migrarDB = MigrarDB();
+    await migrarDB.exec();
   }
 
-  Future<void> init() async {
+  Future<void> iniciar() async {
     WidgetsFlutterBinding.ensureInitialized();
 
-    registerDependencies();
-    await appConfig.load();
+    registrarDependencias();
+    await appConfig.cargar();
 
-    await initLogging();
-    await initDatabase();
-    await initSync();
+    await iniciarLogging();
+    await iniciarDB();
+    await iniciarSync();
   }
 }

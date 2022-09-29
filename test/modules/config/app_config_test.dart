@@ -1,5 +1,5 @@
-import 'package:eleventa/modules/common/utils/uid.dart';
-import 'package:eleventa/modules/config/app_config.dart';
+import 'package:eleventa/modulos/common/utils/uid.dart';
+import 'package:eleventa/modulos/config/app_config.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../loader_for_tests.dart';
@@ -9,13 +9,13 @@ void main() {
     TestWidgetsFlutterBinding.ensureInitialized();
 
     TestsLoader loader = TestsLoader();
-    await loader.init();
+    await loader.iniciar();
   });
 
   test('Debe generar los datos iniciales si no existen.', () async {
     AppConfig appConfig = AppConfig();
 
-    await appConfig.load();
+    await appConfig.cargar();
 
     expect(appConfig.deviceId, isNotNull);
   });
@@ -28,7 +28,7 @@ void main() {
     var prefs = await SharedPreferences.getInstance();
     await prefs.setString('deviceId', uid.toString());
 
-    await appConfig.load();
+    await appConfig.cargar();
 
     expect(appConfig.deviceId, uid);
   });
