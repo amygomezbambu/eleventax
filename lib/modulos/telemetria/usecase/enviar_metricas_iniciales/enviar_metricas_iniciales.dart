@@ -22,6 +22,12 @@ class EnviarMetricasInicialesUseCase extends Usecase<void> {
     await _telemetria.nuevoEvento(EventoDeTelemetria.appIniciada, {
       '\$os': info.sistemaOperativo,
       '\$screen_height': info.altoPantalla,
+      '\$screen_width': info.anchoPantalla,
+      '\$manufacturer': info.fabricante,
+      '\$model': info.modelo,
+      '\$device': info.nombre,
+      'Lenguaje Dispositivo': info.lenguajeConfigurado,
+      'Zona Horaria': info.zonaHoraria,
     });
   }
 }

@@ -8,7 +8,7 @@ import '../../../loader_for_tests.dart';
 void main() {
   setUpAll(() async {
     final loader = TestsLoader();
-    await loader.iniciar();
+    await loader.iniciar(); 
   });
   test(
     'debe enviar los eventos si esta configurado correctamente',

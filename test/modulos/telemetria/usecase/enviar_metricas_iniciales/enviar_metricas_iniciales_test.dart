@@ -5,6 +5,8 @@ import '../../../../loader_for_tests.dart';
 
 void main() {
   setUpAll(() async {
+    //PackageInfo.setMockInitialValues(appName: "abc", packageName: "com.example.example", version: "1.0", buildNumber: "2", buildSignature: "buildSignature");
+
     final loader = TestsLoader();
     await loader.iniciar();
   });

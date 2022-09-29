@@ -1,16 +1,18 @@
 PODS:
+  - device_info_plus_macos (0.0.1):
+    - FlutterMacOS
   - FlutterMacOS (1.0.0)
   - package_info_plus_macos (0.0.1):
     - FlutterMacOS
   - path_provider_macos (0.0.1):
     - FlutterMacOS
-  - Sentry (7.23.0):
-    - Sentry/Core (= 7.23.0)
-  - Sentry/Core (7.23.0)
+  - Sentry (7.25.1):
+    - Sentry/Core (= 7.25.1)
+  - Sentry/Core (7.25.1)
   - sentry_flutter (0.0.1):
     - Flutter
     - FlutterMacOS
-    - Sentry (~> 7.23.0)
+    - Sentry (~> 7.25.1)
   - shared_preferences_macos (0.0.1):
     - FlutterMacOS
   - SQLCipher (4.5.2):
@@ -23,6 +25,7 @@ PODS:
     - SQLCipher (~> 4.5.0)
 
 DEPENDENCIES:
+  - device_info_plus_macos (from `Flutter/ephemeral/.symlinks/plugins/device_info_plus_macos/macos`)
   - FlutterMacOS (from `Flutter/ephemeral`)
   - package_info_plus_macos (from `Flutter/ephemeral/.symlinks/plugins/package_info_plus_macos/macos`)
   - path_provider_macos (from `Flutter/ephemeral/.symlinks/plugins/path_provider_macos/macos`)
@@ -36,6 +39,8 @@ SPEC REPOS:
     - SQLCipher
 
 EXTERNAL SOURCES:
+  device_info_plus_macos:
+    :path: Flutter/ephemeral/.symlinks/plugins/device_info_plus_macos/macos
   FlutterMacOS:
     :path: Flutter/ephemeral
   package_info_plus_macos:
@@ -50,11 +55,12 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/sqlcipher_flutter_libs/macos
 
 SPEC CHECKSUMS:
+  device_info_plus_macos: 1ad388a1ef433505c4038e7dd9605aadd1e2e9c7
   FlutterMacOS: ae6af50a8ea7d6103d888583d46bd8328a7e9811
   package_info_plus_macos: f010621b07802a241d96d01876d6705f15e77c1c
   path_provider_macos: 3c0c3b4b0d4a76d2bf989a913c2de869c5641a19
-  Sentry: a0d4563fa4ddacba31fdcc35daaa8573d87224d6
-  sentry_flutter: 8bde7d0e57a721727fe573f13bb292c497b5a249
+  Sentry: dd29c18c32b0af9269949f079cf631d581ca76ca
+  sentry_flutter: 544b23de27343d0cd12d8d16b0fac71dc884f0e6
   shared_preferences_macos: a64dc611287ed6cbe28fd1297898db1336975727
   SQLCipher: f5b4857434158b571a3ed3b10b3b43cd18ef5f67
   sqlcipher_flutter_libs: 38ad87bfba1bc2f3813513b7d3996fb6bd49fed6

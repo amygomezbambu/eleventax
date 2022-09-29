@@ -1,15 +1,18 @@
 import 'package:eleventa/dependencias.dart';
 import 'package:eleventa/globals.dart';
 import 'package:eleventa/modulos/common/app/interface/database.dart';
+import 'package:eleventa/modulos/common/app/interface/dispositivo.dart';
 import 'package:eleventa/modulos/common/app/interface/logger.dart';
 import 'package:eleventa/modulos/common/app/interface/sync.dart';
 import 'package:eleventa/modulos/common/app/interface/telemetria.dart';
+import 'package:eleventa/modulos/common/infra/adaptador_dispositivo.dart';
 import 'package:eleventa/modulos/common/infra/logger.dart';
 import 'package:eleventa/modulos/common/infra/adaptador_sqlite.dart';
 import 'package:eleventa/modulos/common/infra/adaptador_telemetria.dart';
 import 'package:eleventa/modulos/productos/app/interface/repositorio_productos.dart';
 import 'package:eleventa/modulos/productos/infra/repositorio_productos.dart';
 import 'package:eleventa/modulos/migraciones/migrar_db.dart';
+import 'package:eleventa/modulos/telemetria/modulo_telemetria.dart';
 import 'package:eleventa/modulos/ventas/app/interface/adaptador_de_config_local.dart';
 import 'package:eleventa/modulos/ventas/app/interface/repositorio_ventas.dart';
 import 'package:eleventa/modulos/ventas/infra/adaptador_de_config_local.dart';
@@ -76,6 +79,8 @@ class Loader {
         () => AdaptadorDeConfigLocalDeVentas());
     Dependencias.registrar(
         (IAdaptadorDeTelemetria).toString(), () => AdaptadorDeTelemetria());
+    Dependencias.registrar(
+        (IAdaptadorDeDispositivo).toString(), () => AdaptadorDeDispositivo());
 
     Dependencias.registrar(
       (IRepositorioDeVentas).toString(),
@@ -101,14 +106,29 @@ class Loader {
     await migrarDB.exec();
   }
 
+  Future<void> enviarMetricasIniciales() async {
+    var telemetria = ModuloTelemetria.enviarMetricasIniciales();
+
+    await telemetria.exec();
+  }
+
   Future<void> iniciar() async {
     WidgetsFlutterBinding.ensureInitialized();
 
     registrarDependencias();
     await appConfig.cargar();
 
+    // Sistemas criticos:
     await iniciarLogging();
     await iniciarDB();
     await iniciarSync();
+
+    await enviarMetricasIniciales();
+    // Sistemas no criticos:
+    // try {
+    //   await enviarMetricasIniciales();
+    // } catch (e) {
+
+    // }
   }
 }
