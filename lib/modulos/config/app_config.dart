@@ -11,9 +11,10 @@ class Secrets {
   String get tokenTelemetria => _tokenTelemetria;
 
   Secrets() {
-    _tokenTelemetria = const String.fromEnvironment('TELEMETRY_TOKEN');
+    _tokenTelemetria = const String.fromEnvironment('TELEMETRY_TOKEN',
+        defaultValue: "d3e87d780b5ab79cecdde683eeffbaa3");
     _dbPassword =
-        const String.fromEnvironment('DB_PASSWORD', defaultValue: "123");
+        const String.fromEnvironment('DB_PASSWORD', defaultValue: "12345");
   }
 }
 

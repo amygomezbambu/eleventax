@@ -1,4 +1,5 @@
 import 'package:eleventa/modulos/common/app/interface/database.dart';
+import 'package:eleventa/modulos/common/app/interface/dispositivo.dart';
 import 'package:eleventa/modulos/common/app/interface/sync.dart';
 import 'package:eleventa/modulos/common/app/interface/logger.dart';
 import 'package:eleventa/modulos/common/app/interface/telemetria.dart';
@@ -35,12 +36,16 @@ class DependenciasDeInfraestructura extends _RegistroDeDependencias {
     return obtenerDependencia<ILogger>();
   }
 
-  ISync adaptadorSync() {
+  ISync sync() {
     return obtenerDependencia<ISync>();
   }
 
-  IAdaptadorDeTelemetria adaptadorTelemetria() {
+  IAdaptadorDeTelemetria telemetria() {
     return obtenerDependencia<IAdaptadorDeTelemetria>();
+  }
+
+  IAdaptadorDeDispositivo dispositivo() {
+    return obtenerDependencia<IAdaptadorDeDispositivo>();
   }
 }
 

@@ -8,12 +8,12 @@ import '../../../loader_for_tests.dart';
 void main() {
   setUpAll(() async {
     final loader = TestsLoader();
-    await loader.iniciar();
+    await loader.iniciar(); 
   });
   test(
     'debe enviar los eventos si esta configurado correctamente',
     () async {
-      var telemetry = Dependencias.infra.adaptadorTelemetria();
+      var telemetry = Dependencias.infra.telemetria();
 
       //NOTA: tuve que pasarle el distinct_id de esta maner porque por alguna razon no
       //lo estaba obteniendo correctamente, creo que porque al ser un stream y no tener un
@@ -28,27 +28,6 @@ void main() {
         ),
         completes,
       );
-    },
-  );
-
-  //TODO: esta prueba no pasa, creo que es por la libreria pero hay que verificar que esta
-  //pasando
-  test(
-    'debe lanzar error si no se recibio el evento correctamente',
-    () async {
-      // var invalidToken = '2662762uyyuyss';
-
-      // var telemetry = TelemetryAdapter(token: invalidToken);
-
-      // await expectLater(
-      //   telemetry.sendEvent(
-      //     TelemetryEvent.appStarted,
-      //     {
-      //       'distinct_id': invalidToken,
-      //     },
-      //   ),
-      //   throwsA(isA<EleventaException>()),
-      // );
     },
   );
 }
