@@ -21,6 +21,8 @@ import 'package:eleventa/modulos/common/infra/adaptador_telemetria.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'fakes/adaptador_dispositivo.dart';
+
 /// Inicializador de la aplicacion
 ///
 /// carga todos los objetos y datos necesarios para que la aplicación
@@ -79,7 +81,7 @@ class TestsLoader {
     Dependencias.registrar(
         (IAdaptadorDeTelemetria).toString(), () => AdaptadorDeTelemetria());
     Dependencias.registrar(
-        (IAdaptadorDeDispositivo).toString(), () => AdaptadorDeDispositivo());
+        (IAdaptadorDeDispositivo).toString(), () => AdaptadorDispositivoFake());
 
     Dependencias.registrar(
       (IRepositorioDeVentas).toString(),
