@@ -5,7 +5,6 @@ import 'package:eleventa/modulos/common/app/interface/dispositivo.dart';
 import 'package:eleventa/modulos/common/app/interface/logger.dart';
 import 'package:eleventa/modulos/common/app/interface/sync.dart';
 import 'package:eleventa/modulos/common/app/interface/telemetria.dart';
-import 'package:eleventa/modulos/common/infra/adaptador_dispositivo.dart';
 import 'package:eleventa/modulos/common/infra/logger.dart';
 import 'package:eleventa/modulos/common/infra/adaptador_sqlite.dart';
 import 'package:eleventa/modulos/productos/app/interface/repositorio_productos.dart';

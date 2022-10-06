@@ -3,7 +3,10 @@ import 'dart:ui';
 
 import 'package:eleventa/modulos/common/app/interface/dispositivo.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'dart:async';
+
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AdaptadorDeDispositivo implements IAdaptadorDeDispositivo {
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
@@ -26,23 +29,39 @@ class AdaptadorDeDispositivo implements IAdaptadorDeDispositivo {
       infoDispositivo = _leerWindowsInfo(await deviceInfoPlugin.windowsInfo);
     }
 
-    leerInfoComun(infoDispositivo);
+    await leerInfoComun(infoDispositivo);
 
     return infoDispositivo;
   }
 
-  void leerInfoComun(InfoDispositivo info) {
-    info.sistemaOperativo = Platform.operatingSystem;
+  Future<void> leerInfoComun(InfoDispositivo info) async {
+    var packageInfo = await PackageInfo.fromPlatform();
+
+    info.so = Platform.operatingSystem;
+    info.versionSO = Platform.operatingSystemVersion;
+
+    // Obtenemos el numero de veces que se ha abierto leyendo
+    // desde la configuración
+    var prefs = await SharedPreferences.getInstance();
+    info.numeroDeEjecuciones = prefs.getInt('numero_ejecuciones') ?? 0;
+    info.numeroDeEjecuciones++;
+    await prefs.setInt('numero_ejecuciones', info.numeroDeEjecuciones);
 
     // Convertimos los pixeles fisicos a pixeles lógicos
-    // para evitar tener discrepancias entre dispositivos retina vs no-retina.
+    // para evitar tener discrepanscias entre dispositivos retina vs no-retina.
     info.altoPantalla = window.physicalSize.height / window.devicePixelRatio;
     info.anchoPantalla = window.physicalSize.width / window.devicePixelRatio;
     info.lenguajeConfigurado = window.locale.languageCode;
+
+    //TODO: no se esta obteniendo el codigo correctamente
     info.pais = window.locale.countryCode ?? '';
 
     // Diferencia entre hora local y UTC (Ejem: Chihuahua -> -6)
     info.zonaHoraria = DateTime.now().timeZoneOffset.inHours;
+
+    //Informacion del Build
+    info.appBuild = packageInfo.buildNumber;
+    info.appVersion = packageInfo.version;
   }
 
   InfoDispositivo _leerAndroidInfo(AndroidDeviceInfo build) {

@@ -78,3 +78,6 @@ defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
 
 echo "✔ Instalando GitHooks locales"
 bash setup_githooks.sh
+
+echo "✔ Instalar cliente 1Password para obtener credenciales de dev"
+brew install --cask 1password/tap/1password-cli

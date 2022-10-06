@@ -35,6 +35,9 @@
 # Web related
 lib/generated_plugin_registrant.dart
 
+# Ignoramos el archivo generado de env [ADR-0008]
+lib/modulos/config/env.g.dart
+
 # Symbolication related
 app.*.symbols
 

@@ -12,8 +12,12 @@ class AdaptadorDispositivoFake implements IAdaptadorDeDispositivo {
     info.modelo = 'Inspiron 2801';
     info.nombre = 'Laptop de bambu';
     info.pais = 'MX';
-    info.sistemaOperativo = 'Windows';
+    info.so = 'Windows';
     info.zonaHoraria = -5;
+    info.appBuild = '100';
+    info.appVersion = '0.0.1';
+    info.numeroDeEjecuciones = 2;
+    info.versionSO = '12.6 Monterrey';
 
     return info;
   }

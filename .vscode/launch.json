@@ -1,25 +1,21 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "flutter (dev)",
-            "request": "launch",
-            "type": "dart",
-            "program": "lib/main.dart",
-            "env": {
-                "ENVIRONMENT1": "development"
-            },
-            "toolArgs": [
-                //TODO: cambiar estos secrets 
-                //"--dart-define",
-                // La clave de la base de datos en modo desarrollo es 12345
-                //"DB_PASSWORD=12345",
-                //"--dart-define",
-                //"TELEMETRY_TOKEN=d3e87d780b5ab79cecdde683eeffbaa3"
-            ]
-        }
-    ]
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "flutter (dev)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "env": {
+        "ENVIRONMENT1": "development"
+      },
+      "toolArgs": [
+        //"--dart-define",
+        //"XXX=valor",
+      ]
+    }
+  ]
 }
