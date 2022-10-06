@@ -15,10 +15,11 @@ class SyncConfig {
   var _pullInterval = 30000;
   var _syncMethod = SyncMethod.pull;
   var _sendChangesInmediatly = true;
+  void Function(Object, StackTrace)? _onError;
 
   _validatePullInterval(int value) {
     if (value < 1000) {
-      throw SyncError(
+      throw SyncEx(
           'El intervalo es demasiado pequeño, el valor minimo es de 3 segundos',
           '');
     }
@@ -28,7 +29,7 @@ class SyncConfig {
 
   _validateDeviceId(String value) {
     if (value == '') {
-      throw SyncError('El nombre del dispositivo no puede estar vacio', '');
+      throw SyncEx('El nombre del dispositivo no puede estar vacio', '');
     }
 
     _deviceId = value;
@@ -36,7 +37,7 @@ class SyncConfig {
 
   _validateDbVersionTable(String value) {
     if (value == '') {
-      throw SyncError(
+      throw SyncEx(
           'El nombre de la tabla que contiene la versión de la db no puede ser vacio',
           '');
     }
@@ -46,7 +47,7 @@ class SyncConfig {
 
   _validateDbVersionField(String value) {
     if (value == '') {
-      throw SyncError(
+      throw SyncEx(
           'El nombre del campo que contiene la versión de la db no puede ser vacio',
           '');
     }
@@ -56,7 +57,7 @@ class SyncConfig {
 
   _validateGruopId(String value) {
     if (value == '') {
-      throw SyncError('El identificador de grupo no puede ser vacio', '');
+      throw SyncEx('El identificador de grupo no puede ser vacio', '');
     }
 
     _groupId = value;
@@ -72,6 +73,7 @@ class SyncConfig {
   String get getChangesEndpoint => _getChangesEndpoint;
   String get deleteChangesEndpoint => _deleteChangesEndpoint;
   bool get sendChangesInmediatly => _sendChangesInmediatly;
+  void Function(Object, StackTrace)? get onError => _onError;
 
   // #region singleton
   static final SyncConfig _instance = SyncConfig._internal();
@@ -103,11 +105,14 @@ class SyncConfig {
     required String addChangesEndpoint,
     required String getChangesEndpoint,
     required String deleteChangesEndpoint,
+    void Function(Object, StackTrace)? onError,
     int pullInterval = 30000,
     SyncMethod syncMethod = SyncMethod.pull,
     bool sendChangesInmediatly = true,
   }) {
     var instance = _instance;
+
+    instance._onError = onError;
 
     instance._validateDbVersionField(dbVersionField);
     instance._validateDbVersionTable(dbVersionTable);

@@ -1,8 +1,8 @@
-class SyncError implements Exception {
+class SyncEx implements Exception {
   String message;
   String stackTrace;
 
-  SyncError(this.message, this.stackTrace);
+  SyncEx(this.message, this.stackTrace);
 
   @override
   String toString() {

@@ -34,7 +34,11 @@ class Sync implements ISync {
 
   factory Sync.get() {
     if (!_instance._initialized) {
-      throw SyncError('No se ha inicializado el modulo de Sincronización', '');
+      throw SyncEx(
+          'No se ha inicializado el modulo de Sincronización\n'
+              'Se debe llamar obtener una instancia usando Sync.create() antes\n'
+              'de poder usar Sync.get()',
+          '');
     }
 
     return _instance;
@@ -54,9 +58,15 @@ class Sync implements ISync {
     required String rowID,
     required Map<String, Object?> fields,
   }) async {
-    var changes = await _generateChanges(dataset, rowID, fields);
-    await _applyChangesToLocalDatabase(changes);
-    await _sendChangesToRemoteServer(changes);
+    try {
+      var changes = await _generateChanges(dataset, rowID, fields);
+      await _applyChangesToLocalDatabase(changes);
+      await _sendChangesToRemoteServer(changes);
+    } catch (e, stack) {
+      if (_config.onError != null) {
+        _config.onError!(e, stack);
+      }
+    }
   }
 
   /// Inicia la escucha de nuevos cambios en el servidor remoto

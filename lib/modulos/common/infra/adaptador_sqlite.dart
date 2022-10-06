@@ -180,16 +180,25 @@ class AdaptadorSQLite implements IAdaptadorDeBaseDeDatos {
     required String sql,
     List<Object?>? params,
   }) async {
-    if (params != null) {
-      if (_verbose) {
-        _logger.debug(message: '[SQL] $sql [PARAMS] $params');
+    try {
+      if (params != null) {
+        if (_verbose) {
+          _logger.debug(message: '[SQL] $sql [PARAMS] $params');
+        }
+        await _db.execute(sql, params);
+      } else {
+        if (_verbose) {
+          _logger.debug(message: '[SQL] $sql');
+        }
+        await _db.execute(sql);
       }
-      await _db.execute(sql, params);
-    } else {
-      if (_verbose) {
-        _logger.debug(message: '[SQL] $sql');
-      }
-      await _db.execute(sql);
+    } catch (e, stack) {
+      throw InfraEx(
+        message: 'Ocurrió un error al enviar un comando a la base de datos',
+        innerException: e,
+        stackTrace: stack,
+        input: '[SQL] $sql [PARAMS] $params',
+      );
     }
   }
 
@@ -201,22 +210,31 @@ class AdaptadorSQLite implements IAdaptadorDeBaseDeDatos {
     var result = <Map<String, Object?>>[];
     List<Map<String, Object?>>? dbResult;
 
-    if (params != null) {
-      if (_verbose) {
-        _logger.debug(message: '[SQL] $sql [PARAMS] $params');
+    try {
+      if (params != null) {
+        if (_verbose) {
+          _logger.debug(message: '[SQL] $sql [PARAMS] $params');
+        }
+
+        dbResult = await _db.rawQuery(sql, params);
+      } else {
+        if (_verbose) {
+          _logger.debug(message: '[SQL] $sql');
+        }
+
+        dbResult = await _db.rawQuery(sql);
       }
 
-      dbResult = await _db.rawQuery(sql, params);
-    } else {
-      if (_verbose) {
-        _logger.debug(message: '[SQL] $sql');
+      if (dbResult.isNotEmpty) {
+        result.addAll(dbResult);
       }
-
-      dbResult = await _db.rawQuery(sql);
-    }
-
-    if (dbResult.isNotEmpty) {
-      result.addAll(dbResult);
+    } catch (e, stack) {
+      throw InfraEx(
+        message: 'Ocurrió un error al consultar la base de datos',
+        innerException: e,
+        stackTrace: stack,
+        input: '[SQL] $sql [PARAMS] $params',
+      );
     }
 
     return result;

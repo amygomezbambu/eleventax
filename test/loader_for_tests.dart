@@ -67,6 +67,8 @@ class TestsLoader {
         deleteChangesEndpoint: 'http://localhost:3000/sync-delete-changes',
         pullInterval: 10000,
         sendChangesInmediatly: false,
+        onError: (ex, stack) =>
+            Dependencias.infra.logger().error(ex: ex, stackTrace: stack),
       ),
     );
   }

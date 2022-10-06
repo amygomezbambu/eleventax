@@ -64,6 +64,8 @@ class Loader {
             'https://qgfy59gc83.execute-api.us-west-1.amazonaws.com/dev/sync-get-changes',
         deleteChangesEndpoint: 'http://localhost:3000/sync-delete-changes',
         pullInterval: 10000,
+        onError: (ex, stack) =>
+            Dependencias.infra.logger().error(ex: ex, stackTrace: stack),
       ),
     );
 
@@ -116,9 +118,9 @@ class Loader {
     WidgetsFlutterBinding.ensureInitialized();
 
     registrarDependencias();
-    await appConfig.cargar();
 
     // Sistemas criticos:
+    await appConfig.cargar();
     await iniciarLogging();
     await iniciarDB();
     await iniciarSync();
