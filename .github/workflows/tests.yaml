@@ -30,12 +30,16 @@ jobs:
       - name: Instalar dependencias
         run: flutter pub get
         
-      - name: Generar clases de Dart necesarias (variables entorno, etc.)
+      - name: Generar clases de Dart necesarias con secretos embebidos (y ofuscados)
         run: flutter pub run build_runner build --delete-conflicting-outputs
-
-      - name: Ejecutando pruebas unitarias
-        run: flutter test --test-randomize-ordering-seed=random -rexpanded
+        # Las variables de entorno tienen que estar disponibles en esta etapa
+        # que es cuando se genera el env.g.dart con los secrets "hard codeados"
+        # y que se usarán despues en las pruebas
         env:
           MIXPANEL_PROJECT_ID: ${{ secrets.MIXPANEL_PROJECT_ID }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
           DB_PASSWORD: 12345
+
+      - name: Ejecutando pruebas unitarias
+        run: flutter test --test-randomize-ordering-seed=random -rexpanded
+       
