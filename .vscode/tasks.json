@@ -1,15 +1,23 @@
 {
-    // See https://go.microsoft.com/fwlink/?LinkId=733558
-    // for the documentation about the tasks.json format
-    "version": "2.0.0",
-    "tasks": [
-      {
-        "label": "Configurar GitHooks",
-        "type": "shell",
-        "command": "./tools/setup_githooks.sh",
-        "windows": {
-            "command": ".\\tools\\setup_githooks.cmd"
-        },
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Configurar GitHooks",
+      "type": "shell",
+      "command": "./tools/setup_githooks.sh",
+      "windows": {
+        "command": ".\\tools\\setup_githooks.cmd"
       }
-    ]
-  }
+    },
+    {
+      "label": "Refrescar secretos del entorno desde 1Password",
+      "type": "shell",
+      "command": "op run --env-file=\"./app.env\" -- flutter pub run build_runner build --delete-conflicting-outputs",
+      "windows": {
+        "command": ".\\tools\\setup_githooks.cmd"
+      }
+    }
+  ]
+}

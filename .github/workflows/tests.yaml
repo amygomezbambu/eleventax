@@ -31,4 +31,8 @@ jobs:
       #   run: flutter pub get
 
       - name: Ejecutando pruebas unitarias
-        run: flutter test --test-randomize-ordering-seed=random -rexpanded --dart-define=TELEMETRY_TOKEN=d3e87d780b5ab79cecdde683eeffbaa3 --dart-define=DB_PASSWORD=12345
+        run: flutter test --test-randomize-ordering-seed=random -rexpanded
+        env:
+          MIXPANEL_PROJECT_ID: ${{ secrets.MIXPANEL_PROJECT_ID }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          DB_PASSWORD: 12345

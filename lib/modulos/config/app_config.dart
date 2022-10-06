@@ -1,18 +1,25 @@
 import 'package:eleventa/modulos/common/infra/config_local.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
+import 'package:eleventa/modulos/config/env.dart';
 
 enum WindowMode { normal, maximized }
 
 class Secrets {
   static String _dbPassword = '';
   static String _tokenTelemetria = '';
+  static String _tokenLoggingRemoto = '';
 
   String get dbPassword => _dbPassword;
   String get tokenTelemetria => _tokenTelemetria;
+  String get tokenLoggingRemoto => _tokenLoggingRemoto;
 
   Secrets() {
-    _tokenTelemetria = const String.fromEnvironment('TELEMETRY_TOKEN');
-    _dbPassword = const String.fromEnvironment('DB_PASSWORD');
+    _tokenTelemetria = Env.mixpanelProjectID;
+    _tokenLoggingRemoto = Env.sentryDSN;
+
+    //TODO: no debe tener el default
+    _dbPassword =
+        const String.fromEnvironment('DB_PASSWORD', defaultValue: '12345');
   }
 }
 
@@ -21,6 +28,9 @@ class AppConfig extends ConfigLocal {
 
   WindowMode windowMode = WindowMode.normal;
   late UID deviceId;
+
+  var negocioID = '12345';
+  var sucursalID = 'ABCDF';
   var usuarioLogeado = 'Jhon Doe';
 
   /* #region Singleton */
