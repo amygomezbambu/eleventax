@@ -1,4 +1,6 @@
 {
+  // Nunca solicitar confirmación al ejecutar tareas
+  "task.problemMatchers.neverPrompt": true,
   // Perimitimos que los demas puedan correr pruebas, el proyecto, etc.
   "liveshare.allowGuestDebugControl": true,
   "liveshare.allowGuestTaskControl": true,

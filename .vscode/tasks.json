@@ -4,7 +4,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Configurar GitHooks",
+      "label": "🪝 Configurar GitHooks",
       "type": "shell",
       "command": "./tools/setup_githooks.sh",
       "windows": {
@@ -12,7 +12,7 @@
       }
     },
     {
-      "label": "Refrescar secretos del entorno desde 1Password",
+      "label": "🔐 Refrescar secretos del entorno desde 1Password",
       "type": "shell",
       "command": "op run --env-file=\"./app.env\" -- flutter pub run build_runner build --delete-conflicting-outputs",
       "windows": {
@@ -20,9 +20,19 @@
       }
     },
     {
-      "label": "Actualizar pods",
+      "label": "🧩 Actualizar dependencias (pods) de ios/macos",
       "type": "shell",
       "command": "./tools/actualizar_dependencias.sh"
-    }
+    },
+    {
+      "label": "💥 Ejecutar pruebas de unidad",
+      "detail": "",
+      "type": "flutter",
+      "command": "flutter",
+      "args": [
+        "test"        
+      ],
+      "problemMatcher": [],
+    }    
   ]
 }
