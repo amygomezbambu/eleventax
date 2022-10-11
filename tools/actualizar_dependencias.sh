@@ -7,5 +7,5 @@ cd macos
 pod update
 
 echo "✔ Actualizando dependencias de macOS..."
-cd ios
+cd ../ios
 pod update
