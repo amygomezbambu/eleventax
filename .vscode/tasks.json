@@ -23,6 +23,16 @@
       "label": "🧩 Actualizar dependencias (pods) de ios/macos",
       "type": "shell",
       "command": "./tools/actualizar_dependencias.sh"
-    }
+    },
+    {
+      "label": "💥 Ejecutar pruebas de unidad",
+      "detail": "",
+      "type": "flutter",
+      "command": "flutter",
+      "args": [
+        "test"        
+      ],
+      "problemMatcher": [],
+    }    
   ]
 }
