@@ -25,6 +25,8 @@ class InfoDispositivo {
 
   /// Número de veces que el usuario ha abierto la aplicación en este dispositivo
   var numeroDeEjecuciones = 0;
+
+  var ip = '';
 }
 
 abstract class IAdaptadorDeDispositivo {

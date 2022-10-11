@@ -18,6 +18,11 @@
       "windows": {
         "command": ".\\tools\\setup_githooks.cmd"
       }
+    },
+    {
+      "label": "Actualizar pods",
+      "type": "shell",
+      "command": "./tools/actualizar_dependencias.sh"
     }
   ]
 }

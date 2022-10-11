@@ -3,6 +3,7 @@ import 'package:eleventa/globals.dart';
 import 'package:eleventa/modulos/common/app/interface/database.dart';
 import 'package:eleventa/modulos/common/app/interface/dispositivo.dart';
 import 'package:eleventa/modulos/common/app/interface/logger.dart';
+import 'package:eleventa/modulos/common/app/interface/red.dart';
 import 'package:eleventa/modulos/common/app/interface/sync.dart';
 import 'package:eleventa/modulos/common/app/interface/telemetria.dart';
 import 'package:eleventa/modulos/common/infra/logger.dart';
@@ -21,6 +22,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'fakes/adaptador_dispositivo.dart';
+import 'fakes/adaptador_red.dart';
 
 /// Inicializador de la aplicacion
 ///
@@ -83,6 +85,7 @@ class TestsLoader {
         (IAdaptadorDeTelemetria).toString(), () => AdaptadorDeTelemetria());
     Dependencias.registrar(
         (IAdaptadorDeDispositivo).toString(), () => AdaptadorDispositivoFake());
+    Dependencias.registrar((IRed).toString(), () => AdaptadorRedFake());
 
     Dependencias.registrar(
       (IRepositorioDeVentas).toString(),

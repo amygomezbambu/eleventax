@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:eleventa/modulos/common/app/interface/dispositivo.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:eleventa/modulos/common/utils/utils.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'dart:async';
 
@@ -62,6 +63,8 @@ class AdaptadorDeDispositivo implements IAdaptadorDeDispositivo {
     //Informacion del Build
     info.appBuild = packageInfo.buildNumber;
     info.appVersion = packageInfo.version;
+
+    info.ip = await Utils.red.obtenerIPPublica();
   }
 
   InfoDispositivo _leerAndroidInfo(AndroidDeviceInfo build) {

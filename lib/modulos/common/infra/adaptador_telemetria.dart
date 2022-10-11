@@ -20,15 +20,28 @@ class AdaptadorDeTelemetria implements IAdaptadorDeTelemetria {
   }
 
   @override
-  Future<void> nuevoEvento(EventoDeTelemetria event,
-      [Map<String, dynamic> properties = const {}]) async {
-    var success =
-        await _mixpanel!.track(event: event.name, properties: properties);
-
+  Future<void> nuevoEvento(
+      {required EventoDeTelemetria evento,
+      required Map<String, dynamic> propiedades,
+      String? ip}) async {
+    var success = await _mixpanel!
+        .track(event: evento.name, properties: propiedades, ip: ip);
     if (!success) {
       throw EleventaEx(
-        message: 'No se registro el evento ${event.name}',
+        message: 'No se registro el evento ${evento.name}',
       );
+    }
+  }
+
+  @override
+  Future<void> actualizarPerfil(
+      {required Map<String, dynamic> propiedades, String? ip}) async {
+    /// Establece la propiedad del perfil del usuario
+    /// Ref: https://developer.mixpanel.com/reference/profile-set
+    var success = await _mixpanel!.engage(
+        operation: MixpanelUpdateOperations.$set, value: propiedades, ip: ip);
+    if (!success) {
+      throw EleventaEx(message: 'No se creó o actualizó el perfil');
     }
   }
 

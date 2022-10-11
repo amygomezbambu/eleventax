@@ -1,4 +1,7 @@
 PODS:
+  - connectivity_plus (0.0.1):
+    - Flutter
+    - ReachabilitySwift
   - device_info_plus (0.0.1):
     - Flutter
   - Flutter (1.0.0)
@@ -8,25 +11,27 @@ PODS:
     - Flutter
   - path_provider_ios (0.0.1):
     - Flutter
-  - Sentry (7.25.1):
-    - Sentry/Core (= 7.25.1)
-  - Sentry/Core (7.25.1)
+  - ReachabilitySwift (5.0.0)
+  - Sentry (7.27.1):
+    - Sentry/Core (= 7.27.1)
+  - Sentry/Core (7.27.1)
   - sentry_flutter (0.0.1):
     - Flutter
     - FlutterMacOS
-    - Sentry (~> 7.25.1)
+    - Sentry (~> 7.27.1)
   - shared_preferences_ios (0.0.1):
     - Flutter
-  - SQLCipher (4.5.0):
-    - SQLCipher/standard (= 4.5.0)
-  - SQLCipher/common (4.5.0)
-  - SQLCipher/standard (4.5.0):
+  - SQLCipher (4.5.2):
+    - SQLCipher/standard (= 4.5.2)
+  - SQLCipher/common (4.5.2)
+  - SQLCipher/standard (4.5.2):
     - SQLCipher/common
   - sqlcipher_flutter_libs (0.0.1):
     - Flutter
     - SQLCipher (~> 4.5.0)
 
 DEPENDENCIES:
+  - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
   - Flutter (from `Flutter`)
   - integration_test (from `.symlinks/plugins/integration_test/ios`)
@@ -38,10 +43,13 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - ReachabilitySwift
     - Sentry
     - SQLCipher
 
 EXTERNAL SOURCES:
+  connectivity_plus:
+    :path: ".symlinks/plugins/connectivity_plus/ios"
   device_info_plus:
     :path: ".symlinks/plugins/device_info_plus/ios"
   Flutter:
@@ -60,17 +68,19 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/sqlcipher_flutter_libs/ios"
 
 SPEC CHECKSUMS:
+  connectivity_plus: 413a8857dd5d9f1c399a39130850d02fe0feaf7e
   device_info_plus: e5c5da33f982a436e103237c0c85f9031142abed
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   integration_test: a1e7d09bd98eca2fc37aefd79d4f41ad37bdbbe5
   package_info_plus: 6c92f08e1f853dc01228d6f553146438dafcd14e
   path_provider_ios: 14f3d2fd28c4fdb42f44e0f751d12861c43cee02
-  Sentry: dd29c18c32b0af9269949f079cf631d581ca76ca
-  sentry_flutter: 544b23de27343d0cd12d8d16b0fac71dc884f0e6
+  ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
+  Sentry: bc644307e2eb6a4c9c55cf117a80b895bb2a25a7
+  sentry_flutter: 649559f0512e00d3f6fc92cf51f74bc2fe68d1d3
   shared_preferences_ios: 548a61f8053b9b8a49ac19c1ffbc8b92c50d68ad
-  SQLCipher: 98dc22f27c0b1790d39e710d440f22a466ebdb59
+  SQLCipher: f5b4857434158b571a3ed3b10b3b43cd18ef5f67
   sqlcipher_flutter_libs: 87686ab669dda991b2f384e4bcbb04b93e19c8fe
 
-PODFILE CHECKSUM: ef19549a9bc3046e7bb7d2fab4d021637c0c58a3
+PODFILE CHECKSUM: 4e8f8b2be68aeea4c0d5beb6ff1e79fface1d048
 
 COCOAPODS: 1.11.3

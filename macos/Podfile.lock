@@ -1,4 +1,7 @@
 PODS:
+  - connectivity_plus_macos (0.0.1):
+    - FlutterMacOS
+    - ReachabilitySwift
   - device_info_plus_macos (0.0.1):
     - FlutterMacOS
   - FlutterMacOS (1.0.0)
@@ -6,13 +9,14 @@ PODS:
     - FlutterMacOS
   - path_provider_macos (0.0.1):
     - FlutterMacOS
-  - Sentry (7.25.1):
-    - Sentry/Core (= 7.25.1)
-  - Sentry/Core (7.25.1)
+  - ReachabilitySwift (5.0.0)
+  - Sentry (7.27.1):
+    - Sentry/Core (= 7.27.1)
+  - Sentry/Core (7.27.1)
   - sentry_flutter (0.0.1):
     - Flutter
     - FlutterMacOS
-    - Sentry (~> 7.25.1)
+    - Sentry (~> 7.27.1)
   - shared_preferences_macos (0.0.1):
     - FlutterMacOS
   - SQLCipher (4.5.2):
@@ -25,6 +29,7 @@ PODS:
     - SQLCipher (~> 4.5.0)
 
 DEPENDENCIES:
+  - connectivity_plus_macos (from `Flutter/ephemeral/.symlinks/plugins/connectivity_plus_macos/macos`)
   - device_info_plus_macos (from `Flutter/ephemeral/.symlinks/plugins/device_info_plus_macos/macos`)
   - FlutterMacOS (from `Flutter/ephemeral`)
   - package_info_plus_macos (from `Flutter/ephemeral/.symlinks/plugins/package_info_plus_macos/macos`)
@@ -35,10 +40,13 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - ReachabilitySwift
     - Sentry
     - SQLCipher
 
 EXTERNAL SOURCES:
+  connectivity_plus_macos:
+    :path: Flutter/ephemeral/.symlinks/plugins/connectivity_plus_macos/macos
   device_info_plus_macos:
     :path: Flutter/ephemeral/.symlinks/plugins/device_info_plus_macos/macos
   FlutterMacOS:
@@ -55,12 +63,14 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/sqlcipher_flutter_libs/macos
 
 SPEC CHECKSUMS:
+  connectivity_plus_macos: f6e86fd000e971d361e54b5afcadc8c8fa773308
   device_info_plus_macos: 1ad388a1ef433505c4038e7dd9605aadd1e2e9c7
   FlutterMacOS: ae6af50a8ea7d6103d888583d46bd8328a7e9811
   package_info_plus_macos: f010621b07802a241d96d01876d6705f15e77c1c
   path_provider_macos: 3c0c3b4b0d4a76d2bf989a913c2de869c5641a19
-  Sentry: dd29c18c32b0af9269949f079cf631d581ca76ca
-  sentry_flutter: 544b23de27343d0cd12d8d16b0fac71dc884f0e6
+  ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
+  Sentry: bc644307e2eb6a4c9c55cf117a80b895bb2a25a7
+  sentry_flutter: 649559f0512e00d3f6fc92cf51f74bc2fe68d1d3
   shared_preferences_macos: a64dc611287ed6cbe28fd1297898db1336975727
   SQLCipher: f5b4857434158b571a3ed3b10b3b43cd18ef5f67
   sqlcipher_flutter_libs: 38ad87bfba1bc2f3813513b7d3996fb6bd49fed6

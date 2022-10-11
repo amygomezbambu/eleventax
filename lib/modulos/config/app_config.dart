@@ -23,6 +23,19 @@ class Secrets {
   }
 }
 
+//TODO: obtener los datos reales
+class Propietario {
+  var nombres = 'Luis Alberto';
+  var apellido = 'Carrasco';
+  var correo = 'luis@bambucode.com';
+  var telefono = '6144444444';
+}
+
+class Negocio {
+  var nombre = 'Super Chiwas';
+  var propietario = Propietario();
+}
+
 class AppConfig extends ConfigLocal {
   final secrets = Secrets();
 
@@ -32,6 +45,7 @@ class AppConfig extends ConfigLocal {
   var negocioID = '12345';
   var sucursalID = 'ABCDF';
   var usuarioLogeado = 'Jhon Doe';
+  var negocio = Negocio();
 
   /* #region Singleton */
   static final AppConfig _instance = AppConfig._internal();

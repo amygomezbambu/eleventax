@@ -3,12 +3,14 @@ import 'package:eleventa/globals.dart';
 import 'package:eleventa/modulos/common/app/interface/database.dart';
 import 'package:eleventa/modulos/common/app/interface/dispositivo.dart';
 import 'package:eleventa/modulos/common/app/interface/logger.dart';
+import 'package:eleventa/modulos/common/app/interface/red.dart';
 import 'package:eleventa/modulos/common/app/interface/sync.dart';
 import 'package:eleventa/modulos/common/app/interface/telemetria.dart';
 import 'package:eleventa/modulos/common/infra/adaptador_dispositivo.dart';
 import 'package:eleventa/modulos/common/infra/logger.dart';
 import 'package:eleventa/modulos/common/infra/adaptador_sqlite.dart';
 import 'package:eleventa/modulos/common/infra/adaptador_telemetria.dart';
+import 'package:eleventa/modulos/common/infra/network/adaptador_red.dart';
 import 'package:eleventa/modulos/productos/app/interface/repositorio_productos.dart';
 import 'package:eleventa/modulos/productos/infra/repositorio_productos.dart';
 import 'package:eleventa/modulos/migraciones/migrar_db.dart';
@@ -83,6 +85,7 @@ class Loader {
         (IAdaptadorDeTelemetria).toString(), () => AdaptadorDeTelemetria());
     Dependencias.registrar(
         (IAdaptadorDeDispositivo).toString(), () => AdaptadorDeDispositivo());
+    Dependencias.registrar((IRed).toString(), () => AdaptadorRed());
 
     Dependencias.registrar(
       (IRepositorioDeVentas).toString(),
