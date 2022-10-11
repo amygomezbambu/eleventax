@@ -18,13 +18,13 @@ class Sync implements ISync {
 
   final _repo = SyncRepository();
   final _syncServer = SyncServer();
-  final _obtainRemoteChanges = ObtainRemoteChanges();
+  final _obtainRemoteChanges = ObtainRemoteChanges.instance;
   final _addLocalChanges = AddLocalChanges();
 
   // #region singleton
   static final Sync _instance = Sync._internal();
 
-  factory Sync.create({required SyncConfig syncConfig}) {
+  factory Sync.init({required SyncConfig syncConfig}) {
     var instance = _instance;
     instance._config = syncConfig;
     instance._initialized = true;
@@ -32,12 +32,11 @@ class Sync implements ISync {
     return instance;
   }
 
-  factory Sync.get() {
+  factory Sync.getInstance() {
     if (!_instance._initialized) {
       throw SyncEx(
           'No se ha inicializado el modulo de Sincronización\n'
-              'Se debe llamar obtener una instancia usando Sync.create() antes\n'
-              'de poder usar Sync.get()',
+              'Se debe llamar Sync.init() antes de poder usar Sync.getInstance()',
           '');
     }
 

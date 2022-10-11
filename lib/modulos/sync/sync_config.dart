@@ -5,7 +5,6 @@ enum SyncMethod { pull, realtime }
 class SyncConfig {
   var _addChangesEndpoint = '';
   var _getChangesEndpoint = '';
-
   //solo para pruebas, nunca se deben borrar los cambios en prduccion
   var _deleteChangesEndpoint = '';
   var _dbVersionTable = '';

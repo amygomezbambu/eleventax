@@ -5,7 +5,6 @@ import 'package:eleventa/modulos/common/app/interface/sync.dart';
 import 'package:eleventa/modulos/common/app/interface/logger.dart';
 import 'package:eleventa/modulos/common/app/interface/telemetria.dart';
 import 'package:eleventa/modulos/productos/app/interface/repositorio_productos.dart';
-import 'package:eleventa/modulos/ventas/app/interface/adaptador_de_config_local.dart';
 import 'package:eleventa/modulos/ventas/app/interface/repositorio_ventas.dart';
 
 class _RegistroDeDependencias {
@@ -63,10 +62,6 @@ class DependenciasDeVentas extends _RegistroDeDependencias {
 
   IRepositorioArticulos repositorioArticulos() {
     return obtenerDependencia<IRepositorioArticulos>();
-  }
-
-  IAdaptadorDeConfigLocalDeVentas adaptadorDeConfigLocalDeVentas() {
-    return obtenerDependencia<IAdaptadorDeConfigLocalDeVentas>();
   }
 }
 

@@ -9,19 +9,44 @@ import 'package:eleventa/modulos/sync/sync_config.dart';
 
 class ObtainRemoteChangesRequest {
   var interval = 30000;
+  var singleRequest = false;
 }
 
 class ObtainRemoteChanges {
   final request = ObtainRemoteChangesRequest();
 
-  late Timer _timer;
+  Timer? _timer;
   final _config = SyncConfig.get();
 
   final _server = SyncServer();
   final _repo = SyncRepository();
   final _crdt = CRDTAdapter();
 
+  /* #region Singleton */
+  static final instance = ObtainRemoteChanges._internal();
+
+  ObtainRemoteChanges._internal();
+  /* #endregion */
+
   Future<void> exec() async {
+    if (request.singleRequest) {
+      if (_timer != null && _timer!.isActive) {
+        stop();
+      }
+
+      var changes = await _requestChangesFromServer();
+      await _persistChanges(changes);
+      await _crdt.applyPendingChanges();
+    }
+
+    await initListening();
+  }
+
+  void stop() {
+    _timer?.cancel();
+  }
+
+  Future<void> initListening() async {
     _timer = Timer.periodic(
       Duration(milliseconds: request.interval),
       (timer) async {
@@ -30,10 +55,6 @@ class ObtainRemoteChanges {
         await _crdt.applyPendingChanges();
       },
     );
-  }
-
-  void stop() {
-    _timer.cancel();
   }
 
   Future<void> _persistChanges(List<Change> changes) async {

@@ -11,9 +11,7 @@ import 'package:eleventa/modulos/common/infra/adaptador_sqlite.dart';
 import 'package:eleventa/modulos/productos/app/interface/repositorio_productos.dart';
 import 'package:eleventa/modulos/productos/infra/repositorio_productos.dart';
 import 'package:eleventa/modulos/migraciones/migrar_db.dart';
-import 'package:eleventa/modulos/ventas/app/interface/adaptador_de_config_local.dart';
 import 'package:eleventa/modulos/ventas/app/interface/repositorio_ventas.dart';
-import 'package:eleventa/modulos/ventas/infra/adaptador_de_config_local.dart';
 import 'package:eleventa/modulos/ventas/infra/repositorio_ventas.dart';
 import 'package:eleventa/modulos/sync/sync.dart';
 import 'package:eleventa/modulos/sync/sync_config.dart';
@@ -55,7 +53,7 @@ class TestsLoader {
   }
 
   Future<void> iniciarSync() async {
-    Sync.create(
+    Sync.init(
       syncConfig: SyncConfig.create(
         dbVersionTable: 'migrations',
         dbVersionField: 'version',
@@ -78,9 +76,7 @@ class TestsLoader {
     Dependencias.registrar((ILogger).toString(), () => Logger());
     Dependencias.registrar(
         (IAdaptadorDeBaseDeDatos).toString(), () => AdaptadorSQLite());
-    Dependencias.registrar((ISync).toString(), () => Sync.get());
-    Dependencias.registrar((IAdaptadorDeConfigLocalDeVentas).toString(),
-        () => AdaptadorDeConfigLocalDeVentas());
+    Dependencias.registrar((ISync).toString(), () => Sync.getInstance());
     Dependencias.registrar(
         (IAdaptadorDeTelemetria).toString(), () => AdaptadorDeTelemetria());
     Dependencias.registrar(

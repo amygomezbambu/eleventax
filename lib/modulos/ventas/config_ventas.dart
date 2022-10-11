@@ -1,7 +1,7 @@
 // ignore_for_file: unnecessary_getters_setters
-
 import 'package:eleventa/modulos/common/infra/config_local.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
+import 'package:eleventa/modulos/ventas/app/interface/repositorio_ventas.dart';
 
 class ConfigCompartidaDeVentas {
   UID _uid = UID();
@@ -30,20 +30,39 @@ class ConfigCompartidaDeVentas {
 class ConfigLocalDeVentas extends ConfigLocal {
   var _permitirDescuentos = true;
 
+  bool get permitirDescuentos => _permitirDescuentos;
+
   set permitirDescuentos(bool value) {
     _permitirDescuentos = value;
   }
 
-  bool get permitirDescuentos => _permitirDescuentos;
-
   ConfigLocalDeVentas();
 
-  Map<String, Object> toMap() {
-    return {'permitirDescuentos': _permitirDescuentos};
+  Future<void> _leer() async {
+    _permitirDescuentos =
+        (await readValue<bool>('permitirDescuentos')) ?? _permitirDescuentos;
+  }
+
+  Future<void> _guardar() async {
+    await saveValue('permitirDescuentos', _permitirDescuentos);
   }
 }
 
 class ConfigVentas {
+  final IRepositorioDeVentas _repo;
+
   ConfigCompartidaDeVentas compartida = ConfigCompartidaDeVentas();
   ConfigLocalDeVentas local = ConfigLocalDeVentas();
+
+  ConfigVentas(this._repo);
+
+  Future<void> leer() async {
+    await local._leer();
+    compartida = await _repo.obtenerConfigCompartida();
+  }
+
+  Future<void> guardar() async {
+    await local._guardar();
+    await _repo.guardarConfigCompartida(compartida);
+  }
 }

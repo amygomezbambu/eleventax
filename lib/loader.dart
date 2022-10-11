@@ -15,9 +15,7 @@ import 'package:eleventa/modulos/productos/app/interface/repositorio_productos.d
 import 'package:eleventa/modulos/productos/infra/repositorio_productos.dart';
 import 'package:eleventa/modulos/migraciones/migrar_db.dart';
 import 'package:eleventa/modulos/telemetria/modulo_telemetria.dart';
-import 'package:eleventa/modulos/ventas/app/interface/adaptador_de_config_local.dart';
 import 'package:eleventa/modulos/ventas/app/interface/repositorio_ventas.dart';
-import 'package:eleventa/modulos/ventas/infra/adaptador_de_config_local.dart';
 import 'package:eleventa/modulos/ventas/infra/repositorio_ventas.dart';
 import 'package:eleventa/modulos/sync/sync.dart';
 import 'package:eleventa/modulos/sync/sync_config.dart';
@@ -54,7 +52,7 @@ class Loader {
   }
 
   Future<void> iniciarSync() async {
-    var sync_ = Sync.create(
+    var sync_ = Sync.init(
       syncConfig: SyncConfig.create(
         dbVersionTable: 'migrations',
         dbVersionField: 'version',
@@ -66,8 +64,10 @@ class Loader {
             'https://qgfy59gc83.execute-api.us-west-1.amazonaws.com/dev/sync-get-changes',
         deleteChangesEndpoint: 'http://localhost:3000/sync-delete-changes',
         pullInterval: 10000,
-        onError: (ex, stack) =>
-            Dependencias.infra.logger().error(ex: ex, stackTrace: stack),
+        onError: (ex, stack) {
+          Dependencias.infra.logger().error(ex: ex, stackTrace: stack);
+          throw ex;
+        },
       ),
     );
 
@@ -78,9 +78,7 @@ class Loader {
     Dependencias.registrar((ILogger).toString(), () => Logger());
     Dependencias.registrar(
         (IAdaptadorDeBaseDeDatos).toString(), () => AdaptadorSQLite());
-    Dependencias.registrar((ISync).toString(), () => Sync.get());
-    Dependencias.registrar((IAdaptadorDeConfigLocalDeVentas).toString(),
-        () => AdaptadorDeConfigLocalDeVentas());
+    Dependencias.registrar((ISync).toString(), () => Sync.getInstance());
     Dependencias.registrar(
         (IAdaptadorDeTelemetria).toString(), () => AdaptadorDeTelemetria());
     Dependencias.registrar(
