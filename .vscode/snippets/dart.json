@@ -37,7 +37,7 @@
             "  final String message;",
             "",
             "  ${1:View}ErrorState(this.message);",
-            "}",
+            "}"
         ],
         "description": "Crea el estado, el notificador y el provider para una vista"
     }
