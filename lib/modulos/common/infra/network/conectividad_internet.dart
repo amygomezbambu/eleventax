@@ -8,9 +8,10 @@ class ConectividadDeInternet {
   bool estaConectado = false;
   final _networkConnectivity = Connectivity();
 
-  ConectividadDeInternet._();
-
+  /* #region Singleton */
   static final _instance = ConectividadDeInternet._();
+
+  ConectividadDeInternet._();
 
   static Future<ConectividadDeInternet> getInstance() async {
     ConectividadDeInternet instancia = _instance;
@@ -19,6 +20,7 @@ class ConectividadDeInternet {
 
     return instancia;
   }
+  /* #endregion */
 
   Future<void> inicializar() async {
     ConnectivityResult result = await _networkConnectivity.checkConnectivity();

@@ -9,15 +9,16 @@ import 'package:eleventa/globals.dart';
 
 class AdaptadorDeTelemetria implements IAdaptadorDeTelemetria {
   MixpanelAnalytics? _mixpanel;
-  String _token = '';
 
   final ILogger _logger = Dependencias.infra.logger();
 
-  AdaptadorDeTelemetria({String token = ''}) {
-    _token = token;
+  /* #region Singleton */
+  static final instance = AdaptadorDeTelemetria._();
 
+  AdaptadorDeTelemetria._() {
     _initializeMixPanel();
   }
+  /* #endregion */
 
   @override
   Future<void> nuevoEvento(
@@ -49,7 +50,7 @@ class AdaptadorDeTelemetria implements IAdaptadorDeTelemetria {
     final user$ = StreamController<String>.broadcast();
 
     _mixpanel = MixpanelAnalytics(
-      token: _token.isNotEmpty ? _token : appConfig.secrets.tokenTelemetria,
+      token: appConfig.secrets.tokenTelemetria,
       userId$: user$.stream,
       verbose: true,
       shouldAnonymize: false,

@@ -73,12 +73,12 @@ class TestsLoader {
   }
 
   void registrarDependencias() {
-    Dependencias.registrar((ILogger).toString(), () => Logger());
+    Dependencias.registrar((ILogger).toString(), () => Logger.instance);
     Dependencias.registrar(
-        (IAdaptadorDeBaseDeDatos).toString(), () => AdaptadorSQLite());
+        (IAdaptadorDeBaseDeDatos).toString(), () => AdaptadorSQLite.instance);
     Dependencias.registrar((ISync).toString(), () => Sync.getInstance());
-    Dependencias.registrar(
-        (IAdaptadorDeTelemetria).toString(), () => AdaptadorDeTelemetria());
+    Dependencias.registrar((IAdaptadorDeTelemetria).toString(),
+        () => AdaptadorDeTelemetria.instance);
     Dependencias.registrar(
         (IAdaptadorDeDispositivo).toString(), () => AdaptadorDispositivoFake());
     Dependencias.registrar((IRed).toString(), () => AdaptadorRedFake());
