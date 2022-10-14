@@ -42,7 +42,9 @@ class SaleItemActionButton extends StatelessWidget {
                   _label,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      fontSize: 13, color: TailwindColors.blueGray[600]),
+                      fontFamily: 'Figtree',
+                      fontSize: 13,
+                      color: TailwindColors.blueGray[600]),
                 )
               ],
             ),

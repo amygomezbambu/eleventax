@@ -1,6 +1,6 @@
 import 'package:eleventa/loader.dart';
-import 'package:eleventa/modulos/common/ui/primary_button.dart';
-import 'package:eleventa/modulos/ventas/ui/sales_page.dart';
+import 'package:eleventa/modulos/common/ui/boton_primario.dart';
+import 'package:eleventa/modulos/ventas/ui/vista_ventas.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -42,7 +42,7 @@ void main() {
 
       // Verificamos que el botón de cobrar tenga el total actualizado
       expect(
-          find.widgetWithText(PrimaryButton, 'Cobrar \$10.33'), findsOneWidget,
+          find.widgetWithText(BotonPrimario, 'Cobrar \$10.33'), findsOneWidget,
           reason: 'No se actualizo el total de la venta');
 
       await tester.tap(find.byKey(payButtonKey));
@@ -67,8 +67,8 @@ void main() {
 
       // Accedemos al estado de la vista de Ventas
       // para poder consultar los valores nativos
-      final state = tester
-          .state<SaleItemsContainerState>(find.byType(SaleItemsContainer));
+      final state = tester.state<ContenedorArticulosDeVentaState>(
+          find.byType(ContenedorArticulosDeVenta));
 
       // Verificamos que la venta se haya actualizado consultando
       // el estado del Widget de ventas

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tailwindcss_defaults/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:eleventa/modulos/ventas/ui/ui_sale_item.dart';
-import 'package:eleventa/modulos/common/ui/ui_consts.dart' as ui;
 
 class ItemsListView extends StatelessWidget {
   final List<UiSaleItem> items;
@@ -44,8 +43,7 @@ class ItemsListView extends StatelessWidget {
             selectedTileColor: TailwindColors.coolGray[500],
             title: Text(
               items[index].description,
-              style: GoogleFonts.openSans(
-                  fontSize: ui.defaultFontSize, fontWeight: FontWeight.w500),
+              style: GoogleFonts.openSans(fontWeight: FontWeight.w500),
             ),
             trailing: Wrap(
                 spacing: MediaQuery.of(context).size.width > 800 ? 80 : 31,

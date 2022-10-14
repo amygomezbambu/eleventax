@@ -1,10 +1,7 @@
 import 'package:eleventa/modulos/ventas/modulo_ventas.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tailwindcss_defaults/colors.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:eleventa/modulos/common/ui/ui_consts.dart' as ui;
-import 'package:eleventa/modulos/common/ui/primary_button.dart';
+import 'package:eleventa/modulos/common/ui/boton_primario.dart';
 import 'package:eleventa/modulos/ventas/domain/entity/venta.dart';
 import 'package:eleventa/modulos/ventas/ui/sale_items_actions.dart';
 import 'package:eleventa/modulos/ventas/ui/ui_sale_item.dart';
@@ -16,16 +13,16 @@ import 'package:eleventa/modulos/productos/modulo_productos.dart';
 import 'package:eleventa/modulos/ventas/app/usecase/crear_venta.dart';
 import 'package:eleventa/modulos/ventas/app/usecase/agregar_articulo.dart';
 
-class PaginaVentas extends StatefulWidget {
-  final String title;
+class VistaVentas extends StatefulWidget {
+  final String titulo;
 
-  const PaginaVentas({Key? key, required this.title}) : super(key: key);
+  const VistaVentas({Key? key, required this.titulo}) : super(key: key);
 
   @override
-  State<PaginaVentas> createState() => _PaginaVentasState();
+  State<VistaVentas> createState() => _VistaVentasState();
 }
 
-class _PaginaVentasState extends State<PaginaVentas> {
+class _VistaVentasState extends State<VistaVentas> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -35,20 +32,10 @@ class _PaginaVentasState extends State<PaginaVentas> {
         return Scaffold(
             body: Row(
           children: [
-            Container(
-              color: ui.backgroundColor,
-              width: 70,
-              padding: const EdgeInsets.only(top: 20),
-              child: Column(children: const [
-                NavigationButton(Icons.shopping_cart_outlined),
-                NavigationButton(Icons.person),
-                NavigationButton(Icons.inventory_2)
-              ]),
-            ),
             Expanded(
               child: Row(
                 children: const [
-                  SaleItemsContainer(),
+                  ContenedorArticulosDeVenta(),
                 ],
               ),
             ),
@@ -58,30 +45,7 @@ class _PaginaVentasState extends State<PaginaVentas> {
         // Mobile
         return Scaffold(
             body: Column(
-          children: [
-            AppBar(
-              toolbarHeight: 50,
-              title: Text(
-                MediaQuery.of(context).size.width > 800
-                    ? 'eleventa desktop'
-                    : 'eleventa móvil',
-                style: GoogleFonts.openSans(),
-              ),
-              backgroundColor: ui.backgroundColor,
-              foregroundColor: Colors.white,
-              elevation: 0,
-              actions: <Widget>[
-                IconButton(
-                  icon: const Icon(Icons.add_shopping_cart_rounded),
-                  color: const Color.fromARGB(255, 179, 224, 255),
-                  tooltip: 'Agregar venta rápida',
-                  onPressed: () {},
-                )
-              ],
-              leading: const Icon(Icons.menu),
-            ),
-            const SaleItemsContainer()
-          ],
+          children: const [ContenedorArticulosDeVenta()],
         ));
       }
     });
@@ -108,17 +72,19 @@ class NavigationButton extends StatelessWidget {
   }
 }
 
-class SaleItemsContainer extends StatefulWidget {
-  const SaleItemsContainer({
+class ContenedorArticulosDeVenta extends StatefulWidget {
+  const ContenedorArticulosDeVenta({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<SaleItemsContainer> createState() => SaleItemsContainerState();
+  State<ContenedorArticulosDeVenta> createState() =>
+      ContenedorArticulosDeVentaState();
 }
 
 @visibleForTesting
-class SaleItemsContainerState extends State<SaleItemsContainer> {
+class ContenedorArticulosDeVentaState
+    extends State<ContenedorArticulosDeVenta> {
   double saleTotal = 0.0;
   String currentSaleId = '';
   FocusNode myFocusNode = FocusNode();
@@ -248,7 +214,7 @@ class SaleItemsContainerState extends State<SaleItemsContainer> {
                       Container(
                         margin: const EdgeInsets.fromLTRB(3, 10, 5, 10),
                         height: 60,
-                        child: PrimaryButton(
+                        child: BotonPrimario(
                             'Cobrar \$${saleTotal.toStringAsFixed(2)}',
                             Icons.attach_money_outlined,
                             chargeButtonClick,
@@ -267,7 +233,7 @@ class SaleItemsContainerState extends State<SaleItemsContainer> {
                 Container(
                   margin: const EdgeInsets.all(10),
                   height: 60,
-                  child: PrimaryButton(
+                  child: BotonPrimario(
                     'Cobrar \$${saleTotal.toStringAsFixed(2)}',
                     Icons.attach_money_outlined,
                     chargeButtonClick,
@@ -301,7 +267,7 @@ class SaleItemsContainerState extends State<SaleItemsContainer> {
                   autocorrect: false,
                   decoration: InputDecoration(
                       prefixIcon: Icon(
-                        CupertinoIcons.barcode_viewfinder,
+                        Icons.document_scanner,
                         color: TailwindColors.blueGray[300],
                       ),
                       border: InputBorder.none,

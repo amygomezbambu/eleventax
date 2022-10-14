@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
-class PrimaryButton extends StatelessWidget {
+class BotonPrimario extends StatelessWidget {
   final String _label;
   final IconData _icon;
   final VoidCallback onTap;
 
-  const PrimaryButton(
+  const BotonPrimario(
     this._label,
     this._icon,
     this.onTap, {
@@ -33,7 +32,8 @@ class PrimaryButton extends StatelessWidget {
             Icon(_icon,
                 color: const Color.fromARGB(255, 137, 196, 251), size: 30),
             Text(_label,
-                style: GoogleFonts.openSans(
+                style: const TextStyle(
+                  //fontFamily: 'Figtree',
                   color: Colors.white,
                   fontSize: 22,
                   fontWeight: FontWeight.w400,
