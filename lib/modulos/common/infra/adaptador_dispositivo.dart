@@ -11,10 +11,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AdaptadorDeDispositivo implements IAdaptadorDeDispositivo {
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
-  //final ILogger _logger = Dependencias.infra.logger();
 
-  // ignore: empty_constructor_bodies
-  AdaptadorDeDispositivo() {}
+  /* #region Singleton */
+  static final instance = AdaptadorDeDispositivo._();
+
+  AdaptadorDeDispositivo._();
+  /* #endregion */
 
   @override
   Future<InfoDispositivo> obtenerDatos() async {
@@ -30,12 +32,12 @@ class AdaptadorDeDispositivo implements IAdaptadorDeDispositivo {
       infoDispositivo = _leerWindowsInfo(await deviceInfoPlugin.windowsInfo);
     }
 
-    await leerInfoComun(infoDispositivo);
+    await _leerInfoComun(infoDispositivo);
 
     return infoDispositivo;
   }
 
-  Future<void> leerInfoComun(InfoDispositivo info) async {
+  Future<void> _leerInfoComun(InfoDispositivo info) async {
     var packageInfo = await PackageInfo.fromPlatform();
 
     info.so = Platform.operatingSystem;

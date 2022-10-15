@@ -75,16 +75,30 @@ class Loader {
   }
 
   void registrarDependencias() {
-    Dependencias.registrar((ILogger).toString(), () => Logger());
     Dependencias.registrar(
-        (IAdaptadorDeBaseDeDatos).toString(), () => AdaptadorSQLite());
-    Dependencias.registrar((ISync).toString(), () => Sync.getInstance());
+      (ILogger).toString(),
+      () => Logger.instance,
+    );
     Dependencias.registrar(
-        (IAdaptadorDeTelemetria).toString(), () => AdaptadorDeTelemetria());
+      (IAdaptadorDeBaseDeDatos).toString(),
+      () => AdaptadorSQLite.instance,
+    );
     Dependencias.registrar(
-        (IAdaptadorDeDispositivo).toString(), () => AdaptadorDeDispositivo());
-    Dependencias.registrar((IRed).toString(), () => AdaptadorRed());
-
+      (ISync).toString(),
+      () => Sync.getInstance(),
+    );
+    Dependencias.registrar(
+      (IAdaptadorDeTelemetria).toString(),
+      () => AdaptadorDeTelemetria.instance,
+    );
+    Dependencias.registrar(
+      (IAdaptadorDeDispositivo).toString(),
+      () => AdaptadorDeDispositivo.instance,
+    );
+    Dependencias.registrar(
+      (IRed).toString(),
+      () => AdaptadorRed.instance,
+    );
     Dependencias.registrar(
       (IRepositorioDeVentas).toString(),
       () => RepositorioVentas(
