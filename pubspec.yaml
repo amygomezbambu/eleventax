@@ -52,7 +52,7 @@ dependencies:
   sentry_logging: ^6.12.1 # [ADR-0004]
   path_provider_macos: ^2.0.6
   path_provider: ^2.0.11
-  layout: ^1.0.3
+  layout: ^1.0.3 # [ADR-0009]
   flutter_svg: ^1.1.5
   mixpanel_analytics: ^2.1.1
   device_info_plus: ^6.0.0
