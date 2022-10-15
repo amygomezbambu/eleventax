@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:eleventa/modulos/ventas/ui/sale_item_action_button.dart';
+import 'package:eleventa/modulos/ventas/ui/boton_accion_de_venta.dart';
 
-class SaleItemsActions extends StatelessWidget {
-  const SaleItemsActions({
+class AccionesDeVenta extends StatelessWidget {
+  const AccionesDeVenta({
     Key? key,
   }) : super(key: key);
 
@@ -16,20 +16,20 @@ class SaleItemsActions extends StatelessWidget {
         children: [
           Row(
             children: const [
-              SaleItemActionButton('Aumentar', Icons.person),
-              SaleItemActionButton('Disminuir', Icons.person)
+              BotonAccionDeVenta('Aumentar', Icons.person),
+              BotonAccionDeVenta('Disminuir', Icons.person)
             ],
           ),
           Row(
             children: const [
-              SaleItemActionButton('Venta Rápida', Icons.person),
-              SaleItemActionButton('Asignar Cliente', Icons.person)
+              BotonAccionDeVenta('Venta Rápida', Icons.person),
+              BotonAccionDeVenta('Asignar Cliente', Icons.person)
             ],
           ),
           Row(
             children: const [
-              SaleItemActionButton('Aplicar Descuento', Icons.person),
-              SaleItemActionButton('Convertir a \n cotización', Icons.person)
+              BotonAccionDeVenta('Aplicar Descuento', Icons.person),
+              BotonAccionDeVenta('Convertir a \n cotización', Icons.person)
             ],
           )
         ],

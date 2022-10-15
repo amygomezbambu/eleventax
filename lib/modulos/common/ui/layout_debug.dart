@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:layout/layout.dart';
 
-class LayoutBar extends StatelessWidget {
-  const LayoutBar({super.key});
+class LayoutDebug extends StatelessWidget {
+  const LayoutDebug({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class LayoutBar extends StatelessWidget {
                   '${layout.breakpoint}',
                   maxLines: 1,
                   textAlign: TextAlign.end,
-                  style: TextStyle(fontSize: 12),
+                  style: const TextStyle(fontSize: 12),
                 ),
               ),
             ],

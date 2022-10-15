@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tailwindcss_defaults/colors.dart';
 
-class SaleItemActionButton extends StatelessWidget {
+class BotonAccionDeVenta extends StatelessWidget {
   final String _label;
   final IconData _icon;
 
-  const SaleItemActionButton(
+  const BotonAccionDeVenta(
     this._label,
     this._icon, {
     Key? key,

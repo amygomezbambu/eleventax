@@ -1,5 +1,5 @@
 import 'package:eleventa/loader.dart';
-import 'package:eleventa/modulos/common/ui/boton_primario.dart';
+import 'package:eleventa/modulos/common/ui/widgets/boton_primario.dart';
 import 'package:eleventa/modulos/ventas/ui/vista_ventas.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -67,8 +67,7 @@ void main() {
 
       // Accedemos al estado de la vista de Ventas
       // para poder consultar los valores nativos
-      final state = tester.state<ContenedorArticulosDeVentaState>(
-          find.byType(ContenedorArticulosDeVenta));
+      final state = tester.state<VentaActualState>(find.byType(VentaActual));
 
       // Verificamos que la venta se haya actualizado consultando
       // el estado del Widget de ventas

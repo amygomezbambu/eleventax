@@ -1,8 +1,7 @@
 import 'package:eleventa/modulos/common/ui/design_system.dart';
-import 'package:eleventa/modulos/common/ui/eleventa_logo.dart';
+import 'package:eleventa/modulos/common/ui/widgets/eleventa_logo.dart';
 import 'package:flutter/material.dart';
 import 'package:eleventa/modulos/common/ui/rutas.dart';
-import 'package:eleventa/modulos/common/ui/design_system.dart' as ui;
 
 class BarraNavegacionLateral extends StatelessWidget {
   final int selectedIndex;
