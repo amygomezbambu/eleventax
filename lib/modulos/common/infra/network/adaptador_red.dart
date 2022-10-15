@@ -6,6 +6,12 @@ import 'package:http/http.dart' as http;
 class AdaptadorRed implements IRed {
   var ipPublica = '';
 
+  /* #region Singleton */
+  static final instance = AdaptadorRed._();
+
+  AdaptadorRed._();
+  /* #endregion */
+
   @override
   Future<bool> hayConexionAInternet() async {
     var internet = await ConectividadDeInternet.getInstance();

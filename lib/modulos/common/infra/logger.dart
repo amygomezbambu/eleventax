@@ -14,13 +14,9 @@ class Logger implements ILogger {
   late LoggerConfig _config;
 
   /* #region Singleton */
-  static final Logger _instance = Logger._internal();
+  static final Logger instance = Logger._();
 
-  factory Logger() {
-    return _instance;
-  }
-
-  Logger._internal() {
+  Logger._() {
     log.Logger.root.level = log.Level.ALL;
 
     log.Logger.root.onRecord.listen((record) {

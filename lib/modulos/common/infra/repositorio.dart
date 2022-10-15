@@ -12,21 +12,21 @@ class Repositorio {
 
   /// Obtiene un mapa con las diferencias entre la entidad modificada y la entidad en la db
   ///
-  /// [inMemoryFields] representa representa el estado en memoria
-  /// [dbFields] representa el estado almacenado en la base de datos
+  /// [camposEntidad] representa el estado en memoria
+  /// [camposDb] representa el estado almacenado en la base de datos
   Future<Map<String, Object?>> obtenerDiferencias(
-    Map<String, Object?> inMemoryFields,
-    Map<String, Object?> dbFields,
+    Map<String, Object?> camposEntidad,
+    Map<String, Object?> camposDb,
   ) async {
-    Map<String, Object?> differences = {};
+    Map<String, Object?> diferencias = {};
 
-    for (var field in dbFields.keys) {
-      if (inMemoryFields[field] != dbFields[field]) {
-        differences[field] = inMemoryFields[field];
+    for (var field in camposDb.keys) {
+      if (camposEntidad[field] != camposDb[field]) {
+        diferencias[field] = camposEntidad[field];
       }
     }
 
-    return differences;
+    return diferencias;
   }
 
   Future<void> transaction() async {

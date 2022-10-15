@@ -33,13 +33,9 @@ class AdaptadorSQLite implements IAdaptadorDeBaseDeDatos {
   static const sqliteNotADbError = 26;
 
   /* #region Singleton */
-  static final AdaptadorSQLite _instance = AdaptadorSQLite._internal();
+  static final AdaptadorSQLite instance = AdaptadorSQLite._();
 
-  factory AdaptadorSQLite() {
-    return _instance;
-  }
-
-  AdaptadorSQLite._internal();
+  AdaptadorSQLite._();
   /* #endregion */
 
   Future<void> desconectar() async {
