@@ -36,7 +36,6 @@ dependencies:
   sqflite_common_ffi: ^2.1.1+1 # [ARD-0007]
   # Incluye la libreria de sqlite compilada con SQLCiper para iOS, Android y Mac
   sqlcipher_flutter_libs: ^0.5.1 # [ARD-0007]
-
   shared_preferences: ^2.0.15 #[ARD-0006]
 
   meta: ^1.7.0
@@ -53,6 +52,8 @@ dependencies:
   sentry_logging: ^6.12.1 # [ADR-0004]
   path_provider_macos: ^2.0.6
   path_provider: ^2.0.11
+  layout: ^1.0.3 # [ADR-0009]
+  flutter_svg: ^1.1.5
   mixpanel_analytics: ^2.1.1
   device_info_plus: ^6.0.0
   mockito: ^5.3.2
@@ -89,8 +90,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+     - assets/eleventa.svg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

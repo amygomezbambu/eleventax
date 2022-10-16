@@ -2,66 +2,62 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tailwindcss_defaults/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:eleventa/modulos/ventas/ui/ui_sale_item.dart';
-import 'package:eleventa/modulos/common/ui/ui_consts.dart' as ui;
+import 'package:layout/layout.dart';
 
-class ItemsListView extends StatelessWidget {
-  final List<UiSaleItem> items;
+class ListadoArticulos extends StatelessWidget {
+  final List<UiSaleItem> articulos;
   final void Function(int) onSelectItem;
 
-  const ItemsListView(
-      {required this.items, required this.onSelectItem, Key? key})
+  const ListadoArticulos(
+      {required this.articulos, required this.onSelectItem, Key? key})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final targetPlatform = Theme.of(context).platform;
-    final touchBasedInput = (targetPlatform == TargetPlatform.android ||
+    final soportaTouch = (targetPlatform == TargetPlatform.android ||
         targetPlatform == TargetPlatform.iOS);
 
     return ListView.separated(
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
-      itemCount: items.length,
+      itemCount: articulos.length,
       itemBuilder: (BuildContext context, int index) {
         return ListTile(
-            dense: MediaQuery.of(context).size.width <
-                800, // TBD: Poner denso solo en pantallas chicas
+            dense: (context.breakpoint <= LayoutBreakpoint.sm),
             leading: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Image.network(
-                  'https://source.unsplash.com/random/200×200/?${items[index].description}',
-                  height: 50,
-                  width: 50,
+                  'https://source.unsplash.com/random/200×200/?${articulos[index].description}',
                   // Le indicamos que que tamaño será la imagen para que consuma
                   // menos memoria aunque la imagen original sea más grande
                   cacheHeight: 50,
                   cacheWidth: 50,
                   fit: BoxFit.cover,
                 )),
-            subtitle: Text(items[index].code),
-            selected: !touchBasedInput && UiCart.isSelectedItem(items[index]),
+            subtitle: Text(articulos[index].code),
+            selected: !soportaTouch && UiCart.isSelectedItem(articulos[index]),
             selectedColor: Colors.white,
             selectedTileColor: TailwindColors.coolGray[500],
             title: Text(
-              items[index].description,
-              style: GoogleFonts.openSans(
-                  fontSize: ui.defaultFontSize, fontWeight: FontWeight.w500),
+              articulos[index].description,
+              style: GoogleFonts.openSans(fontWeight: FontWeight.w500),
             ),
             trailing: Wrap(
-                spacing: MediaQuery.of(context).size.width > 800 ? 80 : 31,
+                spacing: (context.breakpoint >= LayoutBreakpoint.sm) ? 80 : 31,
                 children: <Widget>[
                   Text(
-                    '\$${double.parse(items[index].price).toStringAsFixed(2)}',
+                    '\$${double.parse(articulos[index].price).toStringAsFixed(2)}',
                     style: TextStyle(
                         fontSize: 18,
-                        color: !touchBasedInput &&
-                                UiCart.isSelectedItem(items[index])
+                        color: !soportaTouch &&
+                                UiCart.isSelectedItem(articulos[index])
                             ? Colors.white
                             : const Color.fromARGB(255, 38, 119, 181),
                         fontWeight: FontWeight.w600),
                   )
                 ]),
-            onTap: () => {!touchBasedInput ? onSelectItem(index) : true});
+            onTap: () => {!soportaTouch ? onSelectItem(index) : true});
       },
       separatorBuilder: (context, index) => const Padding(
         padding: EdgeInsets.only(left: 80, right: 15),

@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
-class PrimaryButton extends StatelessWidget {
-  final String _label;
-  final IconData _icon;
+class BotonPrimario extends StatelessWidget {
+  final String label;
+  final IconData icon;
   final VoidCallback onTap;
+  final double tamanoFuente;
 
-  const PrimaryButton(
-    this._label,
-    this._icon,
-    this.onTap, {
+  const BotonPrimario({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+    this.tamanoFuente = 22.0,
     Key? key,
   }) : super(key: key);
 
@@ -30,12 +31,13 @@ class PrimaryButton extends StatelessWidget {
           //crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(_icon,
+            Icon(icon,
                 color: const Color.fromARGB(255, 137, 196, 251), size: 30),
-            Text(_label,
-                style: GoogleFonts.openSans(
+            Text(label,
+                style: TextStyle(
+                  //fontFamily: 'Figtree',
                   color: Colors.white,
-                  fontSize: 22,
+                  fontSize: tamanoFuente,
                   fontWeight: FontWeight.w400,
                   letterSpacing: -1.1,
                 )),

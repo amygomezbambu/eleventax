@@ -56,7 +56,6 @@ class AdaptadorDeDispositivo implements IAdaptadorDeDispositivo {
     info.anchoPantalla = window.physicalSize.width / window.devicePixelRatio;
     info.lenguajeConfigurado = window.locale.languageCode;
 
-    //TODO: no se esta obteniendo el codigo correctamente
     info.pais = window.locale.countryCode ?? '';
 
     // Diferencia entre hora local y UTC (Ejem: Chihuahua -> -6)

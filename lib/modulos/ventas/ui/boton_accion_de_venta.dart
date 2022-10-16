@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tailwindcss_defaults/colors.dart';
 
-class SaleItemActionButton extends StatelessWidget {
+class BotonAccionDeVenta extends StatelessWidget {
   final String _label;
   final IconData _icon;
 
-  const SaleItemActionButton(
+  const BotonAccionDeVenta(
     this._label,
     this._icon, {
     Key? key,
@@ -42,7 +42,9 @@ class SaleItemActionButton extends StatelessWidget {
                   _label,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      fontSize: 13, color: TailwindColors.blueGray[600]),
+                      fontFamily: 'Figtree',
+                      fontSize: 13,
+                      color: TailwindColors.blueGray[600]),
                 )
               ],
             ),

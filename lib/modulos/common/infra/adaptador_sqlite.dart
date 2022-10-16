@@ -24,9 +24,9 @@ class AdaptadorSQLite implements IAdaptadorDeBaseDeDatos {
   var _verbose = false;
 
   // Librerias de las que se depende en Windows
-  static const libcryptoWindowsLibrary = 'libcrypto-1_1-x64.dll';
-  static const sslWindowsLibrary = 'libssl-1_1-x64.dll';
-  static const sqlcipherWindowsLibrary = 'sqlcipher.dll';
+  static const archivoLibcryptoWindows = 'libcrypto-1_1-x64.dll';
+  static const archivoSslWindows = 'libssl-1_1-x64.dll';
+  static const archivoSqlcipherWindows = 'sqlcipher.dll';
 
   // Codigos de error que queremos detectar de SQLite
   // https://www.sqlite.org/rescode.html
@@ -55,22 +55,22 @@ class AdaptadorSQLite implements IAdaptadorDeBaseDeDatos {
     late DynamicLibrary library;
 
     // Verificamos que existan las librerias que necesitamos
-    if (!File(AdaptadorSQLite.libcryptoWindowsLibrary).existsSync()) {
+    if (!File(AdaptadorSQLite.archivoLibcryptoWindows).existsSync()) {
       debugPrint(
           'No existe libreria requerida: $AdaptadorSQLite.libcryptoWindowsLibrary');
     }
 
-    if (!File(AdaptadorSQLite.sslWindowsLibrary).existsSync()) {
+    if (!File(AdaptadorSQLite.archivoSslWindows).existsSync()) {
       debugPrint(
           'No existe libreria requerida: $AdaptadorSQLite.sslWindowsLibrary');
     }
 
-    if (!File(AdaptadorSQLite.sqlcipherWindowsLibrary).existsSync()) {
+    if (!File(AdaptadorSQLite.archivoSqlcipherWindows).existsSync()) {
       debugPrint(
           'No existe libreria requerida: $AdaptadorSQLite.sqlcipherWindowsLibrary');
     }
 
-    library = DynamicLibrary.open(AdaptadorSQLite.sqlcipherWindowsLibrary);
+    library = DynamicLibrary.open(AdaptadorSQLite.archivoSqlcipherWindows);
 
     return library;
   }
