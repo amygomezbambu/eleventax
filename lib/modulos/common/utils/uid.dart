@@ -36,9 +36,16 @@ class UID {
     return _identifier;
   }
 
-  /// Genera una cadena que representa un identificador unico
-  void _generate() {
-    var uid = Xid();
-    _identifier = uid.toString();
+  void _generate([int retry = 1]) {
+    try {
+      var uid = Xid();
+      _identifier = uid.toString();
+    } catch (e) {
+      if (retry > 3) {
+        rethrow;
+      }
+
+      _generate(retry + 1);
+    }
   }
 }
