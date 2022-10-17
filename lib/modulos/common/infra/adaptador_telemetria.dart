@@ -21,12 +21,17 @@ class AdaptadorDeTelemetria implements IAdaptadorDeTelemetria {
   /* #endregion */
 
   @override
-  Future<void> nuevoEvento(
-      {required EventoDeTelemetria evento,
-      required Map<String, dynamic> propiedades,
-      String? ip}) async {
-    var success = await _mixpanel!
-        .track(event: evento.name, properties: propiedades, ip: ip);
+  Future<void> nuevoEvento({
+    required EventoDeTelemetria evento,
+    required Map<String, dynamic> propiedades,
+    String? ip,
+  }) async {
+    var success = await _mixpanel!.track(
+      event: evento.name,
+      properties: propiedades,
+      ip: ip,
+    );
+
     if (!success) {
       throw EleventaEx(
         message: 'No se registro el evento ${evento.name}',

@@ -30,9 +30,9 @@
       "type": "flutter",
       "command": "flutter",
       "args": [
-        "test"        
+        "test"
       ],
       "problemMatcher": [],
-    }    
+    }
   ]
 }

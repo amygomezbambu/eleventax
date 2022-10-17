@@ -42,6 +42,9 @@ class AppConfig extends ConfigLocal {
   WindowMode windowMode = WindowMode.normal;
   late UID deviceId;
 
+  String ambiente =
+      const String.fromEnvironment('ENVIRONMENT', defaultValue: 'dev');
+
   var negocioID = '12345';
   var sucursalID = 'ABCDF';
   var usuarioLogeado = 'Jhon Doe';
