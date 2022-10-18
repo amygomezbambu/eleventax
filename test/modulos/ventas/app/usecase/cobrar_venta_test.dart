@@ -10,37 +10,37 @@ void main() {
     await loader.iniciar();
   });
 
-  group('Cobrar venta', () {
-    test('Se debe registrar el tipo de pago y la fecha del cobro', () async {
-      var cobrarVenta = ModuloVentas.cobrarVenta();
-      var crearVenta = ModuloVentas.crearVenta();
-      var agregarArticulo = ModuloVentas.agregarArticulo();
+  // group('Cobrar venta', () {
+  //   test('Se debe registrar el tipo de pago y la fecha del cobro', () async {
+  //     var cobrarVenta = ModuloVentas.cobrarVenta();
+  //     var crearVenta = ModuloVentas.crearVenta();
+  //     var agregarArticulo = ModuloVentas.agregarArticulo();
 
-      //when
-      final uid = crearVenta.exec();
+  //     //when
+  //     final uid = crearVenta.exec();
 
-      agregarArticulo.req.articulo.descripcion = 'coca cola';
-      agregarArticulo.req.articulo.precio = 10.56;
-      agregarArticulo.req.articulo.cantidad = 2;
-      agregarArticulo.req.ventaUID = uid;
+  //     agregarArticulo.req.articulo.descripcion = 'coca cola';
+  //     agregarArticulo.req.articulo.precio = 10.56;
+  //     agregarArticulo.req.articulo.cantidad = 2;
+  //     agregarArticulo.req.ventaUID = uid;
 
-      await agregarArticulo.exec();
+  //     await agregarArticulo.exec();
 
-      cobrarVenta.req.ventaUID = uid;
-      cobrarVenta.req.metodoDePago = MetodoDePago.efectivo;
+  //     cobrarVenta.req.ventaUID = uid;
+  //     cobrarVenta.req.metodoDePago = MetodoDePago.efectivo;
 
-      await cobrarVenta.exec();
+  //     await cobrarVenta.exec();
 
-      var obtenerVenta = ModuloVentas.obtenerVenta();
-      obtenerVenta.req.ventaUID = uid;
-      var saleDTO = await obtenerVenta.exec();
-      //expect
+  //     var obtenerVenta = ModuloVentas.obtenerVenta();
+  //     obtenerVenta.req.ventaUID = uid;
+  //     var saleDTO = await obtenerVenta.exec();
+  //     //expect
 
-      //expect(saleDTO.status, SaleStatus.paid);
-      expect(saleDTO.metodoDePago, MetodoDePago.efectivo);
-      expect(saleDTO.fechaDePago, greaterThan(0));
-    });
+  //     //expect(saleDTO.status, SaleStatus.paid);
+  //     expect(saleDTO.metodoDePago, MetodoDePago.efectivo);
+  //     expect(saleDTO.fechaDePago, greaterThan(0));
+  //   });
 
-    test('Se debe marcar la venta como cobrada', () {});
-  });
+  //   test('Se debe marcar la venta como cobrada', () {});
+  // });
 }

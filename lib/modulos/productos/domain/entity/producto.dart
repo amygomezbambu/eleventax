@@ -1,57 +1,87 @@
 import 'package:eleventa/modulos/common/domain/entidad.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
 
-class Producto extends Entidad {
-  var _descripcion = '';
-  var _precio = 0.0;
-  var _sku = '';
+enum ProductoSeVendePor { unidad, peso }
 
-  String get descripcion => _descripcion;
-  double get precio => _precio;
-  String get sku => _sku;
+class Producto extends Entidad {
+  var _nombre = '';
+  var _precioDeVenta = 0.0;
+  var _precioDeCompra = 0.0;
+  var _categoria = '';
+  //unidad medida
+  // impuestos
+  late ProductoSeVendePor _seVendePor;
+  var _imagenURL = '';
+  var _codigo = '';
+
+  String get nombre => _nombre;
+  double get precioDeVenta => _precioDeVenta;
+  double get precioDeCompra => _precioDeCompra;
+  String get categoria => _categoria;
+  ProductoSeVendePor get seVendePor => _seVendePor;
+  String get imagenURL => _imagenURL;
+  String get codigo => _codigo;
 
   Producto.crear({
-    required String descripcion,
-    required double precio,
-    required String sku,
+    required String nombre,
+    required double precioDeVenta,
+    required double precioDeCompra,
+    String categoria = '',
+    ProductoSeVendePor seVendePor = ProductoSeVendePor.unidad,
+    String imagenURL = '',
+    required String codigo,
   }) : super.crear() {
-    _validarDescripcion(descripcion);
-    _validarPrecio(precio);
-    _validarSKU(sku);
+    //TODO: agregar validaciones
+    _nombre = nombre;
+    _precioDeVenta = precioDeVenta;
+    _precioDeCompra = precioDeCompra;
+    _categoria = categoria;
+    _seVendePor = seVendePor;
+    _imagenURL = imagenURL;
+    _codigo = codigo;
   }
 
-  Producto.cargar(
-    UID uid,
-    String sku,
-    String descripcion,
-    double precio,
-  ) : super.cargar(uid) {
-    _validarDescripcion(descripcion);
-    _validarPrecio(precio);
-    _validarSKU(sku);
+  Producto.cargar({
+    required UID uid,
+    required String nombre,
+    required double precioDeVenta,
+    required double precioDeCompra,
+    String categoria = '',
+    ProductoSeVendePor seVendePor = ProductoSeVendePor.unidad,
+    String imagenURL = '',
+    required String codigo,
+  }) : super.cargar(uid) {
+    //TODO: agregar validaciones
+    _nombre = nombre;
+    _precioDeVenta = precioDeVenta;
+    _precioDeCompra = precioDeCompra;
+    _categoria = categoria;
+    _seVendePor = seVendePor;
+    _imagenURL = imagenURL;
+    _codigo = codigo;
   }
 
-  void _validarDescripcion(String value) {
+  void _validaCategoria(String value) {
     if (value.isEmpty) {
-      throw Exception('La descripcion no puede estar vacia');
+      throw Exception('La _categoria no puede estar vacia');
     }
 
-    _descripcion = value;
+    _categoria = value;
   }
 
-  void _validarPrecio(double value) {
+  void _validarNombre(String value) {
+    if (value.isEmpty) {
+      throw Exception('La _nombre no puede estar vacia');
+    }
+
+    _nombre = value;
+  }
+
+  void _validarPrecioDeVenta(double value) {
     if (value <= 0) {
       throw Exception('El precio no pude ser cero');
     }
 
-    _precio = value;
-  }
-
-  void _validarSKU(String value) {
-    if (value.isEmpty) {
-      throw Exception('El sku no puede ser vacío');
-    }
-
-    _sku = value;
+    _precioDeVenta = value;
   }
 }

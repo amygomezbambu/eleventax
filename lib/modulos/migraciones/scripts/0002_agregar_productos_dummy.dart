@@ -9,20 +9,20 @@ class Migracion2 extends Migracion {
 
   @override
   Future<void> operacion() async {
-    var command = 'insert into productos(uid,descripcion,sku,precio) '
-        'values(?, "Coke 20oz", "1", 10.33)';
+    // var command = 'insert into productos(uid,descripcion,sku,precio) '
+    //     'values(?, "Coke 20oz", "1", 10.33)';
 
-    await db.command(sql: command, params: [UID().toString()]);
+    // await db.command(sql: command, params: [UID().toString()]);
 
-    command = 'insert into productos(uid,descripcion,sku,precio) '
-        'values(?, "Starbucks Coffee", "2", 10.33)';
+    // command = 'insert into productos(uid,descripcion,sku,precio) '
+    //     'values(?, "Starbucks Coffee", "2", 10.33)';
 
-    await db.command(sql: command, params: [UID().toString()]);
+    // await db.command(sql: command, params: [UID().toString()]);
 
-    command = 'insert into productos(uid,descripcion,sku,precio) '
-        'values(?, "Tuna Sandwich", "3", 12.33)';
+    // command = 'insert into productos(uid,descripcion,sku,precio) '
+    //     'values(?, "Tuna Sandwich", "3", 12.33)';
 
-    await db.command(sql: command, params: [UID().toString()]);
+    // await db.command(sql: command, params: [UID().toString()]);
   }
 
   @override

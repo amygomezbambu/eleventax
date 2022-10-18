@@ -17,13 +17,13 @@ class ActualizarProducto extends Usecase<void> {
   }
 
   Future<void> _operation() async {
-    var item = Producto.cargar(
-      UID(req.producto.uid),
-      req.producto.sku,
-      req.producto.descripcion,
-      req.producto.precio,
-    );
+    // var item = Producto.cargar(
+    //   UID(req.producto.uid),
+    //   req.producto.sku,
+    //   req.producto.descripcion,
+    //   req.producto.precio,
+    // );
 
-    await _repo.actualizar(item);
+    // await _repo.actualizar(item);
   }
 }

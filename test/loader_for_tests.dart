@@ -11,6 +11,7 @@ import 'package:eleventa/modulos/common/infra/adaptador_sqlite.dart';
 import 'package:eleventa/modulos/productos/app/interface/repositorio_productos.dart';
 import 'package:eleventa/modulos/productos/infra/repositorio_productos.dart';
 import 'package:eleventa/modulos/migraciones/migrar_db.dart';
+import 'package:eleventa/modulos/productos/interfaces/repositorio_productos.dart';
 import 'package:eleventa/modulos/ventas/app/interface/repositorio_ventas.dart';
 import 'package:eleventa/modulos/ventas/infra/repositorio_ventas.dart';
 import 'package:eleventa/modulos/sync/sync.dart';
@@ -92,6 +93,13 @@ class TestsLoader {
     );
     Dependencias.registrar(
       (IRepositorioArticulos).toString(),
+      () => RepositorioProductos(
+        syncAdapter: Dependencias.infra.sync(),
+        db: Dependencias.infra.database(),
+      ),
+    );
+    Dependencias.registrar(
+      (IRepositorioProductos).toString(),
       () => RepositorioProductos(
         syncAdapter: Dependencias.infra.sync(),
         db: Dependencias.infra.database(),
