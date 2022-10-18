@@ -12,10 +12,7 @@
       "env": {
         "ENVIRONMENT1": "development"
       },
-      "toolArgs": [
-        //"--dart-define",
-        //"XXX=valor",
-      ]
+      "toolArgs": ["--dart-define", "FEATURE_PRODUCTOS=1"]
     }
   ]
 }

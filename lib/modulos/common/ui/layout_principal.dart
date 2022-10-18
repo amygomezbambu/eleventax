@@ -2,6 +2,8 @@
 import 'package:eleventa/modulos/common/ui/layout_desktop.dart';
 import 'package:eleventa/modulos/common/ui/layout_mobile.dart';
 import 'package:eleventa/modulos/common/ui/design_system.dart';
+import 'package:eleventa/modulos/config/flags.dart';
+import 'package:eleventa/modulos/productos/ui/vista_productos.dart';
 import 'package:eleventa/modulos/ventas/ui/vista_ventas.dart';
 
 import 'package:flutter/material.dart';
@@ -33,7 +35,9 @@ class LayoutPrincipalState extends State<LayoutPrincipal> {
         title: Text(
             (context.layout.breakpoint <= LayoutBreakpoint.sm)
                 ? 'Ventas'
-                : 'eleventa punto de venta', // ToDO: Incluir el nombre del módulo
+                : Feature.productos.estaHabilitado()
+                    ? 'productos'
+                    : 'no ', // ToDO: Incluir el nombre del módulo
             style: TextStyle(
                 color: Colors.white,
                 fontSize: (context.layout.breakpoint <= LayoutBreakpoint.sm)
@@ -66,11 +70,16 @@ class LayoutPrincipalState extends State<LayoutPrincipal> {
                 selectedIndex: index, onIndexSelect: onIndexSelect),
             const VerticalDivider(thickness: 1, width: 1),
           ],
-          const Expanded(
-              key: ValueKey('VistaVentas'),
-              child: VistaVentas(
-                titulo: 'Ventas',
-              )),
+          Expanded(
+              child: Feature.productos.estaHabilitado()
+                  ? const VistaProductos(
+                      key: ValueKey('VistaProductos'),
+                      titulo: 'Productos',
+                    )
+                  : const VistaVentas(
+                      key: ValueKey('VistaVentas'),
+                      titulo: 'Ventas',
+                    )),
           Container(
             color: Colors.amber,
             height: 30,

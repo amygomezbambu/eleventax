@@ -1,31 +1,20 @@
-import 'package:eleventa/globals.dart';
-
 enum Feature {
-  catalogoDeProductos,
+  productos,
   ventas,
+  inventario,
 }
 
 extension FlagExtension on Feature {
   bool estaHabilitado() {
-    var env = appConfig.ambiente;
-
-    switch (env) {
-      case 'dev':
-        switch (this) {
-          case Feature.catalogoDeProductos:
-            return true;
-          case Feature.ventas:
-            return true;
-        }
-      case 'prod':
-        switch (this) {
-          case Feature.catalogoDeProductos:
-            return false;
-          case Feature.ventas:
-            return false;
-        }
+    switch (this) {
+      case Feature.productos:
+        var valor = const String.fromEnvironment('FEATURE_PRODUCTOS',
+            defaultValue: "0");
+        return (valor == "1");
+      case Feature.ventas:
+        return true;
+      case Feature.inventario:
+        return true;
     }
-
-    return false;
   }
 }
