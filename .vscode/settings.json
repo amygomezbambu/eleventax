@@ -30,5 +30,6 @@
         }
       ]
     }
-  }
+  },
+  "cmake.sourceDirectory": "${workspaceFolder}/Code/easy_sidemenu/example/windows"
 }
