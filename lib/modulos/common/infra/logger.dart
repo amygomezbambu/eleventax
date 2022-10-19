@@ -64,6 +64,9 @@ class Logger implements ILogger {
       logEntry.message = ex.message;
       logEntry.input = ex.input;
 
+      print(
+          '${logEntry.exception} ${logEntry.stackTrace} ${logEntry.message} ${logEntry.input}');
+
       await _handleException(entry: logEntry, level: NivelDeLog.error);
     } else {
       logEntry.exception = ex;

@@ -55,20 +55,21 @@ class TestsLoader {
   Future<void> iniciarSync() async {
     Sync.init(
       syncConfig: SyncConfig.create(
-        dbVersionTable: 'migrations',
-        dbVersionField: 'version',
-        groupId: 'CH0001',
-        deviceId: appConfig.deviceId.toString(),
-        addChangesEndpoint:
-            'https://qgfy59gc83.execute-api.us-west-1.amazonaws.com/dev/sync',
-        getChangesEndpoint:
-            'https://qgfy59gc83.execute-api.us-west-1.amazonaws.com/dev/sync-get-changes',
-        deleteChangesEndpoint: 'http://localhost:3000/sync-delete-changes',
-        pullInterval: 10000,
-        sendChangesInmediatly: false,
-        onError: (ex, stack) =>
-            Dependencias.infra.logger().error(ex: ex, stackTrace: stack),
-      ),
+          dbVersionTable: 'migrations',
+          dbVersionField: 'version',
+          groupId: 'CH0001',
+          deviceId: appConfig.deviceId.toString(),
+          addChangesEndpoint:
+              'https://qgfy59gc83.execute-api.us-west-1.amazonaws.com/dev/sync',
+          getChangesEndpoint:
+              'https://qgfy59gc83.execute-api.us-west-1.amazonaws.com/dev/sync-get-changes',
+          deleteChangesEndpoint: 'http://localhost:3000/sync-delete-changes',
+          pullInterval: 10000,
+          sendChangesInmediatly: false,
+          onError: (ex, stack) {
+            Dependencias.infra.logger().error(ex: ex, stackTrace: stack);
+            throw ex;
+          }),
     );
   }
 

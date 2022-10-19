@@ -1,6 +1,8 @@
 import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
 
+import '../../common/domain/moneda.dart';
+
 class ProductoMapper {
   // static ProductoDTO domainAData(Producto producto) {
   //   var dto = ProductoDTO();
@@ -35,8 +37,8 @@ class ProductoMapper {
     return Producto.cargar(
       uid: UID(dbRow['uid'] as String),
       nombre: dbRow['nombre'] as String,
-      precioDeVenta: dbRow['precio_venta'] as double,
-      precioDeCompra: dbRow['precio_compra'] as double,
+      precioDeVenta: dbRow['precio_venta'] as Moneda,
+      precioDeCompra: dbRow['precio_compra'] as Moneda,
       codigo: dbRow['codigo'] as String,
     );
   }

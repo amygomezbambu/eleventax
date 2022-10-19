@@ -8,6 +8,8 @@ import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
 import 'package:eleventa/modulos/productos/interfaces/repositorio_productos.dart';
 import 'package:eleventa/modulos/productos/mapper/producto_mapper.dart';
 
+import 'package:eleventa/modulos/common/domain/moneda.dart';
+
 class RepositorioProductos extends Repositorio
     implements IRepositorioProductos {
   RepositorioProductos({
@@ -47,8 +49,8 @@ class RepositorioProductos extends Repositorio
       item = Producto.cargar(
         uid: UID(row['uid'] as String),
         nombre: row['nombre'] as String,
-        precioDeVenta: row['precio_venta'] as double,
-        precioDeCompra: row['precio_compra'] as double,
+        precioDeVenta: row['precio_venta'] as Moneda,
+        precioDeCompra: row['precio_compra'] as Moneda,
         codigo: row['codigo'] as String,
         unidadDeMedida: UnidadDeMedida(
           uid: UID(),
@@ -78,8 +80,8 @@ class RepositorioProductos extends Repositorio
         Producto.cargar(
           uid: UID(row['uid'] as String),
           nombre: row['nombre'] as String,
-          precioDeVenta: row['precio_venta'] as double,
-          precioDeCompra: row['precio_compra'] as double,
+          precioDeVenta: row['precio_venta'] as Moneda,
+          precioDeCompra: row['precio_compra'] as Moneda,
           codigo: row['codigo'] as String,
           unidadDeMedida: UnidadDeMedida(
             uid: UID(),

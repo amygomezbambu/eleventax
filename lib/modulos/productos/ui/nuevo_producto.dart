@@ -1,13 +1,12 @@
 import 'package:eleventa/modulos/common/ui/widgets/boton_primario.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_text_field.dart';
+import 'package:eleventa/modulos/common/utils/uid.dart';
+import 'package:eleventa/modulos/migraciones/registro_de_migraciones.dart';
+import 'package:eleventa/modulos/productos/domain/impuesto.dart';
+import 'package:eleventa/modulos/productos/domain/producto.dart';
+import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
+import 'package:eleventa/modulos/productos/modulo_productos.dart';
 import 'package:flutter/material.dart';
-
-const List<String> listadoCategorias = <String>[
-  'Refrescos',
-  'Carnes',
-  'Papeleria',
-  'Enlatados'
-];
 
 const List<String> listaUnidadesDeMedida = <String>[
   'Pieza',
@@ -15,10 +14,11 @@ const List<String> listaUnidadesDeMedida = <String>[
   'Metro / Centimetro'
 ];
 
-const List<String> listadoImpuestos = <String>[
-  'IVA - 16%',
-  'IVA - 8%',
-  'IVA - 0%'
+const List<String> listadoCategorias = <String>[
+  'Refrescos',
+  'Carnes',
+  'Papeleria',
+  'Enlatados'
 ];
 
 class NuevoProducto extends StatefulWidget {
@@ -28,13 +28,79 @@ class NuevoProducto extends StatefulWidget {
   State<NuevoProducto> createState() => _NuevoProductoState();
 }
 
-enum SeVendePor { unidad, peso }
-
 class _NuevoProductoState extends State<NuevoProducto> {
   String nombreCategoria = '';
   String unidadDeMedida = '';
   String impuesto = '';
-  SeVendePor? seVendePor = SeVendePor.unidad;
+  ProductoSeVendePor seVendePor = ProductoSeVendePor.unidad;
+  final GlobalKey<FormFieldState> _keyCategoria = GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> _keyImpuestos = GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> _keyUnidadDeMedida =
+      GlobalKey<FormFieldState>();
+
+  final _controllerCodigo = TextEditingController();
+  final _controllerNombre = TextEditingController();
+  final _controllerPrecioDeVenta = TextEditingController();
+  final _controllerPrecioDeCompra = TextEditingController();
+  final _controllerImagen = TextEditingController();
+  final _controllerUtilidad = TextEditingController();
+
+  var lecturas = ModuloProductos.repositorioLecturaProductos();
+
+  Future<void> crearProducto() async {
+    var crearProducto = ModuloProductos.crearProducto();
+    var producto = Producto.crear(
+        codigo: _controllerCodigo.text,
+        nombre: _controllerNombre.text,
+        precioDeVenta: int.parse(_controllerPrecioDeVenta.text),
+        precioDeCompra: int.parse(_controllerPrecioDeVenta.text),
+        seVendePor: seVendePor,
+        categoria: nombreCategoria,
+        unidadDeMedida: UnidadDeMedida(
+          uid: UID(),
+          nombre: 'Pieza',
+          abreviacion: 'pz',
+        ));
+
+    crearProducto.req.producto = producto;
+
+    await crearProducto.exec();
+
+    // Ya se creo, limpiamos la forma
+    setState(() {
+      limpiarCampos();
+    });
+  }
+
+  void limpiarCampos() {
+    _controllerCodigo.clear();
+    _controllerImagen.clear();
+    _controllerNombre.clear();
+    _controllerPrecioDeCompra.clear();
+    _controllerPrecioDeVenta.clear();
+    _controllerUtilidad.clear();
+
+    _keyCategoria.currentState!.reset();
+    _keyImpuestos.currentState!.reset();
+    _keyUnidadDeMedida.currentState!.reset();
+
+    seVendePor = ProductoSeVendePor.unidad;
+    nombreCategoria = listadoCategorias.first;
+    //impuesto = listadoImpuestos.first;
+    unidadDeMedida = listaUnidadesDeMedida.first;
+  }
+
+  @override
+  void dispose() {
+    _controllerCodigo.dispose();
+    _controllerNombre.dispose();
+    _controllerPrecioDeCompra.dispose();
+    _controllerPrecioDeVenta.dispose();
+    _controllerImagen.dispose();
+    _controllerUtilidad.dispose();
+
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,9 +115,16 @@ class _NuevoProductoState extends State<NuevoProducto> {
               key: const ValueKey('frmNuevoProducto'),
               child: Column(
                 children: [
-                  const ExTextField(hintText: 'Codigo de producto'),
-                  const ExTextField(hintText: 'Descripcion'),
+                  ExTextField(
+                    hintText: 'Codigo de producto',
+                    controller: _controllerCodigo,
+                  ),
+                  ExTextField(
+                    hintText: 'Nombre',
+                    controller: _controllerNombre,
+                  ),
                   DropdownButtonFormField<String>(
+                    key: _keyCategoria,
                     value: listadoCategorias.first,
                     onChanged: (String? value) {
                       // This is called when the user selects an item.
@@ -68,25 +141,28 @@ class _NuevoProductoState extends State<NuevoProducto> {
                       );
                     }).toList(),
                   ),
-                  RadioListTile<SeVendePor>(
+                  RadioListTile<ProductoSeVendePor>(
                       title: const Text('Unidad'),
-                      value: SeVendePor.unidad,
+                      value: ProductoSeVendePor.unidad,
+                      toggleable: true,
                       groupValue: seVendePor,
-                      onChanged: (SeVendePor? value) {
+                      onChanged: (ProductoSeVendePor? value) {
                         setState(() {
-                          seVendePor = value;
+                          seVendePor = value!;
                         });
                       }),
-                  RadioListTile<SeVendePor>(
+                  RadioListTile<ProductoSeVendePor>(
                       title: const Text('Peso'),
-                      value: SeVendePor.peso,
+                      value: ProductoSeVendePor.peso,
                       groupValue: seVendePor,
-                      onChanged: (SeVendePor? value) {
+                      toggleable: true,
+                      onChanged: (ProductoSeVendePor? value) {
                         setState(() {
-                          seVendePor = value;
+                          seVendePor = value!;
                         });
                       }),
                   DropdownButtonFormField<String>(
+                    key: _keyUnidadDeMedida,
                     value: listaUnidadesDeMedida.first,
                     onChanged: (String? value) {
                       // This is called when the user selects an item.
@@ -102,40 +178,69 @@ class _NuevoProductoState extends State<NuevoProducto> {
                       );
                     }).toList(),
                   ),
-                  DropdownButtonFormField<String>(
-                    value: listadoImpuestos.first,
-                    onChanged: (String? value) {
-                      // This is called when the user selects an item.
-                      setState(() {
-                        impuesto = value!;
-                      });
-                    },
-                    items: listadoImpuestos
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
+                  FutureBuilder<List<Impuesto>>(
+                      future: lecturas.obtenerImpuestos(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<List<Impuesto>> snapshot) {
+                        if (snapshot.hasData) {
+                          List<Impuesto> listadoImpuestos = snapshot.data!;
+                          return DropdownButtonFormField<String>(
+                            key: _keyImpuestos,
+                            value: listadoImpuestos.first.nombre,
+                            onChanged: (String? value) {
+                              // This is called when the user selects an item.
+                              setState(() {
+                                impuesto = value!;
+                              });
+                            },
+                            items: listadoImpuestos
+                                .map<DropdownMenuItem<String>>(
+                                    (Impuesto value) {
+                              return DropdownMenuItem<String>(
+                                value: value.nombre,
+                                child: Text(value.nombre),
+                              );
+                            }).toList(),
+                          );
+                        } else {
+                          return const SizedBox(
+                            width: 60,
+                            height: 60,
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                      }),
+                  ExTextField(
+                      hintText: 'Precio de compra',
+                      controller: _controllerPrecioDeCompra),
+                  ExTextField(
+                    hintText: 'Utilidad',
+                    controller: _controllerUtilidad,
                   ),
-                  const ExTextField(hintText: 'Precio de compra'),
-                  const ExTextField(hintText: 'Utilidad'),
-                  const ExTextField(hintText: 'Precio de venta'),
-                  const ExTextField(hintText: 'Imagen URL'),
+                  ExTextField(
+                    hintText: 'Precio de venta',
+                    controller: _controllerPrecioDeVenta,
+                  ),
+                  ExTextField(
+                    hintText: 'Imagen URL',
+                    controller: _controllerImagen,
+                  ),
                 ],
               ),
             ),
             BotonPrimario(
                 label: 'Guardar',
                 icon: Icons.save,
-                onTap: () => {debugPrint('guardando')}),
+                onTap: () async {
+                  await crearProducto();
+                }),
             const SizedBox(
               height: 5,
             ),
             BotonPrimario(
                 label: 'Cancelar',
                 icon: Icons.cancel,
-                onTap: () => {debugPrint('limpiando forma')})
+                onTap: () => {limpiarCampos()})
           ],
         ),
       ),
