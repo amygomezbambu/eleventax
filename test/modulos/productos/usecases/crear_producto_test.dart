@@ -1,8 +1,10 @@
-import 'package:eleventa/modulos/productos/domain/entity/producto.dart';
+import 'package:eleventa/modulos/common/utils/uid.dart';
+import 'package:eleventa/modulos/productos/domain/producto.dart';
+import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
 import 'package:eleventa/modulos/productos/modulo_productos.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../../../../loader_for_tests.dart';
+import '../../../loader_for_tests.dart';
 
 void main() {
   setUpAll(() async {
@@ -16,13 +18,18 @@ void main() {
     const codigo = '123456';
     const nombre = 'Atun tunny 200 grs.';
     const precioDeVenta = 13.40;
-    const precioDeCompra = 10.0;
+    const precioDeCompra = 10.40;
 
     var producto = Producto.crear(
         codigo: codigo,
         nombre: nombre,
         precioDeVenta: precioDeVenta,
-        precioDeCompra: precioDeCompra);
+        precioDeCompra: precioDeCompra,
+        unidadDeMedida: UnidadDeMedida(
+          uid: UID(),
+          nombre: 'Pieza',
+          abreviacion: 'pz',
+        ));
 
     crearProducto.req.producto = producto;
 
@@ -30,7 +37,5 @@ void main() {
       crearProducto.exec(),
       completes,
     );
-
-    //expect(item.precio, precioActualizado);
   });
 }

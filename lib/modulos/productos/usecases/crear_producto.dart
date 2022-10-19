@@ -1,6 +1,5 @@
 import 'package:eleventa/modulos/common/app/usecase/usecase.dart';
-import 'package:eleventa/modulos/common/utils/uid.dart';
-import 'package:eleventa/modulos/productos/domain/entity/producto.dart';
+import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/productos/interfaces/repositorio_productos.dart';
 
 class CrearProductoRequest {
@@ -18,7 +17,6 @@ class CrearProducto extends Usecase<void> {
   }
 
   Future<void> _operation() async {
-    //crear la entidad Producto para que se validen los datos
     await _productos.agregar(req.producto);
   }
 }

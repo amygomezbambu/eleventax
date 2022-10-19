@@ -1,5 +1,8 @@
 import 'package:eleventa/modulos/common/domain/entidad.dart';
+import 'package:eleventa/modulos/common/domain/respuesta_de_validacion.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
+import 'package:eleventa/modulos/productos/domain/impuesto.dart';
+import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
 
 enum ProductoSeVendePor { unidad, peso }
 
@@ -8,8 +11,8 @@ class Producto extends Entidad {
   var _precioDeVenta = 0.0;
   var _precioDeCompra = 0.0;
   var _categoria = '';
-  //unidad medida
-  // impuestos
+  UnidadDeMedida? _unidadDeMedida;
+  List<Impuesto> _impuestos = [];
   late ProductoSeVendePor _seVendePor;
   var _imagenURL = '';
   var _codigo = '';
@@ -21,6 +24,8 @@ class Producto extends Entidad {
   ProductoSeVendePor get seVendePor => _seVendePor;
   String get imagenURL => _imagenURL;
   String get codigo => _codigo;
+  UnidadDeMedida? get unidadMedida => _unidadDeMedida;
+  List<Impuesto> get impuestos => List.unmodifiable(_impuestos);
 
   Producto.crear({
     required String nombre,
@@ -30,15 +35,21 @@ class Producto extends Entidad {
     ProductoSeVendePor seVendePor = ProductoSeVendePor.unidad,
     String imagenURL = '',
     required String codigo,
+    List<Impuesto> impuestos = const [],
+    UnidadDeMedida? unidadDeMedida,
   }) : super.crear() {
     //TODO: agregar validaciones
-    _nombre = nombre;
+    _nombre = validarYAsignar<String>(nombre, validarNombre);
+    _categoria = validarYAsignar<String>(categoria, validarCategoria);
+
     _precioDeVenta = precioDeVenta;
     _precioDeCompra = precioDeCompra;
     _categoria = categoria;
     _seVendePor = seVendePor;
     _imagenURL = imagenURL;
     _codigo = codigo;
+    _impuestos = impuestos;
+    _unidadDeMedida = unidadDeMedida;
   }
 
   Producto.cargar({
@@ -50,6 +61,8 @@ class Producto extends Entidad {
     ProductoSeVendePor seVendePor = ProductoSeVendePor.unidad,
     String imagenURL = '',
     required String codigo,
+    List<Impuesto> impuestos = const [],
+    UnidadDeMedida? unidadDeMedida,
   }) : super.cargar(uid) {
     //TODO: agregar validaciones
     _nombre = nombre;
@@ -59,29 +72,43 @@ class Producto extends Entidad {
     _seVendePor = seVendePor;
     _imagenURL = imagenURL;
     _codigo = codigo;
+    _impuestos = impuestos;
+    _unidadDeMedida = unidadDeMedida;
   }
 
-  void _validaCategoria(String value) {
+  RespuestaValidacion validarCategoria(String value) {
+    RespuestaValidacion respuesta;
+
     if (value.isEmpty) {
-      throw Exception('La _categoria no puede estar vacia');
+      respuesta = RespuestaValidacion(
+        esValido: false,
+        mensaje: 'La categoria no puede estar vacia',
+      );
     }
 
-    _categoria = value;
+    respuesta = RespuestaValidacion(
+      esValido: true,
+      mensaje: '',
+    );
+
+    return respuesta;
   }
 
-  void _validarNombre(String value) {
+  RespuestaValidacion validarNombre(String value) {
+    RespuestaValidacion respuesta;
+
     if (value.isEmpty) {
-      throw Exception('La _nombre no puede estar vacia');
+      respuesta = RespuestaValidacion(
+        esValido: false,
+        mensaje: 'El nombre no puede estar vacio',
+      );
     }
 
-    _nombre = value;
-  }
+    respuesta = RespuestaValidacion(
+      esValido: true,
+      mensaje: '',
+    );
 
-  void _validarPrecioDeVenta(double value) {
-    if (value <= 0) {
-      throw Exception('El precio no pude ser cero');
-    }
-
-    _precioDeVenta = value;
+    return respuesta;
   }
 }

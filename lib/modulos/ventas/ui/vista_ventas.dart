@@ -7,9 +7,6 @@ import 'package:eleventa/modulos/ventas/ui/acciones_de_venta.dart';
 import 'package:eleventa/modulos/ventas/ui/ui_sale_item.dart';
 import 'package:eleventa/modulos/ventas/ui/listado_articulos.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
-import 'package:eleventa/modulos/productos/app/dto/producto_dto.dart';
-import 'package:eleventa/modulos/productos/app/usecase/obtener_producto.dart';
-import 'package:eleventa/modulos/productos/modulo_productos.dart';
 import 'package:eleventa/modulos/ventas/app/usecase/crear_venta.dart';
 import 'package:eleventa/modulos/ventas/app/usecase/agregar_articulo.dart';
 import 'package:layout/layout.dart';
@@ -67,7 +64,7 @@ class VentaActualState extends State<VentaActual> {
     CrearVenta crearVenta = ModuloVentas.crearVenta();
     AgregarArticulo agregarArticulo = ModuloVentas.agregarArticulo();
 
-    late ProductoDTO producto;
+    //late Producto producto;
 
     // Checamos tener una venta
     if (UiCart.saleUid == '') {

@@ -8,7 +8,6 @@ import 'package:eleventa/modulos/common/app/interface/sync.dart';
 import 'package:eleventa/modulos/common/app/interface/telemetria.dart';
 import 'package:eleventa/modulos/common/infra/logger.dart';
 import 'package:eleventa/modulos/common/infra/adaptador_sqlite.dart';
-import 'package:eleventa/modulos/productos/app/interface/repositorio_productos.dart';
 import 'package:eleventa/modulos/productos/infra/repositorio_productos.dart';
 import 'package:eleventa/modulos/migraciones/migrar_db.dart';
 import 'package:eleventa/modulos/productos/interfaces/repositorio_productos.dart';
@@ -92,7 +91,7 @@ class TestsLoader {
       ),
     );
     Dependencias.registrar(
-      (IRepositorioArticulos).toString(),
+      (IRepositorioProductos).toString(),
       () => RepositorioProductos(
         syncAdapter: Dependencias.infra.sync(),
         db: Dependencias.infra.database(),

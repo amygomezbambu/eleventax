@@ -2,10 +2,11 @@ import 'package:eleventa/modulos/common/app/interface/database.dart';
 import 'package:eleventa/modulos/common/app/interface/sync.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
-import 'package:eleventa/modulos/productos/app/mapper/producto_mapper.dart';
-import 'package:eleventa/modulos/productos/domain/entity/producto.dart';
+import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/common/infra/repositorio.dart';
+import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
 import 'package:eleventa/modulos/productos/interfaces/repositorio_productos.dart';
+import 'package:eleventa/modulos/productos/mapper/producto_mapper.dart';
 
 class RepositorioProductos extends Repositorio
     implements IRepositorioProductos {
@@ -33,50 +34,64 @@ class RepositorioProductos extends Repositorio
 
   @override
   Future<Producto?> obtener(UID uid) async {
-    // var query =
-    //     'SELECT uid, sku, descripcion, precio FROM productos WHERE uid = ?';
+    var query =
+        'SELECT uid,codigo,nombre,categoria,precio_compra,precio_venta,se_vende_por,url_imagen '
+        'FROM productos WHERE uid = ?';
 
-    // var result = await db.query(sql: query, params: [uid.toString()]);
+    var result = await db.query(sql: query, params: [uid.toString()]);
+
     Producto? item;
 
-    // for (var row in result) {
-    //   item = Producto.cargar(UID(row['uid'] as String), row['sku'] as String,
-    //       row['descripcion'] as String, row['precio'] as double);
-    // }
-
-    return item;
-  }
-
-  @override
-  Future<Producto?> obtenerPorSKU(String sku) async {
-    // var query =
-    //     'SELECT uid, sku, descripcion, precio FROM productos WHERE sku = ?';
-
-    // var result = await db.query(sql: query, params: [sku]);
-    Producto? item;
-
-    // for (var row in result) {
-    //   item = Producto.cargar(UID(row['uid'] as String), row['sku'] as String,
-    //       row['descripcion'] as String, double.parse(row['precio'].toString()));
-    // }
+    //TODO: usar unidad de medida real
+    for (var row in result) {
+      item = Producto.cargar(
+        uid: UID(row['uid'] as String),
+        nombre: row['nombre'] as String,
+        precioDeVenta: row['precio_venta'] as double,
+        precioDeCompra: row['precio_compra'] as double,
+        codigo: row['codigo'] as String,
+        unidadDeMedida: UnidadDeMedida(
+          uid: UID(),
+          nombre: 'Pieza',
+          abreviacion: 'pza',
+        ),
+        seVendePor: ProductoSeVendePor.values[row['se_vende_por'] as int],
+        categoria: row['categoria'] as String,
+        imagenURL: row['url_imagen'] as String,
+      );
+    }
 
     return item;
   }
 
   @override
   Future<List<Producto>> obtenerTodos() async {
-    // var query = 'SELECT uid, sku, descripcion, precio FROM productos';
+    var query =
+        'SELECT uid,codigo,nombre,categoria,precio_compra,precio_venta,se_vende_por,url_imagen '
+        'FROM productos';
 
-    // var result = await db.query(sql: query);
+    var result = await db.query(sql: query);
     var items = <Producto>[];
 
-    // for (var row in result) {
-    //   items.add(Producto.cargar(
-    //       UID(row['uid'] as String),
-    //       row['sku'] as String,
-    //       row['descripcion'] as String,
-    //       double.parse(row['precio'].toString())));
-    // }
+    for (var row in result) {
+      items.add(
+        Producto.cargar(
+          uid: UID(row['uid'] as String),
+          nombre: row['nombre'] as String,
+          precioDeVenta: row['precio_venta'] as double,
+          precioDeCompra: row['precio_compra'] as double,
+          codigo: row['codigo'] as String,
+          unidadDeMedida: UnidadDeMedida(
+            uid: UID(),
+            nombre: 'Pieza',
+            abreviacion: 'pza',
+          ),
+          seVendePor: ProductoSeVendePor.values[row['se_vende_por'] as int],
+          categoria: row['categoria'] as String,
+          imagenURL: row['url_imagen'] as String,
+        ),
+      );
+    }
 
     return items;
   }
@@ -88,30 +103,32 @@ class RepositorioProductos extends Repositorio
 
   @override
   Future<void> actualizar(Producto producto) async {
-    // var dbResult = await db.query(
-    //   sql: 'select descripcion,precio,sku,uid from productos where uid = ?',
-    //   params: [producto.uid.toString()],
-    // );
+    var dbResult = await db.query(
+      sql:
+          'SELECT uid,codigo,nombre,categoria,precio_compra,precio_venta,se_vende_por,url_imagen '
+          'FROM productos WHERE uid = ?',
+      params: [producto.uid.toString()],
+    );
 
-    // if (dbResult.isNotEmpty) {
-    //   var row = dbResult[0];
-    //   var productoDB = ProductoMapper.databaseADomain(row);
+    if (dbResult.isNotEmpty) {
+      var row = dbResult[0];
+      var productoDB = ProductoMapper.databaseADomain(row);
 
-    //   var diferencias = await obtenerDiferencias(
-    //     ProductoMapper.domainAMap(producto),
-    //     ProductoMapper.domainAMap(productoDB),
-    //   );
+      var diferencias = await obtenerDiferencias(
+        ProductoMapper.domainAMap(producto),
+        ProductoMapper.domainAMap(productoDB),
+      );
 
-    //   await adaptadorSync.synchronize(
-    //     dataset: 'productos',
-    //     rowID: producto.uid.toString(),
-    //     fields: diferencias,
-    //   );
-    // } else {
-    //   throw EleventaEx(
-    //     message: 'No existe la entidad en la base de datos',
-    //     input: producto.toString(),
-    //   );
-    // }
+      await adaptadorSync.synchronize(
+        dataset: 'productos',
+        rowID: producto.uid.toString(),
+        fields: diferencias,
+      );
+    } else {
+      throw EleventaEx(
+        message: 'No existe la entidad en la base de datos',
+        input: producto.toString(),
+      );
+    }
   }
 }
