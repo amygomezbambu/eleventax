@@ -1,8 +1,3 @@
-//NOTA , puede existir 2 unidades de medida Pieza , mismo nombre pero distinto ID?
-//O siempre que nos referimos a Pieza estamos hablando de la misma unidad de medida
-//Creo que es lo segundo, esto es lo que define un value object, no tiene identidad
-//aunque en este caso si tiene un UID ese UID siempre va a ser el mismo para todas las
-//piezas
 import 'package:eleventa/modulos/common/utils/uid.dart';
 
 class UnidadDeMedida {
