@@ -104,6 +104,9 @@ echo "✔ Tweak: Deshabilitar los smart quotes que interfieren al teclear códig
 defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
 defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
 
+echo "Configurando VSCode como editor de Git"
+git config --global core.editor "code --wait"
+
 # echo "✔ Instalando GitHooks locales"
 # bash setup_githooks.sh
 if brew list 1password-cli &>/dev/null; then
