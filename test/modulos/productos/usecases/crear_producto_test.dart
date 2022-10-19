@@ -17,8 +17,8 @@ void main() {
 
     const codigo = '123456';
     const nombre = 'Atun tunny 200 grs.';
-    const precioDeVenta = 13.40;
-    const precioDeCompra = 10.40;
+    const precioDeVenta = 13400000;
+    const precioDeCompra = 10400000;
 
     var producto = Producto.crear(
         codigo: codigo,

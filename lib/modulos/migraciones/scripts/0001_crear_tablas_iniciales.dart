@@ -8,30 +8,23 @@ class Migracion1 extends Migracion {
 
   @override
   Future<void> operacion() async {
-    // var command = 'CREATE TABLE ventas('
-    //     'uid text primary key,' //unique
-    //     'nombre text null,'
-    //     'total decimal(10,4) null,'
-    //     'status integer null,'
-    //     'metodo_de_pago integer null,'
-    //     'fecha_de_pago integer null'
-    //     ');';
+    var command = 'CREATE TABLE unidades_medida('
+        'uid TEXT PRIMARY KEY,'
+        'nombre TEXT NULL,'
+        'abreviacion TEXT NULL'
+        ') ';
 
-    // await db.command(sql: command);
+    await db.command(sql: command);
 
-    // command = '''
-    //     CREATE TABLE articulos_de_venta(
-    //       venta_uid TEXT NOT NULL,
-    //       producto_uid TEXT NOT NULL,
-    //       cantidad DECIMAL NOT NULL,
-    //       PRIMARY KEY (venta_uid, producto_uid)
-    //     );
-    //   ''';
+    command = 'CREATE TABLE impuestos('
+        'uid TEXT PRIMARY KEY,'
+        'nombre TEXT NULL,'
+        'porcentaje INTEGER NULL'
+        ') ';
 
-    // await db.command(sql: command);
+    await db.command(sql: command);
 
-    //TODO: agregar otras tablas y sus IDs sin llaves foraneas
-    var command = 'CREATE TABLE productos('
+    command = 'CREATE TABLE productos('
         'uid TEXT PRIMARY KEY,'
         'codigo TEXT NULL,'
         'nombre TEXT NULL,'
@@ -41,7 +34,14 @@ class Migracion1 extends Migracion {
         'unidad_medida TEXT NULL,'
         'url_imagen TEXT NULL,'
         'se_vende_por INTEGER NULL'
-        ');';
+        ') ';
+
+    await db.command(sql: command);
+
+    command = 'CREATE TABLE productos_impuestos('
+        'producto_uid TEXT,'
+        'impuesto_uid TEXT'
+        ') ';
 
     await db.command(sql: command);
   }

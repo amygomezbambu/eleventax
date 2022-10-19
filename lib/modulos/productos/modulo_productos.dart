@@ -1,4 +1,5 @@
 import 'package:eleventa/dependencias.dart';
+import 'package:eleventa/modulos/productos/infra/repositorio_productos_lectura.dart';
 import 'package:eleventa/modulos/productos/usecases/actualizar_producto.dart';
 import 'package:eleventa/modulos/productos/usecases/crear_producto.dart';
 import 'package:eleventa/modulos/productos/usecases/obtener_producto.dart';
@@ -19,5 +20,9 @@ class ModuloProductos {
 
   static ActualizarProducto actualizarProducto() {
     return ActualizarProducto(Dependencias.productos.repositorioProductos());
+  }
+
+  static RepositorioLecturaProductos repositorioLecturaProductos() {
+    return RepositorioLecturaProductos(db: Dependencias.infra.database());
   }
 }

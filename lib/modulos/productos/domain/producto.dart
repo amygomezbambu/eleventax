@@ -4,12 +4,14 @@ import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/productos/domain/impuesto.dart';
 import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
 
+import 'package:eleventa/modulos/common/domain/moneda.dart';
+
 enum ProductoSeVendePor { unidad, peso }
 
 class Producto extends Entidad {
   var _nombre = '';
-  var _precioDeVenta = 0.0;
-  var _precioDeCompra = 0.0;
+  var _precioDeVenta = 0;
+  var _precioDeCompra = 0;
   var _categoria = '';
   UnidadDeMedida? _unidadDeMedida;
   List<Impuesto> _impuestos = [];
@@ -18,8 +20,8 @@ class Producto extends Entidad {
   var _codigo = '';
 
   String get nombre => _nombre;
-  double get precioDeVenta => _precioDeVenta;
-  double get precioDeCompra => _precioDeCompra;
+  Moneda get precioDeVenta => _precioDeVenta;
+  Moneda get precioDeCompra => _precioDeCompra;
   String get categoria => _categoria;
   ProductoSeVendePor get seVendePor => _seVendePor;
   String get imagenURL => _imagenURL;
@@ -29,8 +31,8 @@ class Producto extends Entidad {
 
   Producto.crear({
     required String nombre,
-    required double precioDeVenta,
-    required double precioDeCompra,
+    required Moneda precioDeVenta,
+    required Moneda precioDeCompra,
     String categoria = '',
     ProductoSeVendePor seVendePor = ProductoSeVendePor.unidad,
     String imagenURL = '',
@@ -55,8 +57,8 @@ class Producto extends Entidad {
   Producto.cargar({
     required UID uid,
     required String nombre,
-    required double precioDeVenta,
-    required double precioDeCompra,
+    required Moneda precioDeVenta,
+    required Moneda precioDeCompra,
     String categoria = '',
     ProductoSeVendePor seVendePor = ProductoSeVendePor.unidad,
     String imagenURL = '',
