@@ -1,7 +1,6 @@
 import 'package:eleventa/modulos/common/ui/widgets/boton_primario.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_text_field.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
-import 'package:eleventa/modulos/migraciones/registro_de_migraciones.dart';
 import 'package:eleventa/modulos/productos/domain/impuesto.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
@@ -28,15 +27,17 @@ class NuevoProducto extends StatefulWidget {
   State<NuevoProducto> createState() => _NuevoProductoState();
 }
 
+typedef EstadoFormField = FormFieldState<String>;
+
 class _NuevoProductoState extends State<NuevoProducto> {
   String nombreCategoria = '';
   String unidadDeMedida = '';
   String impuesto = '';
   ProductoSeVendePor seVendePor = ProductoSeVendePor.unidad;
-  final GlobalKey<FormFieldState> _keyCategoria = GlobalKey<FormFieldState>();
-  final GlobalKey<FormFieldState> _keyImpuestos = GlobalKey<FormFieldState>();
-  final GlobalKey<FormFieldState> _keyUnidadDeMedida =
-      GlobalKey<FormFieldState>();
+  final GlobalKey<EstadoFormField> _keyCategoria = GlobalKey<EstadoFormField>();
+  final GlobalKey<EstadoFormField> _keyImpuestos = GlobalKey<EstadoFormField>();
+  final GlobalKey<EstadoFormField> _keyUnidadDeMedida =
+      GlobalKey<EstadoFormField>();
 
   final _controllerCodigo = TextEditingController();
   final _controllerNombre = TextEditingController();
@@ -190,6 +191,7 @@ class _NuevoProductoState extends State<NuevoProducto> {
                             onChanged: (String? value) {
                               // This is called when the user selects an item.
                               setState(() {
+                                // TODO: Evitar que se mande llamar el future cada vez que cambiamos la seleccion
                                 impuesto = value!;
                               });
                             },
@@ -204,8 +206,8 @@ class _NuevoProductoState extends State<NuevoProducto> {
                           );
                         } else {
                           return const SizedBox(
-                            width: 60,
-                            height: 60,
+                            width: 20,
+                            height: 20,
                             child: CircularProgressIndicator(),
                           );
                         }

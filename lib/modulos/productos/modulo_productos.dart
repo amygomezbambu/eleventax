@@ -1,6 +1,5 @@
 import 'package:eleventa/dependencias.dart';
 import 'package:eleventa/modulos/productos/infra/repositorio_productos_lectura.dart';
-import 'package:eleventa/modulos/productos/interfaces/repositorio_productos_lectura.dart';
 import 'package:eleventa/modulos/productos/usecases/actualizar_producto.dart';
 import 'package:eleventa/modulos/productos/usecases/crear_producto.dart';
 import 'package:eleventa/modulos/productos/usecases/obtener_producto.dart';

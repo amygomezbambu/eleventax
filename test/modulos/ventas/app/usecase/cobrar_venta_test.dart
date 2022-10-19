@@ -1,5 +1,5 @@
-import 'package:eleventa/modulos/ventas/domain/entity/venta.dart';
-import 'package:eleventa/modulos/ventas/modulo_ventas.dart';
+// import 'package:eleventa/modulos/ventas/domain/entity/venta.dart';
+// import 'package:eleventa/modulos/ventas/modulo_ventas.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../loader_for_tests.dart';

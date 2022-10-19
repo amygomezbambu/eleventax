@@ -64,6 +64,7 @@ class Logger implements ILogger {
       logEntry.message = ex.message;
       logEntry.input = ex.input;
 
+      // ignore: avoid_print
       print(
           '${logEntry.exception} ${logEntry.stackTrace} ${logEntry.message} ${logEntry.input}');
 

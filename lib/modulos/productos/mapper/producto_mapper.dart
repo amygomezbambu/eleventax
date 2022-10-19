@@ -1,7 +1,7 @@
 import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
 
-import '../../common/domain/moneda.dart';
+import 'package:eleventa/modulos/common/domain/moneda.dart';
 
 class ProductoMapper {
   // static ProductoDTO domainAData(Producto producto) {

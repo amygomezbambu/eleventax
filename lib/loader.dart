@@ -14,7 +14,6 @@ import 'package:eleventa/modulos/common/infra/network/adaptador_red.dart';
 import 'package:eleventa/modulos/productos/infra/repositorio_productos.dart';
 import 'package:eleventa/modulos/migraciones/migrar_db.dart';
 import 'package:eleventa/modulos/productos/interfaces/repositorio_productos.dart';
-import 'package:eleventa/modulos/productos/modulo_productos.dart';
 import 'package:eleventa/modulos/telemetria/modulo_telemetria.dart';
 import 'package:eleventa/modulos/ventas/app/interface/repositorio_ventas.dart';
 import 'package:eleventa/modulos/ventas/infra/repositorio_ventas.dart';
@@ -148,13 +147,5 @@ class Loader {
     // } catch (e) {
 
     // }
-
-    var obtenerProducto = ModuloProductos.obtenerProductos();
-
-    var productos = await obtenerProducto.exec();
-
-    for (var producto in productos) {
-      print(producto.nombre);
-    }
   }
 }

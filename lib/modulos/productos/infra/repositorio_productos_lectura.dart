@@ -14,15 +14,14 @@ class RepositorioLecturaProductos extends RepositorioLectura
   Future<List<Impuesto>> obtenerImpuestos() async {
     List<Impuesto> res = [];
     var dbResult =
-        await db.query(sql: 'SELECT  uid, nombre, porcentaje FROM impuestos;');
+        await db.query(sql: 'SELECT uid, nombre, porcentaje FROM impuestos;');
 
     if (dbResult.isNotEmpty) {
       for (var row in dbResult) {
         res.add(Impuesto(
-          uid: UID(row['uid'] as String),
-          nombre: row['nombre'] as String,
-          porcentaje: row['porcentaje'] as double,
-        ));
+            uid: UID(row['uid'] as String),
+            nombre: row['nombre'] as String,
+            porcentaje: (row['porcentaje'] as int).toDouble()));
       }
     }
 
