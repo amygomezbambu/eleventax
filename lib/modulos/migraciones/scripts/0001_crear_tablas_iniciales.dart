@@ -12,7 +12,7 @@ class Migracion1 extends Migracion {
         'uid TEXT PRIMARY KEY,'
         'nombre TEXT NULL,'
         'abreviacion TEXT NULL'
-        ') STRICT;';
+        ') ';
 
     await db.command(sql: command);
 
@@ -20,7 +20,7 @@ class Migracion1 extends Migracion {
         'uid TEXT PRIMARY KEY,'
         'nombre TEXT NULL,'
         'porcentaje INTEGER NULL'
-        ') STRICT;';
+        ') ';
 
     await db.command(sql: command);
 
@@ -34,14 +34,14 @@ class Migracion1 extends Migracion {
         'unidad_medida TEXT NULL,'
         'url_imagen TEXT NULL,'
         'se_vende_por INTEGER NULL'
-        ') STRICT;';
+        ') ';
 
     await db.command(sql: command);
 
     command = 'CREATE TABLE productos_impuestos('
         'producto_uid TEXT,'
         'impuesto_uid TEXT'
-        ') STRICT;';
+        ') ';
 
     await db.command(sql: command);
   }
