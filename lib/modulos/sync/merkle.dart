@@ -1,5 +1,4 @@
 import 'package:any_base/any_base.dart';
-import 'package:flutter/material.dart';
 import 'package:murmurhash/murmurhash.dart';
 
 class Node {
@@ -111,7 +110,7 @@ class Merkle {
 
     var base3Timestamp = base3Converter.convert(timestamp.toString());
 
-    debugPrint(base3Timestamp);
+    //debugPrint(base3Timestamp);
 
     //convertir cada caracter en un nodo
     var chars = base3Timestamp.split('');

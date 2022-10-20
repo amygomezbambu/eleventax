@@ -54,20 +54,22 @@ class AdaptadorSQLite implements IAdaptadorDeBaseDeDatos {
   static DynamicLibrary _openSQLCipherOnWindows() {
     late DynamicLibrary library;
 
-    // Verificamos que existan las librerias que necesitamos
-    if (!File(AdaptadorSQLite.archivoLibcryptoWindows).existsSync()) {
-      debugPrint(
-          'No existe libreria requerida: $AdaptadorSQLite.libcryptoWindowsLibrary');
-    }
+    if (!Platform.environment.containsKey('FLUTTER_TEST')) {
+      // Verificamos que existan las librerias que necesitamos
+      if (!File(AdaptadorSQLite.archivoLibcryptoWindows).existsSync()) {
+        debugPrint(
+            'No existe libreria requerida: $AdaptadorSQLite.libcryptoWindowsLibrary');
+      }
 
-    if (!File(AdaptadorSQLite.archivoSslWindows).existsSync()) {
-      debugPrint(
-          'No existe libreria requerida: $AdaptadorSQLite.sslWindowsLibrary');
-    }
+      if (!File(AdaptadorSQLite.archivoSslWindows).existsSync()) {
+        debugPrint(
+            'No existe libreria requerida: $AdaptadorSQLite.sslWindowsLibrary');
+      }
 
-    if (!File(AdaptadorSQLite.archivoSqlcipherWindows).existsSync()) {
-      debugPrint(
-          'No existe libreria requerida: $AdaptadorSQLite.sqlcipherWindowsLibrary');
+      if (!File(AdaptadorSQLite.archivoSqlcipherWindows).existsSync()) {
+        debugPrint(
+            'No existe libreria requerida: $AdaptadorSQLite.sqlcipherWindowsLibrary');
+      }
     }
 
     library = DynamicLibrary.open(AdaptadorSQLite.archivoSqlcipherWindows);
@@ -121,7 +123,9 @@ class AdaptadorSQLite implements IAdaptadorDeBaseDeDatos {
       dbPath = join(dbPath, 'eleventa.db');
     }
 
-    _logger.info('Conectando a BD en "$dbPath"');
+    if (!Platform.environment.containsKey('FLUTTER_TEST')) {
+      _logger.info('Conectando a BD en "$dbPath"');
+    }
 
     try {
       _db = await dbFactory.openDatabase(
@@ -135,28 +139,32 @@ class AdaptadorSQLite implements IAdaptadorDeBaseDeDatos {
               assert(_debugCheckHasCipher(db));
             },
             onCreate: (db, version) async {
-              _logger.info(
-                  'No hay base de datos, creando con user version ${version.toString()}');
+              if (!Platform.environment.containsKey('FLUTTER_TEST')) {
+                _logger.info(
+                    'No hay base de datos, creando con user version ${version.toString()}');
+              }
             }),
       );
 
       // Logeamos las versiones usadas
-      await _db.rawQuery("SELECT sqlite_version()").then((result) {
-        _logger.info('SQLite v${result.first.values.first}');
-      });
+      if (!Platform.environment.containsKey('FLUTTER_TEST')) {
+        await _db.rawQuery("SELECT sqlite_version()").then((result) {
+          _logger.info('SQLite v${result.first.values.first}');
+        });
 
-      // Mostramos la versión de la base de datos (user version)
-      await _db.getVersion().then(
-          (value) => {_logger.info('Database Version: ${value.toString()}')});
+        // Mostramos la versión de la base de datos (user version)
+        await _db.getVersion().then(
+            (value) => {_logger.info('Database Version: ${value.toString()}')});
 
-      await _db.rawQuery("PRAGMA cipher_version").then((result) {
-        if (result.isNotEmpty) {
-          _logger.info('SQLCipher v${result.first.values.first}');
-        } else {
-          _logger
-              .warn(EleventaEx(message: '-- Sin soporte para SQLCipher ---'));
-        }
-      });
+        await _db.rawQuery("PRAGMA cipher_version").then((result) {
+          if (result.isNotEmpty) {
+            _logger.info('SQLCipher v${result.first.values.first}');
+          } else {
+            _logger
+                .warn(EleventaEx(message: '-- Sin soporte para SQLCipher ---'));
+          }
+        });
+      }
     } catch (ex) {
       if (ex is SqfliteFfiException) {
         if (ex.getResultCode() == AdaptadorSQLite.sqliteNotADbError) {

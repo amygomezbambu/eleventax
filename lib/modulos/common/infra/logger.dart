@@ -20,6 +20,24 @@ class Logger implements ILogger {
     log.Logger.root.level = log.Level.ALL;
 
     log.Logger.root.onRecord.listen((record) {
+      if (record.level == log.Level.SEVERE) {
+        debugPrint(
+            '\x1B[31m${record.level.name}: ${record.time}: ${record.message}\x1B[0m');
+        return;
+      }
+
+      if (record.level == log.Level.WARNING) {
+        debugPrint(
+            '\x1B[33m${record.level.name}: ${record.time}: ${record.message}\x1B[0m');
+        return;
+      }
+
+      if (record.level == log.Level.INFO) {
+        debugPrint(
+            '\x1B[36m${record.level.name}: ${record.time}: ${record.message}\x1B[0m');
+        return;
+      }
+
       debugPrint('${record.level.name}: ${record.time}: ${record.message}');
     });
   }
