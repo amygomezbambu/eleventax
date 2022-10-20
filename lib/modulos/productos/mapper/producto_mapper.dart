@@ -37,8 +37,8 @@ class ProductoMapper {
     return Producto.cargar(
       uid: UID(dbRow['uid'] as String),
       nombre: dbRow['nombre'] as String,
-      precioDeVenta: dbRow['precio_venta'] as Moneda,
-      precioDeCompra: dbRow['precio_compra'] as Moneda,
+      precioDeVenta: Moneda(dbRow['precio_venta'] as int),
+      precioDeCompra: Moneda(dbRow['precio_compra'] as int),
       codigo: dbRow['codigo'] as String,
     );
   }

@@ -10,8 +10,8 @@ enum ProductoSeVendePor { unidad, peso }
 
 class Producto extends Entidad {
   var _nombre = '';
-  var _precioDeVenta = 0;
-  var _precioDeCompra = 0;
+  var _precioDeVenta = Moneda(0);
+  var _precioDeCompra = Moneda(0);
   var _categoria = '';
   UnidadDeMedida? _unidadDeMedida;
   List<Impuesto> _impuestos = [];

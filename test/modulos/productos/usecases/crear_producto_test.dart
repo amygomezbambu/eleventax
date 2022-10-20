@@ -1,3 +1,4 @@
+import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
@@ -17,8 +18,8 @@ void main() {
 
     const codigo = '123456';
     const nombre = 'Atun tunny 200 grs.';
-    const precioDeVenta = 13400000;
-    const precioDeCompra = 10400000;
+    final precioDeVenta = Moneda(13.40);
+    final precioDeCompra = Moneda(10.40);
 
     var producto = Producto.crear(
         codigo: codigo,

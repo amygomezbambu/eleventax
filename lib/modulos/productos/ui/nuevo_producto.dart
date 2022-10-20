@@ -1,3 +1,4 @@
+import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/ui/widgets/boton_primario.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_text_field.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
@@ -53,8 +54,8 @@ class _NuevoProductoState extends State<NuevoProducto> {
     var producto = Producto.crear(
         codigo: _controllerCodigo.text,
         nombre: _controllerNombre.text,
-        precioDeVenta: int.parse(_controllerPrecioDeVenta.text),
-        precioDeCompra: int.parse(_controllerPrecioDeVenta.text),
+        precioDeVenta: Moneda(double.parse(_controllerPrecioDeVenta.text)),
+        precioDeCompra: Moneda(double.parse(_controllerPrecioDeVenta.text)),
         seVendePor: seVendePor,
         categoria: nombreCategoria,
         unidadDeMedida: UnidadDeMedida(

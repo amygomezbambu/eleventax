@@ -26,8 +26,8 @@ class RepositorioProductos extends Repositorio
         'codigo': producto.codigo,
         'nombre': producto.nombre,
         'categoria': producto.categoria,
-        'precio_compra': producto.precioDeCompra,
-        'precio_venta': producto.precioDeVenta,
+        'precio_compra': producto.precioDeCompra.toInt(),
+        'precio_venta': producto.precioDeVenta.toInt(),
         'se_vende_por': producto.seVendePor.index,
         'url_imagen': producto.imagenURL,
       },
@@ -49,8 +49,8 @@ class RepositorioProductos extends Repositorio
       item = Producto.cargar(
         uid: UID(row['uid'] as String),
         nombre: row['nombre'] as String,
-        precioDeVenta: row['precio_venta'] as Moneda,
-        precioDeCompra: row['precio_compra'] as Moneda,
+        precioDeVenta: Moneda(row['precio_venta'] as int),
+        precioDeCompra: Moneda(row['precio_compra'] as int),
         codigo: row['codigo'] as String,
         unidadDeMedida: UnidadDeMedida(
           uid: UID(),
@@ -80,8 +80,8 @@ class RepositorioProductos extends Repositorio
         Producto.cargar(
           uid: UID(row['uid'] as String),
           nombre: row['nombre'] as String,
-          precioDeVenta: row['precio_venta'] as Moneda,
-          precioDeCompra: row['precio_compra'] as Moneda,
+          precioDeVenta: Moneda(row['precio_venta'] as int),
+          precioDeCompra: Moneda(row['precio_compra'] as int),
           codigo: row['codigo'] as String,
           unidadDeMedida: UnidadDeMedida(
             uid: UID(),
@@ -120,6 +120,15 @@ class RepositorioProductos extends Repositorio
         ProductoMapper.domainAMap(producto),
         ProductoMapper.domainAMap(productoDB),
       );
+
+      //El motor de sincronización y la db no trabajan con entidades o value objects
+      //directamente por lo que debemos convertir los tipos especiales a un tipo que ellos
+      //entiendan
+      for (var diferencia in diferencias.keys) {
+        if (diferencias[diferencia] is Moneda) {
+          diferencias[diferencia] = (diferencias[diferencia] as Moneda).toInt();
+        }
+      }
 
       await adaptadorSync.synchronize(
         dataset: 'productos',

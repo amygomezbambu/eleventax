@@ -71,9 +71,9 @@ class AdaptadorDeDispositivo implements IAdaptadorDeDispositivo {
   InfoDispositivo _leerAndroidInfo(AndroidDeviceInfo build) {
     var info = InfoDispositivo();
 
-    info.modelo = build.model ?? '';
-    info.fabricante = build.manufacturer ?? '';
-    info.nombre = build.device ?? '';
+    info.modelo = build.model;
+    info.fabricante = build.manufacturer;
+    info.nombre = build.device;
 
     return info;
     // return <String, dynamic>{
