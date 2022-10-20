@@ -1,6 +1,4 @@
-import 'package:eleventa/dependencias.dart';
 import 'package:eleventa/loader.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tailwindcss_defaults/colors.dart';
 import 'package:layout/layout.dart';
@@ -11,17 +9,17 @@ void main() async {
   await loader.iniciar();
 
   //TODO: Implementar widget o el metodo que decidamos para manejar los errores en este nivel
-  FlutterError.onError = (FlutterErrorDetails details) {
-    Dependencias.infra.logger().error(
-          ex: details.exception,
-          stackTrace: details.stack,
-        );
-  };
+  // FlutterError.onError = (FlutterErrorDetails details) {
+  //   Dependencias.infra.logger().error(
+  //         ex: details.exception,
+  //         stackTrace: details.stack,
+  //       );
+  // };
 
-  PlatformDispatcher.instance.onError = (error, stack) {
-    Dependencias.infra.logger().error(ex: error, stackTrace: stack);
-    return true;
-  };
+  // PlatformDispatcher.instance.onError = (error, stack) {
+  //   Dependencias.infra.logger().error(ex: error, stackTrace: stack);
+  //   return true;
+  // };
 
   runApp(const EleventaApp());
 }

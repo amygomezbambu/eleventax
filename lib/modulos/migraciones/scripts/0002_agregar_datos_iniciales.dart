@@ -25,6 +25,17 @@ class Migracion2 extends Migracion {
 
     await db.command(sql: command, params: [UID().toString()]);
 
+    /* Categorias Iniciales */
+    command =
+        'INSERT INTO productos_categorias (uid, nombre) VALUES (?, "Refrescos")';
+    await db.command(sql: command, params: [UID().toString()]);
+    command =
+        'INSERT INTO productos_categorias (uid, nombre) VALUES (?, "Verduras")';
+    await db.command(sql: command, params: [UID().toString()]);
+    command =
+        'INSERT INTO productos_categorias (uid, nombre) VALUES (?, "Frutas")';
+    await db.command(sql: command, params: [UID().toString()]);
+
     /*Creacion de Unidad de Medida*/
 
     command = 'insert into unidades_medida(uid,nombre,abreviacion) '

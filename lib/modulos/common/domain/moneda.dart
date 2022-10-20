@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:eleventa/modulos/common/exception/excepciones.dart';
+
 class Moneda {
   var _parteEntera = 0;
   var _parteDecimal = 0;
@@ -9,31 +11,47 @@ class Moneda {
 
   int get digitosDecimales => _digitosDecimales;
 
-  /// Crear un objeto Moneda
+  /// Crear un objeto Moneda desde un double
   ///
-  /// [monto] puede ser un double o un int, si es un int se tomaran los ultimos
-  /// ***digitos decimales*** como la parte decimal, ejemplo:
+  /// [monto] debe ser un double
+  ///
+  /// ```dart
+  /// var moneda = Moneda(100.50);
+  /// print(moneda.toInt()); // 100500000;
+  /// ```
+  Moneda.fromDouble(double monto) {
+    _fromDouble(monto);
+  }
+
+  /// Crear un objeto Moneda desde una cadena
+  ///
+  /// [monto] debe ser una cadena que pueda ser parseada a double
+  ///
+  /// ```dart
+  /// var moneda = Moneda('100.50');
+  /// print(moneda.toInt()); // 100500000;
+  /// ```
+  Moneda.fromDoubleString(String monto) {
+    var montoConvertido = double.tryParse(monto);
+
+    if (montoConvertido == null) {
+      throw EleventaEx(
+          message: 'La cadena no es un numero decimal valido: $monto');
+    }
+
+    _fromDouble(montoConvertido);
+  }
+
+  /// Crear un objeto Moneda desde un int
+  ///
+  /// [monto] debe ser un entero
   ///
   /// ```dart
   /// var moneda = Moneda(100500000); //moneda.digitosDecimales = 6;
   /// print(moneda.toString()); // 100.500000
-  ///
-  /// moneda = Moneda(100.50);
-  /// print(moneda.toInt()); // 100500000;
   /// ```
-  Moneda(Object monto) {
-    if (monto is double) {
-      _parteEntera = monto.truncate();
-      _parteDecimal =
-          ((monto - _parteEntera) * (pow(10, _digitosDecimales))).round();
-
-      _montoInt =
-          int.parse((_parteEntera.toString() + _parteDecimal.toString()));
-    }
-
-    if (monto is int) {
-      _montoInt = monto;
-    }
+  Moneda.fromInt(int monto) {
+    _montoInt = monto;
   }
 
   int toInt() {
@@ -43,5 +61,13 @@ class Moneda {
   @override
   String toString() {
     return '\$ $_parteEntera.$_parteDecimal';
+  }
+
+  void _fromDouble(double monto) {
+    _parteEntera = monto.truncate();
+    _parteDecimal =
+        ((monto - _parteEntera) * (pow(10, _digitosDecimales))).round();
+
+    _montoInt = int.parse((_parteEntera.toString() + _parteDecimal.toString()));
   }
 }

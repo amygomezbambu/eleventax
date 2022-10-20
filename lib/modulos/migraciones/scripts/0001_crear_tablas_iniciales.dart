@@ -16,6 +16,13 @@ class Migracion1 extends Migracion {
 
     await db.command(sql: command);
 
+    command = 'CREATE TABLE productos_categorias('
+        'uid TEXT PRIMARY KEY,'
+        'nombre TEXT NULL'
+        ') ';
+
+    await db.command(sql: command);
+
     command = 'CREATE TABLE impuestos('
         'uid TEXT PRIMARY KEY,'
         'nombre TEXT NULL,'
@@ -30,15 +37,23 @@ class Migracion1 extends Migracion {
         'nombre TEXT NULL,'
         'precio_compra INTEGER NULL,'
         'precio_venta INTEGER NULL,'
-        'categoria TEXT NULL,'
-        'unidad_medida TEXT NULL,'
+        'categoria_uid TEXT NULL,'
+        'unidad_medida_uid TEXT NULL,'
         'url_imagen TEXT NULL,'
         'se_vende_por INTEGER NULL'
         ') ';
 
     await db.command(sql: command);
 
+    command =
+        'CREATE INDEX IX_productos_categoria_uid ON productos (categoria_uid);';
+    await db.command(sql: command);
+    command =
+        'CREATE INDEX IX_productos_unidad_medida_uid ON productos (unidad_medida_uid);';
+    await db.command(sql: command);
+
     command = 'CREATE TABLE productos_impuestos('
+        'uid TEXT PRIMARY KEY,'
         'producto_uid TEXT,'
         'impuesto_uid TEXT'
         ') ';

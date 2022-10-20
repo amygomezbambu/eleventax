@@ -4,6 +4,8 @@
   // Perimitimos que los demas puedan correr pruebas, el proyecto, etc.
   "liveshare.allowGuestDebugControl": true,
   "liveshare.allowGuestTaskControl": true,
+  "liveshare.autoShareTerminals": true,
+  "liveshare.languages.allowGuestCommandControl": true,
   // Permitimos el code lens a los invitados
   "liveshare.codeLens": true,
   // Auto guardamos al salir
@@ -30,6 +32,5 @@
         }
       ]
     }
-  },
-  "cmake.sourceDirectory": "${workspaceFolder}/Code/easy_sidemenu/example/windows"
+  },  
 }

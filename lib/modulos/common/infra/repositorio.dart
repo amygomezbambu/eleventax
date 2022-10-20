@@ -14,15 +14,16 @@ class Repositorio {
   ///
   /// [camposEntidad] representa el estado en memoria
   /// [camposDb] representa el estado almacenado en la base de datos
-  Future<Map<String, Object?>> obtenerDiferencias(
+  Future<Map<String, Object>> obtenerDiferencias(
     Map<String, Object?> camposEntidad,
     Map<String, Object?> camposDb,
   ) async {
-    Map<String, Object?> diferencias = {};
+    Map<String, Object> diferencias = {};
 
     for (var field in camposDb.keys) {
       if (camposEntidad[field] != camposDb[field]) {
-        diferencias[field] = camposEntidad[field];
+        // TODO: Quitar el ! y verificar que nunca sea nulo
+        diferencias[field] = camposEntidad[field]!;
       }
     }
 

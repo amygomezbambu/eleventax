@@ -8,10 +8,7 @@
       "name": "flutter (dev)",
       "request": "launch",
       "type": "dart",
-      "program": "lib/main.dart",
-      "env": {
-        "ENVIRONMENT1": "development"
-      },
+      "program": "lib/main.dart",      
       "toolArgs": ["--dart-define", "FEATURE_PRODUCTOS=1"]
     }
   ]

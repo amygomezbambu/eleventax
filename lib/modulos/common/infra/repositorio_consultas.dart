@@ -1,9 +1,9 @@
 import 'package:eleventa/modulos/common/app/interface/database.dart';
 import 'package:meta/meta.dart';
 
-class RepositorioConsultas {
+class RepositorioConsulta {
   @protected
   late IAdaptadorDeBaseDeDatos db;
 
-  RepositorioConsultas(this.db);
+  RepositorioConsulta(this.db);
 }
