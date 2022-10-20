@@ -54,20 +54,22 @@ class AdaptadorSQLite implements IAdaptadorDeBaseDeDatos {
   static DynamicLibrary _openSQLCipherOnWindows() {
     late DynamicLibrary library;
 
-    // Verificamos que existan las librerias que necesitamos
-    if (!File(AdaptadorSQLite.archivoLibcryptoWindows).existsSync()) {
-      debugPrint(
-          'No existe libreria requerida: $AdaptadorSQLite.libcryptoWindowsLibrary');
-    }
+    if (!Platform.environment.containsKey('FLUTTER_TEST')) {
+      // Verificamos que existan las librerias que necesitamos
+      if (!File(AdaptadorSQLite.archivoLibcryptoWindows).existsSync()) {
+        debugPrint(
+            'No existe libreria requerida: $AdaptadorSQLite.libcryptoWindowsLibrary');
+      }
 
-    if (!File(AdaptadorSQLite.archivoSslWindows).existsSync()) {
-      debugPrint(
-          'No existe libreria requerida: $AdaptadorSQLite.sslWindowsLibrary');
-    }
+      if (!File(AdaptadorSQLite.archivoSslWindows).existsSync()) {
+        debugPrint(
+            'No existe libreria requerida: $AdaptadorSQLite.sslWindowsLibrary');
+      }
 
-    if (!File(AdaptadorSQLite.archivoSqlcipherWindows).existsSync()) {
-      debugPrint(
-          'No existe libreria requerida: $AdaptadorSQLite.sqlcipherWindowsLibrary');
+      if (!File(AdaptadorSQLite.archivoSqlcipherWindows).existsSync()) {
+        debugPrint(
+            'No existe libreria requerida: $AdaptadorSQLite.sqlcipherWindowsLibrary');
+      }
     }
 
     library = DynamicLibrary.open(AdaptadorSQLite.archivoSqlcipherWindows);
