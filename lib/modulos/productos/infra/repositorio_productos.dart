@@ -2,6 +2,7 @@ import 'package:eleventa/modulos/common/app/interface/database.dart';
 import 'package:eleventa/modulos/common/app/interface/sync.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
+import 'package:eleventa/modulos/productos/domain/categoria.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/common/infra/repositorio.dart';
 import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
@@ -25,20 +26,39 @@ class RepositorioProductos extends Repositorio
       fields: {
         'codigo': producto.codigo,
         'nombre': producto.nombre,
-        'categoria': producto.categoria,
+        if (producto.categoria != null)
+          'categoria_uid': producto.categoria!.uid.toString(),
+        'unidad_medida_uid': producto.unidadMedida.uid.toString(),
         'precio_compra': producto.precioDeCompra.toInt(),
         'precio_venta': producto.precioDeVenta.toInt(),
         'se_vende_por': producto.seVendePor.index,
         'url_imagen': producto.imagenURL,
       },
     );
+
+    for (var impuesto in producto.impuestos) {
+      await adaptadorSync.synchronize(
+        dataset: 'productos_impuestos',
+        rowID: producto.uid.toString(),
+        fields: {
+          'uid': UID().toString(),
+          'producto_uid': producto.uid.toString(),
+          'impuesto_uid': impuesto.uid.toString(),
+        },
+      );
+    }
   }
 
   @override
   Future<Producto?> obtener(UID uid) async {
     var query =
-        'SELECT uid,codigo,nombre,categoria,precio_compra,precio_venta,se_vende_por,url_imagen '
-        'FROM productos WHERE uid = ?';
+        'SELECT p.uid,p.codigo,p.nombre,p.categoria_uid,p.precio_compra,p.precio_venta,'
+        'p.se_vende_por,p.url_imagen,c.nombre AS categoria,um.nombre as unidad_medida_nombre, '
+        'um.abreviacion as unidad_medida_abreviacion, p.unidad_medida_uid '
+        'FROM productos p '
+        'LEFT JOIN productos_categorias c on p.categoria_uid = c.uid '
+        'LEFT JOIN unidades_medida um on p.unidad_medida_uid = um.uid '
+        'WHERE p.uid = ?';
 
     var result = await db.query(sql: query, params: [uid.toString()]);
 
@@ -49,16 +69,20 @@ class RepositorioProductos extends Repositorio
       item = Producto.cargar(
         uid: UID(row['uid'] as String),
         nombre: row['nombre'] as String,
-        precioDeVenta: Moneda(row['precio_venta'] as int),
-        precioDeCompra: Moneda(row['precio_compra'] as int),
+        precioDeVenta: Moneda.fromInt(row['precio_venta'] as int),
+        precioDeCompra: Moneda.fromInt(row['precio_compra'] as int),
         codigo: row['codigo'] as String,
         unidadDeMedida: UnidadDeMedida(
-          uid: UID(),
-          nombre: 'Pieza',
-          abreviacion: 'pza',
+          uid: UID(row['unidad_medida_uid'] as String),
+          nombre: row['unidad_medida_nombre'] as String,
+          abreviacion: row['unidad_medida_abreviacion'] as String,
         ),
         seVendePor: ProductoSeVendePor.values[row['se_vende_por'] as int],
-        categoria: row['categoria'] as String,
+        categoria: row['categoria_uid'] == null
+            ? null
+            : Categoria(
+                uid: UID(row['categoria_uid'] as String),
+                nombre: row['categoria'] as String),
         imagenURL: row['url_imagen'] as String,
       );
     }
@@ -69,8 +93,12 @@ class RepositorioProductos extends Repositorio
   @override
   Future<List<Producto>> obtenerTodos() async {
     var query =
-        'SELECT uid,codigo,nombre,categoria,precio_compra,precio_venta,se_vende_por,url_imagen '
-        'FROM productos';
+        'SELECT p.uid,p.codigo,p.nombre,p.categoria_uid,p.precio_compra,p.precio_venta,'
+        'p.se_vende_por,p.url_imagen,c.nombre AS categoria,um.nombre as unidad_medida_nombre, '
+        'um.abreviacion as unidad_medida_abreviacion '
+        'FROM productos p '
+        'LEFT JOIN productos_categorias c on p.categoria_uid = c.uid '
+        'LEFT JOIN unidades_medida um on p.unidad_medida_uid = um.uid ';
 
     var result = await db.query(sql: query);
     var items = <Producto>[];
@@ -80,16 +108,20 @@ class RepositorioProductos extends Repositorio
         Producto.cargar(
           uid: UID(row['uid'] as String),
           nombre: row['nombre'] as String,
-          precioDeVenta: Moneda(row['precio_venta'] as int),
-          precioDeCompra: Moneda(row['precio_compra'] as int),
+          precioDeVenta: Moneda.fromInt(row['precio_venta'] as int),
+          precioDeCompra: Moneda.fromInt(row['precio_compra'] as int),
           codigo: row['codigo'] as String,
           unidadDeMedida: UnidadDeMedida(
-            uid: UID(),
-            nombre: 'Pieza',
-            abreviacion: 'pza',
+            uid: UID(row['unidad_medida_uid'] as String),
+            nombre: row['unidad_medida_nombre'] as String,
+            abreviacion: row['unidad_medida_abreviacion'] as String,
           ),
           seVendePor: ProductoSeVendePor.values[row['se_vende_por'] as int],
-          categoria: row['categoria'] as String,
+          categoria: row['categoria_uid'] == null
+              ? null
+              : Categoria(
+                  uid: UID(row['categoria_uid'] as String),
+                  nombre: row['categoria'] as String),
           imagenURL: row['url_imagen'] as String,
         ),
       );

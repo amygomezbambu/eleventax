@@ -55,7 +55,7 @@ class Sync implements ISync {
   Future<void> synchronize({
     required String dataset,
     required String rowID,
-    required Map<String, Object?> fields,
+    required Map<String, Object> fields,
   }) async {
     try {
       var changes = await _generateChanges(dataset, rowID, fields);

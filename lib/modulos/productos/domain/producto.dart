@@ -1,6 +1,7 @@
 import 'package:eleventa/modulos/common/domain/entidad.dart';
 import 'package:eleventa/modulos/common/domain/respuesta_de_validacion.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
+import 'package:eleventa/modulos/productos/domain/categoria.dart';
 import 'package:eleventa/modulos/productos/domain/impuesto.dart';
 import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
 
@@ -10,10 +11,10 @@ enum ProductoSeVendePor { unidad, peso }
 
 class Producto extends Entidad {
   var _nombre = '';
-  var _precioDeVenta = Moneda(0);
-  var _precioDeCompra = Moneda(0);
-  var _categoria = '';
-  UnidadDeMedida? _unidadDeMedida;
+  var _precioDeVenta = Moneda.fromDouble(0);
+  var _precioDeCompra = Moneda.fromDouble(0);
+  Categoria? _categoria;
+  late UnidadDeMedida _unidadDeMedida;
   List<Impuesto> _impuestos = [];
   late ProductoSeVendePor _seVendePor;
   var _imagenURL = '';
@@ -22,27 +23,27 @@ class Producto extends Entidad {
   String get nombre => _nombre;
   Moneda get precioDeVenta => _precioDeVenta;
   Moneda get precioDeCompra => _precioDeCompra;
-  String get categoria => _categoria;
+  Categoria? get categoria => _categoria;
   ProductoSeVendePor get seVendePor => _seVendePor;
   String get imagenURL => _imagenURL;
   String get codigo => _codigo;
-  UnidadDeMedida? get unidadMedida => _unidadDeMedida;
+  UnidadDeMedida get unidadMedida => _unidadDeMedida;
   List<Impuesto> get impuestos => List.unmodifiable(_impuestos);
 
   Producto.crear({
     required String nombre,
     required Moneda precioDeVenta,
     required Moneda precioDeCompra,
-    String categoria = '',
+    Categoria? categoria,
     ProductoSeVendePor seVendePor = ProductoSeVendePor.unidad,
     String imagenURL = '',
     required String codigo,
     List<Impuesto> impuestos = const [],
-    UnidadDeMedida? unidadDeMedida,
+    required UnidadDeMedida unidadDeMedida,
   }) : super.crear() {
     //TODO: agregar validaciones
     _nombre = validarYAsignar<String>(nombre, validarNombre);
-    _categoria = validarYAsignar<String>(categoria, validarCategoria);
+    //_categoria = validarYAsignar<String>(categoria, validarCategoria);
 
     _precioDeVenta = precioDeVenta;
     _precioDeCompra = precioDeCompra;
@@ -59,12 +60,12 @@ class Producto extends Entidad {
     required String nombre,
     required Moneda precioDeVenta,
     required Moneda precioDeCompra,
-    String categoria = '',
+    Categoria? categoria,
     ProductoSeVendePor seVendePor = ProductoSeVendePor.unidad,
     String imagenURL = '',
     required String codigo,
     List<Impuesto> impuestos = const [],
-    UnidadDeMedida? unidadDeMedida,
+    required UnidadDeMedida unidadDeMedida,
   }) : super.cargar(uid) {
     //TODO: agregar validaciones
     _nombre = nombre;

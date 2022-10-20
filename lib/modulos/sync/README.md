@@ -9,15 +9,15 @@ que deseamos que solo se sincronicen datos entre los dispositivos de la misma su
 ## Conceptos
 
 - grupo: todos los dispositivos que se conecten a un grupo recibiran los cambios de todos
-los otros dispositivos del mismo grupo, en otros sistemas de mensajeria se le conoce como
-_topico_ o _canal_, debe tener un numero al final que puede ser usado para distribuir la carga
-del lado del servidor, por ejemplo: `CH-JuanEscutia-01, CH-Industrias-02`.
+  los otros dispositivos del mismo grupo, en otros sistemas de mensajeria se le conoce como
+  _topico_ o _canal_, debe tener un numero al final que puede ser usado para distribuir la carga
+  del lado del servidor, por ejemplo: `CH-JuanEscutia-01, CH-Industrias-02`.
 - cambio: la unidad basica de sincronización es el cambio, un cambio contiene los datos
-de un solo campo o propiedad, si por ejemplo actualizamos un producto y cambian 5 de sus
-propiedades entonces se generarán 5 cambios, uno por cada propiedad.
+  de un solo campo o propiedad, si por ejemplo actualizamos un producto y cambian 5 de sus
+  propiedades entonces se generarán 5 cambios, uno por cada propiedad.
 - dispositivo: cada dispositivo que se conecta debe proporcionar un identificador unico,
-es necesario que se le de una ponderación, esto para que en caso de un
-conflicto gane el dispositivo con mayor peso, por ejemplo:
+  es necesario que se le de una ponderación, esto para que en caso de un
+  conflicto gane el dispositivo con mayor peso, por ejemplo:
 
 `D-a13at0Ri0-0001(caja principal) , D-Al3@T0riO-0002(celular externo)`
 
@@ -48,7 +48,7 @@ var syncAdapter = Sync.init(
 ```
 
 una vez configurado podemos comenzar a usarlo, como ya se habia mencionado el adaptador
-de sincronización trabaja con *cambios* asi es que debemos convertir los cambios hechos
+de sincronización trabaja con _cambios_ asi es que debemos convertir los cambios hechos
 a un mapa de la siguiente manera:
 
 ```dart
@@ -66,7 +66,7 @@ Future<void> agregar(Producto producto) async {
 }
 ```
 
-Con esto el adaptador se encargará de persistir los datos localmente y sincronizarlos con los 
+Con esto el adaptador se encargará de persistir los datos localmente y sincronizarlos con los
 dispositivos remotos, no hay necesidad de persistir los datos en la db directamente y de hecho
 esta prohibido hacerlo, nunca debemos directamente escribir o modificar datos en la DB, solo
 esta permitido consultar libremente.
@@ -109,8 +109,10 @@ Future<void> actualizar(Producto producto) async {
 }
 ```
 
+## Restricciones
+
+- Todas las tablas que se desean sincronizar deben tener un campo uid y debe ser la llave primaria.
+- Nunca se deben usar Insert, Update o Delete directamente en la base de datos
+
 Para saber mas acerca de la implementación interna del modulo de sincronización ir al
-ADR Global 003. 
-
-
-
+ADR Global 003.
