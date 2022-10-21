@@ -16,7 +16,7 @@
       "type": "shell",
       "command": "op run --env-file=\"./app.env\" -- flutter pub run build_runner build --delete-conflicting-outputs",
       "windows": {
-        "command": ".\\tools\\setup_githooks.cmd"
+        "command": "op run --env-file=\"./app.env\" -- flutter pub run build_runner build --delete-conflicting-outputs"
       }
     },
     {
