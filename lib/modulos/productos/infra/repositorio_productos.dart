@@ -64,7 +64,6 @@ class RepositorioProductos extends Repositorio
 
     Producto? item;
 
-    //TODO: usar unidad de medida real
     for (var row in result) {
       item = Producto.cargar(
         uid: UID(row['uid'] as String),
