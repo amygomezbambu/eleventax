@@ -52,6 +52,17 @@ class Moneda {
   /// ```
   Moneda.fromInt(int monto) {
     _montoInt = monto;
+
+    var montoString = monto.toString();
+
+    _parteEntera = int.parse(
+      montoString.substring(0, montoString.length - _digitosDecimales),
+    );
+
+    _parteDecimal = int.parse(
+      montoString.substring(
+          montoString.length - _digitosDecimales, montoString.length),
+    );
   }
 
   int toInt() {
@@ -70,4 +81,18 @@ class Moneda {
 
     _montoInt = int.parse((_parteEntera.toString() + _parteDecimal.toString()));
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is Moneda &&
+        other._parteEntera == _parteEntera &&
+        other._parteDecimal == _parteDecimal &&
+        other._montoInt == _montoInt;
+  }
+
+  @override
+  int get hashCode =>
+      _parteEntera.hashCode ^ _parteDecimal.hashCode ^ _montoInt.hashCode;
 }

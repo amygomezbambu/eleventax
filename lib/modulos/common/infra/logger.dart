@@ -82,6 +82,8 @@ class Logger implements ILogger {
       logEntry.message = ex.message;
       logEntry.input = ex.input;
 
+      //TODO: Este mensaje no se debe imprimir asi, deberia imprimirse solo en el _handleException
+
       // ignore: avoid_print
       print(
           '${logEntry.exception} ${logEntry.stackTrace} ${logEntry.message} ${logEntry.input}');

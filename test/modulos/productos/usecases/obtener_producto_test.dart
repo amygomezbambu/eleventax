@@ -45,19 +45,21 @@ void main() {
       expect(productoDeDB.codigo, codigo);
       expect(productoDeDB.uid.toString(), producto.uid.toString());
       expect(productoDeDB.nombre, producto.nombre);
-
-      // TODO: Realizar comparacion con nueva clase de Moneda
-      //expect(productoDeDB.precioDeVenta, producto.precioDeVenta);
-      //expect(productoDeDB.precioDeCompra, producto.precioDeCompra);
-
-      expect(productoDeDB.categoria?.uid.toString(),
-          producto.categoria?.uid.toString());
+      expect(productoDeDB.precioDeVenta, producto.precioDeVenta);
+      expect(productoDeDB.precioDeCompra, producto.precioDeCompra);
       expect(productoDeDB.imagenURL, producto.imagenURL);
-      expect(productoDeDB.unidadMedida.uid.toString(),
-          producto.unidadMedida.uid.toString());
+      expect(productoDeDB.seVendePor, producto.seVendePor);
+      expect(
+        productoDeDB.unidadMedida.uid.toString(),
+        producto.unidadMedida.uid.toString(),
+      );
+      expect(
+        productoDeDB.categoria?.uid.toString(),
+        producto.categoria?.uid.toString(),
+      );
+
       // TODO: Realizar comparacion de los impuestos
       //expect(productoDeDB.impuestos, producto.impuestos);
-      expect(productoDeDB.seVendePor, producto.seVendePor);
     });
 
     // test('Debe lanzar excepcion cuando proporcionemos un UID inválido',
