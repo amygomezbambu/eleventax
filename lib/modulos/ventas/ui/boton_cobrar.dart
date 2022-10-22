@@ -1,4 +1,4 @@
-import 'package:eleventa/modulos/common/ui/widgets/boton_primario.dart';
+import 'package:eleventa/modulos/common/ui/widgets/ex_boton_primario.dart';
 import 'package:flutter/material.dart';
 
 class BotonCobrarVenta extends StatelessWidget {
@@ -20,7 +20,7 @@ class BotonCobrarVenta extends StatelessWidget {
           ? const EdgeInsets.fromLTRB(12, 10, 12, 10)
           : const EdgeInsets.fromLTRB(3, 10, 3, 10),
       height: dense ? 60 : 70,
-      child: BotonPrimario(
+      child: ExBotonPrimario(
           label: 'Cobrar \$${totalDeVenta.toStringAsFixed(2)}',
           tamanoFuente: dense ? 20 : 25,
           icon: Icons.attach_money_outlined,

@@ -1,5 +1,6 @@
 import 'package:eleventa/modulos/productos/ui/nuevo_producto.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tailwindcss_defaults/colors.dart';
 import 'package:layout/layout.dart';
 
 class VistaProductos extends StatelessWidget {
@@ -12,15 +13,34 @@ class VistaProductos extends StatelessWidget {
     return Scaffold(
       body: AdaptiveBuilder(
         xs: (context) => Column(
-          children: [const Text('Productos Mobile'), NuevoProducto(context)],
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: NuevoProducto(context),
+            )
+          ],
         ),
         md: (context) => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Productos Desktop'),
-                  NuevoProducto(context)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 180, top: 20),
+                    child: Text('Nuevo Producto',
+                        style: TextStyle(
+                            fontSize: 26,
+                            fontWeight: FontWeight.w700,
+                            color: TailwindColors.blueGray[700])),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: NuevoProducto(context),
+                  )
                 ],
               ),
             ),

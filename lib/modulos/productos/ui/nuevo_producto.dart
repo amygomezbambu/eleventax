@@ -1,5 +1,5 @@
 import 'package:eleventa/modulos/common/domain/moneda.dart';
-import 'package:eleventa/modulos/common/ui/widgets/boton_primario.dart';
+import 'package:eleventa/modulos/common/ui/widgets/ex_boton_primario.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_text_field.dart';
 import 'package:eleventa/modulos/productos/domain/categoria.dart';
 import 'package:eleventa/modulos/productos/domain/impuesto.dart';
@@ -7,12 +7,8 @@ import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
 import 'package:eleventa/modulos/productos/modulo_productos.dart';
 import 'package:flutter/material.dart';
-
-const List<String> listaUnidadesDeMedida = <String>[
-  'Pieza',
-  'Kilogramo / Gramo',
-  'Metro / Centimetro'
-];
+import 'package:layout/layout.dart';
+//import 'package:layout/layout.dart';
 
 class NuevoProducto extends StatefulWidget {
   const NuevoProducto(BuildContext context, {Key? key}) : super(key: key);
@@ -25,6 +21,7 @@ typedef EstadoFormField = FormFieldState<String>;
 
 class _NuevoProductoState extends State<NuevoProducto> {
   String unidadDeMedida = '';
+  final mostrarMargenLabel = LayoutValue(xs: false, md: true);
 
   ProductoSeVendePor seVendePor = ProductoSeVendePor.unidad;
   final GlobalKey<EstadoFormField> _keyCategoria = GlobalKey<EstadoFormField>();
@@ -85,8 +82,6 @@ class _NuevoProductoState extends State<NuevoProducto> {
     _keyUnidadDeMedida.currentState!.reset();
 
     seVendePor = ProductoSeVendePor.unidad;
-    //impuesto = listadoImpuestos.first;
-    unidadDeMedida = listaUnidadesDeMedida.first;
   }
 
   @override
@@ -106,17 +101,20 @@ class _NuevoProductoState extends State<NuevoProducto> {
     return Expanded(
       child: Container(
         color: Colors.white10,
-        width: 400,
+        width: 600,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Nuevo Producto'),
             Form(
               key: const ValueKey('frmNuevoProducto'),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ExTextField(
-                    hintText: 'Codigo de producto',
+                    hintText: 'Código',
                     controller: _controllerCodigo,
+                    icon: Icons.document_scanner,
+                    width: 300,
                   ),
                   ExTextField(
                     hintText: 'Nombre',
@@ -217,7 +215,6 @@ class _NuevoProductoState extends State<NuevoProducto> {
                             key: _keyImpuestos,
                             value: listadoImpuestos.first,
                             onChanged: (Impuesto? impuesto) {
-                              // This is called when the user selects an item.
                               setState(() {
                                 impuestoSeleccionado = impuesto!;
                               });
@@ -240,15 +237,21 @@ class _NuevoProductoState extends State<NuevoProducto> {
                         }
                       }),
                   ExTextField(
-                      hintText: 'Precio de compra',
-                      controller: _controllerPrecioDeCompra),
-                  ExTextField(
-                    hintText: 'Utilidad',
-                    controller: _controllerUtilidad,
+                    hintText: 'Precio de compra',
+                    controller: _controllerPrecioDeCompra,
+                    prefixText: '\$ ',
+                    width: 160,
                   ),
+                  ExTextField(
+                      hintText: 'Utilidad',
+                      controller: _controllerUtilidad,
+                      suffixText: '%',
+                      width: 160),
                   ExTextField(
                     hintText: 'Precio de venta',
                     controller: _controllerPrecioDeVenta,
+                    prefixText: '\$ ',
+                    width: 160,
                   ),
                   ExTextField(
                     hintText: 'Imagen URL',
@@ -257,19 +260,37 @@ class _NuevoProductoState extends State<NuevoProducto> {
                 ],
               ),
             ),
-            BotonPrimario(
-                label: 'Guardar',
-                icon: Icons.save,
-                onTap: () async {
-                  await crearProducto();
-                }),
-            const SizedBox(
-              height: 5,
+            Row(
+              children: [
+                SizedBox(
+                  width:
+                      (mostrarMargenLabel.resolve(context) == true) ? 160 : 0,
+                ),
+                SizedBox(
+                  width: 150,
+                  height: 45,
+                  child: ExBotonPrimario(
+                      label: 'Guardar',
+                      icon: Icons.save,
+                      tamanoFuente: 15,
+                      onTap: () async {
+                        await crearProducto();
+                      }),
+                ),
+                const SizedBox(
+                  width: 5,
+                ),
+                SizedBox(
+                  width: 150,
+                  height: 45,
+                  child: ExBotonPrimario(
+                      label: 'Cancelar',
+                      tamanoFuente: 15,
+                      icon: Icons.cancel,
+                      onTap: () => {limpiarCampos()}),
+                )
+              ],
             ),
-            BotonPrimario(
-                label: 'Cancelar',
-                icon: Icons.cancel,
-                onTap: () => {limpiarCampos()})
           ],
         ),
       ),

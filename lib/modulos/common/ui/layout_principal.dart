@@ -32,16 +32,21 @@ class LayoutPrincipalState extends State<LayoutPrincipal> {
     return Scaffold(
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.white),
+        leading: IconButton(
+            color: Colors.white70,
+            iconSize: 30,
+            icon: const Icon(Icons.chevron_left),
+            onPressed: () {}),
         title: Text(
             (context.layout.breakpoint <= LayoutBreakpoint.sm)
-                ? 'Ventas'
+                ? 'Nuevo Producto'
                 : Feature.productos.estaHabilitado()
                     ? 'productos'
                     : 'no ', // ToDO: Incluir el nombre del módulo
             style: TextStyle(
                 color: Colors.white,
                 fontSize: (context.layout.breakpoint <= LayoutBreakpoint.sm)
-                    ? 16
+                    ? 19
                     : 12)),
         toolbarHeight:
             (context.layout.breakpoint <= LayoutBreakpoint.sm) ? 55 : 38,

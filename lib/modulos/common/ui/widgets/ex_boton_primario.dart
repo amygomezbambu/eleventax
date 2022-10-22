@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class BotonPrimario extends StatelessWidget {
+class ExBotonPrimario extends StatelessWidget {
   final String label;
   final IconData icon;
   final VoidCallback onTap;
   final double tamanoFuente;
 
-  const BotonPrimario({
+  const ExBotonPrimario({
     required this.label,
     required this.icon,
     required this.onTap,
@@ -22,25 +22,26 @@ class BotonPrimario extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
             backgroundColor: const Color(0xFF3973CE),
-            elevation: 4
+            elevation: 3
             //minimumSize: Size(350, 70)
             ),
         onPressed: onTap,
         child: Row(
-          //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          //crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon,
-                color: const Color.fromARGB(255, 137, 196, 251), size: 30),
-            Text(label,
-                style: TextStyle(
-                  //fontFamily: 'Figtree',
-                  color: Colors.white,
-                  fontSize: tamanoFuente,
-                  fontWeight: FontWeight.w400,
-                  letterSpacing: -1.1,
-                )),
+                color: const Color.fromARGB(255, 137, 196, 251), size: 18),
+            Padding(
+              padding: const EdgeInsets.only(left: 5.0),
+              child: Text(label,
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    color: Colors.white,
+                    fontSize: tamanoFuente,
+                    fontWeight: FontWeight.w400,
+                    letterSpacing: -0.5,
+                  )),
+            ),
           ],
         ));
   }
