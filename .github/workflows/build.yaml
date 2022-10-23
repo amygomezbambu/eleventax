@@ -18,6 +18,17 @@ jobs:
           flutter-version: ${{ steps.get-flutter-version.outputs.version }}
       - name: Instalar dependencias
         run: flutter pub get
+        
+      - name: Generar clases de Dart necesarias con secretos embebidos (y ofuscados)
+        run: flutter pub run build_runner build --delete-conflicting-outputs
+        # Las variables de entorno tienen que estar disponibles en esta etapa
+        # que es cuando se genera el env.g.dart con los secrets "hard codeados"
+        # y que se usarán despues en las pruebas
+        env:
+          MIXPANEL_PROJECT_ID: ${{ secrets.MIXPANEL_PROJECT_ID }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          DB_PASSWORD: 12345  
+        
       - name: Compilar binario de Windows
         run: flutter build windows --release
       - name: Archivar los binarios
@@ -49,6 +60,17 @@ jobs:
           flutter-version: ${{ steps.get-flutter-version.outputs.version }}
       - name: Instalar dependencias
         run: flutter pub get
+        
+      - name: Generar clases de Dart necesarias con secretos embebidos (y ofuscados)
+        run: flutter pub run build_runner build --delete-conflicting-outputs
+        # Las variables de entorno tienen que estar disponibles en esta etapa
+        # que es cuando se genera el env.g.dart con los secrets "hard codeados"
+        # y que se usarán despues en las pruebas
+        env:
+          MIXPANEL_PROJECT_ID: ${{ secrets.MIXPANEL_PROJECT_ID }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          DB_PASSWORD: 12345   
+        
       - name: Compilar binario de macOS
         run: flutter build macos --release
       - name: Archivar los binarios
@@ -65,72 +87,72 @@ jobs:
         with:
           files: build/macos/Build/Products/Release/eleventa-${{github.ref_name}}-macos-x64.zip
 
-  build-and-release-ios:
-    runs-on: macos-latest
+#   build-and-release-ios:
+#     runs-on: macos-latest
 
-    steps:
-      - uses: actions/checkout@v3
-      - name: Obtenemos la version de Flutter de pubspec.yaml
-        id: get-flutter-version
-        uses: zgosalvez/github-actions-get-flutter-version-env@v1
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: "stable"
-          architecture: x64
-          flutter-version: ${{ steps.get-flutter-version.outputs.version }}
-      - name: Instalar dependencias
-        run: flutter pub get
-      - name: Compilar binario de iOS
-        run: flutter build ios --release --no-codesign
-      - name: Archivar los binarios
-        uses: thedoctor0/zip-release@master
-        with:
-          type: "zip"
-          filename: eleventa-${{github.ref_name}}-ios.zip
-          directory: build/ios/iphoneos/
-      - name: Publicar binarios iOS
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          files: build/ios/iphoneos/eleventa-${{github.ref_name}}-ios.zip
+#     steps:
+#       - uses: actions/checkout@v3
+#       - name: Obtenemos la version de Flutter de pubspec.yaml
+#         id: get-flutter-version
+#         uses: zgosalvez/github-actions-get-flutter-version-env@v1
+#       - uses: subosito/flutter-action@v2
+#         with:
+#           channel: "stable"
+#           architecture: x64
+#           flutter-version: ${{ steps.get-flutter-version.outputs.version }}
+#       - name: Instalar dependencias
+#         run: flutter pub get
+#       - name: Compilar binario de iOS
+#         run: flutter build ios --release --no-codesign
+#       - name: Archivar los binarios
+#         uses: thedoctor0/zip-release@master
+#         with:
+#           type: "zip"
+#           filename: eleventa-${{github.ref_name}}-ios.zip
+#           directory: build/ios/iphoneos/
+#       - name: Publicar binarios iOS
+#         uses: softprops/action-gh-release@v1
+#         if: startsWith(github.ref, 'refs/tags/')
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#         with:
+#           files: build/ios/iphoneos/eleventa-${{github.ref_name}}-ios.zip
 
-  build-and-release-android:
-    runs-on: ubuntu-latest
+#   build-and-release-android:
+#     runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v3
-      - name: Obtenemos la version de Flutter de pubspec.yaml
-        id: get-flutter-version
-        uses: zgosalvez/github-actions-get-flutter-version-env@v1
-      - name: Instalamos Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: "zulu"
-          java-version: "11"
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: "stable"
-          architecture: x64
-          flutter-version: ${{ steps.get-flutter-version.outputs.version }}
-      - name: Instalar dependencias
-        run: flutter pub get
-      #   run: flutter pub run build_runner build --delete-conflicting-outputs
-      # - name: Build APK artifact
-      #   run: flutter build apk --release
-      - name: Compilar binario AppBundle de Android
-        run: flutter build appbundle --release
-      - name: Archivar los binarios
-        uses: thedoctor0/zip-release@master
-        with:
-          type: "zip"
-          filename: eleventa-${{github.ref_name}}-android.zip
-          directory: build/app/outputs/bundle/release/
-      - name: Publicar release de Android
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          files: build/app/outputs/bundle/release/eleventa-${{github.ref_name}}-android.zip
+#     steps:
+#       - uses: actions/checkout@v3
+#       - name: Obtenemos la version de Flutter de pubspec.yaml
+#         id: get-flutter-version
+#         uses: zgosalvez/github-actions-get-flutter-version-env@v1
+#       - name: Instalamos Java
+#         uses: actions/setup-java@v3
+#         with:
+#           distribution: "zulu"
+#           java-version: "11"
+#       - uses: subosito/flutter-action@v2
+#         with:
+#           channel: "stable"
+#           architecture: x64
+#           flutter-version: ${{ steps.get-flutter-version.outputs.version }}
+#       - name: Instalar dependencias
+#         run: flutter pub get
+#       #   run: flutter pub run build_runner build --delete-conflicting-outputs
+#       # - name: Build APK artifact
+#       #   run: flutter build apk --release
+#       - name: Compilar binario AppBundle de Android
+#         run: flutter build appbundle --release
+#       - name: Archivar los binarios
+#         uses: thedoctor0/zip-release@master
+#         with:
+#           type: "zip"
+#           filename: eleventa-${{github.ref_name}}-android.zip
+#           directory: build/app/outputs/bundle/release/
+#       - name: Publicar release de Android
+#         uses: softprops/action-gh-release@v1
+#         if: startsWith(github.ref, 'refs/tags/')
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#         with:
+#           files: build/app/outputs/bundle/release/eleventa-${{github.ref_name}}-android.zip
