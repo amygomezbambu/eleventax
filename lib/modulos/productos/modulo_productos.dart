@@ -1,5 +1,5 @@
 import 'package:eleventa/dependencias.dart';
-import 'package:eleventa/modulos/productos/infra/repositorio_consulta_productos.dart';
+import 'package:eleventa/modulos/productos/interfaces/repositorio_consulta_productos.dart';
 import 'package:eleventa/modulos/productos/usecases/actualizar_producto.dart';
 import 'package:eleventa/modulos/productos/usecases/crear_producto.dart';
 import 'package:eleventa/modulos/productos/usecases/obtener_producto.dart';
@@ -15,14 +15,15 @@ class ModuloProductos {
   }
 
   static CrearProducto crearProducto() {
-    return CrearProducto(Dependencias.productos.repositorioProductos());
+    return CrearProducto(Dependencias.productos.repositorioProductos(),
+        Dependencias.productos.repositorioConsultasProductos());
   }
 
   static ActualizarProducto actualizarProducto() {
     return ActualizarProducto(Dependencias.productos.repositorioProductos());
   }
 
-  static RepositorioConsultaProductos repositorioConsultaProductos() {
-    return RepositorioConsultaProductos(db: Dependencias.infra.database());
+  static IRepositorioConsultaProductos repositorioConsultaProductos() {
+    return Dependencias.productos.repositorioConsultasProductos();
   }
 }

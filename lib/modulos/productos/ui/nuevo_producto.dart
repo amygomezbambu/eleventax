@@ -29,8 +29,8 @@ class _NuevoProductoState extends State<NuevoProducto> {
   final GlobalKey<EstadoFormField> _keyUnidadDeMedida =
       GlobalKey<EstadoFormField>();
 
-  late Impuesto impuestoSeleccionado;
   late final Future<List<Impuesto>> _impuestos = lecturas.obtenerImpuestos();
+  late Impuesto impuestoSeleccionado;
 
   late Categoria categoriaSeleccionada;
   late final Future<List<Categoria>> _categorias = lecturas.obtenerCategorias();
@@ -50,15 +50,24 @@ class _NuevoProductoState extends State<NuevoProducto> {
 
   Future<void> crearProducto() async {
     var crearProducto = ModuloProductos.crearProducto();
+    bool hayPrecioDeVenta = _controllerPrecioDeVenta.text.isNotEmpty;
+    Moneda? precioDeVenta;
+
+    if (hayPrecioDeVenta) {
+      precioDeVenta = Moneda.fromDoubleString(_controllerPrecioDeVenta.text);
+    }
+
     var producto = Producto.crear(
-        codigo: _controllerCodigo.text,
-        nombre: _controllerNombre.text,
-        precioDeVenta: Moneda.fromDoubleString(_controllerPrecioDeVenta.text),
-        precioDeCompra: Moneda.fromDoubleString(_controllerPrecioDeCompra.text),
-        seVendePor: seVendePor,
-        categoria: categoriaSeleccionada,
-        impuestos: [impuestoSeleccionado],
-        unidadDeMedida: unidadDeMedidaSeleccionada);
+      codigo: _controllerCodigo.text,
+      nombre: _controllerNombre.text,
+      precioDeCompra: Moneda.fromDoubleString(_controllerPrecioDeCompra.text),
+      seVendePor: seVendePor,
+      categoria: categoriaSeleccionada,
+      impuestos: [impuestoSeleccionado],
+      unidadDeMedida: unidadDeMedidaSeleccionada,
+      preguntarPrecio: !hayPrecioDeVenta,
+      precioDeVenta: precioDeVenta,
+    );
 
     crearProducto.req.producto = producto;
 
@@ -82,6 +91,18 @@ class _NuevoProductoState extends State<NuevoProducto> {
     _keyUnidadDeMedida.currentState!.reset();
 
     seVendePor = ProductoSeVendePor.unidad;
+  }
+
+  Future<void> verificarExistenciaDeCodigo() async {
+    var consultas = ModuloProductos.repositorioConsultaProductos();
+
+    var existe = await consultas.existeProducto(_controllerCodigo.text);
+
+    if (existe) {
+      // TODO: UI manejar esta advertencia
+      debugPrint(
+          'El codigo ${_controllerCodigo.text} ya existe en base de datos...');
+    }
   }
 
   @override
@@ -110,11 +131,18 @@ class _NuevoProductoState extends State<NuevoProducto> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ExTextField(
-                    hintText: 'Código',
-                    controller: _controllerCodigo,
-                    icon: Icons.document_scanner,
-                    width: 300,
+                  Focus(
+                    onFocusChange: (hasFocus) {
+                      if (!hasFocus) {
+                        verificarExistenciaDeCodigo();
+                      }
+                    },
+                    child: ExTextField(
+                      hintText: 'Código',
+                      controller: _controllerCodigo,
+                      icon: Icons.document_scanner,
+                      width: 300,
+                    ),
                   ),
                   ExTextField(
                     hintText: 'Nombre',
@@ -126,9 +154,11 @@ class _NuevoProductoState extends State<NuevoProducto> {
                           AsyncSnapshot<List<Categoria>> snapshot) {
                         if (snapshot.hasData) {
                           List<Categoria> listadoCategorias = snapshot.data!;
+                          categoriaSeleccionada = listadoCategorias.first;
+
                           return DropdownButtonFormField<Categoria>(
                             key: _keyCategoria,
-                            value: listadoCategorias.first,
+                            value: categoriaSeleccionada,
                             onChanged: (Categoria? categoria) {
                               // This is called when the user selects an item.
                               setState(() {
@@ -179,6 +209,9 @@ class _NuevoProductoState extends State<NuevoProducto> {
                         if (snapshot.hasData) {
                           List<UnidadDeMedida> listadoUnidadesDeMedida =
                               snapshot.data!;
+                          unidadDeMedidaSeleccionada =
+                              listadoUnidadesDeMedida.first;
+
                           return DropdownButtonFormField<UnidadDeMedida>(
                             key: _keyUnidadDeMedida,
                             value: listadoUnidadesDeMedida.first,
@@ -211,6 +244,8 @@ class _NuevoProductoState extends State<NuevoProducto> {
                           AsyncSnapshot<List<Impuesto>> snapshot) {
                         if (snapshot.hasData) {
                           List<Impuesto> listadoImpuestos = snapshot.data!;
+                          impuestoSeleccionado = listadoImpuestos.first;
+
                           return DropdownButtonFormField<Impuesto>(
                             key: _keyImpuestos,
                             value: listadoImpuestos.first,

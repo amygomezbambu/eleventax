@@ -4,6 +4,7 @@ import 'package:eleventa/dependencias.dart';
 import 'package:eleventa/globals.dart';
 import 'package:eleventa/modulos/common/app/interface/database.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
+import 'package:eleventa/modulos/common/utils/db_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -189,7 +190,7 @@ class AdaptadorSQLite implements IAdaptadorDeBaseDeDatos {
         if (_verbose) {
           _logger.debug(message: '[SQL] $sql [PARAMS] $params');
         }
-        await _db.execute(sql, params);
+        await _db.execute(sql, _sanitizarParams(params));
       } else {
         if (_verbose) {
           _logger.debug(message: '[SQL] $sql');
@@ -206,6 +207,19 @@ class AdaptadorSQLite implements IAdaptadorDeBaseDeDatos {
     }
   }
 
+  List<Object?> _sanitizarParams(List<Object?> params) {
+    List<Object?> nuevosParams = [];
+    for (var param in params) {
+      if (param is bool) {
+        nuevosParams.add(DBUtils().boolToInt(param));
+      } else {
+        nuevosParams.add(param);
+      }
+    }
+
+    return nuevosParams;
+  }
+
   @override
   Future<List<Map<String, Object?>>> query({
     required String sql,
@@ -220,7 +234,7 @@ class AdaptadorSQLite implements IAdaptadorDeBaseDeDatos {
           _logger.debug(message: '[SQL] $sql [PARAMS] $params');
         }
 
-        dbResult = await _db.rawQuery(sql, params);
+        dbResult = await _db.rawQuery(sql, _sanitizarParams(params));
       } else {
         if (_verbose) {
           _logger.debug(message: '[SQL] $sql');

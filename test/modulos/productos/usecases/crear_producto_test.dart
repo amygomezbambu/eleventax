@@ -1,4 +1,5 @@
 import 'package:eleventa/modulos/common/domain/moneda.dart';
+import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/productos/domain/categoria.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
@@ -14,37 +15,7 @@ void main() {
     await loader.iniciar();
   });
 
-  test('debe persistir el producto con opciones minimas', () async {
-    var crearProducto = ModuloProductos.crearProducto();
-
-    const codigo = '123456';
-    const nombre = 'Atun tunny 200 grs.';
-    final precioDeVenta = Moneda.fromDouble(13.40);
-    final precioDeCompra = Moneda.fromDouble(10.40);
-
-    var producto = Producto.crear(
-        codigo: codigo,
-        nombre: nombre,
-        precioDeVenta: precioDeVenta,
-        precioDeCompra: precioDeCompra,
-        unidadDeMedida: UnidadDeMedida(
-          uid: UID(),
-          nombre: 'Pieza',
-          abreviacion: 'pz',
-        ));
-
-    crearProducto.req.producto = producto;
-
-    await expectLater(
-      crearProducto.exec(),
-      completes,
-    );
-  });
-
-  test('debe persistir el producto con todas sus propiedades', () async {
-    var crearProducto = ModuloProductos.crearProducto();
-
-    const codigo = '123456';
+  Producto llenarProducto(String codigo) {
     const nombre = 'Atun tunny 200 grs.';
     final precioDeVenta = Moneda.fromDouble(13.40);
     final precioDeCompra = Moneda.fromDouble(10.40);
@@ -61,11 +32,38 @@ void main() {
           abreviacion: 'pz',
         ));
 
-    crearProducto.req.producto = producto;
+    return producto;
+  }
+
+  test('debe persistir el producto con opciones minimas', () async {
+    var crearProducto = ModuloProductos.crearProducto();
+
+    crearProducto.req.producto = llenarProducto('12345');
 
     await expectLater(
       crearProducto.exec(),
       completes,
     );
+  });
+
+  test('debe persistir el producto con todas sus propiedades', () async {
+    var crearProducto = ModuloProductos.crearProducto();
+
+    crearProducto.req.producto = llenarProducto('ABC');
+
+    await expectLater(
+      crearProducto.exec(),
+      completes,
+    );
+  });
+
+  test('debe lanzar una excepcion si el codigo existe', () async {
+    var crearProducto = ModuloProductos.crearProducto();
+    crearProducto.req.producto = llenarProducto('12345-3323');
+
+    await crearProducto.exec();
+
+    // TODO: Ver como evitar que se loguee la excepcion y nos cause ruido en los logs
+    await expectLater(crearProducto.exec(), throwsA(isA<AppEx>()));
   });
 }

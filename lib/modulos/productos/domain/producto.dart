@@ -19,6 +19,7 @@ class Producto extends Entidad {
   late ProductoSeVendePor _seVendePor;
   var _imagenURL = '';
   var _codigo = '';
+  bool _preguntarPrecio = false;
 
   String get nombre => _nombre;
   Moneda get precioDeVenta => _precioDeVenta;
@@ -29,10 +30,10 @@ class Producto extends Entidad {
   String get codigo => _codigo;
   UnidadDeMedida get unidadMedida => _unidadDeMedida;
   List<Impuesto> get impuestos => List.unmodifiable(_impuestos);
+  bool get preguntarPrecio => _preguntarPrecio;
 
   Producto.crear({
     required String nombre,
-    required Moneda precioDeVenta,
     required Moneda precioDeCompra,
     Categoria? categoria,
     ProductoSeVendePor seVendePor = ProductoSeVendePor.unidad,
@@ -40,12 +41,17 @@ class Producto extends Entidad {
     required String codigo,
     List<Impuesto> impuestos = const [],
     required UnidadDeMedida unidadDeMedida,
+    Moneda? precioDeVenta,
+    bool preguntarPrecio = false,
   }) : super.crear() {
     //TODO: agregar validaciones
     _nombre = validarYAsignar<String>(nombre, validarNombre);
     //_categoria = validarYAsignar<String>(categoria, validarCategoria);
 
-    _precioDeVenta = precioDeVenta;
+    if (precioDeVenta != null) {
+      _precioDeVenta = precioDeVenta;
+    }
+
     _precioDeCompra = precioDeCompra;
     _categoria = categoria;
     _seVendePor = seVendePor;
@@ -53,6 +59,7 @@ class Producto extends Entidad {
     _codigo = codigo;
     _impuestos = impuestos;
     _unidadDeMedida = unidadDeMedida;
+    _preguntarPrecio = preguntarPrecio;
   }
 
   Producto.cargar({
@@ -66,6 +73,7 @@ class Producto extends Entidad {
     required String codigo,
     List<Impuesto> impuestos = const [],
     required UnidadDeMedida unidadDeMedida,
+    required bool preguntarPrecio,
   }) : super.cargar(uid) {
     //TODO: agregar validaciones
     _nombre = nombre;
@@ -77,6 +85,7 @@ class Producto extends Entidad {
     _codigo = codigo;
     _impuestos = impuestos;
     _unidadDeMedida = unidadDeMedida;
+    _preguntarPrecio = preguntarPrecio;
   }
 
   RespuestaValidacion validarCategoria(String value) {

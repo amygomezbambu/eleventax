@@ -31,17 +31,22 @@ class Migracion1 extends Migracion {
 
     await db.command(sql: command);
 
-    command = 'CREATE TABLE productos('
-        'uid TEXT PRIMARY KEY,'
-        'codigo TEXT NULL,'
-        'nombre TEXT NULL,'
-        'precio_compra INTEGER NULL,'
-        'precio_venta INTEGER NULL,'
-        'categoria_uid TEXT NULL,'
-        'unidad_medida_uid TEXT NULL,'
-        'url_imagen TEXT NULL,'
-        'se_vende_por INTEGER NULL'
-        ') ';
+    command = '''
+        CREATE TABLE productos(
+          uid TEXT PRIMARY KEY,
+          codigo TEXT NULL,
+          nombre TEXT NULL,
+          precio_compra INTEGER NULL,
+          precio_venta INTEGER NULL DEFAULT 0,
+          categoria_uid TEXT NULL,
+          unidad_medida_uid TEXT NULL,
+          url_imagen TEXT NULL,
+          se_vende_por INTEGER NULL,       
+          borrado BOOLEAN NOT NULL CHECK (borrado IN (0, 1)) DEFAULT 0,
+          preguntar_precio BOOLEAN NOT NULL CHECK (preguntar_precio IN (0,1)) DEFAULT 0
+
+        );
+        ''';
 
     await db.command(sql: command);
 

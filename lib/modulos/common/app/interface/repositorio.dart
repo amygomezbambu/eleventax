@@ -1,10 +1,12 @@
 import 'package:eleventa/modulos/common/utils/uid.dart';
+// ignore: unused_import
+import 'package:eleventa/modulos/common/domain/entidad.dart';
 
-abstract class IRepositorio<Entity> {
-  Future<void> agregar(Entity entity);
-  Future<Entity?> obtener(UID uid);
-  Future<List<Entity>> obtenerTodos();
-  Future<void> actualizar(Entity entity);
+abstract class IRepositorio<Entidad> {
+  Future<void> agregar(Entidad entity);
+  Future<Entidad?> obtener(UID uid);
+  Future<List<Entidad>> obtenerTodos();
+  Future<void> actualizar(Entidad entity);
   Future<void> borrar(UID id);
 
   Future<void> transaction();

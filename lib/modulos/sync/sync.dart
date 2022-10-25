@@ -1,4 +1,5 @@
 import 'package:eleventa/modulos/common/app/interface/sync.dart';
+import 'package:eleventa/modulos/common/utils/utils.dart';
 import 'package:eleventa/modulos/sync/adapter/sync_repository.dart';
 import 'package:eleventa/modulos/sync/adapter/sync_server.dart';
 import 'package:eleventa/modulos/sync/app/usecase/add_local_changes.dart';
@@ -46,6 +47,21 @@ class Sync implements ISync {
   Sync._internal();
   // #endregion
 
+  Map<String, Object> _sanitizarFields(Map<String, Object> fields) {
+    Map<String, Object> nuevosFields = {};
+    for (var key in fields.keys) {
+      if (fields[key] is bool) {
+        var valor = fields[key] as bool;
+        nuevosFields[key] = Utils.db.boolToInt(valor);
+      } else {
+        var valor = fields[key];
+        nuevosFields[key] = valor!;
+      }
+    }
+
+    return nuevosFields;
+  }
+
   /// Sincroniza los cambios.
   ///
   /// Para cada columna en [columns] y su respectivo valor en [values]
@@ -58,7 +74,8 @@ class Sync implements ISync {
     required Map<String, Object> fields,
   }) async {
     try {
-      var changes = await _generateChanges(dataset, rowID, fields);
+      var changes =
+          await _generateChanges(dataset, rowID, _sanitizarFields(fields));
       await _applyChangesToLocalDatabase(changes);
       await _sendChangesToRemoteServer(changes);
     } catch (e, stack) {

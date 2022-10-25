@@ -63,4 +63,14 @@ class RepositorioConsultaProductos extends RepositorioConsulta
 
     return res;
   }
+
+  @override
+  Future<bool> existeProducto(String codigo) async {
+    var dbResult = await db.query(
+      sql: 'SELECT codigo FROM productos where codigo = ? and borrado = ?;',
+      params: [codigo, false],
+    );
+
+    return dbResult.isNotEmpty;
+  }
 }

@@ -11,8 +11,10 @@ import 'package:eleventa/modulos/common/infra/logger.dart';
 import 'package:eleventa/modulos/common/infra/adaptador_sqlite.dart';
 import 'package:eleventa/modulos/common/infra/adaptador_telemetria.dart';
 import 'package:eleventa/modulos/common/infra/network/adaptador_red.dart';
+import 'package:eleventa/modulos/productos/infra/repositorio_consulta_productos.dart';
 import 'package:eleventa/modulos/productos/infra/repositorio_productos.dart';
 import 'package:eleventa/modulos/migraciones/migrar_db.dart';
+import 'package:eleventa/modulos/productos/interfaces/repositorio_consulta_productos.dart';
 import 'package:eleventa/modulos/productos/interfaces/repositorio_productos.dart';
 import 'package:eleventa/modulos/telemetria/modulo_telemetria.dart';
 import 'package:eleventa/modulos/ventas/app/interface/repositorio_ventas.dart';
@@ -110,6 +112,12 @@ class Loader {
       (IRepositorioProductos).toString(),
       () => RepositorioProductos(
         syncAdapter: Dependencias.infra.sync(),
+        db: Dependencias.infra.database(),
+      ),
+    );
+    Dependencias.registrar(
+      (IRepositorioConsultaProductos).toString(),
+      () => RepositorioConsultaProductos(
         db: Dependencias.infra.database(),
       ),
     );
