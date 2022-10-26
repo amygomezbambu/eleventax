@@ -21,8 +21,7 @@ class EleventaEx implements Exception {
 
   @override
   String toString() {
-    return '${runtimeType.toString()}: $message\n'
-        '[Tech Info]: ${innerException?.toString()}';
+    return '${runtimeType.toString()}: $message\n';
   }
 }
 

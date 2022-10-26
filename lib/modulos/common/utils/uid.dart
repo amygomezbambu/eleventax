@@ -1,27 +1,13 @@
-import 'package:xid/xid.dart';
+import 'package:nanoid/nanoid.dart';
 
 class UID {
   String _identifier = '';
 
   UID([String uid = '']) {
-    if (uid == '') {
-      _generate();
+    if (uid.isEmpty) {
+      _identifier = nanoid();
     } else {
-      if (isValid(uid)) {
-        _identifier = uid;
-      } else {
-        throw Exception('El uid proporcionado es invalido: $uid');
-      }
-    }
-  }
-
-  static bool isValid(String uid) {
-    try {
-      Xid.fromString(uid);
-
-      return true;
-    } catch (e) {
-      return false;
+      _identifier = uid;
     }
   }
 
@@ -34,18 +20,5 @@ class UID {
   @override
   String toString() {
     return _identifier;
-  }
-
-  void _generate([int retry = 1]) {
-    try {
-      var uid = Xid();
-      _identifier = uid.toString();
-    } catch (e) {
-      if (retry > 3) {
-        rethrow;
-      }
-
-      _generate(retry + 1);
-    }
   }
 }

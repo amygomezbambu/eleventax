@@ -46,7 +46,6 @@ dependencies:
   any_base: ^2.0.0
   murmurhash: ^1.0.1
   hlc: ^1.0.3
-  xid: ^1.0.7 # [ADR-0003]
   logging: ^1.1.0 # [ADR-0004]
   sentry_flutter: ^6.13.1 # [ADR-0004]
   sentry_logging: ^6.13.0 # [ADR-0004]
@@ -60,6 +59,7 @@ dependencies:
   envied: ^0.2.3 # [ADR-0008]
   package_info_plus: ^3.0.1
   connectivity_plus: ^3.0.2
+  nanoid: ^1.0.0 # [ADR-0003]
 
 dev_dependencies:
   integration_test:

@@ -13,16 +13,14 @@ conocido que en este tipo de sistemas los indetificadores auto-incrementales tie
 - UUID v4
 - UUID v7
 - NanoID
+- XID
 
 # Decisión
 
-Usaremos un paquete llamado [XID](https://pub.dev/packages/xid), seleccionamos este paquete debido a que tiene algunas ventajas sobre las otras opciones:
+Decidimos usar NanoID debido a que nuestra primera opción la cual era XID presenta un fallo aleatorio durante las pruebas.
 
-- es mas pequeño, por consecuencia ocupa menos especio al ser almacenado y menos ancho de banda al ser transmitido.
-- es ordenable, aunque esto no es algo que nos ayude o afecte demasiado el ser ordenable
-  puede sernos util en alguna ocasión.
+La segunda mejor opción es NanoID debido a su tamaño mas compacto y mayor velocidad de generación que UUID.
 
 # Consecuencias
 
-Anteriormente usabamos el paquete [UUID](https://pub.dev/packages/uuid), por lo que tendremos que cambiar todos los lugares
-en donde se este usando el paquete anterior.
+Debemos refactorizar las clases necesarias para usar la nueva libreria.

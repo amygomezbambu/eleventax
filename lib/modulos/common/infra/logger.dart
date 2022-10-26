@@ -19,26 +19,34 @@ class Logger implements ILogger {
   Logger._() {
     log.Logger.root.level = log.Level.ALL;
 
-    log.Logger.root.onRecord.listen((record) {
-      if (record.level == log.Level.SEVERE) {
-        debugPrint(
-            '\x1B[31m${record.level.name}: ${record.time}: ${record.message}\x1B[0m');
+    log.Logger.root.onRecord.listen((rec) {
+      if (rec.level == log.Level.SEVERE) {
+        if (Platform.environment.containsKey('FLUTTER_TEST')) {
+          debugPrint('\x1B[31m${rec.level.name}: ${rec.message}');
+        } else {
+          var msg = '\x1B[31m${rec.level.name}: ${rec.message} \n';
+          msg += rec.error != null ? '[INNER EX]: ${rec.error} \n' : '';
+          msg += rec.stackTrace != null ? '[STACK]: ${rec.stackTrace} \n' : '';
+          msg += '\x1B[0m';
+
+          debugPrint(msg);
+        }
         return;
       }
 
-      if (record.level == log.Level.WARNING) {
+      if (rec.level == log.Level.WARNING) {
         debugPrint(
-            '\x1B[33m${record.level.name}: ${record.time}: ${record.message}\x1B[0m');
+            '\x1B[33m${rec.level.name}: ${rec.time}: ${rec.message}\x1B[0m');
         return;
       }
 
-      if (record.level == log.Level.INFO) {
+      if (rec.level == log.Level.INFO) {
         debugPrint(
-            '\x1B[36m${record.level.name}: ${record.time}: ${record.message}\x1B[0m');
+            '\x1B[36m${rec.level.name}: ${rec.time}: ${rec.message}\x1B[0m');
         return;
       }
 
-      debugPrint('${record.level.name}: ${record.time}: ${record.message}');
+      debugPrint('${rec.level.name}: ${rec.time}: ${rec.message}');
     });
   }
   /* #endregion */
@@ -77,16 +85,10 @@ class Logger implements ILogger {
     logEntry.userId = appConfig.usuarioLogeado;
 
     if (ex is EleventaEx) {
-      logEntry.exception = ex;
+      logEntry.exception = ex.innerException;
       logEntry.stackTrace = ex.stackTrace;
       logEntry.message = ex.message;
       logEntry.input = ex.input;
-
-      //TODO: Este mensaje no se debe imprimir asi, deberia imprimirse solo en el _handleException
-
-      // ignore: avoid_print
-      print(
-          '${logEntry.exception} ${logEntry.stackTrace} ${logEntry.message} ${logEntry.input}');
 
       await _handleException(entry: logEntry, level: NivelDeLog.error);
     } else {
@@ -151,7 +153,9 @@ class Logger implements ILogger {
         _logger.fine(entry.message, entry.exception, entry.stackTrace);
         break;
       case NivelDeLog.error:
-        _logger.severe(entry.message, entry.exception, entry.stackTrace);
+        var message = entry.message;
+        message += entry.input != null ? '\n[INPUT]:${entry.input}' : '';
+        _logger.severe(message, entry.exception, entry.stackTrace);
         break;
       case NivelDeLog.info:
         _logger.info(entry.message);

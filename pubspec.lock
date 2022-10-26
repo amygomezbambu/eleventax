@@ -500,6 +500,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
+  nanoid:
+    dependency: "direct main"
+    description:
+      name: nanoid
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   nm:
     dependency: transitive
     description:
@@ -925,13 +932,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.0+2"
-  xid:
-    dependency: "direct main"
-    description:
-      name: xid
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.7"
   xml:
     dependency: transitive
     description:
