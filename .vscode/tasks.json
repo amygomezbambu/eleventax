@@ -33,6 +33,15 @@
         "test"
       ],
       "problemMatcher": [],
+    },
+    {
+      "label": "❌ Borrar base de datos local",
+      "type": "shell",
+      "command": "rm",
+      "args": [
+        "~/Library/Containers/com.bambucode.eleventa/Data/Documents/eleventa.db"
+      ],
+      "problemMatcher": [],      
     }
   ]
 }

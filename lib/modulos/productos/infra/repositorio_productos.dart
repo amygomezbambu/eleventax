@@ -28,7 +28,8 @@ class RepositorioProductos extends Repositorio
         'codigo': producto.codigo,
         'nombre': producto.nombre,
         if (producto.categoria != null)
-          'categoria_uid': producto.categoria!.uid.toString(),
+          if (!producto.categoria!.uid.isInvalid())
+            'categoria_uid': producto.categoria!.uid.toString(),
         'unidad_medida_uid': producto.unidadMedida.uid.toString(),
         'precio_compra': producto.precioDeCompra.toInt(),
         'precio_venta': producto.precioDeVenta.toInt(),

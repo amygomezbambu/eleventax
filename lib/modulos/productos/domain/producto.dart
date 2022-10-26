@@ -32,6 +32,8 @@ class Producto extends Entidad {
   List<Impuesto> get impuestos => List.unmodifiable(_impuestos);
   bool get preguntarPrecio => _preguntarPrecio;
 
+  set categoria(Categoria? val) => _categoria;
+
   Producto.crear({
     required String nombre,
     required Moneda precioDeCompra,

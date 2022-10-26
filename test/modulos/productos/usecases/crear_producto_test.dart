@@ -15,7 +15,7 @@ void main() {
     await loader.iniciar();
   });
 
-  Producto llenarProducto(String codigo) {
+  Producto llenarProductoConCodigo(String codigo) {
     const nombre = 'Atun tunny 200 grs.';
     final precioDeVenta = Moneda.fromDouble(13.40);
     final precioDeCompra = Moneda.fromDouble(10.40);
@@ -37,8 +37,20 @@ void main() {
 
   test('debe persistir el producto con opciones minimas', () async {
     var crearProducto = ModuloProductos.crearProducto();
+    const nombre = 'Atun tunny 200 grs.';
+    final precioDeCompra = Moneda.fromDouble(10.40);
 
-    crearProducto.req.producto = llenarProducto('12345');
+    var producto = Producto.crear(
+        codigo: '2343Q34',
+        nombre: nombre,
+        precioDeCompra: precioDeCompra,
+        unidadDeMedida: UnidadDeMedida(
+          uid: UID(),
+          nombre: 'Pieza',
+          abreviacion: 'pz',
+        ));
+
+    crearProducto.req.producto = producto;
 
     await expectLater(
       crearProducto.exec(),
@@ -49,7 +61,7 @@ void main() {
   test('debe persistir el producto con todas sus propiedades', () async {
     var crearProducto = ModuloProductos.crearProducto();
 
-    crearProducto.req.producto = llenarProducto('ABC');
+    crearProducto.req.producto = llenarProductoConCodigo('ABC');
 
     await expectLater(
       crearProducto.exec(),
@@ -59,11 +71,24 @@ void main() {
 
   test('debe lanzar una excepcion si el codigo existe', () async {
     var crearProducto = ModuloProductos.crearProducto();
-    crearProducto.req.producto = llenarProducto('12345-3323');
+    crearProducto.req.producto = llenarProductoConCodigo('12345-3323');
 
     await crearProducto.exec();
 
     // TODO: Ver como evitar que se loguee la excepcion y nos cause ruido en los logs
     await expectLater(crearProducto.exec(), throwsA(isA<AppEx>()));
+  });
+
+  test('debe persistir el producto con categoria "sin categoria"', () async {
+    var crearProducto = ModuloProductos.crearProducto();
+
+    crearProducto.req.producto = llenarProductoConCodigo('S34gj4');
+    crearProducto.req.producto.categoria =
+        Categoria(uid: UID.invalid(), nombre: 'Sin Categoria');
+
+    await expectLater(
+      crearProducto.exec(),
+      completes,
+    );
   });
 }

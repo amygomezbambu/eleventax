@@ -1,6 +1,7 @@
 import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_boton_primario.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_text_field.dart';
+import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/productos/domain/categoria.dart';
 import 'package:eleventa/modulos/productos/domain/impuesto.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
@@ -154,6 +155,17 @@ class _NuevoProductoState extends State<NuevoProducto> {
                           AsyncSnapshot<List<Categoria>> snapshot) {
                         if (snapshot.hasData) {
                           List<Categoria> listadoCategorias = snapshot.data!;
+
+                          if (!listadoCategorias.first.uid.isInvalid()) {
+                            listadoCategorias.insert(
+                              0,
+                              Categoria(
+                                uid: UID.invalid(),
+                                nombre: 'Sin Categoria',
+                              ),
+                            );
+                          }
+
                           categoriaSeleccionada = listadoCategorias.first;
 
                           return DropdownButtonFormField<Categoria>(

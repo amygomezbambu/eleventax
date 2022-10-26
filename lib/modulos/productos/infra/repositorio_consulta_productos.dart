@@ -32,18 +32,18 @@ class RepositorioConsultaProductos extends RepositorioConsulta
 
   @override
   Future<List<Categoria>> obtenerCategorias() async {
-    List<Categoria> res = [];
+    List<Categoria> categorias = [];
     var dbResult =
         await db.query(sql: 'SELECT uid, nombre FROM productos_categorias;');
 
     if (dbResult.isNotEmpty) {
       for (var row in dbResult) {
-        res.add(Categoria(
+        categorias.add(Categoria(
             uid: UID(row['uid'] as String), nombre: row['nombre'] as String));
       }
     }
 
-    return res;
+    return categorias;
   }
 
   @override
