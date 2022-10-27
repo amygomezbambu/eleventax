@@ -52,3 +52,8 @@ android/fastlane/report.xml
 *.p8
 ios/fastlane/fastlane_api.json
 ios/fastlane/report.xml
+
+#Librerias incluidas en Assets/Windows, no es necesario agregarlas en el repo raiz.
+libcrypto-1_1-x64.dll
+libssl-1_1-x64.dll
+sqlcipher.dll

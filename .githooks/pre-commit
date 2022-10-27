@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env
 
 # Buscamos ubicación de comando flutter 
 USER=`whoami`
