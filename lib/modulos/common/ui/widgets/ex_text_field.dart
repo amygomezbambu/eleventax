@@ -12,6 +12,7 @@ class ExTextField extends StatelessWidget {
   final TextEditingController controller;
   final String? prefixText;
   final String? suffixText;
+  final String? helperText;
   final double? width;
   final IconData? icon;
 
@@ -21,6 +22,7 @@ class ExTextField extends StatelessWidget {
     required this.controller,
     this.prefixText,
     this.suffixText,
+    this.helperText,
     this.width,
     this.icon,
   }) : super(key: key);
@@ -39,6 +41,7 @@ class ExTextField extends StatelessWidget {
                 tamanoFuente: _fontSizeXS,
                 prefixText: prefixText,
                 suffixText: suffixText,
+                helperText: helperText,
                 icon: icon),
             parentBuilder: (Widget child) => SizedBox(
               width: width,
@@ -67,6 +70,7 @@ class ExTextField extends StatelessWidget {
                   tamanoFuente: _fontSizeMD,
                   prefixText: prefixText,
                   suffixText: suffixText,
+                  helperText: helperText,
                   icon: icon),
               parentBuilder: (Widget child) => SizedBox(
                 width: width,
@@ -111,6 +115,7 @@ class _ExTextField extends StatelessWidget {
   final double tamanoFuente;
   final String? prefixText;
   final String? suffixText;
+  final String? helperText;
   final IconData? icon;
 
   _ExTextField(
@@ -120,6 +125,7 @@ class _ExTextField extends StatelessWidget {
       required this.tamanoFuente,
       this.prefixText,
       this.suffixText,
+      this.helperText,
       this.icon})
       : super(key: key);
 
@@ -149,7 +155,8 @@ class _ExTextField extends StatelessWidget {
           decoration: InputDecoration(
               prefixText: prefixText,
               suffixText: suffixText,
-              //errorText: 'this is an error',
+              helperText: helperText,
+              helperStyle: const TextStyle(fontSize: 12),
               filled: true,
               isDense: true,
               fillColor: TailwindColors.blueGray[200],

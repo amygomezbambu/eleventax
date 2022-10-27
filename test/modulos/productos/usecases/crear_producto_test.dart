@@ -17,8 +17,8 @@ void main() {
 
   Producto llenarProductoConCodigo(String codigo) {
     const nombre = 'Atun tunny 200 grs.';
-    final precioDeVenta = Moneda.fromDouble(13.40);
-    final precioDeCompra = Moneda.fromDouble(10.40);
+    final precioDeVenta = Moneda(13.40);
+    final precioDeCompra = Moneda(10.40);
 
     var producto = Producto.crear(
         codigo: codigo,
@@ -38,7 +38,7 @@ void main() {
   test('debe persistir el producto con opciones minimas', () async {
     var crearProducto = ModuloProductos.crearProducto();
     const nombre = 'Atun tunny 200 grs.';
-    final precioDeCompra = Moneda.fromDouble(10.40);
+    final precioDeCompra = Moneda(10.40);
 
     var producto = Producto.crear(
         codigo: '2343Q34',

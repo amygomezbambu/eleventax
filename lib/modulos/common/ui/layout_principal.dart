@@ -41,8 +41,8 @@ class LayoutPrincipalState extends State<LayoutPrincipal> {
             (context.layout.breakpoint <= LayoutBreakpoint.sm)
                 ? 'Nuevo Producto'
                 : Feature.productos.estaHabilitado()
-                    ? 'productos'
-                    : 'no ', // ToDO: Incluir el nombre del módulo
+                    ? 'eleventa punto de venta - productos'
+                    : 'eleventa punto de venta ', // ToDO: Incluir el nombre del módulo
             style: TextStyle(
                 color: Colors.white,
                 fontSize: (context.layout.breakpoint <= LayoutBreakpoint.sm)
@@ -59,7 +59,7 @@ class LayoutPrincipalState extends State<LayoutPrincipal> {
             focusColor: Colors.white,
             icon: const Icon(
               Icons.feedback,
-              color: Colors.white,
+              color: Colors.white38,
             ),
             tooltip: 'Dar retroalimentación',
             onPressed: () {

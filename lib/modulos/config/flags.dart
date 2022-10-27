@@ -9,7 +9,7 @@ extension FlagExtension on Feature {
     switch (this) {
       case Feature.productos:
         var valor = const String.fromEnvironment('FEATURE_PRODUCTOS',
-            defaultValue: "0");
+            defaultValue: "1");
         return (valor == "1");
       case Feature.ventas:
         return true;

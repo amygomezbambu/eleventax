@@ -24,8 +24,8 @@ void main() {
 
       const codigo = '12345689';
       const nombre = 'Atun tunny 200 grs.';
-      final precioDeVenta = Moneda.fromDouble(13.40);
-      final precioDeCompra = Moneda.fromDouble(10.40);
+      final precioDeVenta = Moneda(13.40);
+      final precioDeCompra = Moneda(10.40);
 
       var producto = Producto.crear(
           codigo: codigo,
@@ -74,8 +74,8 @@ void main() {
 
       const codigo = 'ABCDEF';
       const nombre = 'Atun tunny 200 grs.';
-      final precioDeVenta = Moneda.fromDouble(13.40);
-      final precioDeCompra = Moneda.fromDouble(10.40);
+      final precioDeVenta = Moneda(13.40);
+      final precioDeCompra = Moneda(10.40);
 
       var producto = Producto.crear(
           codigo: codigo,

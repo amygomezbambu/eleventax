@@ -41,8 +41,8 @@ class ProductoMapper {
     return Producto.cargar(
       uid: UID(dbRow['uid'] as String),
       nombre: dbRow['nombre'] as String,
-      precioDeVenta: Moneda.fromInt(dbRow['precio_venta'] as int),
-      precioDeCompra: Moneda.fromInt(dbRow['precio_compra'] as int),
+      precioDeVenta: Moneda.fromMonedaInt(dbRow['precio_venta'] as int),
+      precioDeCompra: Moneda.fromMonedaInt(dbRow['precio_compra'] as int),
       codigo: dbRow['codigo'] as String,
       unidadDeMedida: UnidadDeMedida(
           uid: UID(dbRow['unidad_medida_uid'] as String),

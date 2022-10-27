@@ -11,40 +11,39 @@ class VistaProductos extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: AdaptiveBuilder(
-        xs: (context) => Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: NuevoProducto(context),
-            )
-          ],
-        ),
-        md: (context) => Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 180, top: 20),
-                    child: Text('Nuevo Producto',
-                        style: TextStyle(
-                            fontSize: 26,
-                            fontWeight: FontWeight.w700,
-                            color: TailwindColors.blueGray[700])),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: NuevoProducto(context),
-                  )
-                ],
-              ),
+      body: Scrollbar(
+        thumbVisibility: true,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: AdaptiveBuilder(
+            xs: (context) => Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: NuevoProducto(context),
+                )
+              ],
             ),
-          ],
+            md: (context) => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 180, top: 20),
+                  child: Text('Nuevo Producto',
+                      style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.w700,
+                          color: TailwindColors.blueGray[700])),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: NuevoProducto(context),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

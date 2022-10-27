@@ -1,5 +1,7 @@
 import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_boton_primario.dart';
+import 'package:eleventa/modulos/common/ui/widgets/ex_drop_down.dart';
+import 'package:eleventa/modulos/common/ui/widgets/ex_radio_button.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_text_field.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/productos/domain/categoria.dart';
@@ -55,13 +57,13 @@ class _NuevoProductoState extends State<NuevoProducto> {
     Moneda? precioDeVenta;
 
     if (hayPrecioDeVenta) {
-      precioDeVenta = Moneda.fromDoubleString(_controllerPrecioDeVenta.text);
+      precioDeVenta = Moneda(_controllerPrecioDeVenta.text);
     }
 
     var producto = Producto.crear(
       codigo: _controllerCodigo.text,
       nombre: _controllerNombre.text,
-      precioDeCompra: Moneda.fromDoubleString(_controllerPrecioDeCompra.text),
+      precioDeCompra: Moneda(_controllerPrecioDeCompra.text),
       seVendePor: seVendePor,
       categoria: categoriaSeleccionada,
       impuestos: [impuestoSeleccionado],
@@ -120,226 +122,227 @@ class _NuevoProductoState extends State<NuevoProducto> {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        color: Colors.white10,
-        width: 600,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Form(
-              key: const ValueKey('frmNuevoProducto'),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Focus(
-                    onFocusChange: (hasFocus) {
-                      if (!hasFocus) {
-                        verificarExistenciaDeCodigo();
-                      }
-                    },
-                    child: ExTextField(
-                      hintText: 'Código',
-                      controller: _controllerCodigo,
-                      icon: Icons.document_scanner,
-                      width: 300,
-                    ),
-                  ),
-                  ExTextField(
-                    hintText: 'Nombre',
-                    controller: _controllerNombre,
-                  ),
-                  FutureBuilder<List<Categoria>>(
-                      future: _categorias,
-                      builder: (BuildContext context,
-                          AsyncSnapshot<List<Categoria>> snapshot) {
-                        if (snapshot.hasData) {
-                          List<Categoria> listadoCategorias = snapshot.data!;
-
-                          if (!listadoCategorias.first.uid.isInvalid()) {
-                            listadoCategorias.insert(
-                              0,
-                              Categoria(
-                                uid: UID.invalid(),
-                                nombre: 'Sin Categoria',
-                              ),
-                            );
-                          }
-
-                          categoriaSeleccionada = listadoCategorias.first;
-
-                          return DropdownButtonFormField<Categoria>(
-                            key: _keyCategoria,
-                            value: categoriaSeleccionada,
-                            onChanged: (Categoria? categoria) {
-                              // This is called when the user selects an item.
-                              setState(() {
-                                categoriaSeleccionada = categoria!;
-                              });
-                            },
-                            items: listadoCategorias
-                                .map<DropdownMenuItem<Categoria>>(
-                                    (Categoria value) {
-                              return DropdownMenuItem<Categoria>(
-                                value: value,
-                                child: Text(value.nombre),
-                              );
-                            }).toList(),
-                          );
-                        } else {
-                          return const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                      }),
-                  RadioListTile<ProductoSeVendePor>(
-                      title: const Text('Unidad'),
-                      value: ProductoSeVendePor.unidad,
-                      toggleable: true,
-                      groupValue: seVendePor,
-                      onChanged: (ProductoSeVendePor? value) {
-                        setState(() {
-                          seVendePor = value!;
-                        });
-                      }),
-                  RadioListTile<ProductoSeVendePor>(
-                      title: const Text('Peso'),
-                      value: ProductoSeVendePor.peso,
-                      groupValue: seVendePor,
-                      toggleable: true,
-                      onChanged: (ProductoSeVendePor? value) {
-                        setState(() {
-                          seVendePor = value!;
-                        });
-                      }),
-                  FutureBuilder<List<UnidadDeMedida>>(
-                      future: _unidadesDeMedida,
-                      builder: (BuildContext context,
-                          AsyncSnapshot<List<UnidadDeMedida>> snapshot) {
-                        if (snapshot.hasData) {
-                          List<UnidadDeMedida> listadoUnidadesDeMedida =
-                              snapshot.data!;
-                          unidadDeMedidaSeleccionada =
-                              listadoUnidadesDeMedida.first;
-
-                          return DropdownButtonFormField<UnidadDeMedida>(
-                            key: _keyUnidadDeMedida,
-                            value: listadoUnidadesDeMedida.first,
-                            onChanged: (UnidadDeMedida? unidadDeMedida) {
-                              // This is called when the user selects an item.
-                              setState(() {
-                                unidadDeMedidaSeleccionada = unidadDeMedida!;
-                              });
-                            },
-                            items: listadoUnidadesDeMedida
-                                .map<DropdownMenuItem<UnidadDeMedida>>(
-                                    (UnidadDeMedida value) {
-                              return DropdownMenuItem<UnidadDeMedida>(
-                                value: value,
-                                child: Text(value.nombre),
-                              );
-                            }).toList(),
-                          );
-                        } else {
-                          return const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                      }),
-                  FutureBuilder<List<Impuesto>>(
-                      future: _impuestos,
-                      builder: (BuildContext context,
-                          AsyncSnapshot<List<Impuesto>> snapshot) {
-                        if (snapshot.hasData) {
-                          List<Impuesto> listadoImpuestos = snapshot.data!;
-                          impuestoSeleccionado = listadoImpuestos.first;
-
-                          return DropdownButtonFormField<Impuesto>(
-                            key: _keyImpuestos,
-                            value: listadoImpuestos.first,
-                            onChanged: (Impuesto? impuesto) {
-                              setState(() {
-                                impuestoSeleccionado = impuesto!;
-                              });
-                            },
-                            items: listadoImpuestos
-                                .map<DropdownMenuItem<Impuesto>>(
-                                    (Impuesto value) {
-                              return DropdownMenuItem<Impuesto>(
-                                value: value,
-                                child: Text(value.nombre),
-                              );
-                            }).toList(),
-                          );
-                        } else {
-                          return const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                      }),
-                  ExTextField(
-                    hintText: 'Precio de compra',
-                    controller: _controllerPrecioDeCompra,
-                    prefixText: '\$ ',
-                    width: 160,
-                  ),
-                  ExTextField(
-                      hintText: 'Utilidad',
-                      controller: _controllerUtilidad,
-                      suffixText: '%',
-                      width: 160),
-                  ExTextField(
-                    hintText: 'Precio de venta',
-                    controller: _controllerPrecioDeVenta,
-                    prefixText: '\$ ',
-                    width: 160,
-                  ),
-                  ExTextField(
-                    hintText: 'Imagen URL',
-                    controller: _controllerImagen,
-                  ),
-                ],
-              ),
-            ),
-            Row(
+    return Container(
+      color: Colors.white10,
+      width: 600,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Form(
+            key: const ValueKey('frmNuevoProducto'),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(
-                  width:
-                      (mostrarMargenLabel.resolve(context) == true) ? 160 : 0,
+                Focus(
+                  onFocusChange: (hasFocus) {
+                    if (!hasFocus) {
+                      verificarExistenciaDeCodigo();
+                    }
+                  },
+                  child: ExTextField(
+                    hintText: 'Código',
+                    controller: _controllerCodigo,
+                    icon: Icons.document_scanner,
+                    width: 300,
+                  ),
                 ),
-                SizedBox(
-                  width: 150,
-                  height: 45,
-                  child: ExBotonPrimario(
-                      label: 'Guardar',
-                      icon: Icons.save,
-                      tamanoFuente: 15,
-                      onTap: () async {
-                        await crearProducto();
-                      }),
+                ExTextField(
+                  hintText: 'Nombre',
+                  controller: _controllerNombre,
                 ),
-                const SizedBox(
-                  width: 5,
+                FutureBuilder<List<Categoria>>(
+                    future: _categorias,
+                    builder: (BuildContext context,
+                        AsyncSnapshot<List<Categoria>> snapshot) {
+                      if (snapshot.hasData) {
+                        List<Categoria> listadoCategorias = snapshot.data!;
+
+                        if (!listadoCategorias.first.uid.isInvalid()) {
+                          listadoCategorias.insert(
+                            0,
+                            Categoria(
+                              uid: UID.invalid(),
+                              nombre: 'Sin Categoria',
+                            ),
+                          );
+                          categoriaSeleccionada = listadoCategorias.first;
+                        }
+
+                        return ExDropDown<Categoria>(
+                          hintText: 'Categoría',
+                          dropDownKey: _keyCategoria,
+                          value: categoriaSeleccionada,
+                          onChanged: (Categoria? categoria) {
+                            setState(() {
+                              categoriaSeleccionada = categoria!;
+                            });
+                          },
+                          items: listadoCategorias
+                              .map<DropdownMenuItem<Categoria>>(
+                                  (Categoria value) {
+                            return DropdownMenuItem<Categoria>(
+                              value: value,
+                              child: Text(value.nombre),
+                            );
+                          }).toList(),
+                        );
+                      } else {
+                        return const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                    }),
+                ExRadioButton<ProductoSeVendePor>(
+                    value: ProductoSeVendePor.unidad,
+                    groupValue: seVendePor,
+                    label: 'Unidad',
+                    hint: 'Se vende por',
+                    onChange: (ProductoSeVendePor? value) {
+                      setState(() {
+                        seVendePor = value!;
+                      });
+                    }),
+                ExRadioButton<ProductoSeVendePor>(
+                    value: ProductoSeVendePor.peso,
+                    groupValue: seVendePor,
+                    label: 'Peso',
+                    hint: '',
+                    onChange: (ProductoSeVendePor? value) {
+                      setState(() {
+                        seVendePor = value!;
+                      });
+                    }),
+                // RadioListTile<ProductoSeVendePor>(
+
+                FutureBuilder<List<UnidadDeMedida>>(
+                    future: _unidadesDeMedida,
+                    builder: (BuildContext context,
+                        AsyncSnapshot<List<UnidadDeMedida>> snapshot) {
+                      if (snapshot.hasData) {
+                        List<UnidadDeMedida> listadoUnidadesDeMedida =
+                            snapshot.data!;
+                        unidadDeMedidaSeleccionada =
+                            listadoUnidadesDeMedida.first;
+                        return ExDropDown<UnidadDeMedida>(
+                          hintText: 'Unidad de Medida',
+                          width: 300,
+                          dropDownKey: _keyUnidadDeMedida,
+                          value: listadoUnidadesDeMedida.first,
+                          onChanged: (UnidadDeMedida? unidadDeMedida) {
+                            setState(() {
+                              unidadDeMedidaSeleccionada = unidadDeMedida!;
+                            });
+                          },
+                          items: listadoUnidadesDeMedida
+                              .map<DropdownMenuItem<UnidadDeMedida>>(
+                                  (UnidadDeMedida value) {
+                            return DropdownMenuItem<UnidadDeMedida>(
+                              value: value,
+                              child: Text(value.nombre),
+                            );
+                          }).toList(),
+                        );
+                      } else {
+                        return const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                    }),
+                FutureBuilder<List<Impuesto>>(
+                    future: _impuestos,
+                    builder: (BuildContext context,
+                        AsyncSnapshot<List<Impuesto>> snapshot) {
+                      if (snapshot.hasData) {
+                        List<Impuesto> listadoImpuestos = snapshot.data!;
+                        impuestoSeleccionado = listadoImpuestos.first;
+
+                        return ExDropDown<Impuesto>(
+                          hintText: 'Impuesto',
+                          width: 160,
+                          dropDownKey: _keyImpuestos,
+                          value: listadoImpuestos.first,
+                          onChanged: (Impuesto? impuesto) {
+                            setState(() {
+                              impuestoSeleccionado = impuesto!;
+                            });
+                          },
+                          items: listadoImpuestos
+                              .map<DropdownMenuItem<Impuesto>>(
+                                  (Impuesto value) {
+                            return DropdownMenuItem<Impuesto>(
+                              value: value,
+                              child: Text(value.nombre),
+                            );
+                          }).toList(),
+                        );
+                      } else {
+                        return const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                    }),
+                ExTextField(
+                  hintText: 'Precio de compra',
+                  controller: _controllerPrecioDeCompra,
+                  helperText: 'Con Impuestos',
+                  prefixText: '\$ ',
+                  width: 160,
                 ),
-                SizedBox(
-                  width: 150,
-                  height: 45,
-                  child: ExBotonPrimario(
-                      label: 'Cancelar',
-                      tamanoFuente: 15,
-                      icon: Icons.cancel,
-                      onTap: () => {limpiarCampos()}),
-                )
+                ExTextField(
+                    hintText: 'Utilidad',
+                    controller: _controllerUtilidad,
+                    suffixText: '%',
+                    width: 160),
+                ExTextField(
+                  hintText: 'Precio de venta',
+                  controller: _controllerPrecioDeVenta,
+                  prefixText: '\$ ',
+                  width: 160,
+                ),
+                ExTextField(
+                  hintText: 'Imagen URL',
+                  controller: _controllerImagen,
+                ),
               ],
             ),
-          ],
-        ),
+          ),
+          Row(
+            children: [
+              SizedBox(
+                width: (mostrarMargenLabel.resolve(context) == true) ? 160 : 0,
+              ),
+              SizedBox(
+                width: 150,
+                height: 45,
+                child: ExBotonPrimario(
+                    label: 'Guardar',
+                    icon: Icons.save,
+                    tamanoFuente: 15,
+                    onTap: () async {
+                      await crearProducto();
+                    }),
+              ),
+              const SizedBox(
+                width: 5,
+              ),
+              SizedBox(
+                width: 150,
+                height: 45,
+                child: ExBotonPrimario(
+                    label: 'Cancelar',
+                    tamanoFuente: 15,
+                    icon: Icons.cancel,
+                    onTap: () => {limpiarCampos()}),
+              )
+            ],
+          ),
+        ],
       ),
     );
   }

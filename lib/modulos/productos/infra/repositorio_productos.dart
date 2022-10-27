@@ -31,8 +31,8 @@ class RepositorioProductos extends Repositorio
           if (!producto.categoria!.uid.isInvalid())
             'categoria_uid': producto.categoria!.uid.toString(),
         'unidad_medida_uid': producto.unidadMedida.uid.toString(),
-        'precio_compra': producto.precioDeCompra.toInt(),
-        'precio_venta': producto.precioDeVenta.toInt(),
+        'precio_compra': producto.precioDeCompra.toMonedaInt(),
+        'precio_venta': producto.precioDeVenta.toMonedaInt(),
         'se_vende_por': producto.seVendePor.index,
         'url_imagen': producto.imagenURL,
         'preguntar_precio': producto.preguntarPrecio,
@@ -81,8 +81,8 @@ class RepositorioProductos extends Repositorio
       producto = Producto.cargar(
           uid: UID(row['uid'] as String),
           nombre: row['nombre'] as String,
-          precioDeVenta: Moneda.fromInt(row['precio_venta'] as int),
-          precioDeCompra: Moneda.fromInt(row['precio_compra'] as int),
+          precioDeVenta: Moneda.fromMonedaInt(row['precio_venta'] as int),
+          precioDeCompra: Moneda.fromMonedaInt(row['precio_compra'] as int),
           codigo: row['codigo'] as String,
           unidadDeMedida: UnidadDeMedida(
             uid: UID(row['unidad_medida_uid'] as String),
@@ -120,8 +120,8 @@ class RepositorioProductos extends Repositorio
         Producto.cargar(
             uid: UID(row['uid'] as String),
             nombre: row['nombre'] as String,
-            precioDeVenta: Moneda.fromInt(row['precio_venta'] as int),
-            precioDeCompra: Moneda.fromInt(row['precio_compra'] as int),
+            precioDeVenta: Moneda.fromMonedaInt(row['precio_venta'] as int),
+            precioDeCompra: Moneda.fromMonedaInt(row['precio_compra'] as int),
             codigo: row['codigo'] as String,
             unidadDeMedida: UnidadDeMedida(
               uid: UID(row['unidad_medida_uid'] as String),
@@ -171,7 +171,8 @@ class RepositorioProductos extends Repositorio
       //entiendan
       for (var diferencia in diferencias.keys) {
         if (diferencias[diferencia] is Moneda) {
-          diferencias[diferencia] = (diferencias[diferencia] as Moneda).toInt();
+          diferencias[diferencia] =
+              (diferencias[diferencia] as Moneda).toMonedaInt();
         }
       }
 
