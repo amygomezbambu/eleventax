@@ -1,0 +1,2 @@
+SQLite v3.39.2
+SQLCipher v4.5.2 community
