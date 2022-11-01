@@ -21,6 +21,10 @@ class Entidad {
     throw DomainEx(mensaje);
   }
 
+  /// Corre un validador para un valor
+  ///
+  /// si el [validador] determina que el [valor] es valido retorna el mismo valor
+  /// en caso contrario lanza una excepcion.
   @protected
   T validarYAsignar<T>(T valor, RespuestaValidacion Function(T) validador) {
     var respuesta = validador(valor);

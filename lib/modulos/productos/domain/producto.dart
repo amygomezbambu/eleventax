@@ -46,19 +46,20 @@ class Producto extends Entidad {
     Moneda? precioDeVenta,
     bool preguntarPrecio = false,
   }) : super.crear() {
-    //TODO: agregar validaciones
+    _codigo = validarYAsignar<String>(codigo, validarCodigo);
     _nombre = validarYAsignar<String>(nombre, validarNombre);
+    _precioDeCompra =
+        validarYAsignar<Moneda>(precioDeCompra, validarPrecioDeCompra);
     //_categoria = validarYAsignar<String>(categoria, validarCategoria);
 
     if (precioDeVenta != null) {
-      _precioDeVenta = precioDeVenta;
+      _precioDeVenta =
+          validarYAsignar<Moneda>(precioDeVenta, validarPrecioDeVenta);
     }
 
-    _precioDeCompra = precioDeCompra;
     _categoria = categoria;
     _seVendePor = seVendePor;
     _imagenURL = imagenURL;
-    _codigo = codigo;
     _impuestos = impuestos;
     _unidadDeMedida = unidadDeMedida;
     _preguntarPrecio = preguntarPrecio;
@@ -77,7 +78,6 @@ class Producto extends Entidad {
     required UnidadDeMedida unidadDeMedida,
     required bool preguntarPrecio,
   }) : super.cargar(uid) {
-    //TODO: agregar validaciones
     _nombre = nombre;
     _precioDeVenta = precioDeVenta;
     _precioDeCompra = precioDeCompra;
@@ -90,38 +90,116 @@ class Producto extends Entidad {
     _preguntarPrecio = preguntarPrecio;
   }
 
-  RespuestaValidacion validarCategoria(String value) {
-    RespuestaValidacion respuesta;
+  static RespuestaValidacion validarCodigo(String value) {
+    const codigoReservado = '0';
+
+    RespuestaValidacion respuesta = RespuestaValidacion(esValido: true);
 
     if (value.isEmpty) {
-      respuesta = RespuestaValidacion(
+      return RespuestaValidacion(
+        esValido: false,
+        mensaje: 'El código no puede estar vacío: $value',
+      );
+    }
+
+    if (value.length > 20) {
+      return RespuestaValidacion(
+        esValido: false,
+        mensaje: 'El código no puede tener mas de 20 letras',
+      );
+    }
+
+    if (value == codigoReservado) {
+      return RespuestaValidacion(
+        esValido: false,
+        mensaje: 'El codigo $codigoReservado no es un código valido',
+      );
+    }
+    //TODO: revisar la correcta validacion del codigo y qué caracteres
+    var regex = RegExp(r'[a-zA-Z0-9_\-=@,\.;]+$');
+    if (!regex.hasMatch(value)) {
+      return RespuestaValidacion(
+        esValido: false,
+        mensaje: 'El codigo contiene caracteres invalidos: $value',
+      );
+    }
+
+    return respuesta;
+  }
+
+  static RespuestaValidacion validarPrecioDeVenta(Moneda value) {
+    var respuesta = RespuestaValidacion(esValido: true);
+
+    if (value <= Moneda(0)) {
+      return respuesta = RespuestaValidacion(
+        esValido: false,
+        mensaje: 'El precio de venta debe ser mayor a cero',
+      );
+    }
+
+    return respuesta;
+  }
+
+  // TODO: Ver cómo incluir el parametro , bool permitirPrecioCero
+  static RespuestaValidacion validarPrecioDeCompra(Moneda value) {
+    var respuesta = RespuestaValidacion(esValido: true);
+
+    // if (permitirPrecioCero) {
+    //   if (value < Moneda(0)) {
+    //     respuesta = RespuestaValidacion(
+    //       esValido: false,
+    //       mensaje: 'El precio de compra, no puede ser negativo',
+    //     );
+    //   }
+    // } else {
+    if (value <= Moneda(0)) {
+      return RespuestaValidacion(
+        esValido: false,
+        mensaje: 'El precio de compra, debe ser mayor a cero',
+      );
+    }
+    //}
+
+    return respuesta;
+  }
+
+  static RespuestaValidacion validarCategoria(String value) {
+    var respuesta = RespuestaValidacion(esValido: true);
+
+    if (value.isEmpty) {
+      return RespuestaValidacion(
         esValido: false,
         mensaje: 'La categoria no puede estar vacia',
       );
     }
 
-    respuesta = RespuestaValidacion(
-      esValido: true,
-      mensaje: '',
-    );
-
     return respuesta;
   }
 
-  RespuestaValidacion validarNombre(String value) {
-    RespuestaValidacion respuesta;
+  static RespuestaValidacion validarNombre(String value) {
+    var respuesta = RespuestaValidacion(esValido: true);
+    //var regex = RegExp(r'[-~]+$');
 
     if (value.isEmpty) {
-      respuesta = RespuestaValidacion(
+      return RespuestaValidacion(
         esValido: false,
         mensaje: 'El nombre no puede estar vacio',
       );
     }
 
-    respuesta = RespuestaValidacion(
-      esValido: true,
-      mensaje: '',
-    );
+    if (value.length > 130) {
+      return RespuestaValidacion(
+        esValido: false,
+        mensaje: 'El nombre no puede tener más de 130 letras',
+      );
+    }
+
+    // if (!regex.hasMatch(value)) {
+    //   respuesta = RespuestaValidacion(
+    //     esValido: false,
+    //     mensaje: 'El nombre contiene caracteres invalidos: $value',
+    //   );
+    // }
 
     return respuesta;
   }

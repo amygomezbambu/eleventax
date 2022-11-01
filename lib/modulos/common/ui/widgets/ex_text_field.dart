@@ -16,6 +16,10 @@ class ExTextField extends StatelessWidget {
   final double? width;
   final IconData? icon;
 
+  /// Evento lanzado cuando el widget pierde el foco,
+  /// usualmente usado para validaciones
+  final Function? onExit;
+
   const ExTextField({
     Key? key,
     required this.hintText,
@@ -25,6 +29,7 @@ class ExTextField extends StatelessWidget {
     this.helperText,
     this.width,
     this.icon,
+    this.onExit,
   }) : super(key: key);
 
   @override
@@ -36,13 +41,15 @@ class ExTextField extends StatelessWidget {
           ConditionalParentWidget(
             condition: (width != null),
             child: _ExTextField(
-                hintText: hintText,
-                controller: controller,
-                tamanoFuente: _fontSizeXS,
-                prefixText: prefixText,
-                suffixText: suffixText,
-                helperText: helperText,
-                icon: icon),
+              hintText: hintText,
+              controller: controller,
+              tamanoFuente: _fontSizeXS,
+              prefixText: prefixText,
+              suffixText: suffixText,
+              helperText: helperText,
+              icon: icon,
+              onExit: onExit,
+            ),
             parentBuilder: (Widget child) => SizedBox(
               width: width,
               child: child,
@@ -65,13 +72,15 @@ class ExTextField extends StatelessWidget {
             child: ConditionalParentWidget(
               condition: (width != null),
               child: _ExTextField(
-                  hintText: hintText,
-                  controller: controller,
-                  tamanoFuente: _fontSizeMD,
-                  prefixText: prefixText,
-                  suffixText: suffixText,
-                  helperText: helperText,
-                  icon: icon),
+                hintText: hintText,
+                controller: controller,
+                tamanoFuente: _fontSizeMD,
+                prefixText: prefixText,
+                suffixText: suffixText,
+                helperText: helperText,
+                icon: icon,
+                onExit: onExit,
+              ),
               parentBuilder: (Widget child) => SizedBox(
                 width: width,
                 child: child,
@@ -117,17 +126,19 @@ class _ExTextField extends StatelessWidget {
   final String? suffixText;
   final String? helperText;
   final IconData? icon;
+  final Function? onExit;
 
-  _ExTextField(
-      {Key? key,
-      required this.hintText,
-      required this.controller,
-      required this.tamanoFuente,
-      this.prefixText,
-      this.suffixText,
-      this.helperText,
-      this.icon})
-      : super(key: key);
+  _ExTextField({
+    Key? key,
+    required this.hintText,
+    required this.controller,
+    required this.tamanoFuente,
+    this.prefixText,
+    this.suffixText,
+    this.helperText,
+    this.icon,
+    this.onExit,
+  }) : super(key: key);
 
   final String hintText;
 
@@ -135,56 +146,64 @@ class _ExTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
-      child: TextFormField(
-          controller: controller,
-          cursorColor: Colors.black,
-          keyboardType: TextInputType.text,
-          textInputAction: TextInputAction.next,
-          autofocus: true,
-          style: TextStyle(
-              fontSize: tamanoFuente,
-              fontFamily: _fontFamily,
-              color: TailwindColors.trueGray[700],
-              fontWeight: FontWeight.normal),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Please enter some text';
-            }
-            return null;
-          },
-          decoration: InputDecoration(
-              prefixText: prefixText,
-              suffixText: suffixText,
-              helperText: helperText,
-              helperStyle: const TextStyle(fontSize: 12),
-              filled: true,
-              isDense: true,
-              fillColor: TailwindColors.blueGray[200],
-              prefixIcon: (icon != null)
-                  ? Icon(
-                      icon,
-                      color: TailwindColors.blueGray[400],
-                    )
-                  : null,
-              hintText: (_enDesktop.resolve(context) == true) ? hintText : null,
-              //helperText: "Ingresa precios sin impuestos",
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(5),
-                borderSide: BorderSide(
-                  color: TailwindColors.blueGray[200]!,
-                  width: 1.0,
+      child: Focus(
+        onFocusChange: (hasFocus) {
+          if (!hasFocus) {
+            onExit;
+          }
+        },
+        child: TextFormField(
+            controller: controller,
+            cursorColor: Colors.black,
+            keyboardType: TextInputType.text,
+            textInputAction: TextInputAction.next,
+            autofocus: true,
+            style: TextStyle(
+                fontSize: tamanoFuente,
+                fontFamily: _fontFamily,
+                color: TailwindColors.trueGray[700],
+                fontWeight: FontWeight.normal),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter some text';
+              }
+              return null;
+            },
+            decoration: InputDecoration(
+                prefixText: prefixText,
+                suffixText: suffixText,
+                helperText: helperText,
+                helperStyle: const TextStyle(fontSize: 12),
+                filled: true,
+                isDense: true,
+                fillColor: TailwindColors.blueGray[200],
+                prefixIcon: (icon != null)
+                    ? Icon(
+                        icon,
+                        color: TailwindColors.blueGray[400],
+                      )
+                    : null,
+                hintText:
+                    (_enDesktop.resolve(context) == true) ? hintText : null,
+                //helperText: "Ingresa precios sin impuestos",
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(5),
+                  borderSide: BorderSide(
+                    color: TailwindColors.blueGray[200]!,
+                    width: 1.0,
+                  ),
                 ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(5),
-                borderSide: BorderSide(
-                  color: TailwindColors.lightBlue[600]!,
-                  width: 1.5,
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(5),
+                  borderSide: BorderSide(
+                    color: TailwindColors.lightBlue[600]!,
+                    width: 1.5,
+                  ),
                 ),
-              ),
-              hintStyle: TextStyle(
-                  fontSize: tamanoFuente,
-                  color: TailwindColors.blueGray[400]))),
+                hintStyle: TextStyle(
+                    fontSize: tamanoFuente,
+                    color: TailwindColors.blueGray[400]))),
+      ),
     );
   }
 }

@@ -4,6 +4,6 @@ class RespuestaValidacion {
 
   RespuestaValidacion({
     required this.esValido,
-    required this.mensaje,
+    this.mensaje = '',
   });
 }

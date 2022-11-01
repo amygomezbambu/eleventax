@@ -105,6 +105,16 @@ class Moneda {
         other._montoInterno == _montoInterno;
   }
 
+  Moneda operator +(Moneda v) =>
+      Moneda.fromMonedaInt(montoInterno + v._montoInterno);
+  Moneda operator -(Moneda v) =>
+      Moneda.fromMonedaInt(montoInterno - v._montoInterno);
+
+  bool operator <=(Moneda other) => _montoInterno <= other.montoInterno;
+  bool operator <(Moneda other) => _montoInterno < other.montoInterno;
+  bool operator >(Moneda other) => _montoInterno > other.montoInterno;
+  bool operator >=(Moneda other) => _montoInterno >= other.montoInterno;
+
   @override
   int get hashCode =>
       _parteEntera.hashCode ^ _parteDecimal.hashCode ^ _montoInterno.hashCode;

@@ -60,25 +60,29 @@ class _NuevoProductoState extends State<NuevoProducto> {
       precioDeVenta = Moneda(_controllerPrecioDeVenta.text);
     }
 
-    var producto = Producto.crear(
-      codigo: _controllerCodigo.text,
-      nombre: _controllerNombre.text,
-      precioDeCompra: Moneda(_controllerPrecioDeCompra.text),
-      seVendePor: seVendePor,
-      categoria: categoriaSeleccionada,
-      impuestos: [impuestoSeleccionado],
-      unidadDeMedida: unidadDeMedidaSeleccionada,
-      preguntarPrecio: !hayPrecioDeVenta,
-      precioDeVenta: precioDeVenta,
-    );
+    try {
+      var producto = Producto.crear(
+        codigo: _controllerCodigo.text,
+        nombre: _controllerNombre.text,
+        precioDeCompra: Moneda(_controllerPrecioDeCompra.text),
+        seVendePor: seVendePor,
+        categoria: categoriaSeleccionada,
+        impuestos: [impuestoSeleccionado],
+        unidadDeMedida: unidadDeMedidaSeleccionada,
+        preguntarPrecio: !hayPrecioDeVenta,
+        precioDeVenta: precioDeVenta,
+      );
 
-    crearProducto.req.producto = producto;
+      crearProducto.req.producto = producto;
 
-    await crearProducto.exec();
+      await crearProducto.exec();
 
-    setState(() {
-      limpiarCampos();
-    });
+      setState(() {
+        limpiarCampos();
+      });
+    } catch (e) {
+      debugPrint('No fue posible crear producto: $e');
+    }
   }
 
   void limpiarCampos() {
@@ -133,22 +137,25 @@ class _NuevoProductoState extends State<NuevoProducto> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Focus(
-                  onFocusChange: (hasFocus) {
-                    if (!hasFocus) {
-                      verificarExistenciaDeCodigo();
-                    }
+                ExTextField(
+                  hintText: 'Código',
+                  controller: _controllerCodigo,
+                  icon: Icons.document_scanner,
+                  width: 300,
+                  onExit: () {
+                    verificarExistenciaDeCodigo();
                   },
-                  child: ExTextField(
-                    hintText: 'Código',
-                    controller: _controllerCodigo,
-                    icon: Icons.document_scanner,
-                    width: 300,
-                  ),
                 ),
                 ExTextField(
                   hintText: 'Nombre',
                   controller: _controllerNombre,
+                  onExit: () {
+                    var validacion =
+                        Producto.validarNombre(_controllerNombre.text);
+                    if (!validacion.esValido) {
+                      debugPrint(validacion.mensaje);
+                    }
+                  },
                 ),
                 FutureBuilder<List<Categoria>>(
                     future: _categorias,

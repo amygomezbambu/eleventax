@@ -68,10 +68,12 @@ class RepositorioConsultaProductos extends RepositorioConsulta
   @override
   Future<bool> existeProducto(String codigo) async {
     var dbResult = await db.query(
-      sql: 'SELECT codigo FROM productos where codigo = ? and borrado = ?;',
+      sql:
+          'SELECT COUNT(codigo) as existe FROM productos where codigo = ? and borrado = ?;',
       params: [codigo, false],
     );
 
-    return dbResult.isNotEmpty;
+    var existe = dbResult[0]['existe'] as int;
+    return existe >= 1;
   }
 }

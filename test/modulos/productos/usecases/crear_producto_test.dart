@@ -15,10 +15,11 @@ void main() {
     await loader.iniciar();
   });
 
-  Producto llenarProductoConCodigo(String codigo) {
-    const nombre = 'Atun tunny 200 grs.';
-    final precioDeVenta = Moneda(13.40);
-    final precioDeCompra = Moneda(10.40);
+  Producto llenarProductoConCodigo(String codigo,
+      {double precioCompra = 10.30, double precioVenta = 13.40}) {
+    const nombre = '🐟 Atun tunny 200 grs. 👋';
+    final precioDeCompra = Moneda(precioCompra);
+    final precioDeVenta = Moneda(precioVenta);
 
     var producto = Producto.crear(
         codigo: codigo,
@@ -73,10 +74,41 @@ void main() {
     var crearProducto = ModuloProductos.crearProducto();
     crearProducto.req.producto = llenarProductoConCodigo('12345-3323');
 
+    // Lo creamos la primera vez, debe pasar
     await crearProducto.exec();
 
-    // TODO: Ver como evitar que se loguee la excepcion y nos cause ruido en los logs
+    // Al crearlo por segunda vez, debe tronar
     await expectLater(crearProducto.exec(), throwsA(isA<AppEx>()));
+  });
+
+  test('debe lanzar una excepcion si alguna de las propiedades es inválida',
+      () async {
+    // Codigo - Que no pueda ser vacio
+    expect(() => llenarProductoConCodigo(''), throwsA(isA<DomainEx>()));
+
+    // Codigo - No debe aceptar mas de 20 caracteres
+    expect(() => llenarProductoConCodigo('123456789123456789999'),
+        throwsA(isA<DomainEx>()));
+
+    // Codigo - No debemos permitir espacios
+    expect(() => llenarProductoConCodigo('  '), throwsA(isA<DomainEx>()));
+
+    // Codigo - No puede ser el reservado para Venta Rapida
+    expect(() => llenarProductoConCodigo('0'), throwsA(isA<DomainEx>()));
+
+    // Código - No debe permitir caracteres inválidos (emoji)
+    expect(() => llenarProductoConCodigo('💥'), throwsA(isA<DomainEx>()));
+
+    // Código - No debe permitir caracteres inválidos (otros)
+    expect(() => llenarProductoConCodigo('&'), throwsA(isA<DomainEx>()));
+
+    // Precio de compra - Que no pueda ser negativo
+    expect(() => llenarProductoConCodigo('INVALIDO-COMPRA', precioCompra: -1),
+        throwsA(isA<DomainEx>()));
+
+    // Precio de venta - Que no pueda ser negativo
+    expect(() => llenarProductoConCodigo('INVALIDO-VENTA', precioVenta: 0),
+        throwsA(isA<DomainEx>()));
   });
 
   test('debe persistir el producto con categoria "sin categoria"', () async {
