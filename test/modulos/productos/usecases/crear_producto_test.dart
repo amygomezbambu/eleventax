@@ -16,8 +16,9 @@ void main() {
   });
 
   Producto llenarProductoConCodigo(String codigo,
-      {double precioCompra = 10.30, double precioVenta = 13.40}) {
-    const nombre = '🐟 Atun tunny 200 grs. 👋';
+      {double precioCompra = 10.30,
+      double precioVenta = 13.40,
+      String nombre = '🐟 Atun tunny 200 grs. 👋'}) {
     final precioDeCompra = Moneda(precioCompra);
     final precioDeVenta = Moneda(precioVenta);
 
@@ -92,6 +93,9 @@ void main() {
 
     // Codigo - No debemos permitir espacios
     expect(() => llenarProductoConCodigo('  '), throwsA(isA<DomainEx>()));
+
+    // Codigo - Validar que no se pueda crear producto con código inválido
+    expect(() => llenarProductoConCodigo('‎'), throwsA(isA<DomainEx>()));
 
     // Codigo - No puede ser el reservado para Venta Rapida
     expect(() => llenarProductoConCodigo('0'), throwsA(isA<DomainEx>()));

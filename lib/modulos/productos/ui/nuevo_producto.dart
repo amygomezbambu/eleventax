@@ -4,6 +4,7 @@ import 'package:eleventa/modulos/common/ui/widgets/ex_drop_down.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_radio_button.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_text_field.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
+import 'package:eleventa/modulos/common/utils/utils.dart';
 import 'package:eleventa/modulos/productos/domain/categoria.dart';
 import 'package:eleventa/modulos/productos/domain/impuesto.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
@@ -11,7 +12,6 @@ import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
 import 'package:eleventa/modulos/productos/modulo_productos.dart';
 import 'package:flutter/material.dart';
 import 'package:layout/layout.dart';
-//import 'package:layout/layout.dart';
 
 class NuevoProducto extends StatefulWidget {
   const NuevoProducto(BuildContext context, {Key? key}) : super(key: key);
@@ -112,6 +112,24 @@ class _NuevoProductoState extends State<NuevoProducto> {
     }
   }
 
+  Future<void> realizarValidacionesDeCodigo() async {
+    _controllerCodigo.text =
+        Utils.string.limpiarCaracteresInvisibles(_controllerCodigo.text);
+    _controllerCodigo.text =
+        Utils.string.removerEspacios(_controllerCodigo.text);
+    _controllerCodigo.text = _controllerCodigo.text.trim();
+
+    var respuesta = Producto.validarCodigo(_controllerCodigo.text);
+
+    if (respuesta.esValido) {
+      await verificarExistenciaDeCodigo();
+    } else {
+      // TODO: UI manejar esta advertencia
+      debugPrint(
+          'El codigo ${_controllerCodigo.text} no es valido para su registro');
+    }
+  }
+
   @override
   void dispose() {
     _controllerCodigo.dispose();
@@ -142,8 +160,8 @@ class _NuevoProductoState extends State<NuevoProducto> {
                   controller: _controllerCodigo,
                   icon: Icons.document_scanner,
                   width: 300,
-                  onExit: () {
-                    verificarExistenciaDeCodigo();
+                  onExit: () async {
+                    await realizarValidacionesDeCodigo();
                   },
                 ),
                 ExTextField(

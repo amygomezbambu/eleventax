@@ -130,7 +130,6 @@ class _ExTextField extends StatelessWidget {
 
   _ExTextField({
     Key? key,
-    required this.hintText,
     required this.controller,
     required this.tamanoFuente,
     this.prefixText,
@@ -138,6 +137,7 @@ class _ExTextField extends StatelessWidget {
     this.helperText,
     this.icon,
     this.onExit,
+    required this.hintText,
   }) : super(key: key);
 
   final String hintText;
@@ -148,8 +148,9 @@ class _ExTextField extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Focus(
         onFocusChange: (hasFocus) {
+          if (onExit == null) return;
           if (!hasFocus) {
-            onExit;
+            onExit!();
           }
         },
         child: TextFormField(
