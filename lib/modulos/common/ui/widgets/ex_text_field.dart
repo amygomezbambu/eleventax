@@ -4,7 +4,7 @@ import 'package:layout/layout.dart';
 
 // TODO: Valores temporales, extraer en DesignSystem
 const _fontFamily = 'Inter';
-const _fontSizeXS = 14.0;
+const _fontSizeXS = 15.0;
 const _fontSizeMD = 14.0;
 
 class ExTextField extends StatelessWidget {

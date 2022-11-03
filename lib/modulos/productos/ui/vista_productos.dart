@@ -12,9 +12,9 @@ class VistaProductos extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Scrollbar(
-        scrollbarOrientation: ScrollbarOrientation.right,
         thumbVisibility: true,
         child: SingleChildScrollView(
+          primary: true,
           scrollDirection: Axis.vertical,
           child: AdaptiveBuilder(
             xs: (context) => Column(
