@@ -25,9 +25,9 @@ class Sync implements ISync {
   // #region singleton
   static final Sync _instance = Sync._internal();
 
-  factory Sync.init({required SyncConfig syncConfig}) {
+  factory Sync.init({required SyncConfig config}) {
     var instance = _instance;
-    instance._config = syncConfig;
+    instance._config = config;
     instance._initialized = true;
 
     return instance;
