@@ -23,6 +23,8 @@ class Moneda {
   /// print(moneda.toString()); // 100.500000
   /// ```
   Moneda(dynamic monto) {
+    _validar(monto);
+
     if (monto is double) {
       _fromDouble(monto);
     } else if (monto is String) {
@@ -88,6 +90,27 @@ class Moneda {
     }
 
     _fromDouble(montoConvertido);
+  }
+
+  void _validar(dynamic monto) {
+    //12 en la parte entera -> 999 999 999 999
+    if (monto is double) {
+      if (monto.truncate().toString().length > 12) {
+        throw EleventaEx(message: 'El valor máximo es 999 999 999 999');
+      }
+    } else if (monto is String) {
+      _fromString(monto);
+      if (_parteEntera > 999999999999) {
+        throw EleventaEx(message: 'El valor máximo es 999 999 999 999');
+      }
+    } else if (monto is int) {
+      if (monto > 999999999999) {
+        throw EleventaEx(message: 'El valor máximo es 999 999 999 999');
+      }
+      _fromDouble(monto.toDouble());
+    } else {
+      throw EleventaEx(message: 'Moneda solo acepta un double, int o String.');
+    }
   }
 
   @override

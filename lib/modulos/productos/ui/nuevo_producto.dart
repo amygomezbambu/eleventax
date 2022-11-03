@@ -4,11 +4,14 @@ import 'package:eleventa/modulos/common/ui/widgets/ex_drop_down.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_radio_button.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_text_field.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
-import 'package:eleventa/modulos/common/utils/utils.dart';
 import 'package:eleventa/modulos/productos/domain/categoria.dart';
 import 'package:eleventa/modulos/productos/domain/impuesto.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_compra_producto.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_venta_producto.dart';
 import 'package:eleventa/modulos/productos/modulo_productos.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -56,17 +59,19 @@ class _NuevoProductoState extends State<NuevoProducto> {
   Future<void> crearProducto() async {
     var crearProducto = ModuloProductos.crearProducto();
     bool hayPrecioDeVenta = _controllerPrecioDeVenta.text.isNotEmpty;
-    Moneda? precioDeVenta;
+    PrecioDeVentaProducto? precioDeVenta;
 
     if (hayPrecioDeVenta) {
-      precioDeVenta = Moneda(_controllerPrecioDeVenta.text);
+      precioDeVenta =
+          PrecioDeVentaProducto(Moneda(_controllerPrecioDeVenta.text));
     }
 
     try {
       var producto = Producto.crear(
-        codigo: _controllerCodigo.text,
-        nombre: _controllerNombre.text,
-        precioDeCompra: Moneda(_controllerPrecioDeCompra.text),
+        codigo: CodigoProducto(_controllerCodigo.text),
+        nombre: NombreProducto(_controllerNombre.text),
+        precioDeCompra:
+            PrecioDeCompraProducto(Moneda(_controllerPrecioDeCompra.text)),
         seVendePor: seVendePor,
         categoria: categoriaSeleccionada,
         impuestos: [impuestoSeleccionado],
@@ -114,21 +119,23 @@ class _NuevoProductoState extends State<NuevoProducto> {
     }
   }
 
-  Future<void> realizarValidacionesDeCodigo() async {
-    _controllerCodigo.text =
-        Utils.string.limpiarCaracteresInvisibles(_controllerCodigo.text);
-    _controllerCodigo.text =
-        Utils.string.removerEspacios(_controllerCodigo.text);
-    _controllerCodigo.text = _controllerCodigo.text.trim();
-
-    var respuesta = Producto.validarCodigo(_controllerCodigo.text);
-
-    if (respuesta.esValido) {
+  Future<void> sanitizarYValidarCodigo() async {
+    try {
+      _controllerCodigo.text = CodigoProducto(_controllerCodigo.text).value;
       await verificarExistenciaDeCodigo();
-    } else {
+    } catch (e) {
       // TODO: UI manejar esta advertencia
       debugPrint(
           'El codigo ${_controllerCodigo.text} no es valido para su registro');
+    }
+  }
+
+  Future<void> sanitizarYValidarNombre() async {
+    try {
+      _controllerNombre.text = NombreProducto(_controllerNombre.text).value;
+    } catch (e) {
+      // TODO: UI manejar esta advertencia
+      debugPrint('El nombre no es valido');
     }
   }
 
@@ -189,18 +196,14 @@ class _NuevoProductoState extends State<NuevoProducto> {
                       icon: Icons.document_scanner,
                       width: 300,
                       onExit: () async {
-                        await realizarValidacionesDeCodigo();
+                        await sanitizarYValidarCodigo();
                       },
                     ),
                     ExTextField(
                       hintText: 'Nombre',
                       controller: _controllerNombre,
-                      onExit: () {
-                        var validacion =
-                            Producto.validarNombre(_controllerNombre.text);
-                        if (!validacion.esValido) {
-                          debugPrint(validacion.mensaje);
-                        }
+                      onExit: () async {
+                        await sanitizarYValidarNombre();
                       },
                     ),
                     FutureBuilder<List<Categoria>>(

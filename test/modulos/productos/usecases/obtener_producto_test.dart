@@ -1,6 +1,10 @@
 import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_compra_producto.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_venta_producto.dart';
 import 'package:eleventa/modulos/productos/modulo_productos.dart';
 import 'package:eleventa/modulos/productos/usecases/obtener_producto.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -28,10 +32,10 @@ void main() {
       final precioDeCompra = Moneda(10.40);
 
       var producto = Producto.crear(
-          codigo: codigo,
-          nombre: nombre,
-          precioDeVenta: precioDeVenta,
-          precioDeCompra: precioDeCompra,
+          codigo: CodigoProducto(codigo),
+          nombre: NombreProducto(nombre),
+          precioDeVenta: PrecioDeVentaProducto(precioDeVenta),
+          precioDeCompra: PrecioDeCompraProducto(precioDeCompra),
           unidadDeMedida: unidadMedida);
 
       crearProducto.req.producto = producto;
@@ -78,10 +82,10 @@ void main() {
       final precioDeCompra = Moneda(10.40);
 
       var producto = Producto.crear(
-          codigo: codigo,
-          nombre: nombre,
-          precioDeVenta: precioDeVenta,
-          precioDeCompra: precioDeCompra,
+          codigo: CodigoProducto(codigo),
+          nombre: NombreProducto(nombre),
+          precioDeVenta: PrecioDeVentaProducto(precioDeVenta),
+          precioDeCompra: PrecioDeCompraProducto(precioDeCompra),
           unidadDeMedida: unidadMedida);
 
       crearProducto.req.producto = producto;

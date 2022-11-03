@@ -24,11 +24,16 @@ class StringUtils {
     return input.trim().replaceAll(RegExp(' +'), ' ');
   }
 
+  ///
   String removerEspacios(String input) {
     return input.replaceAll(RegExp(r'\s+'), '');
   }
 
   String capitalizar(String input) {
+    if (input.isEmpty) {
+      return '';
+    }
+
     var palabras = input.trim().toLowerCase().split(' ');
     for (var i = 0; i < palabras.length; i++) {
       if (palabras[i].length > 1 || i == 0) {
@@ -42,6 +47,9 @@ class StringUtils {
 
   /* #region metodos auxiliares */
   bool _buscarEnListadoDeCodigos(String caracter) {
+    // La lista de códigos hexadecimales de espacios
+    // en blanco invisibles la tomamos de:
+    // https://gist.github.com/JamoCA/42c3be286185aff0476d5888f0a819ff
     List<int> codigoHexadecimal = [
       0x00A0,
       0x0085,

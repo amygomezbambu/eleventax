@@ -4,6 +4,10 @@ import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/productos/domain/categoria.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_compra_producto.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_venta_producto.dart';
 import 'package:eleventa/modulos/productos/modulo_productos.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -23,10 +27,10 @@ void main() {
     final precioDeVenta = Moneda(precioVenta);
 
     var producto = Producto.crear(
-        codigo: codigo,
-        nombre: nombre,
-        precioDeVenta: precioDeVenta,
-        precioDeCompra: precioDeCompra,
+        codigo: CodigoProducto(codigo),
+        nombre: NombreProducto(nombre),
+        precioDeVenta: PrecioDeVentaProducto(precioDeVenta),
+        precioDeCompra: PrecioDeCompraProducto(precioDeCompra),
         categoria: Categoria(uid: UID(), nombre: 'Refrescos'),
         unidadDeMedida: UnidadDeMedida(
           uid: UID(),
@@ -43,9 +47,9 @@ void main() {
     final precioDeCompra = Moneda(10.40);
 
     var producto = Producto.crear(
-        codigo: '2343Q34',
-        nombre: nombre,
-        precioDeCompra: precioDeCompra,
+        codigo: CodigoProducto('2343Q34'),
+        nombre: NombreProducto(nombre),
+        precioDeCompra: PrecioDeCompraProducto(precioDeCompra),
         unidadDeMedida: UnidadDeMedida(
           uid: UID(),
           nombre: 'Pieza',
@@ -80,39 +84,6 @@ void main() {
 
     // Al crearlo por segunda vez, debe tronar
     await expectLater(crearProducto.exec(), throwsA(isA<AppEx>()));
-  });
-
-  test('debe lanzar una excepcion si alguna de las propiedades es inválida',
-      () async {
-    // Codigo - Que no pueda ser vacio
-    expect(() => llenarProductoConCodigo(''), throwsA(isA<DomainEx>()));
-
-    // Codigo - No debe aceptar mas de 20 caracteres
-    expect(() => llenarProductoConCodigo('123456789123456789999'),
-        throwsA(isA<DomainEx>()));
-
-    // Codigo - No debemos permitir espacios
-    expect(() => llenarProductoConCodigo('  '), throwsA(isA<DomainEx>()));
-
-    // Codigo - Validar que no se pueda crear producto con código inválido
-    expect(() => llenarProductoConCodigo('‎'), throwsA(isA<DomainEx>()));
-
-    // Codigo - No puede ser el reservado para Venta Rapida
-    expect(() => llenarProductoConCodigo('0'), throwsA(isA<DomainEx>()));
-
-    // Código - No debe permitir caracteres inválidos (emoji)
-    expect(() => llenarProductoConCodigo('💥'), throwsA(isA<DomainEx>()));
-
-    // Código - No debe permitir caracteres inválidos (otros)
-    expect(() => llenarProductoConCodigo('&'), throwsA(isA<DomainEx>()));
-
-    // Precio de compra - Que no pueda ser negativo
-    expect(() => llenarProductoConCodigo('INVALIDO-COMPRA', precioCompra: -1),
-        throwsA(isA<DomainEx>()));
-
-    // Precio de venta - Que no pueda ser negativo
-    expect(() => llenarProductoConCodigo('INVALIDO-VENTA', precioVenta: 0),
-        throwsA(isA<DomainEx>()));
   });
 
   test('debe persistir el producto con categoria "sin categoria"', () async {

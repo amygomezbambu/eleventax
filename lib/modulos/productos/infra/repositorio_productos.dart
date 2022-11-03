@@ -3,10 +3,15 @@ import 'package:eleventa/modulos/common/app/interface/sync.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/common/utils/utils.dart';
+import 'package:eleventa/modulos/productos/config_productos.dart';
 import 'package:eleventa/modulos/productos/domain/categoria.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/common/infra/repositorio.dart';
 import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_compra_producto.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_venta_producto.dart';
 import 'package:eleventa/modulos/productos/interfaces/repositorio_productos.dart';
 import 'package:eleventa/modulos/productos/mapper/producto_mapper.dart';
 
@@ -32,7 +37,8 @@ class RepositorioProductos extends Repositorio
             'categoria_uid': producto.categoria!.uid.toString(),
         'unidad_medida_uid': producto.unidadMedida.uid.toString(),
         'precio_compra': producto.precioDeCompra.toMonedaInt(),
-        'precio_venta': producto.precioDeVenta.toMonedaInt(),
+        if (producto.precioDeVenta != null)
+          'precio_venta': producto.precioDeVenta!.toMonedaInt(),
         'se_vende_por': producto.seVendePor.index,
         'url_imagen': producto.imagenURL,
         'preguntar_precio': producto.preguntarPrecio,
@@ -80,10 +86,13 @@ class RepositorioProductos extends Repositorio
     for (var row in result) {
       producto = Producto.cargar(
           uid: UID(row['uid'] as String),
-          nombre: row['nombre'] as String,
-          precioDeVenta: Moneda.fromMonedaInt(row['precio_venta'] as int),
-          precioDeCompra: Moneda.fromMonedaInt(row['precio_compra'] as int),
-          codigo: row['codigo'] as String,
+          nombre: NombreProducto(row['nombre'] as String),
+          precioDeVenta: PrecioDeVentaProducto(
+              Moneda.fromMonedaInt(row['precio_venta'] as int)),
+          precioDeCompra: PrecioDeCompraProducto(
+            Moneda.fromMonedaInt(row['precio_compra'] as int),
+          ),
+          codigo: CodigoProducto(row['codigo'] as String),
           unidadDeMedida: UnidadDeMedida(
             uid: UID(row['unidad_medida_uid'] as String),
             nombre: row['unidad_medida_nombre'] as String,
@@ -119,10 +128,12 @@ class RepositorioProductos extends Repositorio
       items.add(
         Producto.cargar(
             uid: UID(row['uid'] as String),
-            nombre: row['nombre'] as String,
-            precioDeVenta: Moneda.fromMonedaInt(row['precio_venta'] as int),
-            precioDeCompra: Moneda.fromMonedaInt(row['precio_compra'] as int),
-            codigo: row['codigo'] as String,
+            nombre: NombreProducto(row['nombre'] as String),
+            precioDeVenta: PrecioDeVentaProducto(
+                Moneda.fromMonedaInt(row['precio_venta'] as int)),
+            precioDeCompra: PrecioDeCompraProducto(
+                Moneda.fromMonedaInt(row['precio_compra'] as int)),
+            codigo: CodigoProducto(row['codigo'] as String),
             unidadDeMedida: UnidadDeMedida(
               uid: UID(row['unidad_medida_uid'] as String),
               nombre: row['unidad_medida_nombre'] as String,
@@ -187,5 +198,36 @@ class RepositorioProductos extends Repositorio
         input: producto.toString(),
       );
     }
+  }
+
+  @override
+  Future<void> guardarConfigCompartida(
+      ConfigCompartidaDeProductos config) async {
+    await adaptadorSync.synchronize(
+      dataset: 'config_productos',
+      rowID: config.uid.toString(),
+      fields: {'permitirPrecioCompraCero': config.permitirPrecioCompraCero},
+    );
+  }
+
+  @override
+  Future<ConfigCompartidaDeProductos> obtenerConfigCompartida() async {
+    ConfigCompartidaDeProductos configCompartida;
+    var query = 'SELECT * FROM config_productos';
+
+    var dbResult = await db.query(sql: query);
+
+    if (dbResult.length == 1) {
+      configCompartida = ConfigCompartidaDeProductos.cargar(
+        uid: UID(dbResult.first['uid'].toString()),
+        permitirPrecioCompraCero: Utils.db
+            .intToBool(dbResult.first['permitirPrecioCompraCero'] as int),
+      );
+    } else {
+      throw EleventaEx(
+          message: 'No hay valores de configuración del módulo productos');
+    }
+
+    return configCompartida;
   }
 }

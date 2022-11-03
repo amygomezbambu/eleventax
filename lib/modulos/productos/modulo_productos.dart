@@ -1,4 +1,5 @@
 import 'package:eleventa/dependencias.dart';
+import 'package:eleventa/modulos/productos/config_productos.dart';
 import 'package:eleventa/modulos/productos/interfaces/repositorio_consulta_productos.dart';
 import 'package:eleventa/modulos/productos/usecases/actualizar_producto.dart';
 import 'package:eleventa/modulos/productos/usecases/crear_producto.dart';
@@ -6,6 +7,9 @@ import 'package:eleventa/modulos/productos/usecases/obtener_producto.dart';
 import 'package:eleventa/modulos/productos/usecases/obtener_productos.dart';
 
 class ModuloProductos {
+  static final config =
+      ConfigProductos(Dependencias.productos.repositorioProductos());
+
   static ObtenerProducto obtenerProducto() {
     return ObtenerProducto(Dependencias.productos.repositorioProductos());
   }

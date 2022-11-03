@@ -1,10 +1,12 @@
 import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
-
 import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
-
 import 'package:eleventa/modulos/common/utils/utils.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_compra_producto.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_venta_producto.dart';
 
 class ProductoMapper {
   // static ProductoDTO domainAData(Producto producto) {
@@ -40,10 +42,12 @@ class ProductoMapper {
   static Producto databaseADomain(Map<String, Object?> dbRow) {
     return Producto.cargar(
       uid: UID(dbRow['uid'] as String),
-      nombre: dbRow['nombre'] as String,
-      precioDeVenta: Moneda.fromMonedaInt(dbRow['precio_venta'] as int),
-      precioDeCompra: Moneda.fromMonedaInt(dbRow['precio_compra'] as int),
-      codigo: dbRow['codigo'] as String,
+      nombre: NombreProducto(dbRow['nombre'] as String),
+      precioDeVenta: PrecioDeVentaProducto(
+          Moneda.fromMonedaInt(dbRow['precio_venta'] as int)),
+      precioDeCompra: PrecioDeCompraProducto(
+          Moneda.fromMonedaInt(dbRow['precio_compra'] as int)),
+      codigo: CodigoProducto(dbRow['codigo'] as String),
       unidadDeMedida: UnidadDeMedida(
           uid: UID(dbRow['unidad_medida_uid'] as String),
           nombre: dbRow['unidad_medida_nombre'] as String,
