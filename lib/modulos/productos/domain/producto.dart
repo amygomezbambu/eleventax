@@ -99,4 +99,17 @@ class Producto extends Entidad {
 
     return respuesta;
   }
+
+  @override
+  String toString() {
+    return 'codigo: $codigo \n'
+        'nombre: $nombre\n'
+        'categoria: $categoria\n'
+        'unidadMedida: $unidadMedida\n'
+        'precioDeVenta: $precioDeVenta\n'
+        'precioDeCompra: $precioDeCompra\n'
+        'impuestos: $impuestos\n'
+        'seVendePor: $seVendePor\n'
+        'preguntarPrecio: $preguntarPrecio\n';
+  }
 }
