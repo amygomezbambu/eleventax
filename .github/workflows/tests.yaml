@@ -16,8 +16,6 @@ jobs:
       - name: Obtenemos la version de Flutter de pubspec.yaml
         id: get-flutter-version
         uses: zgosalvez/github-actions-get-flutter-version-env@v1.1.4
-        with:
-          using: "node16"
 
       - uses: subosito/flutter-action@v2
         with:
@@ -27,9 +25,6 @@ jobs:
           cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:"
           cache-path: "${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:"
           architecture: x64
-
-      - run: echo "PUB_CACHE=${{ runner.tool_cache }}/.pub-cache" >> $GITHUB_ENV
-      - run: echo "${PUB_CACHE}/bin" >> $GITHUB_PATH
 
       - name: Cache packages
         uses: actions/cache@v3
