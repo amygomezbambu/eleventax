@@ -16,8 +16,10 @@ jobs:
       - name: Obtenemos la version de Flutter de pubspec.yaml
         id: get-flutter-version
         uses: zgosalvez/github-actions-get-flutter-version-env@v1.1.4
+        with:
+          using: "node16"
 
-      - uses: subosito/flutter-action@v2.8.0
+      - uses: subosito/flutter-action@v2
         with:
           channel: "stable"
           flutter-version: ${{ steps.get-flutter-version.outputs.version }}
@@ -30,7 +32,7 @@ jobs:
       - run: echo "${PUB_CACHE}/bin" >> $GITHUB_PATH
 
       - name: Cache packages
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ env.PUB_CACHE }}
           key: deps-${{ hashFiles('**/pubspec.lock') }}
