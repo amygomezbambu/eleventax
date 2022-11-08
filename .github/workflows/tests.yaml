@@ -21,11 +21,10 @@ jobs:
         with:
           channel: "stable"
           cache: true
-          os: ${{ matrix.os }}
           flutter-version: ${{ steps.get-flutter-version.outputs.version }}
           architecture: x64
-          cache-key: "flutter-:os:-:channel:-:version:-:arch:"
-          cache-path: "${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:"
+          #cache-key: "flutter-windows-:-:version:-:arch:"
+          #cache-path: "${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:"
       - run: |
           echo CACHE-PATH=${{ steps.flutter-action.outputs.CACHE-PATH }}
           echo CACHE-KEY=${{ steps.flutter-action.outputs.CACHE-KEY }}
