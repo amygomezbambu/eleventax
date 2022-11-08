@@ -15,21 +15,33 @@ jobs:
 
       - name: Obtenemos la version de Flutter de pubspec.yaml
         id: get-flutter-version
-        uses: zgosalvez/github-actions-get-flutter-version-env@v1
+        uses: zgosalvez/github-actions-get-flutter-version-env@v1.1.4
+
       - uses: subosito/flutter-action@v2
         with:
           channel: "stable"
-          architecture: x64
           flutter-version: ${{ steps.get-flutter-version.outputs.version }}
+          cache: true
+          cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:"
+          cache-path: "${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:"
+          architecture: x64
+
+      - name: Cache packages
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.PUB_CACHE }}
+          key: deps-${{ hashFiles('**/pubspec.lock') }}
+
+      - run: flutter pub get
 
       # Copiamos los DLLs a la carpeta donde se ejecutan las pruebas de unidad
       - name: Copiamos DLLs de SQLite para que funcionen las pruebas (solo Windows)
         if: runner.os == 'Windows'
         run: Copy-Item -Path "assets/windows/*" -Destination "${{ env.FLUTTER_ROOT }}\bin\cache\artifacts\engine\windows-x64"
 
-      - name: Instalar dependencias
-        run: flutter pub get
-        
+      #- name: Instalar dependencias
+      #  run: flutter pub get
+
       - name: Generar clases de Dart necesarias con secretos embebidos (y ofuscados)
         run: flutter pub run build_runner build --delete-conflicting-outputs
         # Las variables de entorno tienen que estar disponibles en esta etapa
@@ -42,4 +54,3 @@ jobs:
 
       - name: Ejecutando pruebas unitarias
         run: flutter test --test-randomize-ordering-seed=random -rexpanded
-       
