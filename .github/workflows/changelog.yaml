@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Verificar modificación a Changelog.md
-        uses: Zomzog/changelog-checker@v1.2.0
+        uses: Zomzog/changelog-checker@v1.3.0
         with:
           fileName: CHANGELOG.md
           noChangelogLabel: sin changelog # default `no changelog`
