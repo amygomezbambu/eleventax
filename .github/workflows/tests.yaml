@@ -15,12 +15,24 @@ jobs:
 
       - name: Obtenemos la version de Flutter de pubspec.yaml
         id: get-flutter-version
-        uses: zgosalvez/github-actions-get-flutter-version-env@v1
-      - uses: subosito/flutter-action@v2
+        uses: zgosalvez/github-actions-get-flutter-version-env@v1.1.4
+
+      - uses: subosito/flutter-action@v2.8.0
         with:
           channel: "stable"
-          architecture: x64
+          cache: true
+          os: ${{ matrix.os }}
           flutter-version: ${{ steps.get-flutter-version.outputs.version }}
+          architecture: x64
+          cache-key: "flutter-:os:-:channel:-:version:-:arch:"
+          cache-path: "${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:"
+      - run: |
+          echo CACHE-PATH=${{ steps.flutter-action.outputs.CACHE-PATH }}
+          echo CACHE-KEY=${{ steps.flutter-action.outputs.CACHE-KEY }}
+          echo CHANNEL=${{ steps.flutter-action.outputs.CHANNEL }}
+          echo VERSION=${{ steps.flutter-action.outputs.VERSION }}
+          echo ARCHITECTURE=${{ steps.flutter-action.outputs.ARCHITECTURE }}
+        shell: bash
 
       # Copiamos los DLLs a la carpeta donde se ejecutan las pruebas de unidad
       - name: Copiamos DLLs de SQLite para que funcionen las pruebas (solo Windows)
@@ -29,7 +41,7 @@ jobs:
 
       - name: Instalar dependencias
         run: flutter pub get
-        
+
       - name: Generar clases de Dart necesarias con secretos embebidos (y ofuscados)
         run: flutter pub run build_runner build --delete-conflicting-outputs
         # Las variables de entorno tienen que estar disponibles en esta etapa
@@ -42,4 +54,3 @@ jobs:
 
       - name: Ejecutando pruebas unitarias
         run: flutter test --test-randomize-ordering-seed=random -rexpanded
-       
