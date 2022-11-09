@@ -26,8 +26,9 @@ jobs:
           cache-path: "${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:"
           architecture: x64
 
-      - name: Obtener dependencias del proyecto
-      - run: flutter pub get
+
+      - name: Obtener dependencias de flutter
+        run: flutter pub get
 
       # Copiamos los DLLs a la carpeta donde se ejecutan las pruebas de unidad
       - name: Copiamos DLLs de SQLite para que funcionen las pruebas (solo Windows)
