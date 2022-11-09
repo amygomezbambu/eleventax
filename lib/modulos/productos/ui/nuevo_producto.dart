@@ -1,6 +1,7 @@
 import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_boton_primario.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_drop_down.dart';
+import 'package:eleventa/modulos/common/ui/widgets/ex_numeric_field.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_radio_button.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_text_field.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
@@ -343,12 +344,13 @@ class _NuevoProductoState extends State<NuevoProducto> {
                             );
                           }
                         }),
-                    ExTextField(
+                    ExNumericField(
                       hintText: 'Precio de compra',
                       controller: _controllerPrecioDeCompra,
                       helperText: 'Con Impuestos',
                       prefixText: '\$ ',
                       width: 160,
+                      
                     ),
                     ExTextField(
                         hintText: 'Utilidad',
