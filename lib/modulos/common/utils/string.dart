@@ -1,4 +1,6 @@
 class StringUtils {
+  bool isDigit(String s, int index) => (s.codeUnitAt(index) ^ 0x30) <= 9;
+
   String limpiarCaracteresInvisibles(String input, [String sustituto = '']) {
     var resultado = '';
     var encontrado = false;
