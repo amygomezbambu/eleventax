@@ -26,11 +26,7 @@ jobs:
           cache-path: "${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:"
           architecture: x64
 
-      - name: Guardar en Cache dependencias
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.PUB_CACHE }}
-          key: deps-${{ hashFiles('**/pubspec.lock') }}
+      - name: Obtener dependencias del proyecto
       - run: flutter pub get
 
       # Copiamos los DLLs a la carpeta donde se ejecutan las pruebas de unidad
