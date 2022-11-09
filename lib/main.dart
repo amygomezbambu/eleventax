@@ -1,5 +1,6 @@
 import 'package:eleventa/loader.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tailwindcss_defaults/colors.dart';
 import 'package:layout/layout.dart';
 import 'package:eleventa/modulos/common/ui/layout_principal.dart';
@@ -21,7 +22,7 @@ void main() async {
   //   return true;
   // };
 
-  runApp(const EleventaApp());
+  runApp(const ProviderScope(child: EleventaApp()));
 }
 
 class EleventaApp extends StatelessWidget {
