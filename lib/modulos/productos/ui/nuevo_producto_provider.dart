@@ -1,5 +1,6 @@
 //estado base
 import 'package:eleventa/modulos/common/domain/moneda.dart';
+import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/productos/domain/categoria.dart';
 import 'package:eleventa/modulos/productos/domain/impuesto.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
@@ -83,14 +84,6 @@ class NotificadorNuevoProducto extends StateNotifier<EstadoNuevoProducto> {
   Future<void> crearProducto() async {
     var crearProducto = ModuloProductos.crearProducto();
 
-    // bool hayPrecioDeVenta = _controllerPrecioDeVenta.text.isNotEmpty;
-    // PrecioDeVentaProducto? precioDeVenta;
-
-    // if (hayPrecioDeVenta) {
-    //   precioDeVenta =
-    //       PrecioDeVentaProducto(Moneda(_controllerPrecioDeVenta.text));
-    // }
-
     try {
       if (state.codigo != null && state.nombre != null) {
         var producto = Producto.crear(
@@ -122,24 +115,35 @@ class NotificadorNuevoProducto extends StateNotifier<EstadoNuevoProducto> {
     state = EstadoInicialNuevoProducto(utilidad: 10.00);
   }
 
-  Future<void> sanitizarYValidarCodigo(String codigo) async {
+  Future<String?> sanitizarYValidarCodigo(String codigo) async {
     try {
       var codigoProducto = CodigoProducto(codigo);
+
       await _verificarExistenciaDeCodigo(codigo);
 
       if (!state.existeCodigo) {
         state.codigo = codigoProducto;
+      } else {
+        return 'El código ya existe';
       }
+
+      state = EstadoInicialNuevoProducto.copyWith(state);
+      return null;
     } catch (e) {
-      state = EstadoErrorNuevoProducto(e.toString());
+      state = EstadoInicialNuevoProducto.copyWith(state);
+      return (e as DomainEx).message;
     }
   }
 
-  void sanitizarYValidarNombre(String nombre) {
+  Future<String?> sanitizarYValidarNombre(String nombre) async {
     try {
       state.nombre = NombreProducto(nombre);
+      state = EstadoInicialNuevoProducto.copyWith(state);
+
+      return null;
     } catch (e) {
       state = EstadoErrorNuevoProducto(e.toString());
+      return (e as DomainEx).message;
     }
   }
 

@@ -77,6 +77,7 @@ class Sync implements ISync {
       var changes =
           await _generateChanges(dataset, rowID, _sanitizarFields(fields));
       await _applyChangesToLocalDatabase(changes);
+      //TODO: esta linea es la que hace que la UI se tarde demasiado al guardar un producto
       await _sendChangesToRemoteServer(changes);
     } catch (e, stack) {
       if (_config.onError != null) {

@@ -7,6 +7,8 @@ const _fontFamily = 'Inter';
 const _fontSizeXS = 15.0;
 const _fontSizeMD = 14.0;
 
+typedef ValidadorTextField = Future<String?> Function(String? value)?;
+
 class ExTextField extends StatelessWidget {
   final String hintText;
   final TextEditingController controller;
@@ -15,22 +17,27 @@ class ExTextField extends StatelessWidget {
   final String? helperText;
   final double? width;
   final IconData? icon;
+  final GlobalKey? fieldKey;
 
   /// Evento lanzado cuando el widget pierde el foco,
   /// usualmente usado para validaciones
   final Function? onExit;
 
-  const ExTextField({
-    Key? key,
-    required this.hintText,
-    required this.controller,
-    this.prefixText,
-    this.suffixText,
-    this.helperText,
-    this.width,
-    this.icon,
-    this.onExit,
-  }) : super(key: key);
+  final ValidadorTextField validator;
+
+  const ExTextField(
+      {Key? key,
+      required this.hintText,
+      required this.controller,
+      this.prefixText,
+      this.suffixText,
+      this.helperText,
+      this.width,
+      this.icon,
+      this.fieldKey,
+      this.onExit,
+      this.validator})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -41,15 +48,16 @@ class ExTextField extends StatelessWidget {
           ConditionalParentWidget(
             condition: (width != null),
             child: _ExTextField(
-              hintText: hintText,
-              controller: controller,
-              tamanoFuente: _fontSizeXS,
-              prefixText: prefixText,
-              suffixText: suffixText,
-              helperText: helperText,
-              icon: icon,
-              onExit: onExit,
-            ),
+                hintText: hintText,
+                controller: controller,
+                tamanoFuente: _fontSizeXS,
+                prefixText: prefixText,
+                suffixText: suffixText,
+                helperText: helperText,
+                icon: icon,
+                onExit: onExit,
+                validator: validator,
+                fieldKey: fieldKey),
             parentBuilder: (Widget child) => SizedBox(
               width: width,
               child: child,
@@ -72,15 +80,16 @@ class ExTextField extends StatelessWidget {
             child: ConditionalParentWidget(
               condition: (width != null),
               child: _ExTextField(
-                hintText: hintText,
-                controller: controller,
-                tamanoFuente: _fontSizeMD,
-                prefixText: prefixText,
-                suffixText: suffixText,
-                helperText: helperText,
-                icon: icon,
-                onExit: onExit,
-              ),
+                  hintText: hintText,
+                  controller: controller,
+                  tamanoFuente: _fontSizeMD,
+                  prefixText: prefixText,
+                  suffixText: suffixText,
+                  helperText: helperText,
+                  icon: icon,
+                  onExit: onExit,
+                  fieldKey: fieldKey,
+                  validator: validator),
               parentBuilder: (Widget child) => SizedBox(
                 width: width,
                 child: child,
@@ -118,8 +127,7 @@ class EditLabel extends StatelessWidget {
   }
 }
 
-class _ExTextField extends StatelessWidget {
-  final _enDesktop = LayoutValue(xs: true, md: false);
+class _ExTextField extends StatefulWidget {
   final TextEditingController controller;
   final double tamanoFuente;
   final String? prefixText;
@@ -127,8 +135,11 @@ class _ExTextField extends StatelessWidget {
   final String? helperText;
   final IconData? icon;
   final Function? onExit;
+  final GlobalKey? fieldKey;
+  final ValidadorTextField validator;
+  final String hintText;
 
-  _ExTextField({
+  const _ExTextField({
     Key? key,
     required this.controller,
     required this.tamanoFuente,
@@ -137,55 +148,69 @@ class _ExTextField extends StatelessWidget {
     this.helperText,
     this.icon,
     this.onExit,
+    this.fieldKey,
     required this.hintText,
+    this.validator,
   }) : super(key: key);
 
-  final String hintText;
+  @override
+  State<_ExTextField> createState() => _ExTextFieldState();
+}
+
+class _ExTextFieldState extends State<_ExTextField> {
+  final _enDesktop = LayoutValue(xs: true, md: false);
+  String? _errValidacion;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Focus(
-        onFocusChange: (hasFocus) {
-          if (onExit == null) return;
+        onFocusChange: (hasFocus) async {
           if (!hasFocus) {
-            onExit!();
+            if (widget.validator != null) {
+              _errValidacion = await widget.validator!(widget.controller.text);
+            }
+          }
+
+          if (widget.onExit == null) return;
+          if (!hasFocus) {
+            widget.onExit!();
           }
         },
         child: TextFormField(
-            controller: controller,
+            key: widget.fieldKey,
+            controller: widget.controller,
             cursorColor: Colors.black,
             keyboardType: TextInputType.text,
             textInputAction: TextInputAction.next,
             autofocus: true,
+            autovalidateMode: AutovalidateMode.disabled,
             style: TextStyle(
-                fontSize: tamanoFuente,
+                fontSize: widget.tamanoFuente,
                 fontFamily: _fontFamily,
                 color: TailwindColors.trueGray[700],
                 fontWeight: FontWeight.normal),
             validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter some text';
-              }
-              return null;
+              return _errValidacion;
             },
             decoration: InputDecoration(
-                prefixText: prefixText,
-                suffixText: suffixText,
-                helperText: helperText,
+                prefixText: widget.prefixText,
+                suffixText: widget.suffixText,
+                helperText: widget.helperText,
                 helperStyle: const TextStyle(fontSize: 12),
                 filled: true,
                 isDense: true,
                 fillColor: TailwindColors.blueGray[200],
-                prefixIcon: (icon != null)
+                prefixIcon: (widget.icon != null)
                     ? Icon(
-                        icon,
+                        widget.icon,
                         color: TailwindColors.blueGray[400],
                       )
                     : null,
-                hintText:
-                    (_enDesktop.resolve(context) == true) ? hintText : null,
+                hintText: (_enDesktop.resolve(context) == true)
+                    ? widget.hintText
+                    : null,
                 //helperText: "Ingresa precios sin impuestos",
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(5),
@@ -202,7 +227,7 @@ class _ExTextField extends StatelessWidget {
                   ),
                 ),
                 hintStyle: TextStyle(
-                    fontSize: tamanoFuente,
+                    fontSize: widget.tamanoFuente,
                     color: TailwindColors.blueGray[400]))),
       ),
     );

@@ -1,7 +1,12 @@
+import 'package:eleventa/modulos/common/ui/widgets/ex_numeric_field.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:layout/layout.dart';
+
 import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_boton_primario.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_drop_down.dart';
-import 'package:eleventa/modulos/common/ui/widgets/ex_numeric_field.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_radio_button.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_text_field.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
@@ -9,25 +14,21 @@ import 'package:eleventa/modulos/productos/domain/categoria.dart';
 import 'package:eleventa/modulos/productos/domain/impuesto.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
-import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
-import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_compra_producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_venta_producto.dart';
 import 'package:eleventa/modulos/productos/modulo_productos.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:layout/layout.dart';
+import 'package:eleventa/modulos/productos/ui/nuevo_producto_provider.dart';
 
-class NuevoProducto extends StatefulWidget {
+class NuevoProducto extends ConsumerStatefulWidget {
   const NuevoProducto(BuildContext context, {Key? key}) : super(key: key);
 
   @override
-  State<NuevoProducto> createState() => _NuevoProductoState();
+  ConsumerState<NuevoProducto> createState() => _NuevoProductoState();
 }
 
 typedef EstadoFormField = FormFieldState<String>;
 
-class _NuevoProductoState extends State<NuevoProducto> {
+class _NuevoProductoState extends ConsumerState<NuevoProducto> {
   String unidadDeMedida = '';
   final mostrarMargenLabel = LayoutValue(xs: false, md: true);
 
@@ -37,6 +38,11 @@ class _NuevoProductoState extends State<NuevoProducto> {
   final GlobalKey<EstadoFormField> _keyImpuestos = GlobalKey<EstadoFormField>();
   final GlobalKey<EstadoFormField> _keyUnidadDeMedida =
       GlobalKey<EstadoFormField>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  final _codigoField = GlobalKey<FormFieldState<dynamic>>();
+  final _nombreField = GlobalKey<FormFieldState<dynamic>>();
+  final _precioCompraField = GlobalKey<FormFieldState<dynamic>>();
 
   late final Future<List<Impuesto>> _impuestos = lecturas.obtenerImpuestos();
   late Impuesto impuestoSeleccionado;
@@ -57,42 +63,6 @@ class _NuevoProductoState extends State<NuevoProducto> {
 
   var lecturas = ModuloProductos.repositorioConsultaProductos();
 
-  Future<void> crearProducto() async {
-    var crearProducto = ModuloProductos.crearProducto();
-    bool hayPrecioDeVenta = _controllerPrecioDeVenta.text.isNotEmpty;
-    PrecioDeVentaProducto? precioDeVenta;
-
-    if (hayPrecioDeVenta) {
-      precioDeVenta =
-          PrecioDeVentaProducto(Moneda(_controllerPrecioDeVenta.text));
-    }
-
-    try {
-      var producto = Producto.crear(
-        codigo: CodigoProducto(_controllerCodigo.text),
-        nombre: NombreProducto(_controllerNombre.text),
-        precioDeCompra:
-            PrecioDeCompraProducto(Moneda(_controllerPrecioDeCompra.text)),
-        seVendePor: seVendePor,
-        categoria: categoriaSeleccionada,
-        impuestos: [impuestoSeleccionado],
-        unidadDeMedida: unidadDeMedidaSeleccionada,
-        preguntarPrecio: !hayPrecioDeVenta,
-        precioDeVenta: precioDeVenta,
-      );
-
-      crearProducto.req.producto = producto;
-
-      await crearProducto.exec();
-
-      setState(() {
-        limpiarCampos();
-      });
-    } catch (e) {
-      debugPrint('No fue posible crear producto: $e');
-    }
-  }
-
   void limpiarCampos() {
     _controllerCodigo.clear();
     _controllerImagen.clear();
@@ -106,38 +76,6 @@ class _NuevoProductoState extends State<NuevoProducto> {
     _keyUnidadDeMedida.currentState!.reset();
 
     seVendePor = ProductoSeVendePor.unidad;
-  }
-
-  Future<void> verificarExistenciaDeCodigo() async {
-    var consultas = ModuloProductos.repositorioConsultaProductos();
-
-    var existe = await consultas.existeProducto(_controllerCodigo.text);
-
-    if (existe) {
-      // TODO: UI manejar esta advertencia
-      debugPrint(
-          'El codigo ${_controllerCodigo.text} ya existe en base de datos...');
-    }
-  }
-
-  Future<void> sanitizarYValidarCodigo() async {
-    try {
-      _controllerCodigo.text = CodigoProducto(_controllerCodigo.text).value;
-      await verificarExistenciaDeCodigo();
-    } catch (e) {
-      // TODO: UI manejar esta advertencia
-      debugPrint(
-          'El codigo ${_controllerCodigo.text} no es valido para su registro');
-    }
-  }
-
-  Future<void> sanitizarYValidarNombre() async {
-    try {
-      _controllerNombre.text = NombreProducto(_controllerNombre.text).value;
-    } catch (e) {
-      // TODO: UI manejar esta advertencia
-      debugPrint('El nombre no es valido');
-    }
   }
 
   @override
@@ -175,6 +113,21 @@ class _NuevoProductoState extends State<NuevoProducto> {
 
   @override
   Widget build(BuildContext context) {
+    var model = ref.read(nuevoProductoProvider.notifier);
+    var state = ref.watch(nuevoProductoProvider);
+
+    if (state is EstadoCargandoNuevoProducto) {
+      return const SizedBox(
+        width: 20,
+        height: 20,
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    if (state is EstadoExitoNuevoProducto) {
+      return const Text('Todo Jalo bien');
+    }
+
     return Container(
       color: Colors.white10,
       width: 600,
@@ -187,33 +140,50 @@ class _NuevoProductoState extends State<NuevoProducto> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Form(
-                key: const ValueKey('frmNuevoProducto'),
+                key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ExTextField(
+                      fieldKey: _codigoField,
                       hintText: 'Código',
                       controller: _controllerCodigo,
-                      icon: Icons.document_scanner,
+                      icon: state.existeCodigo
+                          ? Icons.error
+                          : Icons.document_scanner,
                       width: 300,
+                      validator: (value) async {
+                        debugPrint('Validando codigo...');
+                        if (value == null) {
+                          return 'No se aceptan valores Nulos';
+                        }
+
+                        return await model.sanitizarYValidarCodigo(value);
+                      },
                       onExit: () async {
-                        await sanitizarYValidarCodigo();
+                        _codigoField.currentState?.validate();
                       },
                     ),
                     ExTextField(
-                      hintText: 'Nombre',
-                      controller: _controllerNombre,
-                      onExit: () async {
-                        await sanitizarYValidarNombre();
-                      },
-                    ),
+                        fieldKey: _nombreField,
+                        hintText: 'Nombre',
+                        controller: _controllerNombre,
+                        validator: (value) async {
+                          if (value == null) {
+                            return 'No se aceptan valores Nulos';
+                          }
+
+                          return await model.sanitizarYValidarNombre(value);
+                        },
+                        onExit: () async {
+                          _nombreField.currentState?.validate();
+                        }),
                     FutureBuilder<List<Categoria>>(
                         future: _categorias,
                         builder: (BuildContext context,
                             AsyncSnapshot<List<Categoria>> snapshot) {
                           if (snapshot.hasData) {
                             List<Categoria> listadoCategorias = snapshot.data!;
-
                             if (!listadoCategorias.first.uid.isInvalid()) {
                               listadoCategorias.insert(
                                 0,
@@ -222,17 +192,16 @@ class _NuevoProductoState extends State<NuevoProducto> {
                                   nombre: 'Sin Categoria',
                                 ),
                               );
-                              categoriaSeleccionada = listadoCategorias.first;
                             }
+
+                            state.categoria = listadoCategorias.first;
 
                             return ExDropDown<Categoria>(
                               hintText: 'Categoría',
                               dropDownKey: _keyCategoria,
-                              value: categoriaSeleccionada,
+                              value: state.categoria,
                               onChanged: (Categoria? categoria) {
-                                setState(() {
-                                  categoriaSeleccionada = categoria!;
-                                });
+                                state.categoria = categoria!;
                               },
                               items: listadoCategorias
                                   .map<DropdownMenuItem<Categoria>>(
@@ -256,20 +225,17 @@ class _NuevoProductoState extends State<NuevoProducto> {
                         groupValue: seVendePor,
                         label: 'Unidad',
                         hint: 'Se vende por',
-                        onChange: (ProductoSeVendePor? value) {
-                          setState(() {
-                            seVendePor = value!;
-                          });
+                        onChange: (ProductoSeVendePor? seVendePor) {
+                          state.seVendePor = seVendePor!;
+                          //state.seVendePor = seVendePor!;
                         }),
                     ExRadioButton<ProductoSeVendePor>(
                         value: ProductoSeVendePor.peso,
                         groupValue: seVendePor,
                         label: 'Peso',
                         hint: '',
-                        onChange: (ProductoSeVendePor? value) {
-                          setState(() {
-                            seVendePor = value!;
-                          });
+                        onChange: (ProductoSeVendePor? seVendePor) {
+                          state.seVendePor = seVendePor!;
                         }),
                     // RadioListTile<ProductoSeVendePor>(
 
@@ -280,17 +246,16 @@ class _NuevoProductoState extends State<NuevoProducto> {
                           if (snapshot.hasData) {
                             List<UnidadDeMedida> listadoUnidadesDeMedida =
                                 snapshot.data!;
-                            unidadDeMedidaSeleccionada =
+                            state.unidadDeMedida =
                                 listadoUnidadesDeMedida.first;
+
                             return ExDropDown<UnidadDeMedida>(
                               hintText: 'Unidad de Medida',
                               width: 300,
                               dropDownKey: _keyUnidadDeMedida,
                               value: listadoUnidadesDeMedida.first,
                               onChanged: (UnidadDeMedida? unidadDeMedida) {
-                                setState(() {
-                                  unidadDeMedidaSeleccionada = unidadDeMedida!;
-                                });
+                                state.unidadDeMedida = unidadDeMedida!;
                               },
                               items: listadoUnidadesDeMedida
                                   .map<DropdownMenuItem<UnidadDeMedida>>(
@@ -315,7 +280,8 @@ class _NuevoProductoState extends State<NuevoProducto> {
                             AsyncSnapshot<List<Impuesto>> snapshot) {
                           if (snapshot.hasData) {
                             List<Impuesto> listadoImpuestos = snapshot.data!;
-                            impuestoSeleccionado = listadoImpuestos.first;
+
+                            state.impuesto = listadoImpuestos.first;
 
                             return ExDropDown<Impuesto>(
                               hintText: 'Impuesto',
@@ -323,9 +289,7 @@ class _NuevoProductoState extends State<NuevoProducto> {
                               dropDownKey: _keyImpuestos,
                               value: listadoImpuestos.first,
                               onChanged: (Impuesto? impuesto) {
-                                setState(() {
-                                  impuestoSeleccionado = impuesto!;
-                                });
+                                state.impuesto = impuesto!;
                               },
                               items: listadoImpuestos
                                   .map<DropdownMenuItem<Impuesto>>(
@@ -345,24 +309,31 @@ class _NuevoProductoState extends State<NuevoProducto> {
                           }
                         }),
                     ExNumericField(
+                      key: _precioCompraField,
                       hintText: 'Precio de compra',
                       controller: _controllerPrecioDeCompra,
                       helperText: 'Con Impuestos',
                       prefixText: '\$ ',
                       width: 160,
-                      
+                      onExit: () {
+                        state.precioDeCompra = PrecioDeCompraProducto(
+                            Moneda(_controllerPrecioDeCompra.text));
+                      },
                     ),
-                    ExTextField(
+                    ExNumericField(
                         hintText: 'Utilidad',
                         controller: _controllerUtilidad,
                         suffixText: '%',
                         width: 160),
-                    ExTextField(
-                      hintText: 'Precio de venta',
-                      controller: _controllerPrecioDeVenta,
-                      prefixText: '\$ ',
-                      width: 160,
-                    ),
+                    ExNumericField(
+                        hintText: 'Precio de venta',
+                        controller: _controllerPrecioDeVenta,
+                        prefixText: '\$ ',
+                        width: 160,
+                        onExit: () {
+                          state.precioDeVenta = PrecioDeVentaProducto(
+                              Moneda(_controllerPrecioDeCompra.text));
+                        }),
                     ExTextField(
                       hintText: 'Imagen URL',
                       controller: _controllerImagen,
@@ -384,7 +355,7 @@ class _NuevoProductoState extends State<NuevoProducto> {
                         icon: Icons.save,
                         tamanoFuente: 15,
                         onTap: () async {
-                          await crearProducto();
+                          await model.crearProducto();
                         }),
                   ),
                   const SizedBox(
@@ -397,7 +368,10 @@ class _NuevoProductoState extends State<NuevoProducto> {
                         label: 'Cancelar',
                         tamanoFuente: 15,
                         icon: Icons.cancel,
-                        onTap: () => {limpiarCampos()}),
+                        onTap: () {
+                          limpiarCampos();
+                          model.limpiar();
+                        }),
                   )
                 ],
               ),
