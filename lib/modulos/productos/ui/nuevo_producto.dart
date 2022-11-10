@@ -145,25 +145,20 @@ class _NuevoProductoState extends ConsumerState<NuevoProducto> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ExTextField(
-                      fieldKey: _codigoField,
-                      hintText: 'Código',
-                      controller: _controllerCodigo,
-                      icon: state.existeCodigo
-                          ? Icons.error
-                          : Icons.document_scanner,
-                      width: 300,
-                      validator: (value) async {
-                        debugPrint('Validando codigo...');
-                        if (value == null) {
-                          return 'No se aceptan valores Nulos';
-                        }
+                        fieldKey: _codigoField,
+                        hintText: 'Código',
+                        controller: _controllerCodigo,
+                        icon: state.existeCodigo
+                            ? Icons.error
+                            : Icons.document_scanner,
+                        width: 300,
+                        validator: (value) async {
+                          if (value == null) {
+                            return 'No se aceptan valores Nulos';
+                          }
 
-                        return await model.sanitizarYValidarCodigo(value);
-                      },
-                      onExit: () async {
-                        _codigoField.currentState?.validate();
-                      },
-                    ),
+                          return await model.sanitizarYValidarCodigo(value);
+                        }),
                     ExTextField(
                         fieldKey: _nombreField,
                         hintText: 'Nombre',
@@ -174,9 +169,6 @@ class _NuevoProductoState extends ConsumerState<NuevoProducto> {
                           }
 
                           return await model.sanitizarYValidarNombre(value);
-                        },
-                        onExit: () async {
-                          _nombreField.currentState?.validate();
                         }),
                     FutureBuilder<List<Categoria>>(
                         future: _categorias,

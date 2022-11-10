@@ -168,8 +168,20 @@ class _ExTextFieldState extends State<_ExTextField> {
       child: Focus(
         onFocusChange: (hasFocus) async {
           if (!hasFocus) {
+            // Solo al perder el foco, mandamos llamar al validador si existe...
             if (widget.validator != null) {
               _errValidacion = await widget.validator!(widget.controller.text);
+
+              // Como perdimos el foco mandamos validar el campo de la forma para que se muestre
+              // el error de validación del TextFormField
+              if (widget.fieldKey is GlobalKey<FormFieldState>) {
+                (widget.fieldKey as GlobalKey<FormFieldState>)
+                    .currentState
+                    ?.validate();
+              } else {
+                debugPrint(
+                    '🚧 El campo no tiene asignado un fieldKey, se necesita para realizar la validación.');
+              }
             }
           }
 
@@ -211,7 +223,21 @@ class _ExTextFieldState extends State<_ExTextField> {
                 hintText: (_enDesktop.resolve(context) == true)
                     ? widget.hintText
                     : null,
-                //helperText: "Ingresa precios sin impuestos",
+                errorStyle: TextStyle(color: TailwindColors.red[700]!),
+                errorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(5),
+                  borderSide: BorderSide(
+                    color: TailwindColors.red[700]!,
+                    width: 1.0,
+                  ),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(5),
+                  borderSide: BorderSide(
+                    color: TailwindColors.lightBlue[600]!,
+                    width: 1.5,
+                  ),
+                ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(5),
                   borderSide: BorderSide(
