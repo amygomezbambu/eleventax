@@ -15,17 +15,17 @@ class BarraNavegacionInferior extends StatelessWidget {
   List<BottomNavigationBarItem> construirNavegacion(BuildContext context) {
     List<BottomNavigationBarItem> navegacion = [];
 
-    modulosActuales.forEach((key, v) {
+    for (var ruta in Rutas.values) {
       var destination = BottomNavigationBarItem(
         backgroundColor: DesignSystem.backgroundColor,
-        icon: Icon(v),
-        activeIcon: Icon(v),
-        tooltip: key,
-        label: key,
+        icon: Icon(ruta.icon),
+        activeIcon: Icon(ruta.icon),
+        tooltip: ruta.nombre,
+        label: ruta.nombre,
       );
 
       navegacion.add(destination);
-    });
+    }
 
     return navegacion;
   }

@@ -1,9 +1,11 @@
-// TODO: Mover cuando la lógica de ruteo/navegación esté lista
 import 'package:flutter/material.dart';
 
-const modulosActuales = {
-  "Ventas": Icons.shopping_bag,
-  "Productos": Icons.inventory_2,
-  "Inventario": Icons.inventory_sharp,
-  "Configuración": Icons.settings,
-};
+/// Rutas de las Vistas de la app disponibles
+enum Rutas {
+  ventas("Ventas", Icons.shopping_bag),
+  productos("Productos", Icons.inventory_2);
+
+  const Rutas(this.nombre, this.icon);
+  final String nombre;
+  final IconData icon;
+}

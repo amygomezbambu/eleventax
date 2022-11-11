@@ -14,6 +14,7 @@
     {
       "label": "📄 Copiamos DLLs de SQLite para que funcionen las pruebas (solo Windows)",
       "type": "shell",
+      "command": "",
       "windows": {
         "command": " Copy-Item -Path \"assets/windows/*.dll\" -Destination \"./\" -Force"
       }
@@ -49,15 +50,6 @@
         "test"
       ],
       "problemMatcher": [],
-    },
-    {
-      "label": "❌ Borrar base de datos local",
-      "type": "shell",
-      "command": "rm",
-      "args": [
-        "~/Library/Containers/com.bambucode.eleventa/Data/Documents/eleventa.db"
-      ],
-      "problemMatcher": [],      
-    }
+    }    
   ]
 }

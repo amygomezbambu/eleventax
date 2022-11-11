@@ -1,18 +1,20 @@
 //import 'package:eleventa/modules/common/ui/ui_consts.dart' as ui;
-import 'package:eleventa/modulos/common/ui/layout_desktop.dart';
-import 'package:eleventa/modulos/common/ui/layout_mobile.dart';
-import 'package:eleventa/modulos/common/ui/design_system.dart';
-import 'package:eleventa/modulos/config/flags.dart';
-import 'package:eleventa/modulos/productos/ui/vista_productos.dart';
-import 'package:eleventa/modulos/ventas/ui/vista_ventas.dart';
-
+import 'package:eleventa/modulos/common/ui/rutas.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:layout/layout.dart';
 
-class LayoutPrincipal extends StatefulWidget {
-  const LayoutPrincipal({Key? key, required this.title}) : super(key: key);
+import 'package:eleventa/modulos/common/ui/design_system.dart';
+import 'package:eleventa/modulos/common/ui/layout_desktop.dart';
+import 'package:eleventa/modulos/common/ui/layout_mobile.dart';
 
-  final String title;
+class LayoutPrincipal extends StatefulWidget {
+  final Widget child;
+
+  const LayoutPrincipal({
+    Key? key,
+    required this.child,
+  }) : super(key: key);
 
   @override
   LayoutPrincipalState createState() => LayoutPrincipalState();
@@ -24,6 +26,16 @@ class LayoutPrincipalState extends State<LayoutPrincipal> {
   void onIndexSelect(newIndex) {
     setState(() {
       index = newIndex;
+
+      // TODO: Refactorizar para no depender del indice
+      switch (index) {
+        case 0:
+          context.goNamed(Rutas.ventas.name);
+          break;
+        case 1:
+          context.goNamed(Rutas.productos.name);
+          break;
+      }
     });
   }
 
@@ -37,12 +49,7 @@ class LayoutPrincipalState extends State<LayoutPrincipal> {
             iconSize: 30,
             icon: const Icon(Icons.chevron_left),
             onPressed: () {}),
-        title: Text(
-            (context.layout.breakpoint <= LayoutBreakpoint.sm)
-                ? 'Nuevo Producto'
-                : Feature.productos.estaHabilitado()
-                    ? 'eleventa punto de venta - productos'
-                    : 'eleventa punto de venta ', // ToDO: Incluir el nombre del módulo
+        title: Text('titulo', // ToDO: Incluir el nombre del módulo
             style: TextStyle(
                 color: Colors.white,
                 fontSize: (context.layout.breakpoint <= LayoutBreakpoint.sm)
@@ -61,7 +68,7 @@ class LayoutPrincipalState extends State<LayoutPrincipal> {
               Icons.feedback,
               color: Colors.white38,
             ),
-            tooltip: 'Dar retroalimentación',
+            //tooltip: 'Dar retroalimentación',
             onPressed: () {
               // TODO: Mostrar vista para mandar feedback a desarrolladores
             },
@@ -75,16 +82,7 @@ class LayoutPrincipalState extends State<LayoutPrincipal> {
                 selectedIndex: index, onIndexSelect: onIndexSelect),
             const VerticalDivider(thickness: 1, width: 1),
           ],
-          Expanded(
-              child: Feature.productos.estaHabilitado()
-                  ? const VistaProductos(
-                      key: ValueKey('VistaProductos'),
-                      titulo: 'Productos',
-                    )
-                  : const VistaVentas(
-                      key: ValueKey('VistaVentas'),
-                      titulo: 'Ventas',
-                    )),
+          Expanded(child: widget.child),
           Container(
             color: Colors.amber,
             height: 30,

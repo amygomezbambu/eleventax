@@ -12,9 +12,7 @@ import 'package:eleventa/modulos/ventas/app/usecase/agregar_articulo.dart';
 import 'package:layout/layout.dart';
 
 class VistaVentas extends StatefulWidget {
-  final String titulo;
-
-  const VistaVentas({Key? key, required this.titulo}) : super(key: key);
+  const VistaVentas({Key? key, required String title}) : super(key: key);
 
   @override
   State<VistaVentas> createState() => _VistaVentasState();

@@ -16,28 +16,19 @@ class BarraNavegacionLateral extends StatelessWidget {
   List<NavigationRailDestination> construirNavegacion(BuildContext context) {
     List<NavigationRailDestination> navegacion = [];
 
-    modulosActuales.forEach((key, v) {
+    for (var ruta in Rutas.values) {
       var destination = NavigationRailDestination(
         padding: const EdgeInsets.only(top: 5, bottom: 15),
-        icon: Tooltip(
-          message: key,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5),
-            color: Colors.black87,
-          ),
-          margin: const EdgeInsets.only(left: 57, top: 51),
-          preferBelow: false,
-          child: Icon(
-            v,
-            semanticLabel: key,
-          ),
+        icon: Icon(
+          ruta.icon,
+          semanticLabel: ruta.nombre,
         ),
-        selectedIcon: Icon(v),
+        selectedIcon: Icon(ruta.icon),
         label: const Text('Ventas'),
       );
 
       navegacion.add(destination);
-    });
+    }
 
     return navegacion;
   }

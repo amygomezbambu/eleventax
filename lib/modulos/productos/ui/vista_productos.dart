@@ -4,9 +4,7 @@ import 'package:flutter_tailwindcss_defaults/colors.dart';
 import 'package:layout/layout.dart';
 
 class VistaProductos extends StatelessWidget {
-  final String titulo;
-
-  const VistaProductos({Key? key, required this.titulo}) : super(key: key);
+  const VistaProductos({Key? key, required String title}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
