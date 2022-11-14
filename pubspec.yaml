@@ -57,7 +57,7 @@ dependencies:
   device_info_plus: ^8.0.0
   mockito: ^5.3.2
   envied: ^0.2.4 # [ADR-0008]
-  package_info_plus: ^3.0.1
+  package_info_plus: ^3.0.2
   connectivity_plus: ^3.0.2
   nanoid: ^1.0.0 # [ADR-0003]
   flutter_riverpod: ^2.1.1
