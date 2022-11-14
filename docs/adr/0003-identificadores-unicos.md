@@ -17,11 +17,8 @@ conocido que en este tipo de sistemas los indetificadores auto-incrementales tie
 
 # Decisión
 
-Decidimos usar NanoID debido a que nuestra primera opción la cual era XID presenta un fallo aleatorio durante las pruebas. Adicionalmente elegimos limitar el alfabeto de nanoID a los caracteres default (0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-) excepto el guion bajo (\_) debido a que en un futuro se proyecta que los IDs serán visibles y/o usados en URLs donde el guion bajo dificulta la lectura.
+Decidimos utilizar XID ya que su tamaño es mas pequeño que todas las otras opciones, es mas rapido y cumple con todos los criterios de selección.
 
-Adicionalmente se decidió dejar la longitud por defecto de 21 caracteres para evitar tener colisiones entre distintos dispositivos.
-
-La segunda mejor opción es NanoID debido a su tamaño mas compacto y mayor velocidad de generación que UUID.
 
 # Consecuencias
 

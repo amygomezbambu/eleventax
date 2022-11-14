@@ -176,7 +176,8 @@ class _NuevoProductoState extends ConsumerState<NuevoProducto> {
                             AsyncSnapshot<List<Categoria>> snapshot) {
                           if (snapshot.hasData) {
                             List<Categoria> listadoCategorias = snapshot.data!;
-                            if (!listadoCategorias.first.uid.isInvalid()) {
+                            if (UID.isValid(
+                                listadoCategorias.first.uid.toString())) {
                               listadoCategorias.insert(
                                 0,
                                 Categoria(

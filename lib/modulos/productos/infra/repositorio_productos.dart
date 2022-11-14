@@ -33,7 +33,7 @@ class RepositorioProductos extends Repositorio
         'codigo': producto.codigo,
         'nombre': producto.nombre,
         if (producto.categoria != null)
-          if (!producto.categoria!.uid.isInvalid())
+          if (UID.isValid(producto.categoria!.uid.toString()))
             'categoria_uid': producto.categoria!.uid.toString(),
         'unidad_medida_uid': producto.unidadMedida.uid.toString(),
         'precio_compra': producto.precioDeCompra.toMonedaInt(),
@@ -85,7 +85,7 @@ class RepositorioProductos extends Repositorio
 
     for (var row in result) {
       producto = Producto.cargar(
-          uid: UID(row['uid'] as String),
+          uid: UID.fromString(row['uid'] as String),
           nombre: NombreProducto(row['nombre'] as String),
           precioDeVenta: PrecioDeVentaProducto(
               Moneda.fromMonedaInt(row['precio_venta'] as int)),
@@ -94,7 +94,7 @@ class RepositorioProductos extends Repositorio
           ),
           codigo: CodigoProducto(row['codigo'] as String),
           unidadDeMedida: UnidadDeMedida(
-            uid: UID(row['unidad_medida_uid'] as String),
+            uid: UID.fromString(row['unidad_medida_uid'] as String),
             nombre: row['unidad_medida_nombre'] as String,
             abreviacion: row['unidad_medida_abreviacion'] as String,
           ),
@@ -102,7 +102,7 @@ class RepositorioProductos extends Repositorio
           categoria: row['categoria_uid'] == null
               ? null
               : Categoria(
-                  uid: UID(row['categoria_uid'] as String),
+                  uid: UID.fromString(row['categoria_uid'] as String),
                   nombre: row['categoria'] as String),
           imagenURL: row['url_imagen'] as String,
           preguntarPrecio: Utils.db.intToBool(row['preguntar_precio'] as int));
@@ -127,7 +127,7 @@ class RepositorioProductos extends Repositorio
     for (var row in result) {
       items.add(
         Producto.cargar(
-            uid: UID(row['uid'] as String),
+            uid: UID.fromString(row['uid'] as String),
             nombre: NombreProducto(row['nombre'] as String),
             precioDeVenta: PrecioDeVentaProducto(
                 Moneda.fromMonedaInt(row['precio_venta'] as int)),
@@ -135,7 +135,7 @@ class RepositorioProductos extends Repositorio
                 Moneda.fromMonedaInt(row['precio_compra'] as int)),
             codigo: CodigoProducto(row['codigo'] as String),
             unidadDeMedida: UnidadDeMedida(
-              uid: UID(row['unidad_medida_uid'] as String),
+              uid: UID.fromString(row['unidad_medida_uid'] as String),
               nombre: row['unidad_medida_nombre'] as String,
               abreviacion: row['unidad_medida_abreviacion'] as String,
             ),
@@ -143,7 +143,7 @@ class RepositorioProductos extends Repositorio
             categoria: row['categoria_uid'] == null
                 ? null
                 : Categoria(
-                    uid: UID(row['categoria_uid'] as String),
+                    uid: UID.fromString(row['categoria_uid'] as String),
                     nombre: row['categoria'] as String),
             imagenURL: row['url_imagen'] as String,
             preguntarPrecio:
@@ -219,7 +219,7 @@ class RepositorioProductos extends Repositorio
 
     if (dbResult.length == 1) {
       configCompartida = ConfigCompartidaDeProductos.cargar(
-        uid: UID(dbResult.first['uid'].toString()),
+        uid: UID.fromString(dbResult.first['uid'].toString()),
         permitirPrecioCompraCero: Utils.db
             .intToBool(dbResult.first['permitirPrecioCompraCero'] as int),
       );

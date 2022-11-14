@@ -17,7 +17,7 @@ class ObtenerVenta extends Usecase<VentaDTO> {
   }
 
   Future<VentaDTO> _operation() async {
-    var venta = await _repo.obtener(UID(req.ventaUID));
+    var venta = await _repo.obtener(UID.fromString(req.ventaUID));
 
     if (venta == null) {
       throw Exception('No existe la venta');

@@ -5,9 +5,10 @@ import 'package:eleventa/modulos/ventas/domain/entity/articulo_de_venta.dart';
 class ArticuloMapper {
   static ArticuloDeVenta dataADominio(ArticuloDTO articulo) {
     return ArticuloDeVenta(
-      productoUID:
-          articulo.productoUID != null ? UID(articulo.productoUID!) : null,
-      ventaUID: UID(articulo.ventaUID),
+      productoUID: articulo.productoUID != null
+          ? UID.fromString(articulo.productoUID!)
+          : null,
+      ventaUID: UID.fromString(articulo.ventaUID),
       descripcion: articulo.descripcion,
       precio: articulo.precio,
       cantidad: articulo.cantidad,

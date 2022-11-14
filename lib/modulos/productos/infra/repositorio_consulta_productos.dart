@@ -21,7 +21,7 @@ class RepositorioConsultaProductos extends RepositorioConsulta
     if (dbResult.isNotEmpty) {
       for (var row in dbResult) {
         res.add(Impuesto(
-            uid: UID(row['uid'] as String),
+            uid: UID.fromString(row['uid'] as String),
             nombre: row['nombre'] as String,
             porcentaje: (row['porcentaje'] as int).toDouble()));
       }
@@ -39,8 +39,12 @@ class RepositorioConsultaProductos extends RepositorioConsulta
 
     if (dbResult.isNotEmpty) {
       for (var row in dbResult) {
-        categorias.add(Categoria(
-            uid: UID(row['uid'] as String), nombre: row['nombre'] as String));
+        categorias.add(
+          Categoria(
+            uid: UID.fromString(row['uid'] as String),
+            nombre: row['nombre'] as String,
+          ),
+        );
       }
     }
 
@@ -56,7 +60,7 @@ class RepositorioConsultaProductos extends RepositorioConsulta
     if (dbResult.isNotEmpty) {
       for (var row in dbResult) {
         res.add(UnidadDeMedida(
-            uid: UID(row['uid'] as String),
+            uid: UID.fromString(row['uid'] as String),
             nombre: row['nombre'] as String,
             abreviacion: row['abreviacion'] as String));
       }

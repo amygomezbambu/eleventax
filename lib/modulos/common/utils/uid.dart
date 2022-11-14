@@ -1,25 +1,38 @@
-import 'package:nanoid/nanoid.dart';
+import 'package:eleventa/modulos/common/exception/excepciones.dart';
+import 'package:xid/xid.dart';
 
 class UID {
-  String _identifier = '';
+  late String _identifier;
   static const _invalidIdentifier = '0';
-  static const _nanoIdAlphabet =
-      '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-';
 
-  UID([String uid = '']) {
-    if (uid.isEmpty) {
-      _identifier = customAlphabet(_nanoIdAlphabet, 21);
+  /// Crear un nuevo UID
+  UID() {
+    _identifier = Xid().toString();
+  }
+
+  ///Crea un UID a partir de una cadena
+  ///
+  /// Si el parametro [uidString] es valido entonces se utiliza para crear
+  /// un nuevo UID, si es invalido se lanza [EleventaEx].
+  UID.fromString(String uidString) {
+    if (isValid(uidString)) {
+      _identifier = uidString;
     } else {
-      _identifier = uid;
+      throw EleventaEx(message: 'El identificador es invalido');
     }
   }
 
-  UID.invalid() {
-    _identifier = _invalidIdentifier;
-  }
+  /// Crear un uid invalido
+  UID.invalid() : _identifier = _invalidIdentifier;
 
-  bool isInvalid() {
-    return _identifier == _invalidIdentifier;
+  /// Determina si la cadena proporcionada [uidString] representa un UID valido
+  static bool isValid(String uidString) {
+    try {
+      Xid.fromString(uidString);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   @override
@@ -30,6 +43,6 @@ class UID {
 
   @override
   String toString() {
-    return _identifier;
+    return _identifier.toString();
   }
 }

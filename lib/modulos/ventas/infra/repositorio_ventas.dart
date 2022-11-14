@@ -111,7 +111,7 @@ class RepositorioVentas extends Repositorio implements IRepositorioDeVentas {
       var statusIndex = row['status'] as int;
 
       venta = Venta.cargar(
-        uid: UID(row['uid'] as String),
+        uid: UID.fromString(row['uid'] as String),
         nombre: row['nombre'] as String,
         total: row['total'] as double,
         status: EstadoDeVenta.values[statusIndex],
@@ -158,7 +158,7 @@ class RepositorioVentas extends Repositorio implements IRepositorioDeVentas {
 
     if (dbResult.length == 1) {
       configCompartida = ConfigCompartidaDeVentas.cargar(
-        uid: UID(dbResult.first['uid'].toString()),
+        uid: UID.fromString(dbResult.first['uid'].toString()),
         permitirProductoComun:
             Utils.db.intToBool(dbResult.first['permitirProductoComun'] as int),
         permitirCostoZero:

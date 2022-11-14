@@ -41,7 +41,7 @@ class ProductoMapper {
   /// de esa manera al cambiar la db cambiaria automaticamente el mapeador.
   static Producto databaseADomain(Map<String, Object?> dbRow) {
     return Producto.cargar(
-      uid: UID(dbRow['uid'] as String),
+      uid: UID.fromString(dbRow['uid'] as String),
       nombre: NombreProducto(dbRow['nombre'] as String),
       precioDeVenta: PrecioDeVentaProducto(
           Moneda.fromMonedaInt(dbRow['precio_venta'] as int)),
@@ -49,7 +49,7 @@ class ProductoMapper {
           Moneda.fromMonedaInt(dbRow['precio_compra'] as int)),
       codigo: CodigoProducto(dbRow['codigo'] as String),
       unidadDeMedida: UnidadDeMedida(
-          uid: UID(dbRow['unidad_medida_uid'] as String),
+          uid: UID.fromString(dbRow['unidad_medida_uid'] as String),
           nombre: dbRow['unidad_medida_nombre'] as String,
           abreviacion: dbRow['unidad_medida_abreviacion'] as String),
       preguntarPrecio: Utils.db.intToBool(dbRow['preguntar_precio'] as int),

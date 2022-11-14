@@ -1030,6 +1030,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.0+2"
+  xid:
+    dependency: "direct main"
+    description:
+      name: xid
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.12"
   xml:
     dependency: transitive
     description:
