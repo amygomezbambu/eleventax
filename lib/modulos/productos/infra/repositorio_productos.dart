@@ -1,3 +1,4 @@
+import 'package:eleventa/dependencias.dart';
 import 'package:eleventa/modulos/common/app/interface/database.dart';
 import 'package:eleventa/modulos/common/app/interface/sync.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
@@ -19,6 +20,8 @@ import 'package:eleventa/modulos/common/domain/moneda.dart';
 
 class RepositorioProductos extends Repositorio
     implements IRepositorioProductos {
+  final _consultas = Dependencias.productos.repositorioConsultasProductos();
+
   RepositorioProductos({
     required ISync syncAdapter,
     required IAdaptadorDeBaseDeDatos db,
@@ -113,45 +116,7 @@ class RepositorioProductos extends Repositorio
 
   @override
   Future<List<Producto>> obtenerTodos() async {
-    var query =
-        'SELECT p.uid,p.codigo,p.nombre,p.categoria_uid,p.precio_compra,p.precio_venta,'
-        'p.se_vende_por,p.url_imagen,c.nombre AS categoria,um.nombre as unidad_medida_nombre, '
-        'um.abreviacion as unidad_medida_abreviacion, p.preguntar_precio '
-        'FROM productos p '
-        'LEFT JOIN productos_categorias c on p.categoria_uid = c.uid '
-        'LEFT JOIN unidades_medida um on p.unidad_medida_uid = um.uid ';
-
-    var result = await db.query(sql: query);
-    var items = <Producto>[];
-
-    for (var row in result) {
-      items.add(
-        Producto.cargar(
-            uid: UID.fromString(row['uid'] as String),
-            nombre: NombreProducto(row['nombre'] as String),
-            precioDeVenta: PrecioDeVentaProducto(
-                Moneda.fromMonedaInt(row['precio_venta'] as int)),
-            precioDeCompra: PrecioDeCompraProducto(
-                Moneda.fromMonedaInt(row['precio_compra'] as int)),
-            codigo: CodigoProducto(row['codigo'] as String),
-            unidadDeMedida: UnidadDeMedida(
-              uid: UID.fromString(row['unidad_medida_uid'] as String),
-              nombre: row['unidad_medida_nombre'] as String,
-              abreviacion: row['unidad_medida_abreviacion'] as String,
-            ),
-            seVendePor: ProductoSeVendePor.values[row['se_vende_por'] as int],
-            categoria: row['categoria_uid'] == null
-                ? null
-                : Categoria(
-                    uid: UID.fromString(row['categoria_uid'] as String),
-                    nombre: row['categoria'] as String),
-            imagenURL: row['url_imagen'] as String,
-            preguntarPrecio:
-                Utils.db.intToBool(row['preguntar_precio'] as int)),
-      );
-    }
-
-    return items;
+    return _consultas.obtenerProductos();
   }
 
   @override

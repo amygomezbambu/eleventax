@@ -2,6 +2,7 @@ import 'package:eleventa/dependencias.dart';
 import 'package:eleventa/loader.dart';
 import 'package:eleventa/modulos/common/ui/no_encontrado.dart';
 import 'package:eleventa/modulos/common/ui/rutas.dart';
+import 'package:eleventa/modulos/productos/ui/nuevo_producto.dart';
 import 'package:eleventa/modulos/ventas/ui/vista_ventas.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -77,7 +78,7 @@ class EleventaApp extends StatelessWidget {
   }
 
   final GoRouter _router = GoRouter(
-    initialLocation: '/',
+    initialLocation: '/ventas',
     navigatorKey: _rootNavigatorKey,
     routes: [
       ShellRoute(
@@ -92,7 +93,7 @@ class EleventaApp extends StatelessWidget {
           },
           routes: [
             GoRoute(
-              path: '/',
+              path: '/ventas',
               name: Rutas.ventas.name,
               pageBuilder: (BuildContext context, GoRouterState state) =>
                   // TODO: Construir el arreglo de rutas de forma dinamica en base al enum de Rutas
@@ -105,14 +106,18 @@ class EleventaApp extends StatelessWidget {
               )),
             ),
             GoRoute(
-              path: '/productos',
-              name: Rutas.productos.name,
-              pageBuilder: (context, state) => const NoTransitionPage(
-                child: VistaProductos(
-                  title: 'Productos',
-                ),
-              ),
-            ),
+                path: '/productos',
+                name: Rutas.productos.name,
+                pageBuilder: (context, state) => const NoTransitionPage(
+                      child: VistaProductos(
+                        title: 'Productos',
+                      ),
+                    ),
+                routes: [
+                  GoRoute(
+                      path: 'nuevo',
+                      builder: (context, state) => NuevoProducto(context))
+                ]),
           ])
     ],
     errorBuilder: (context, state) => const VistaNoEncontrado(),

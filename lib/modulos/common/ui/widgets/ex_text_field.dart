@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_tailwindcss_defaults/colors.dart';
 import 'package:layout/layout.dart';
 
@@ -9,6 +10,8 @@ const _fontSizeMD = 14.0;
 
 typedef ValidadorTextField = Future<String?> Function(String? value)?;
 
+enum InputType { texto, numerico, moneda }
+
 class ExTextField extends StatelessWidget {
   final String hintText;
   final TextEditingController controller;
@@ -18,6 +21,7 @@ class ExTextField extends StatelessWidget {
   final double? width;
   final IconData? icon;
   final GlobalKey? fieldKey;
+  final InputType inputType;
 
   /// Evento lanzado cuando el widget pierde el foco,
   /// usualmente usado para validaciones
@@ -36,7 +40,8 @@ class ExTextField extends StatelessWidget {
       this.icon,
       this.fieldKey,
       this.onExit,
-      this.validator})
+      this.validator,
+      this.inputType = InputType.texto})
       : super(key: key);
 
   @override
@@ -57,7 +62,8 @@ class ExTextField extends StatelessWidget {
                 icon: icon,
                 onExit: onExit,
                 validator: validator,
-                fieldKey: fieldKey),
+                fieldKey: fieldKey,
+                inputType: inputType),
             parentBuilder: (Widget child) => SizedBox(
               width: width,
               child: child,
@@ -80,16 +86,18 @@ class ExTextField extends StatelessWidget {
             child: ConditionalParentWidget(
               condition: (width != null),
               child: _ExTextField(
-                  hintText: hintText,
-                  controller: controller,
-                  tamanoFuente: _fontSizeMD,
-                  prefixText: prefixText,
-                  suffixText: suffixText,
-                  helperText: helperText,
-                  icon: icon,
-                  onExit: onExit,
-                  fieldKey: fieldKey,
-                  validator: validator),
+                hintText: hintText,
+                controller: controller,
+                tamanoFuente: _fontSizeMD,
+                prefixText: prefixText,
+                suffixText: suffixText,
+                helperText: helperText,
+                icon: icon,
+                onExit: onExit,
+                fieldKey: fieldKey,
+                validator: validator,
+                inputType: inputType,
+              ),
               parentBuilder: (Widget child) => SizedBox(
                 width: width,
                 child: child,
@@ -138,6 +146,7 @@ class _ExTextField extends StatefulWidget {
   final GlobalKey? fieldKey;
   final ValidadorTextField validator;
   final String hintText;
+  final InputType inputType;
 
   const _ExTextField({
     Key? key,
@@ -151,6 +160,7 @@ class _ExTextField extends StatefulWidget {
     this.fieldKey,
     required this.hintText,
     this.validator,
+    required this.inputType,
   }) : super(key: key);
 
   @override
@@ -161,6 +171,22 @@ class _ExTextFieldState extends State<_ExTextField> {
   final _enDesktop = LayoutValue(xs: true, md: false);
   String? _errValidacion;
 
+  String _sanitizarNumerico(String cadena) {
+    if (cadena.isEmpty) {
+      return cadena;
+    }
+
+    if (cadena[cadena.length - 1] == '.') {
+      cadena = cadena.substring(0, cadena.length - 1);
+    }
+
+    var arr = cadena.split('.');
+    arr[0] = int.parse(arr[0]).toString();
+
+    cadena = arr.length > 1 ? ('${arr[0]}.${arr[1]}') : (arr[0]);
+    return cadena;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -168,6 +194,11 @@ class _ExTextFieldState extends State<_ExTextField> {
       child: Focus(
         onFocusChange: (hasFocus) async {
           if (!hasFocus) {
+            if (widget.inputType == InputType.numerico) {
+              widget.controller.text =
+                  _sanitizarNumerico(widget.controller.text);
+            }
+
             // Solo al perder el foco, mandamos llamar al validador si existe...
             if (widget.validator != null) {
               _errValidacion = await widget.validator!(widget.controller.text);
@@ -194,7 +225,27 @@ class _ExTextFieldState extends State<_ExTextField> {
             key: widget.fieldKey,
             controller: widget.controller,
             cursorColor: Colors.black,
-            keyboardType: TextInputType.text,
+            keyboardType: (widget.inputType == InputType.texto)
+                ? TextInputType.text
+                : const TextInputType.numberWithOptions(decimal: true),
+            inputFormatters: (widget.inputType == InputType.texto)
+                ? null
+                : [
+                    TextInputFormatter.withFunction(
+                      (oldValue, newValue) {
+                        var reg = RegExp(r'^[0-9]\d{0,11}(\.\d{0,6})?$');
+
+                        if (newValue.text.isEmpty) {
+                          return newValue;
+                        }
+                        if (!reg.hasMatch(newValue.text)) {
+                          return oldValue;
+                        }
+
+                        return newValue;
+                      },
+                    ),
+                  ],
             textInputAction: TextInputAction.next,
             autofocus: true,
             autovalidateMode: AutovalidateMode.disabled,

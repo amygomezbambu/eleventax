@@ -35,10 +35,11 @@ class BarraNavegacionInferior extends StatelessWidget {
     return BottomNavigationBar(
       currentIndex: selectedIndex,
       selectedItemColor: DesignSystem.accionPrimaria,
-      //unselectedItemColor: const Color.fromARGB(255, 197, 196, 196),
+      backgroundColor: DesignSystem.backgroundColor,
+      unselectedItemColor: const Color.fromARGB(255, 197, 196, 196),
       enableFeedback: false,
-      showSelectedLabels: false,
-      showUnselectedLabels: false,
+      showSelectedLabels: true,
+      showUnselectedLabels: true,
       selectedFontSize: 11,
       unselectedFontSize: 11,
       selectedIconTheme: const IconThemeData(

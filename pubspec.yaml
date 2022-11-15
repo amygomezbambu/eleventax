@@ -59,10 +59,9 @@ dependencies:
   envied: ^0.2.4 # [ADR-0008]
   package_info_plus: ^3.0.2
   connectivity_plus: ^3.0.2
-  nanoid: ^1.0.0 # [ADR-0003]
   flutter_riverpod: ^2.1.1
   go_router: ^5.1.5
-  xid: ^1.0.12
+  xid: ^1.0.12 # [ADR-0003]
 
 dev_dependencies:
   integration_test:

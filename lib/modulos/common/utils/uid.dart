@@ -18,7 +18,7 @@ class UID {
     if (isValid(uidString)) {
       _identifier = uidString;
     } else {
-      throw EleventaEx(message: 'El identificador es invalido');
+      throw EleventaEx(message: 'El identificador es invalido: $uidString');
     }
   }
 

@@ -49,7 +49,7 @@ class LayoutPrincipalState extends State<LayoutPrincipal> {
             iconSize: 30,
             icon: const Icon(Icons.chevron_left),
             onPressed: () {}),
-        title: Text('titulo', // ToDO: Incluir el nombre del módulo
+        title: Text('eleventa', // ToDO: Incluir el nombre del módulo
             style: TextStyle(
                 color: Colors.white,
                 fontSize: (context.layout.breakpoint <= LayoutBreakpoint.sm)
