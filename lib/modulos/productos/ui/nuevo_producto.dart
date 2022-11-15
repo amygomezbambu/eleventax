@@ -131,6 +131,9 @@ class _NuevoProductoState extends ConsumerState<NuevoProducto> {
     if (state is EstadoExitoNuevoProducto) {}
 
     return Scaffold(
+      // appBar: AppBar(
+      //   title: const Text('Nuevo producto'),
+      // ),
       body: Scrollbar(
         thumbVisibility: true,
         child: Padding(

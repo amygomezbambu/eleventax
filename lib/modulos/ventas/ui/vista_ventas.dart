@@ -240,7 +240,7 @@ class ControlesVentaActual extends StatelessWidget {
                   child: TextField(
                     key: const ValueKey('skuField'),
                     obscureText: false,
-                    autofocus: true,
+                    autofocus: false,
                     focusNode: focusNode,
                     controller: editingController,
                     onSubmitted: (String val) => {onBuscarCodigo(val)},
