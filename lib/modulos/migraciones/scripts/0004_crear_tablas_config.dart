@@ -12,7 +12,7 @@ class Migracion4 extends Migracion {
         'uid text primary key,'
         'permitirProductoComun INTEGER null,'
         'permitirCostoZero INTEGER null'
-        ') STRICT;';
+        ') ;';
 
     await db.command(sql: command);
 
@@ -20,7 +20,7 @@ class Migracion4 extends Migracion {
         CREATE TABLE config_productos(
         uid TEXT PRIMARY KEY, 
         permitirPrecioCompraCero INTEGER NOT NULL CHECK (permitirPrecioCompraCero IN (0, 1)) DEFAULT 0       
-        ) STRICT;
+        ) ;
         ''';
 
     await db.command(sql: command);

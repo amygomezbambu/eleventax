@@ -82,9 +82,7 @@ class AdaptadorSQLite implements IAdaptadorDeBaseDeDatos {
     try {
       if (Platform.isAndroid) {
         open.overrideFor(OperatingSystem.android, openCipherOnAndroid);
-      }
-
-      if (Platform.isWindows) {
+      } else if (Platform.isWindows) {
         open.overrideFor(OperatingSystem.windows, _openSQLCipherOnWindows);
       } else {
         open.overrideForAll(_sqlcipherOpen);
@@ -173,6 +171,8 @@ class AdaptadorSQLite implements IAdaptadorDeBaseDeDatos {
           debugPrint(
               '** CONTRASEÑA INCORRECTA, ARCHIVO DE BD CORRUPTO O NO ENCRIPTADO **');
           debugPrint('------------------------------------------');
+        } else {
+          debugPrint(ex.toString());
         }
       }
 
