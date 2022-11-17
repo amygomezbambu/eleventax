@@ -45,8 +45,10 @@ class AgregarArticulo extends Usecase<VentaDTO> {
   }
 
   Future<bool> existeVenta(UID uid) async {
-    var venta = await _repo.obtener(uid);
+    //var venta = await _repo.obtener(uid);
 
-    return (venta != null ? true : false);
+    //return (venta != null ? true : false);
+
+    return false;
   }
 }

@@ -2,6 +2,7 @@ import 'package:eleventa/dependencias.dart';
 import 'package:eleventa/loader.dart';
 import 'package:eleventa/modulos/common/ui/no_encontrado.dart';
 import 'package:eleventa/modulos/common/ui/rutas.dart';
+import 'package:eleventa/modulos/productos/ui/modificar_producto.dart';
 import 'package:eleventa/modulos/productos/ui/nuevo_producto.dart';
 import 'package:eleventa/modulos/ventas/ui/vista_ventas.dart';
 import 'package:flutter/foundation.dart';
@@ -115,8 +116,16 @@ class EleventaApp extends StatelessWidget {
                     ),
                 routes: [
                   GoRoute(
-                      path: 'nuevo',
-                      builder: (context, state) => NuevoProducto(context))
+                    path: 'nuevo',
+                    builder: (context, state) => const NuevoProducto(),
+                  ),
+                  GoRoute(
+                      path: 'modificar',
+                      builder: (context, state) {
+                        return ModificarProducto(
+                          producto: state.extra!,
+                        );
+                      }),
                 ]),
           ])
     ],

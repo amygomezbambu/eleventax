@@ -58,7 +58,7 @@ class Loader {
       config: SyncConfig.create(
         dbVersionTable: 'migrations',
         dbVersionField: 'version',
-        groupId: 'CH0001',
+        groupId: 'CH0002',
         deviceId: appConfig.deviceId.toString(),
         addChangesEndpoint:
             'https://qgfy59gc83.execute-api.us-west-1.amazonaws.com/dev/sync',

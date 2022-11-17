@@ -1,19 +1,25 @@
+import 'package:eleventa/modulos/common/domain/entidad.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
 
-class Impuesto {
-  final UID _uid;
+class Impuesto extends Entidad {
   final String _nombre;
   final double _porcentaje;
 
-  UID get uid => _uid;
   String get nombre => _nombre;
   double get porcentaje => _porcentaje;
 
-  Impuesto({
+  Impuesto.cargar({
     required UID uid,
     required String nombre,
     required double porcentaje,
-  })  : _uid = uid,
-        _nombre = nombre,
-        _porcentaje = porcentaje;
+  })  : _nombre = nombre,
+        _porcentaje = porcentaje,
+        super.cargar(uid);
+
+  Impuesto.crear({
+    required String nombre,
+    required double porcentaje,
+  })  : _nombre = nombre,
+        _porcentaje = porcentaje,
+        super.crear();
 }

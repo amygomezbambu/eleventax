@@ -31,9 +31,8 @@ void main() {
         nombre: NombreProducto(nombre),
         precioDeVenta: PrecioDeVentaProducto(precioDeVenta),
         precioDeCompra: PrecioDeCompraProducto(precioDeCompra),
-        categoria: Categoria(uid: UID(), nombre: 'Refrescos'),
-        unidadDeMedida: UnidadDeMedida(
-          uid: UID(),
+        categoria: Categoria.crear(nombre: 'Refrescos'),
+        unidadDeMedida: UnidadDeMedida.crear(
           nombre: 'Pieza',
           abreviacion: 'pz',
         ));
@@ -50,8 +49,7 @@ void main() {
         codigo: CodigoProducto('2343Q34'),
         nombre: NombreProducto(nombre),
         precioDeCompra: PrecioDeCompraProducto(precioDeCompra),
-        unidadDeMedida: UnidadDeMedida(
-          uid: UID(),
+        unidadDeMedida: UnidadDeMedida.crear(
           nombre: 'Pieza',
           abreviacion: 'pz',
         ));
@@ -91,7 +89,7 @@ void main() {
 
     crearProducto.req.producto = llenarProductoConCodigo('S34gj4');
     crearProducto.req.producto.categoria =
-        Categoria(uid: UID.invalid(), nombre: 'Sin Categoria');
+        Categoria.cargar(uid: UID.invalid(), nombre: 'Sin Categoria');
 
     await expectLater(
       crearProducto.exec(),

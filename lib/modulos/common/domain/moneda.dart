@@ -10,8 +10,8 @@ class Moneda {
   MonedaInt _montoInterno = 0;
 
   final _digitosDecimales = 6;
+  final _numeroDigitosAMostrar = 2;
 
-  int get digitosDecimales => _digitosDecimales;
   MonedaInt get montoInterno => _montoInterno;
 
   /// Crear un objeto Moneda desde un monto
@@ -113,9 +113,18 @@ class Moneda {
     }
   }
 
+  //TODO: checar si es posible una mejorar manera ya que el parse puede hacer redondeos
+  double toDouble() {
+    var valor = double.parse('$_parteEntera.$_parteDecimal');
+
+    return valor;
+  }
+
   @override
   String toString() {
-    return '\$ $_parteEntera.$_parteDecimal';
+    var valorCompleto = double.parse('$_parteEntera.$_parteDecimal');
+
+    return '\$ ${valorCompleto.toStringAsFixed(_numeroDigitosAMostrar)}';
   }
 
   @override

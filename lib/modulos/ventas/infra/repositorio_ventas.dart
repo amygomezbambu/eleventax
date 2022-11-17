@@ -98,33 +98,33 @@ class RepositorioVentas extends Repositorio implements IRepositorioDeVentas {
     await db.command(sql: command, params: params);
   }
 
-  @override
-  Future<Venta?> obtener(UID uid) async {
-    var query =
-        'SELECT uid,nombre,total,status,metodo_de_pago,fecha_de_pago FROM ventas '
-        'WHERE uid = ?';
+  // @override
+  // Future<Venta?> obtener(UID uid) async {
+  //   var query =
+  //       'SELECT uid,nombre,total,status,metodo_de_pago,fecha_de_pago FROM ventas '
+  //       'WHERE uid = ?';
 
-    var dbResult = await db.query(sql: query, params: [uid.toString()]);
-    Venta? venta;
+  //   var dbResult = await db.query(sql: query, params: [uid.toString()]);
+  //   Venta? venta;
 
-    for (var row in dbResult) {
-      var statusIndex = row['status'] as int;
+  //   for (var row in dbResult) {
+  //     var statusIndex = row['status'] as int;
 
-      venta = Venta.cargar(
-        uid: UID.fromString(row['uid'] as String),
-        nombre: row['nombre'] as String,
-        total: row['total'] as double,
-        status: EstadoDeVenta.values[statusIndex],
-        metodoDePago: row['metodo_de_pago'] == null
-            ? null
-            : MetodoDePago.values[(row['metodo_de_pago'] as int)],
-        fechaDePago:
-            row['fecha_de_pago'] == null ? null : row['fecha_de_pago'] as int,
-      );
-    }
+  //     venta = Venta.cargar(
+  //       uid: UID.fromString(row['uid'] as String),
+  //       nombre: row['nombre'] as String,
+  //       total: row['total'] as double,
+  //       status: EstadoDeVenta.values[statusIndex],
+  //       metodoDePago: row['metodo_de_pago'] == null
+  //           ? null
+  //           : MetodoDePago.values[(row['metodo_de_pago'] as int)],
+  //       fechaDePago:
+  //           row['fecha_de_pago'] == null ? null : row['fecha_de_pago'] as int,
+  //     );
+  //   }
 
-    return venta;
-  }
+  //   return venta;
+  // }
 
   @override
   Future<void> borrar(UID id) {

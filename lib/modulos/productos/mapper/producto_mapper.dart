@@ -48,11 +48,12 @@ class ProductoMapper {
       precioDeCompra: PrecioDeCompraProducto(
           Moneda.fromMonedaInt(dbRow['precio_compra'] as int)),
       codigo: CodigoProducto(dbRow['codigo'] as String),
-      unidadDeMedida: UnidadDeMedida(
+      unidadDeMedida: UnidadDeMedida.cargar(
           uid: UID.fromString(dbRow['unidad_medida_uid'] as String),
           nombre: dbRow['unidad_medida_nombre'] as String,
           abreviacion: dbRow['unidad_medida_abreviacion'] as String),
       preguntarPrecio: Utils.db.intToBool(dbRow['preguntar_precio'] as int),
+      imagenURL: dbRow['url_imagen'] as String,
     );
   }
 }

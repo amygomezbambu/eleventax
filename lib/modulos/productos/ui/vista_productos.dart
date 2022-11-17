@@ -1,4 +1,4 @@
-import 'package:eleventa/modulos/productos/ui/listado_productos.dart';
+import 'package:eleventa/modulos/productos/ui/vista_listado_productos.dart';
 import 'package:flutter/material.dart';
 
 class VistaProductos extends StatelessWidget {
@@ -6,6 +6,6 @@ class VistaProductos extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const ListadoProductos();
+    return const VistaListadoProductos();
   }
 }

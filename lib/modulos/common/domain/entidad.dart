@@ -1,4 +1,3 @@
-import 'package:eleventa/modulos/common/domain/respuesta_de_validacion.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:meta/meta.dart';
@@ -8,31 +7,26 @@ import 'package:meta/meta.dart';
 ///Todas las entidades deben extender esta clase
 class Entidad {
   @protected
-  UID internalUID;
+  final UID _uid;
 
-  UID get uid => internalUID;
+  UID get uid => _uid;
 
-  Entidad.crear() : internalUID = UID();
+  Entidad.crear() : _uid = UID();
 
-  Entidad.cargar(UID uid) : internalUID = uid;
+  Entidad.cargar(UID uid) : _uid = uid;
 
   @protected
   void lanzarExcepcion({required String mensaje}) {
     throw DomainEx(mensaje);
   }
 
-  /// Corre un validador para un valor
-  ///
-  /// si el [validador] determina que el [valor] es valido retorna el mismo valor
-  /// en caso contrario lanza una excepcion.
-  @protected
-  T validarYAsignar<T>(T valor, RespuestaValidacion Function(T) validador) {
-    var respuesta = validador(valor);
+  @override
+  bool operator ==(Object other) {
+    //if (identical(this, other)) return true;
 
-    if (!respuesta.esValido) {
-      lanzarExcepcion(mensaje: respuesta.mensaje);
-    }
-
-    return valor;
+    return (other as Entidad).uid == _uid;
   }
+
+  @override
+  int get hashCode => _uid.hashCode ^ uid.hashCode;
 }

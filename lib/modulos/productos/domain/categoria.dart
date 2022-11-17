@@ -1,13 +1,18 @@
+import 'package:eleventa/modulos/common/domain/entidad.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
 
-class Categoria {
-  final UID _uid;
+class Categoria extends Entidad {
   final String _nombre;
 
-  UID get uid => _uid;
   String get nombre => _nombre;
 
-  Categoria({required UID uid, required String nombre})
-      : _uid = uid,
-        _nombre = nombre;
+  Categoria.crear({required String nombre})
+      : _nombre = nombre,
+        super.crear();
+
+  Categoria.cargar({
+    required UID uid,
+    required String nombre,
+  })  : _nombre = nombre,
+        super.cargar(uid);
 }

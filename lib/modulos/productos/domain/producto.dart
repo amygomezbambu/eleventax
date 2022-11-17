@@ -109,6 +109,7 @@ class Producto extends Entidad {
         'precioDeVenta: $precioDeVenta\n'
         'precioDeCompra: $precioDeCompra\n'
         'impuestos: $impuestos\n'
+        'imagenURL: $imagenURL\n'
         'seVendePor: $seVendePor\n'
         'preguntarPrecio: $preguntarPrecio\n';
   }

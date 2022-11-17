@@ -4,7 +4,6 @@ import 'package:eleventa/modulos/common/domain/entidad.dart';
 
 abstract class IRepositorio<Entidad> {
   Future<void> agregar(Entidad entity);
-  Future<Entidad?> obtener(UID uid);
   Future<List<Entidad>> obtenerTodos();
   Future<void> actualizar(Entidad entity);
   Future<void> borrar(UID id);

@@ -1,3 +1,4 @@
+import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/productos/domain/categoria.dart';
 import 'package:eleventa/modulos/productos/domain/impuesto.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
@@ -9,4 +10,6 @@ abstract class IRepositorioConsultaProductos {
   Future<List<UnidadDeMedida>> obtenerUnidadesDeMedida();
   Future<bool> existeProducto(String codigo);
   Future<List<Producto>> obtenerProductos();
+  Future<Producto?> obtenerProducto(UID uid);
+  Future<List<Impuesto>> obtenerImpuestosParaProducto(UID productoUID);
 }
