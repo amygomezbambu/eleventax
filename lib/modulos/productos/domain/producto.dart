@@ -1,11 +1,10 @@
 import 'package:eleventa/modulos/common/domain/entidad.dart';
+import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/domain/respuesta_de_validacion.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/productos/domain/categoria.dart';
 import 'package:eleventa/modulos/productos/domain/impuesto.dart';
 import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
-
-import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_compra_producto.dart';
@@ -100,17 +99,36 @@ class Producto extends Entidad {
     return respuesta;
   }
 
-  @override
-  String toString() {
-    return 'codigo: $codigo \n'
-        'nombre: $nombre\n'
-        'categoria: $categoria\n'
-        'unidadMedida: $unidadMedida\n'
-        'precioDeVenta: $precioDeVenta\n'
-        'precioDeCompra: $precioDeCompra\n'
-        'impuestos: $impuestos\n'
-        'imagenURL: $imagenURL\n'
-        'seVendePor: $seVendePor\n'
-        'preguntarPrecio: $preguntarPrecio\n';
+  Producto copyWith({
+    UID? uid,
+    NombreProducto? nombre,
+    PrecioDeVentaProducto? precioDeVenta,
+    PrecioDeCompraProducto? precioDeCompra,
+    Categoria? categoria,
+    UnidadDeMedida? unidadDeMedida,
+    List<Impuesto>? impuestos,
+    ProductoSeVendePor? seVendePor,
+    String? imagenURL,
+    CodigoProducto? codigo,
+    bool? preguntarPrecio,
+  }) {
+    var uidAnterior = uidInterno.toString();
+
+    var result = Producto.crear(
+      codigo: codigo ?? _codigo,
+      nombre: nombre ?? _nombre,
+      precioDeVenta: precioDeVenta ?? _precioDeVenta,
+      unidadDeMedida: unidadDeMedida ?? _unidadDeMedida,
+      precioDeCompra: precioDeCompra ?? _precioDeCompra,
+      categoria: categoria ?? _categoria,
+      preguntarPrecio: preguntarPrecio ?? _preguntarPrecio,
+      imagenURL: imagenURL ?? _imagenURL,
+      seVendePor: seVendePor ?? _seVendePor,
+      impuestos: impuestos ?? _impuestos,
+    );
+
+    result.uidInterno = uid ?? UID.fromString(uidAnterior);
+
+    return result;
   }
 }

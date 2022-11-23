@@ -24,8 +24,11 @@ import 'package:eleventa/modulos/productos/modulo_productos.dart';
 class FormaProducto extends StatefulWidget {
   final Producto? producto;
 
-  const FormaProducto(BuildContext context, {Key? key, this.producto})
-      : super(key: key);
+  const FormaProducto(
+    BuildContext context, {
+    Key? key,
+    this.producto,
+  }) : super(key: key);
 
   @override
   State<FormaProducto> createState() => _FormaProductoState();
@@ -128,40 +131,69 @@ class _FormaProductoState extends State<FormaProducto> {
 
   @override
   void initState() {
+    debugPrint('Iniciando estado de widget FormaProducto');
     super.initState();
+    _cargarProducto();
+  }
+
+  @override
+  void didUpdateWidget(FormaProducto oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.producto != oldWidget.producto) {
+      debugPrint('Somos widget distinto, redibujate!');
+      _cargarProducto();
+      // TODO: Resetear validaciones para que cuando se cambie de producto
+      // no aparezca error de codigo existente
+    }
   }
 
   Future<bool> _verificarExistenciaDeCodigo(String codigo) async {
     var consultas = ModuloProductos.repositorioConsultaProductos();
-    return await consultas.existeProducto(codigo);
-  }
 
-  Future<void> crearProducto() async {
-    var crearProducto = ModuloProductos.crearProducto();
-    bool hayPrecioDeVenta = _controllerPrecioDeVenta.text.isNotEmpty;
-    PrecioDeVentaProducto? precioDeVenta;
-
-    if (hayPrecioDeVenta) {
-      precioDeVenta =
-          PrecioDeVentaProducto(Moneda(_controllerPrecioDeVenta.text));
+    if (widget.producto == null) {
+      return await consultas.existeProducto(codigo);
+    } else {
+      if (widget.producto!.codigo != codigo) {
+        return await consultas.existeProducto(codigo);
+      }
     }
 
-    try {
-      var producto = Producto.crear(
-        codigo: CodigoProducto(_controllerCodigo.text),
-        nombre: NombreProducto(_controllerNombre.text),
-        precioDeCompra:
-            PrecioDeCompraProducto(Moneda(_controllerPrecioDeCompra.text)),
-        seVendePor: seVendePor,
-        categoria: categoriaSeleccionada,
-        impuestos: [impuestoSeleccionado!],
-        unidadDeMedida: unidadDeMedidaSeleccionada!,
-        preguntarPrecio: !hayPrecioDeVenta,
-        precioDeVenta: precioDeVenta,
-        imagenURL: _controllerImagen.text,
-      );
+    return false;
+  }
 
-      crearProducto.req.producto = producto;
+  Future<bool> _guardarProducto() async {
+    if (widget.producto == null) {
+      await _crearProducto();
+    } else {
+      await _modificarProducto();
+    }
+
+    return true;
+  }
+
+  Future<void> _modificarProducto() async {
+    var modificarProducto = ModuloProductos.modificarProducto();
+
+    var producto = _llenarProducto();
+
+    producto = producto.copyWith(uid: widget.producto!.uid);
+
+    modificarProducto.req.producto = producto;
+    try {
+      await modificarProducto.exec();
+    } catch (e) {
+      //TODO: mostrar alerta visual con el error
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<void> _crearProducto() async {
+    var crearProducto = ModuloProductos.crearProducto();
+
+    try {
+      Producto productoNuevo = _llenarProducto();
+
+      crearProducto.req.producto = productoNuevo;
 
       await crearProducto.exec();
 
@@ -175,9 +207,35 @@ class _FormaProductoState extends State<FormaProducto> {
     }
   }
 
+  Producto _llenarProducto() {
+    bool hayPrecioDeVenta = _controllerPrecioDeVenta.text.isNotEmpty;
+    PrecioDeVentaProducto? precioDeVenta;
+
+    if (hayPrecioDeVenta) {
+      precioDeVenta =
+          PrecioDeVentaProducto(Moneda(_controllerPrecioDeVenta.text));
+    }
+
+    var producto = Producto.crear(
+      codigo: CodigoProducto(_controllerCodigo.text),
+      nombre: NombreProducto(_controllerNombre.text),
+      precioDeCompra:
+          PrecioDeCompraProducto(Moneda(_controllerPrecioDeCompra.text)),
+      seVendePor: seVendePor,
+      categoria: categoriaSeleccionada,
+      impuestos: [impuestoSeleccionado!],
+      unidadDeMedida: unidadDeMedidaSeleccionada!,
+      preguntarPrecio: !hayPrecioDeVenta,
+      precioDeVenta: precioDeVenta,
+      imagenURL: _controllerImagen.text,
+    );
+    return producto;
+  }
+
   void _cargarProducto() {
     if (widget.producto != null) {
       _controllerCodigo.text = widget.producto!.codigo;
+
       _controllerNombre.text = widget.producto!.nombre;
       _controllerPrecioDeCompra.text =
           widget.producto!.precioDeCompra.toDouble().toString();
@@ -200,7 +258,6 @@ class _FormaProductoState extends State<FormaProducto> {
 
   @override
   Widget build(BuildContext context) {
-    _cargarProducto();
     return Scrollbar(
       thumbVisibility: true,
       child: Padding(
@@ -230,6 +287,7 @@ class _FormaProductoState extends State<FormaProducto> {
                               hintText: 'Código',
                               controller: _controllerCodigo,
                               icon: Icons.document_scanner,
+
                               // icon: state.existeCodigo
                               //     ? Icons.error
                               //     : Icons.document_scanner,
@@ -242,18 +300,21 @@ class _FormaProductoState extends State<FormaProducto> {
                                 try {
                                   var codigoSanitizado = CodigoProducto(value);
 
+                                  setState(() {
+                                    debugPrint(
+                                        'estableciendo código a: ${codigoSanitizado.value}');
+                                    _controllerCodigo.text =
+                                        codigoSanitizado.value;
+                                  });
+
                                   var existeCodigo =
                                       await _verificarExistenciaDeCodigo(
                                           codigoSanitizado.value);
 
-                                  if (!existeCodigo) {
-                                    setState(() {
-                                      _controllerCodigo.text =
-                                          codigoSanitizado.value;
-                                    });
-                                  } else {
+                                  if (existeCodigo) {
                                     return 'El código ya existe, verificar';
                                   }
+
                                   return null;
                                 } catch (e) {
                                   if (e is DomainEx) {
@@ -528,15 +589,15 @@ class _FormaProductoState extends State<FormaProducto> {
                                   icon: Icons.save,
                                   tamanoFuente: 15,
                                   onTap: () async {
-                                    await crearProducto();
-
-                                    if (!mounted) return;
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(const SnackBar(
-                                      content: Text(
-                                          'Producto creado exitosamente 🎉'),
-                                      duration: Duration(seconds: 3),
-                                    ));
+                                    if (await _guardarProducto()) {
+                                      if (!mounted) return;
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                        content: Text(
+                                            'Producto creado exitosamente 🎉'),
+                                        duration: Duration(seconds: 3),
+                                      ));
+                                    }
 
                                     ref
                                         .read(providerListadoProductos.notifier)

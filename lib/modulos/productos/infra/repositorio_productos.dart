@@ -66,21 +66,13 @@ class RepositorioProductos extends Repositorio
   }
 
   @override
-  Future<void> actualizar(Producto producto) async {
-    var dbResult = await db.query(
-      sql:
-          'SELECT uid,codigo,nombre,categoria,precio_compra,precio_venta,se_vende_por,url_imagen, preguntar_precio '
-          'FROM productos WHERE uid = ?',
-      params: [producto.uid.toString()],
-    );
+  Future<void> modificar(Producto producto) async {
+    Producto? productoOriginal = await _consultas.obtenerProducto(producto.uid);
 
-    if (dbResult.isNotEmpty) {
-      var row = dbResult[0];
-      var productoDB = ProductoMapper.databaseADomain(row);
-
+    if (productoOriginal != null) {
       var diferencias = await obtenerDiferencias(
         ProductoMapper.domainAMap(producto),
-        ProductoMapper.domainAMap(productoDB),
+        ProductoMapper.domainAMap(productoOriginal),
       );
 
       //El motor de sincronización y la db no trabajan con entidades o value objects
@@ -100,7 +92,8 @@ class RepositorioProductos extends Repositorio
       );
     } else {
       throw EleventaEx(
-        message: 'No existe la entidad en la base de datos',
+        message:
+            'No existe la entidad en la base de datos, codigo: ${producto.uid.toString()}',
         input: producto.toString(),
       );
     }

@@ -21,6 +21,17 @@ class Repositorio {
     Map<String, Object> diferencias = {};
 
     for (var field in camposDb.keys) {
+      //TODO: terminar esta logica
+      if (camposEntidad[field] is List<Object>) {
+        //para cada impuesto en la lista
+
+        //si existe en la base de datos ya no hago nada(ya existe nada cambio)
+
+        //si no existe en la base de datos quiere decir que es nuevo (se tiene que sincronizar)
+
+        //para cada valor de la base de datos si no existe en la entidad en memoria marcarlo como borrado
+      }
+
       if (camposEntidad[field] != camposDb[field]) {
         // TODO: Quitar el ! y verificar que nunca sea nulo
         diferencias[field] = camposEntidad[field]!;

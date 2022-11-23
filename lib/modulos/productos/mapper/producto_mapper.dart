@@ -19,16 +19,20 @@ class ProductoMapper {
   //   return dto;
   // }
 
+  //TODO: Reflection o instrospeccion
+  //TODO: Solo aceptar tipos primitivos y Moneda
   static Map<String, Object?> domainAMap(Producto producto) {
     return <String, Object?>{
       'uid': producto.uid.toString(),
       'codigo': producto.codigo,
       'nombre': producto.nombre,
-      'categoria': producto.categoria,
+      'categoria_uid': producto.categoria?.uid.toString(),
       'precio_compra': producto.precioDeCompra,
       'precio_venta': producto.precioDeVenta,
       'se_vende_por': producto.seVendePor.index,
+      'unidad_medida_uid': producto.unidadMedida.uid.toString(),
       'url_imagen': producto.imagenURL,
+      //'impuestos': producto.impuestos,
       'preguntar_precio': producto.preguntarPrecio,
     };
   }

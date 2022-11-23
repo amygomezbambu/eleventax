@@ -75,7 +75,7 @@ class RepositorioVentas extends Repositorio implements IRepositorioDeVentas {
   }
 
   @override
-  Future<void> actualizar(Venta venta) async {
+  Future<void> modificar(Venta venta) async {
     var command =
         'UPDATE ventas set nombre = ?, total = ?, status = ?, metodo_de_pago = ?, fecha_de_pago = ? '
         ' WHERE uid = ?';

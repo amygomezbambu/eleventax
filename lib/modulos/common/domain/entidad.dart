@@ -7,13 +7,12 @@ import 'package:meta/meta.dart';
 ///Todas las entidades deben extender esta clase
 class Entidad {
   @protected
-  final UID _uid;
+  UID uidInterno;
+  UID get uid => uidInterno;
 
-  UID get uid => _uid;
+  Entidad.crear() : uidInterno = UID();
 
-  Entidad.crear() : _uid = UID();
-
-  Entidad.cargar(UID uid) : _uid = uid;
+  Entidad.cargar(UID uid) : uidInterno = uid;
 
   @protected
   void lanzarExcepcion({required String mensaje}) {
@@ -22,11 +21,9 @@ class Entidad {
 
   @override
   bool operator ==(Object other) {
-    //if (identical(this, other)) return true;
-
-    return (other as Entidad).uid == _uid;
+    return (other as Entidad).uid == uid;
   }
 
   @override
-  int get hashCode => _uid.hashCode ^ uid.hashCode;
+  int get hashCode => uid.hashCode ^ uid.hashCode;
 }

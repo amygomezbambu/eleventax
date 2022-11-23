@@ -34,7 +34,7 @@ class AgregarArticulo extends Usecase<VentaDTO> {
     venta.agregarArticulo(articulo);
 
     if (await existeVenta(venta.uid)) {
-      await _repo.actualizar(venta);
+      await _repo.modificar(venta);
     } else {
       await _repo.agregar(venta);
     }

@@ -1,7 +1,7 @@
 import 'package:eleventa/dependencias.dart';
 import 'package:eleventa/modulos/productos/config_productos.dart';
 import 'package:eleventa/modulos/productos/interfaces/repositorio_consulta_productos.dart';
-import 'package:eleventa/modulos/productos/usecases/actualizar_producto.dart';
+import 'package:eleventa/modulos/productos/usecases/modificar_producto.dart';
 import 'package:eleventa/modulos/productos/usecases/crear_producto.dart';
 import 'package:eleventa/modulos/productos/usecases/obtener_productos.dart';
 
@@ -17,8 +17,8 @@ class ModuloProductos {
         Dependencias.productos.repositorioConsultasProductos());
   }
 
-  static ActualizarProducto actualizarProducto() {
-    return ActualizarProducto(Dependencias.productos.repositorioProductos());
+  static ModificarProducto modificarProducto() {
+    return ModificarProducto(Dependencias.productos.repositorioProductos());
   }
 
   static IRepositorioConsultaProductos repositorioConsultaProductos() {
