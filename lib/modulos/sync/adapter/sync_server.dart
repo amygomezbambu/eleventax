@@ -2,17 +2,19 @@ import 'dart:convert';
 
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/sync/change.dart';
+import 'package:eleventa/modulos/sync/config.dart';
 import 'package:eleventa/modulos/sync/error.dart';
-import 'package:eleventa/modulos/sync/sync_config.dart';
-import 'package:http/http.dart' as http;
+import 'package:eleventa/modulos/sync/interfaces/sync_server.dart';
+import 'package:http/http.dart' show Client;
 
-class SyncServer {
-  final _config = SyncConfig.get();
+class SyncServer implements IServidorSync {
+  final Client _client;
 
-  SyncServer();
+  SyncServer({Client? client}) : _client = client ?? Client();
 
   /// Obtiene los cambios de otros nodos que este nodo no tiene aun
-  Future<List<Change>> obtain(
+  @override
+  Future<List<Change>> obtenerCambios(
     String groupId,
     String merkle,
     String hash,
@@ -22,8 +24,8 @@ class SyncServer {
         '{ "groupId": "$groupId", "merkle": "$merkle", "hash": "$hash"}';
 
     try {
-      var response = await http.post(
-        Uri.parse(_config.getChangesEndpoint),
+      var response = await _client.post(
+        Uri.parse(syncConfig!.getChangesEndpoint),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -66,12 +68,14 @@ class SyncServer {
   }
 
   /// Envia los cambios al servidor de sincronización
-  Future<void> send(List<Change> changes) async {
+  ///
+  @override
+  Future<void> enviarCambios(List<Change> changes) async {
     String json = '{ "changes": ${jsonEncode(changes)}}';
 
     try {
-      var response = await http.post(
-        Uri.parse(_config.addChangesEndpoint),
+      var response = await _client.post(
+        Uri.parse(syncConfig!.addChangesEndpoint),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },

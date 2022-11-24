@@ -47,9 +47,11 @@ class Migracion1 extends Migracion {
           unidad_medida_uid TEXT NULL,
           url_imagen TEXT NULL,
           se_vende_por INTEGER NULL,       
-          borrado INTEGER NOT NULL CHECK (borrado IN (0, 1)) DEFAULT 0,
-          preguntar_precio INTEGER NOT NULL CHECK (preguntar_precio IN (0,1)) DEFAULT 0
-        ) 
+          borrado BOOLEAN NOT NULL CHECK (borrado IN (0, 1)) DEFAULT 0,
+          bloqueado BOOLEAN NOT NULL CHECK (borrado IN (0, 1)) DEFAULT 0,
+          preguntar_precio BOOLEAN NOT NULL CHECK (preguntar_precio IN (0,1)) DEFAULT 0
+
+        );
         ''';
 
     await db.command(sql: command);

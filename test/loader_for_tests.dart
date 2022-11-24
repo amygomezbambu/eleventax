@@ -55,8 +55,8 @@ class TestsLoader {
   }
 
   Future<void> iniciarSync() async {
-    Sync.init(
-      config: SyncConfig.create(
+    Sync(
+      config: SyncConfig(
           dbVersionTable: 'migrations',
           dbVersionField: 'version',
           groupId: 'CH0001',

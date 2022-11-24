@@ -1,3 +1,4 @@
+import 'package:eleventa/modulos/sync/config.dart';
 import 'package:eleventa/modulos/sync/error.dart';
 import 'package:eleventa/modulos/sync/sync_config.dart';
 
@@ -7,8 +8,6 @@ class Change {
   final crdtString = 'S';
   final crdtNumber = 'N';
   final crdtNull = 'Null';
-
-  final _config = SyncConfig.get();
 
   late String _dataset;
   late String _rowId;
@@ -130,7 +129,7 @@ class Change {
         'column': _column,
         'value': _value.toString(),
         'hlc': _hlc,
-        'groupId': _config.groupId,
+        'groupId': syncConfig != null ? syncConfig!.groupId : '',
         'type': _valueType,
         'timestamp': _timestamp.toString(),
         'version': _version.toString()

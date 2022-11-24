@@ -31,7 +31,12 @@ tiene soporte para Flutter Desktop.
 
 - No se pueden crear o modificar datos directamente en la base de datos, solo se permite consultar, todos los insert,
 updates y deletes tienes que pasar a travez del modulo de sincronización.
-
+- No se pueden usar foreign keys 
+- No se deben usar uniques, si hay uniques deben especificarse como uniqueRules en la sincronización
+- No se deben eliminar registros, solo usar borrado logico
+- Antes de usar cualquier row se debe verificar que no este en estado "bloqueado"
+- Si se implementa la funcionalidad de recuperar un registro borrado primero se debe
+validar que no entre en conflicto con otros uniques y que no este en estado bloqueado
 
 # Referencias
 

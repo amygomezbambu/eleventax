@@ -31,6 +31,16 @@ class Migracion3 extends Migracion {
     command = 'insert into syncConfig(hlc,merkle) values(?,?);';
 
     await db.command(sql: command, params: ['', '']);
+
+    command = 'CREATE TABLE sync_duplicados('
+        'uid TEXT PRIMARY KEY,'
+        'sucedio_primero TEXT NOT NULL,'
+        'sucedio_despues TEXT NOT NULL,'
+        'dataset TEXT NOT NULL,'
+        'column TEXT NOT NULL'
+        ');';
+
+    await db.command(sql: command);
   }
 
   @override

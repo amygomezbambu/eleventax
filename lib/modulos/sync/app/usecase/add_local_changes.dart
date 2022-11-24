@@ -1,21 +1,18 @@
 import 'package:eleventa/modulos/sync/adapter/crdt_adapter.dart';
-import 'package:eleventa/modulos/sync/adapter/sync_repository.dart';
-import 'package:eleventa/modulos/sync/adapter/sync_server.dart';
 import 'package:eleventa/modulos/sync/change.dart';
+import 'package:eleventa/modulos/sync/interfaces/sync_repository.dart';
 import 'package:eleventa/modulos/sync/merkle.dart';
-import 'package:eleventa/modulos/sync/sync_config.dart';
 import 'package:hlc/hlc.dart';
 
 class AddChangesRequest {
   List<Change> changes = [];
+  var deviceId = '';
 }
 
 class AddLocalChanges {
-  final _config = SyncConfig.get();
-  final changesRepo = SyncRepository();
-  final syncServer = SyncServer();
+  final req = AddChangesRequest();
+  final IRepositorioSync _repoSync;
   final crdtAdapter = CRDTAdapter();
-  final request = AddChangesRequest();
 
   var merkle = Merkle();
   var firstChange = true;
@@ -23,8 +20,10 @@ class AddLocalChanges {
   late HLC hlc;
   late Change currentChange;
 
+  AddLocalChanges({required IRepositorioSync repoSync}) : _repoSync = repoSync;
+
   Future<void> exec() async {
-    var serializedMerkle = await changesRepo.getMerkle();
+    var serializedMerkle = await _repoSync.obtenerMerkle();
 
     if (serializedMerkle.isEmpty) {
       merkle = Merkle();
@@ -32,7 +31,7 @@ class AddLocalChanges {
       merkle.deserialize(serializedMerkle);
     }
 
-    for (var change in request.changes) {
+    for (var change in req.changes) {
       currentChange = change;
 
       //todo: modificar algoritmo para que primero persista todo,
@@ -50,10 +49,10 @@ class AddLocalChanges {
 
   Future<void> getHLC() async {
     if (firstChange) {
-      var packedHLC = await changesRepo.getCurrentHLC();
+      var packedHLC = await _repoSync.obtenerHLCActual();
 
       if (packedHLC.isEmpty) {
-        hlc = HLC.now(_config.deviceId);
+        hlc = HLC.now(req.deviceId);
       } else {
         _determineHLC(packedHLC);
       }
@@ -67,7 +66,7 @@ class AddLocalChanges {
   }
 
   void _determineHLC(String packedHLC) async {
-    HLC newHLC = HLC.now(_config.deviceId);
+    HLC newHLC = HLC.now(req.deviceId);
     HLC currentHLC = HLC.unpack(packedHLC);
 
     if (currentHLC.compareTo(newHLC) < 0) {
@@ -80,12 +79,12 @@ class AddLocalChanges {
   }
 
   Future<void> persistChanges() async {
-    await changesRepo.add(currentChange);
-    await changesRepo.saveCurrentHLC(currentChange.hlc);
+    await _repoSync.agregarCambio(currentChange);
+    await _repoSync.actualizarHLCActual(currentChange.hlc);
   }
 
   Future<void> persistMerkle() async {
-    await changesRepo.saveMerkle(merkle.serialize());
+    await _repoSync.actualizarMerkle(merkle.serialize());
   }
 
   Future<void> applyChanges() async {

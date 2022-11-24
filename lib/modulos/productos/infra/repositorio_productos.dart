@@ -1,6 +1,7 @@
 import 'package:eleventa/dependencias.dart';
 import 'package:eleventa/modulos/common/app/interface/database.dart';
 import 'package:eleventa/modulos/common/app/interface/sync.dart';
+import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/common/utils/utils.dart';
@@ -19,6 +20,23 @@ class RepositorioProductos extends Repositorio
     required ISync syncAdapter,
     required IAdaptadorDeBaseDeDatos db,
   }) : super(syncAdapter, db);
+
+  Future<Map<String, Object>> obtenerNombreYCodigo(UID uid) async {
+    var query =
+        'SELECT nombre, codigo, bloqueado, borrado from productos WHERE uid = ?';
+    Map<String, Object> result = {};
+
+    var dbResult = await db.query(sql: query, params: [uid.toString()]);
+
+    for (var row in dbResult) {
+      result['nombre'] = row['nombre'] as String;
+      result['codigo'] = row['codigo'] as String;
+      result['bloqueado'] = row['bloqueado'] as int;
+      result['borrado'] = row['borrado'] as int;
+    }
+
+    return result;
+  }
 
   @override
   Future<void> agregar(Producto producto) async {
@@ -155,5 +173,21 @@ class RepositorioProductos extends Repositorio
     }
 
     return configCompartida;
+  }
+
+  @override
+  Future<bool> existe(UID uid) async {
+    var query = 'SELECT count(uid) as count FROM productos where uid = ?;';
+
+    var dbResult = await db.query(sql: query, params: [uid.toString()]);
+    var existe = false;
+
+    if (dbResult.isNotEmpty) {
+      if ((dbResult[0]['count'] as int) > 0) {
+        existe = true;
+      }
+    }
+
+    return existe;
   }
 }

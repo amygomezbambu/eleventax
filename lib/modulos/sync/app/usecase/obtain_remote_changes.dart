@@ -1,35 +1,35 @@
 import 'dart:async';
 
 import 'package:eleventa/modulos/sync/adapter/crdt_adapter.dart';
-import 'package:eleventa/modulos/sync/adapter/sync_repository.dart';
-import 'package:eleventa/modulos/sync/adapter/sync_server.dart';
 import 'package:eleventa/modulos/sync/change.dart';
+import 'package:eleventa/modulos/sync/interfaces/sync_repository.dart';
+import 'package:eleventa/modulos/sync/interfaces/sync_server.dart';
 import 'package:eleventa/modulos/sync/merkle.dart';
-import 'package:eleventa/modulos/sync/sync_config.dart';
 
 class ObtainRemoteChangesRequest {
   var interval = 30000;
   var singleRequest = false;
+  var groupId = '';
 }
 
 class ObtainRemoteChanges {
-  final request = ObtainRemoteChangesRequest();
+  final IServidorSync _servidorSync;
+  final IRepositorioSync _repoSync;
+
+  final req = ObtainRemoteChangesRequest();
 
   Timer? _timer;
-  final _config = SyncConfig.get();
 
-  final _server = SyncServer();
-  final _repo = SyncRepository();
   final _crdt = CRDTAdapter();
 
-  /* #region Singleton */
-  static final instance = ObtainRemoteChanges._internal();
-
-  ObtainRemoteChanges._internal();
-  /* #endregion */
+  ObtainRemoteChanges({
+    required IRepositorioSync repoSync,
+    required IServidorSync servidorSync,
+  })  : _repoSync = repoSync,
+        _servidorSync = servidorSync;
 
   Future<void> exec() async {
-    if (request.singleRequest) {
+    if (req.singleRequest) {
       if (_timer != null && _timer!.isActive) {
         stop();
       }
@@ -48,7 +48,7 @@ class ObtainRemoteChanges {
 
   Future<void> initListening() async {
     _timer = Timer.periodic(
-      Duration(milliseconds: request.interval),
+      Duration(milliseconds: req.interval),
       (timer) async {
         var changes = await _requestChangesFromServer();
         await _persistChanges(changes);
@@ -59,16 +59,16 @@ class ObtainRemoteChanges {
 
   Future<void> _persistChanges(List<Change> changes) async {
     for (var change in changes) {
-      var dbChange = await _repo.getByHLC(change.hlc);
+      var dbChange = await _repoSync.obtenerCambioPorHLC(change.hlc);
 
       if (dbChange == null) {
-        await _repo.add(change);
+        await _repoSync.agregarCambio(change);
       }
     }
   }
 
   Future<List<Change>> _requestChangesFromServer() async {
-    var serializedMerkle = await _repo.getMerkle();
+    var serializedMerkle = await _repoSync.obtenerMerkle();
     var merkle = Merkle();
     var hash = '';
 
@@ -77,7 +77,11 @@ class ObtainRemoteChanges {
       hash = merkle.tree!.hash.toString();
     }
 
-    var changes = await _server.obtain(_config.groupId, serializedMerkle, hash);
+    var changes = await _servidorSync.obtenerCambios(
+      req.groupId,
+      serializedMerkle,
+      hash,
+    );
 
     return changes;
   }

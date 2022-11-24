@@ -40,5 +40,46 @@
             "}"
         ],
         "description": "Crea el estado, el notificador y el provider para una vista"
+    },
+    "Caso de uso": {
+        "prefix": "s_usecase",
+        "body": [
+            "import 'package:eleventa/modulos/common/app/usecase/usecase.dart';",
+            "",
+            "class ${1:UseCase}Request {",
+            "",
+            "  var property1 = '';",
+            "}",
+            "",
+            "class ${1:UseCase} extends Usecase<${2:void}> {",
+            "",
+            "  var req = ${1:UseCase}Request();",
+            "  IRepositorio _repo;",
+            "",
+            "  ${1:UseCase}(IRepositorio repo): _repo = repo, super(_repo) { operation = _operation; }",
+            "",
+            "  Future<${2:void}> _operation() async { }",
+            "}",
+            ""
+        ],
+        "description": "Crea el estado, el notificador y el provider para una vista"
+    },
+    "Entidad de dominio": {
+        "prefix": "s_entity",
+        "body": [
+            "import 'package:eleventa/modulos/common/domain/entidad.dart';",
+            "import 'package:eleventa/modulos/common/utils/uid.dart';",
+            "",
+            "class ${1:Entidad} extends Entidad {",
+            "",
+            "  var _property1 = '';",
+            "",
+            "  ${1:Entidad}.crear({required String property1}): _property1 = property1, super.crear();",
+            "",
+            "  ${1:Entidad}.cargar({required UID uid,required String property1}): _property1 = property1, super.cargar(uid);",
+            "}",
+            ""
+        ],
+        "description": "Crea el estado, el notificador y el provider para una vista"
     }
 }

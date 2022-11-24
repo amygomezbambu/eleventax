@@ -1,63 +1,61 @@
+import 'package:eleventa/modulos/common/exception/excepciones.dart';
+import 'package:eleventa/modulos/sync/app/usecase/add_local_changes.dart';
+import 'package:eleventa/modulos/sync/config.dart';
+import 'package:eleventa/modulos/sync/interfaces/sync_repository.dart';
+import 'package:eleventa/modulos/sync/interfaces/sync_server.dart';
+import 'package:eleventa/modulos/sync/sync_container.dart';
+import 'package:hlc/hlc.dart';
+
 import 'package:eleventa/modulos/common/app/interface/sync.dart';
 import 'package:eleventa/modulos/common/utils/utils.dart';
-import 'package:eleventa/modulos/sync/adapter/sync_repository.dart';
-import 'package:eleventa/modulos/sync/adapter/sync_server.dart';
-import 'package:eleventa/modulos/sync/app/usecase/add_local_changes.dart';
 import 'package:eleventa/modulos/sync/app/usecase/obtain_remote_changes.dart';
 import 'package:eleventa/modulos/sync/change.dart';
-import 'package:eleventa/modulos/sync/error.dart';
 import 'package:eleventa/modulos/sync/sync_config.dart';
-import 'package:hlc/hlc.dart';
 
 /// Clase principal de Sincronización
 ///
 /// A travez de esta clase se accede a todos los servicios de sincronización
 class Sync implements ISync {
-  late SyncConfig _config;
+  late IRepositorioSync _repoSync;
+  late IServidorSync _servidorSync;
 
-  var _initialized = false;
+  late ObtainRemoteChanges _obtainRemoteChanges;
+  late AddLocalChanges _addLocalChanges;
 
-  final _repo = SyncRepository();
-  final _syncServer = SyncServer();
-  final _obtainRemoteChanges = ObtainRemoteChanges.instance;
-  final _addLocalChanges = AddLocalChanges();
-
-  // #region singleton
   static final Sync _instance = Sync._internal();
 
-  factory Sync.init({required SyncConfig config}) {
+  factory Sync({
+    required SyncConfig config,
+    IRepositorioSync? repoSync,
+    IServidorSync? servidorSync,
+  }) {
     var instance = _instance;
-    instance._config = config;
-    instance._initialized = true;
+
+    //Esta linea debe ejecutarse antes que todo para registrar la config de manera global
+    syncConfig = config;
+
+    instance._repoSync = repoSync ?? SyncContainer.repositorioSync();
+    instance._servidorSync = servidorSync ?? SyncContainer.servidorSync();
+
+    instance._addLocalChanges = AddLocalChanges(repoSync: instance._repoSync);
+    instance._obtainRemoteChanges = ObtainRemoteChanges(
+      repoSync: instance._repoSync,
+      servidorSync: instance._servidorSync,
+    );
 
     return instance;
   }
 
-  factory Sync.getInstance() {
-    if (!_instance._initialized) {
-      throw SyncEx(
-          'No se ha inicializado el modulo de Sincronización\n'
-              'Se debe llamar Sync.init() antes de poder usar Sync.getInstance()',
-          '');
+  Sync._internal();
+
+  static Sync getInstance() {
+    if (syncConfig == null) {
+      throw EleventaEx(
+          message: 'El modulo de sincronización no ha sido inicializado\n'
+              'Debes mandar llamas Sync(config) antes de poder obtener una instancia');
     }
 
     return _instance;
-  }
-
-  Sync._internal();
-  // #endregion
-
-  Map<String, Object?> _sanitizarFields(Map<String, Object?> fields) {
-    Map<String, Object?> nuevosFields = {};
-    for (var key in fields.keys) {
-      if (fields[key] is bool) {
-        nuevosFields[key] = Utils.db.boolToInt(fields[key] as bool);
-      } else {
-        nuevosFields[key] = fields[key];
-      }
-    }
-
-    return nuevosFields;
   }
 
   /// Sincroniza los cambios.
@@ -72,40 +70,52 @@ class Sync implements ISync {
     required Map<String, Object?> fields,
   }) async {
     try {
-      //TODO: verificar que se puedan enviar Nulls
-      var changes =
-          await _generateChanges(dataset, rowID, _sanitizarFields(fields));
+      var changes = await _generateChanges(
+        dataset,
+        rowID,
+        _sanitizarFields(fields),
+      );
+
       await _applyChangesToLocalDatabase(changes);
       //TODO: esta linea es la que hace que la UI se tarde demasiado al guardar un producto
       await _sendChangesToRemoteServer(changes);
     } catch (e, stack) {
-      if (_config.onError != null) {
-        _config.onError!(e, stack);
+      if (syncConfig?.onError != null) {
+        syncConfig?.onError!(e, stack);
       }
     }
   }
 
-  /// Inicia la escucha de nuevos cambios en el servidor remoto
+  Map<String, Object?> _sanitizarFields(Map<String, Object?> fields) {
+    Map<String, Object?> nuevosFields = {};
+    for (var key in fields.keys) {
+      nuevosFields[key] = fields[key] is bool
+          ? Utils.db.boolToInt(fields[key] as bool)
+          : fields[key];
+    }
+
+    return nuevosFields;
+  }
+
   @override
   Future<void> initListening() async {
-    _obtainRemoteChanges.request.interval = _config.pullInterval;
+    _obtainRemoteChanges.req.interval = syncConfig!.pullInterval;
     await _obtainRemoteChanges.exec();
   }
 
-  /// Detiene la escucha de nuevos cambios en el servidor remoto
   @override
   void stopListening() {
     _obtainRemoteChanges.stop();
   }
 
   Future<void> _sendChangesToRemoteServer(List<Change> changes) async {
-    if (_config.sendChangesInmediatly) {
-      await _syncServer.send(changes);
+    if (syncConfig!.sendChangesInmediatly) {
+      await _servidorSync.enviarCambios(changes);
     }
   }
 
   Future<void> _applyChangesToLocalDatabase(List<Change> changes) async {
-    _addLocalChanges.request.changes = changes;
+    _addLocalChanges.req.changes = changes;
     await _addLocalChanges.exec();
   }
 
@@ -116,8 +126,8 @@ class Sync implements ISync {
   ) async {
     var changes = <Change>[];
 
-    var dbversion = await _repo.dbVersion();
-    var hlc = HLC.now(_config.deviceId);
+    var dbversion = await _repoSync.obtenerVersionDeDB();
+    var hlc = HLC.now(syncConfig!.deviceId);
 
     for (var field in fields.keys) {
       changes.add(Change.create(

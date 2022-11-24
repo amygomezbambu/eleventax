@@ -1,12 +1,14 @@
 import 'package:eleventa/dependencias.dart';
 import 'package:eleventa/modulos/common/app/interface/database.dart';
+import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/utils/utils.dart';
 import 'package:eleventa/modulos/sync/change.dart';
-import 'package:eleventa/modulos/sync/sync_config.dart';
+import 'package:eleventa/modulos/sync/config.dart';
+import 'package:eleventa/modulos/sync/interfaces/sync_repository.dart';
+import 'package:eleventa/modulos/sync/unique_duplicate.dart';
 
-class SyncRepository {
+class SyncRepository implements IRepositorioSync {
   late IAdaptadorDeBaseDeDatos _db;
-  final _config = SyncConfig.get();
 
   SyncRepository({IAdaptadorDeBaseDeDatos? db}) {
     if (db != null) {
@@ -16,28 +18,69 @@ class SyncRepository {
     }
   }
 
-  Future<void> executeCommand(String command, List<Object?> params) async {
+  @override
+  Future<void> ejecutarComandoRaw(String command, List<Object?> params) async {
     await _db.command(sql: command, params: params);
   }
 
-  Future<void> saveCurrentHLC(String hlc) async {
+  @override
+  Future<Map<String, String>?> obtenerCRDTPorDatos(
+    String dataset,
+    String column,
+    String value,
+    String excluirUID,
+  ) async {
+    var rowId = '';
+    var hlc = '';
+
+    var query = 'select dataset,rowId,hlc '
+        'from crdt where dataset = ? and column = ? and value = ? '
+        'and rowId != ?;';
+
+    var dbResult = await _db.query(sql: query, params: [
+      dataset,
+      column,
+      value,
+      excluirUID,
+    ]);
+
+    for (var dbRow in dbResult) {
+      rowId = dbRow['rowId'] as String;
+      hlc = dbRow['hlc'] as String;
+    }
+
+    if (rowId.isEmpty) {
+      return null;
+    }
+
+    return {
+      'rowId': rowId,
+      'hlc': hlc,
+    };
+  }
+
+  @override
+  Future<void> actualizarHLCActual(String hlc) async {
     var command = 'update syncConfig set hlc = ?;';
 
     await _db.command(sql: command, params: [hlc]);
   }
 
-  Future<void> deleteMerkle() async {
+  @override
+  Future<void> borrarMerkle() async {
     var command = 'update syncConfig set merkle = ?;';
     await _db.command(sql: command, params: ['']);
   }
 
-  Future<void> saveMerkle(String serializedMerkle) async {
+  @override
+  Future<void> actualizarMerkle(String serializedMerkle) async {
     var command = 'update syncConfig set merkle = ?;';
 
     await _db.command(sql: command, params: [serializedMerkle]);
   }
 
-  Future<String> getMerkle() async {
+  @override
+  Future<String> obtenerMerkle() async {
     var merkle = '';
 
     var query = 'SELECT merkle FROM syncConfig;';
@@ -51,22 +94,75 @@ class SyncRepository {
     return merkle;
   }
 
-  Future<int> dbVersion() async {
+  Future<UniqueDuplicate> obtenerDuplicadoPorSucedioPrimero(
+      String uidSucedioPrimero) async {
+    UniqueDuplicate duplicate;
+
+    var query =
+        'SELECT uid,dataset,column,sucedio_primero,sucedio_despues FROM sync_duplicados '
+        'WHERE sucedio_primero = ?';
+
+    var dbResult = await _db.query(sql: query, params: [uidSucedioPrimero]);
+
+    if (dbResult.isNotEmpty) {
+      duplicate = UniqueDuplicate(
+          uid: dbResult[0]['uid'] as String,
+          happenLastUID: dbResult[0]['sucedio_despues'] as String,
+          happenFirstUID: dbResult[0]['sucedio_primero'] as String,
+          dataset: dbResult[0]['dataset'] as String,
+          column: dbResult[0]['column'] as String);
+    } else {
+      throw EleventaEx(
+          message:
+              'No existe un elemento para el uid proporcionado: $uidSucedioPrimero');
+    }
+
+    return duplicate;
+  }
+
+  @override
+  Future<UniqueDuplicate> obtenerDuplicado(String uid) async {
+    UniqueDuplicate duplicate;
+
+    var query =
+        'SELECT dataset,column,sucedio_primero,sucedio_despues FROM sync_duplicados '
+        'WHERE uid = ?';
+
+    var dbResult = await _db.query(sql: query, params: [uid]);
+
+    if (dbResult.isNotEmpty) {
+      duplicate = UniqueDuplicate(
+          uid: uid,
+          happenLastUID: dbResult[0]['sucedio_despues'] as String,
+          happenFirstUID: dbResult[0]['sucedio_primero'] as String,
+          dataset: dbResult[0]['dataset'] as String,
+          column: dbResult[0]['column'] as String);
+    } else {
+      throw EleventaEx(
+          message: 'No existe un elemento para el uid proporcionado: $uid');
+    }
+
+    return duplicate;
+  }
+
+  @override
+  Future<int> obtenerVersionDeDB() async {
     var version = 0;
 
     var query =
-        'SELECT ${_config.dbVersionField} FROM ${_config.dbVersionTable};';
+        'SELECT ${syncConfig?.dbVersionField} FROM ${syncConfig?.dbVersionTable};';
 
     var dbResult = await _db.query(sql: query);
 
     for (var dbRow in dbResult) {
-      version = dbRow[_config.dbVersionField] as int;
+      version = dbRow[syncConfig?.dbVersionField] as int;
     }
 
     return version;
   }
 
-  Future<String> getCurrentHLC() async {
+  @override
+  Future<String> obtenerHLCActual() async {
     var hlc = '';
 
     var query = 'SELECT hlc FROM syncConfig;';
@@ -80,7 +176,8 @@ class SyncRepository {
     return hlc;
   }
 
-  Future<bool> rowExist(String dataset, String rowId) async {
+  @override
+  Future<bool> existeRow(String dataset, String rowId) async {
     var exist = false;
     var query = 'select count(uid) as count from $dataset where uid = ?;';
 
@@ -97,7 +194,8 @@ class SyncRepository {
     return exist;
   }
 
-  Future<List<Change>> getRowChanges(String rowId) async {
+  @override
+  Future<List<Change>> obtenerCambiosParaRow(String rowId) async {
     var query = 'select dataset,rowId,column,value,type,hlc,version '
         'from crdt where rowId = ?';
     var rowChanges = <Change>[];
@@ -123,7 +221,8 @@ class SyncRepository {
   ///
   /// un cambio mas nuevo es aquel que tiene el mismo rowId(misma entidad)
   /// afecta a la misma columna(campo) y tiene un hlc mayor(es mas actual)
-  Future<int> getNewerChangesCount(Change change) async {
+  @override
+  Future<int> obtenerNumeroDeCambiosMasRecientes(Change change) async {
     var count = 0;
 
     var query = 'select count(hlc) as count from crdt where rowId = ? '
@@ -139,7 +238,8 @@ class SyncRepository {
     return count;
   }
 
-  Future<List<Change>> getUnappliedChanges() async {
+  @override
+  Future<List<Change>> obtenerCambiosNoAplicados() async {
     var changes = <Change>[];
 
     var query = 'select dataset,rowId,column,value,type,hlc,version from crdt '
@@ -162,7 +262,8 @@ class SyncRepository {
     return changes;
   }
 
-  Future<List<Change>> getAll() async {
+  @override
+  Future<List<Change>> obtenerTodosLosCambios() async {
     var changes = <Change>[];
 
     var query = 'select dataset,rowId,column,value,type,hlc,version from crdt';
@@ -184,7 +285,8 @@ class SyncRepository {
     return changes;
   }
 
-  Future<Change?> getByHLC(String hlc) async {
+  @override
+  Future<Change?> obtenerCambioPorHLC(String hlc) async {
     Change? change;
 
     var query = 'select * from crdt where hlc = ?';
@@ -204,7 +306,8 @@ class SyncRepository {
     return change;
   }
 
-  Future<void> add(Change change) async {
+  @override
+  Future<void> agregarCambio(Change change) async {
     await _db.command(
         sql:
             'insert into crdt(hlc,dataset,rowId,column,value,type,isLocal,sended,applied,version) '
@@ -225,7 +328,8 @@ class SyncRepository {
         ]);
   }
 
-  Future<void> updateAppliedChange(Change change) async {
+  @override
+  Future<void> marcarCambioComoAplicado(Change change) async {
     await _db.command(
         sql: 'update crdt set applied = 1 where hlc = ?', params: [change.hlc]);
   }

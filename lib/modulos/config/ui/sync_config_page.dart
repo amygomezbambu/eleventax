@@ -1,4 +1,3 @@
-import 'package:eleventa/modulos/sync/app/usecase/obtain_remote_changes.dart';
 import 'package:flutter/material.dart';
 
 class SyncConfigPage extends StatelessWidget {
@@ -7,12 +6,12 @@ class SyncConfigPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Future<void> forceSync() async {
-      var obtenerVentas = ObtainRemoteChanges.instance;
+      // var obtenerVentas = ObtainRemoteChanges.instance;
 
-      obtenerVentas.request.singleRequest = true;
-      await obtenerVentas.exec().catchError((e) {
-        //print('Error desde la UI ${e.toString()}');
-      });
+      // obtenerVentas.request.singleRequest = true;
+      // await obtenerVentas.exec().catchError((e) {
+      //   //print('Error desde la UI ${e.toString()}');
+      // });
     }
 
     return Scaffold(

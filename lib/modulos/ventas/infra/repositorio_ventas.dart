@@ -170,4 +170,10 @@ class RepositorioVentas extends Repositorio implements IRepositorioDeVentas {
 
     return configCompartida;
   }
+
+  @override
+  Future<bool> existe(UID uid) {
+    // TODO: implement existe
+    throw UnimplementedError();
+  }
 }

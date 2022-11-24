@@ -54,8 +54,8 @@ class Loader {
   }
 
   Future<void> iniciarSync() async {
-    var sync_ = Sync.init(
-      config: SyncConfig.create(
+    var sync_ = Sync(
+      config: SyncConfig(
         dbVersionTable: 'migrations',
         dbVersionField: 'version',
         groupId: 'CH0002',
