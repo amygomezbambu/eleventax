@@ -6,7 +6,7 @@ abstract class IRepositorio<Entidad> {
   Future<void> agregar(Entidad entity);
   Future<List<Entidad>> obtenerTodos();
   Future<void> modificar(Entidad entity);
-  Future<void> borrar(UID id);
+  Future<void> eliminar(UID id);
 
   Future<void> transaction();
   Future<void> commit();

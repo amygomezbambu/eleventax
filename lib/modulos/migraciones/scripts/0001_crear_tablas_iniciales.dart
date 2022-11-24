@@ -8,26 +8,31 @@ class Migracion1 extends Migracion {
 
   @override
   Future<void> operacion() async {
-    var command = 'CREATE TABLE unidades_medida('
-        'uid TEXT PRIMARY KEY,'
-        'nombre TEXT NULL,'
-        'abreviacion TEXT NULL'
-        ') ';
+    var command = '''
+        CREATE TABLE unidades_medida(
+        uid TEXT PRIMARY KEY,
+        nombre TEXT NULL,
+        abreviacion TEXT NULL,
+        borrado INTEGER NOT NULL CHECK (borrado IN (0, 1)) DEFAULT 0
+        ) ''';
 
     await db.command(sql: command);
 
-    command = 'CREATE TABLE productos_categorias('
-        'uid TEXT PRIMARY KEY,'
-        'nombre TEXT NULL'
-        ') ';
+    command = '''
+         CREATE TABLE productos_categorias(
+        uid TEXT PRIMARY KEY,
+        nombre TEXT NULL,
+        borrado INTEGER NOT NULL CHECK (borrado IN (0, 1)) DEFAULT 0
+        ) ''';
 
     await db.command(sql: command);
 
-    command = 'CREATE TABLE impuestos('
-        'uid TEXT PRIMARY KEY,'
-        'nombre TEXT NULL,'
-        'porcentaje INTEGER NULL'
-        ') ';
+    command = ''' CREATE TABLE impuestos(
+        uid TEXT PRIMARY KEY,
+        nombre TEXT NULL,
+        porcentaje INTEGER NULL,
+        borrado INTEGER NOT NULL CHECK (borrado IN (0, 1)) DEFAULT 0
+        ); ''';
 
     await db.command(sql: command);
 

@@ -127,7 +127,7 @@ class RepositorioVentas extends Repositorio implements IRepositorioDeVentas {
   // }
 
   @override
-  Future<void> borrar(UID id) {
+  Future<void> eliminar(UID id) {
     throw UnimplementedError();
   }
 

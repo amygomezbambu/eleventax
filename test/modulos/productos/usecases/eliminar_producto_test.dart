@@ -15,8 +15,8 @@ void main() {
     await loader.iniciar();
   });
 
-  test('debe actualizar el producto si los parametros son correctos', () async {
-    var actualizarProducto = ModuloProductos.modificarProducto();
+  test('debe eliminar el producto', () async {
+    var eliminarProducto = ModuloProductos.eliminarProducto();
     var crearProducto = ModuloProductos.crearProducto();
     var consultas = ModuloProductos.repositorioConsultaProductos();
 
@@ -39,21 +39,13 @@ void main() {
 
     await crearProducto.exec();
 
-    const codigoActualizado = '1A2B3C';
-    final precioDeVentaActualizado = Moneda(15.50);
+    eliminarProducto.req.uidProducto = producto.uid;
 
-    producto = producto.copyWith(
-      codigo: CodigoProducto(codigoActualizado),
-      precioDeVenta: PrecioDeVentaProducto(precioDeVentaActualizado),
-    );
-
-    actualizarProducto.req.producto = producto;
-
-    await actualizarProducto.exec();
+    await eliminarProducto.exec();
 
     final productoDB = await consultas.obtenerProducto(producto.uid);
 
-    expect(productoDB!.codigo, codigoActualizado);
-    expect(productoDB.precioDeVenta, precioDeVentaActualizado);
+    expect(productoDB!.eliminado, true,
+        reason: 'El producto consultado NO esta eliminado');
   });
 }

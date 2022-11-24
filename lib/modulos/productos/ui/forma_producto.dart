@@ -140,7 +140,6 @@ class _FormaProductoState extends State<FormaProducto> {
   void didUpdateWidget(FormaProducto oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.producto != oldWidget.producto) {
-      debugPrint('Somos widget distinto, redibujate!');
       _cargarProducto();
       // TODO: Resetear validaciones para que cuando se cambie de producto
       // no aparezca error de codigo existente
@@ -233,6 +232,15 @@ class _FormaProductoState extends State<FormaProducto> {
   }
 
   void _cargarProducto() {
+    // Reiniciamos el estado de validacion de los campos
+    if (_codigoField.currentState != null) {
+      _codigoField.currentState!.reset();
+      _nombreField.currentState!.reset();
+      _precioCompraField.currentState!.reset();
+      _precioVentaField.currentState!.reset();
+      _imagenURL.currentState!.reset();
+    }
+
     if (widget.producto != null) {
       _controllerCodigo.text = widget.producto!.codigo;
 

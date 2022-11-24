@@ -60,8 +60,14 @@ class RepositorioProductos extends Repositorio
   }
 
   @override
-  Future<void> borrar(UID id) {
-    throw UnimplementedError();
+  Future<void> eliminar(UID id) async {
+    await adaptadorSync.synchronize(
+      dataset: 'productos',
+      rowID: id.toString(),
+      fields: {
+        'borrado': true,
+      },
+    );
   }
 
   @override

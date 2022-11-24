@@ -75,7 +75,7 @@ class _ListadoProductos extends ConsumerWidget {
     return Column(
       children: [
         SizedBox(
-          height: 66,
+          height: 156,
           child: Card(
             color: TailwindColors.coolGray[100],
             elevation: 1,

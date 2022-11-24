@@ -5,7 +5,10 @@ import 'package:go_router/go_router.dart';
 import 'package:layout/layout.dart';
 
 import 'package:eleventa/modulos/common/ui/widgets/ex_boton_primario.dart';
+import 'package:eleventa/modulos/common/ui/widgets/ex_text_field.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
+import 'package:eleventa/modulos/productos/modulo_productos.dart';
 import 'package:eleventa/modulos/productos/ui/listado_productos_provider.dart';
 import 'package:eleventa/modulos/productos/ui/modificar_producto.dart';
 import 'package:eleventa/modulos/productos/ui/nuevo_producto.dart';
@@ -21,6 +24,19 @@ class VistaListadoProductosState extends State<VistaListadoProductos> {
   var editando = false;
   Producto? producto;
 
+  void _mandarModificarProducto(Producto value) {
+    setState(() {
+      editando = true;
+      producto = value;
+    });
+  }
+
+  void _mostrarNuevoProducto() {
+    setState(() {
+      editando = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return AdaptiveBuilder(
@@ -35,12 +51,8 @@ class VistaListadoProductosState extends State<VistaListadoProductos> {
                   borderRadius: BorderRadius.circular(2.0),
                 ),
                 child: _ListadoProductos(
-                  onTap: (Producto value) {
-                    setState(() {
-                      editando = true;
-                      producto = value;
-                    });
-                  },
+                  onTap: _mandarModificarProducto,
+                  onNuevoProducto: _mostrarNuevoProducto,
                 ),
               ),
             ),
@@ -54,35 +66,34 @@ class VistaListadoProductosState extends State<VistaListadoProductos> {
         ),
       ),
       xs: (BuildContext context) => Scaffold(
-        body: _ListadoProductos(onTap: (Producto value) {
-          setState(() {
-            editando = true;
-            producto = value;
-          });
-        }),
-      ),
+          body: _ListadoProductos(
+              onTap: _mandarModificarProducto,
+              onNuevoProducto: _mostrarNuevoProducto)),
     );
   }
 }
 
 class _ListadoProductos extends ConsumerWidget {
-  final _esDesktop = LayoutValue(xs: false, md: true);
+  final esDesktop = LayoutValue(xs: false, md: true);
   final Function(Producto) onTap;
+  final VoidCallback onNuevoProducto;
+  final controllerBusqueda = TextEditingController();
 
   _ListadoProductos({
     Key? key,
     required this.onTap,
+    required this.onNuevoProducto,
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context, WidgetRef ref, [bool mounted = true]) {
     final productos = ref.watch(providerListadoProductos);
     final scrollController = ScrollController();
 
     return Column(
       children: [
         SizedBox(
-          height: 66,
+          height: 125,
           child: Card(
             color: TailwindColors.coolGray[100],
             elevation: 1,
@@ -94,18 +105,54 @@ class _ListadoProductos extends ConsumerWidget {
               child: Column(
                 children: [
                   // TODO: Mostrar buscador cuando tengamos la funcionalidad
-                  // ExTextField(
-                  //   controller: _controller,
-                  //   hintText: 'Buscar productos',
-                  // ),
+                  ExTextField(
+                    controller: controllerBusqueda,
+                    hintText: 'Buscar productos',
+                    onFieldSubmitted: (value) async {
+                      try {
+                        CodigoProducto codigo = CodigoProducto(value);
+
+                        var producto =
+                            await ModuloProductos.repositorioConsultaProductos()
+                                .obtenerProductoPorCodigo(codigo);
+
+                        if (!mounted) return;
+
+                        if (producto == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Producto no encontrado!'),
+                            ),
+                          );
+                        } else {
+                          if (!esDesktop.resolve(context)) {
+                            context.push(
+                              '/productos/modificar',
+                              extra: producto,
+                            );
+                          } else {
+                            onTap(producto);
+                          }
+                        }
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Código inválido!'),
+                          ),
+                        );
+                      }
+
+                      controllerBusqueda.clear();
+                    },
+                  ),
                   ExBotonPrimario(
                     icon: Icons.create_outlined,
                     label: 'Crear producto',
                     onTap: () => {
-                      if (!_esDesktop.resolve(context))
+                      if (!esDesktop.resolve(context))
                         {GoRouter.of(context).go('/productos/nuevo')}
                       else
-                        {}
+                        {onNuevoProducto()}
                     },
                   )
                 ],
@@ -117,7 +164,7 @@ class _ListadoProductos extends ConsumerWidget {
             child: Padding(
           padding: const EdgeInsets.only(top: 8.0),
           child: Scrollbar(
-            thumbVisibility: _esDesktop.resolve(context),
+            thumbVisibility: esDesktop.resolve(context),
             controller: scrollController,
             //scrollbarOrientation: ScrollbarOrientation.bottom,
             child: ListView.separated(
@@ -148,7 +195,7 @@ class _ListadoProductos extends ConsumerWidget {
                     title: Text(
                       productos[index].nombre,
                       style: TextStyle(
-                          fontSize: _esDesktop.resolve(context) ? 16 : 14,
+                          fontSize: esDesktop.resolve(context) ? 16 : 14,
                           fontWeight: FontWeight.w500),
                     ),
                     hoverColor: TailwindColors.blueGray[200],
@@ -160,13 +207,13 @@ class _ListadoProductos extends ConsumerWidget {
                           Text(
                             productos[index].precioDeVenta.toString(),
                             style: TextStyle(
-                                fontSize: _esDesktop.resolve(context) ? 18 : 16,
+                                fontSize: esDesktop.resolve(context) ? 18 : 16,
                                 color: const Color.fromARGB(255, 38, 119, 181),
                                 fontWeight: FontWeight.w600),
                           )
                         ]),
                     onTap: () => {
-                          if (!_esDesktop.resolve(context))
+                          if (!esDesktop.resolve(context))
                             {
                               context.push('/productos/modificar',
                                   extra: productos[index])

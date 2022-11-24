@@ -29,7 +29,7 @@ class RepositorioConsultaProductos extends RepositorioConsulta
     var sql = ''' 
       SELECT pi.impuesto_uid, i.nombre, i.porcentaje FROM productos_impuestos pi
       JOIN impuestos i on i.uid = pi.impuesto_uid 
-      WHERE pi.producto_uid = ?;
+      WHERE pi.producto_uid = ? and pi.borrado = false 
     ''';
 
     var dbResult = await db.query(sql: sql, params: [productoUID.toString()]);
@@ -49,8 +49,9 @@ class RepositorioConsultaProductos extends RepositorioConsulta
   @override
   Future<List<Impuesto>> obtenerImpuestos() async {
     List<Impuesto> res = [];
-    var dbResult =
-        await db.query(sql: 'SELECT uid, nombre, porcentaje FROM impuestos;');
+    var dbResult = await db.query(
+        sql:
+            'SELECT uid, nombre, porcentaje FROM impuestos WHERE borrado=false;');
 
     if (dbResult.isNotEmpty) {
       for (var row in dbResult) {
@@ -124,10 +125,10 @@ class RepositorioConsultaProductos extends RepositorioConsulta
       case ObtenerProductos.todos:
         break;
       case ObtenerProductos.borrados:
-        condicion += ' WHERE borrado = true ';
+        condicion += ' WHERE p.borrado = true ';
         break;
       case ObtenerProductos.activos:
-        condicion += ' WHERE borrado = false ';
+        condicion += ' WHERE p.borrado = false ';
         break;
     }
 
@@ -146,11 +147,23 @@ class RepositorioConsultaProductos extends RepositorioConsulta
     }
   }
 
+  @override
+  Future<Producto?> obtenerProductoPorCodigo(CodigoProducto codigo) async {
+    var productos =
+        await _obtenerProductos('WHERE p.codigo = ?', [codigo.value]);
+
+    if (productos.isEmpty) {
+      return null;
+    } else {
+      return productos.first;
+    }
+  }
+
   Future<List<Producto>> _obtenerProductos(
       String condicionWhere, List<Object?> params) async {
     var query = '''
         SELECT p.uid,p.codigo,p.nombre,p.categoria_uid,p.precio_compra,p.precio_venta,
-        p.se_vende_por,p.url_imagen,
+        p.se_vende_por,p.url_imagen, p.borrado AS eliminado,
         c.uid AS categoria_uid, c.nombre AS categoria,
         um.nombre as unidad_medida_nombre, um.abreviacion as unidad_medida_abreviacion, um.uid AS unidad_medida_uid,  
         p.preguntar_precio
@@ -191,6 +204,7 @@ class RepositorioConsultaProductos extends RepositorioConsulta
           imagenURL: row['url_imagen'] as String,
           preguntarPrecio: Utils.db.intToBool(row['preguntar_precio'] as int),
           impuestos: impuestos,
+          eliminado: Utils.db.intToBool(row['eliminado'] as int),
         ),
       );
     }

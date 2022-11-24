@@ -27,22 +27,25 @@ class ExTextField extends StatelessWidget {
   /// usualmente usado para validaciones
   final Function? onExit;
 
+  final Function(String)? onFieldSubmitted;
+
   final ValidadorTextField validator;
 
-  const ExTextField(
-      {Key? key,
-      required this.hintText,
-      required this.controller,
-      this.prefixText,
-      this.suffixText,
-      this.helperText,
-      this.width,
-      this.icon,
-      this.fieldKey,
-      this.onExit,
-      this.validator,
-      this.inputType = InputType.texto})
-      : super(key: key);
+  const ExTextField({
+    Key? key,
+    required this.hintText,
+    required this.controller,
+    this.prefixText,
+    this.suffixText,
+    this.helperText,
+    this.width,
+    this.icon,
+    this.fieldKey,
+    this.onExit,
+    this.validator,
+    this.inputType = InputType.texto,
+    this.onFieldSubmitted,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +64,7 @@ class ExTextField extends StatelessWidget {
                 helperText: helperText,
                 icon: icon,
                 onExit: onExit,
+                onFieldSubmitted: onFieldSubmitted,
                 validator: validator,
                 fieldKey: fieldKey,
                 inputType: inputType),
@@ -92,6 +96,7 @@ class ExTextField extends StatelessWidget {
                 prefixText: prefixText,
                 suffixText: suffixText,
                 helperText: helperText,
+                onFieldSubmitted: onFieldSubmitted,
                 icon: icon,
                 onExit: onExit,
                 fieldKey: fieldKey,
@@ -143,6 +148,7 @@ class _ExTextField extends StatefulWidget {
   final String? helperText;
   final IconData? icon;
   final Function? onExit;
+  final Function(String)? onFieldSubmitted;
   final GlobalKey? fieldKey;
   final ValidadorTextField validator;
   final String hintText;
@@ -161,6 +167,7 @@ class _ExTextField extends StatefulWidget {
     required this.hintText,
     this.validator,
     required this.inputType,
+    this.onFieldSubmitted,
   }) : super(key: key);
 
   @override
@@ -222,90 +229,96 @@ class _ExTextFieldState extends State<_ExTextField> {
           }
         },
         child: TextFormField(
-            key: widget.fieldKey,
-            controller: widget.controller,
-            cursorColor: Colors.black,
-            keyboardType: (widget.inputType == InputType.texto)
-                ? TextInputType.text
-                : const TextInputType.numberWithOptions(decimal: true),
-            inputFormatters: (widget.inputType == InputType.texto)
-                ? null
-                : [
-                    TextInputFormatter.withFunction(
-                      (oldValue, newValue) {
-                        var reg = RegExp(r'^[0-9]\d{0,11}(\.\d{0,6})?$');
+          key: widget.fieldKey,
+          controller: widget.controller,
+          cursorColor: Colors.black,
+          keyboardType: (widget.inputType == InputType.texto)
+              ? TextInputType.text
+              : const TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: (widget.inputType == InputType.texto)
+              ? null
+              : [
+                  TextInputFormatter.withFunction(
+                    (oldValue, newValue) {
+                      var reg = RegExp(r'^[0-9]\d{0,11}(\.\d{0,6})?$');
 
-                        if (newValue.text.isEmpty) {
-                          return newValue;
-                        }
-                        if (!reg.hasMatch(newValue.text)) {
-                          return oldValue;
-                        }
-
+                      if (newValue.text.isEmpty) {
                         return newValue;
-                      },
-                    ),
-                  ],
-            textInputAction: TextInputAction.next,
-            autofocus: true,
-            autovalidateMode: AutovalidateMode.disabled,
-            style: TextStyle(
+                      }
+                      if (!reg.hasMatch(newValue.text)) {
+                        return oldValue;
+                      }
+
+                      return newValue;
+                    },
+                  ),
+                ],
+          textInputAction: TextInputAction.next,
+          autofocus: true,
+          autovalidateMode: AutovalidateMode.disabled,
+          style: TextStyle(
+              fontSize: widget.tamanoFuente,
+              fontFamily: _fontFamily,
+              color: TailwindColors.trueGray[700],
+              fontWeight: FontWeight.normal),
+          validator: (value) {
+            return _errValidacion;
+          },
+          decoration: InputDecoration(
+            prefixText: widget.prefixText,
+            suffixText: widget.suffixText,
+            helperText: widget.helperText,
+            helperStyle: const TextStyle(fontSize: 12),
+            filled: true,
+            isDense: true,
+            fillColor: TailwindColors.blueGray[200],
+            prefixIcon: (widget.icon != null)
+                ? Icon(
+                    widget.icon,
+                    color: TailwindColors.blueGray[400],
+                  )
+                : null,
+            hintText:
+                (_enDesktop.resolve(context) == true) ? widget.hintText : null,
+            errorStyle: TextStyle(color: TailwindColors.red[700]!),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(5),
+              borderSide: BorderSide(
+                color: TailwindColors.red[700]!,
+                width: 1.0,
+              ),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(5),
+              borderSide: BorderSide(
+                color: TailwindColors.lightBlue[600]!,
+                width: 1.5,
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(5),
+              borderSide: BorderSide(
+                color: TailwindColors.blueGray[200]!,
+                width: 1.0,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(5),
+              borderSide: BorderSide(
+                color: TailwindColors.lightBlue[600]!,
+                width: 1.5,
+              ),
+            ),
+            hintStyle: TextStyle(
                 fontSize: widget.tamanoFuente,
-                fontFamily: _fontFamily,
-                color: TailwindColors.trueGray[700],
-                fontWeight: FontWeight.normal),
-            validator: (value) {
-              return _errValidacion;
-            },
-            decoration: InputDecoration(
-                prefixText: widget.prefixText,
-                suffixText: widget.suffixText,
-                helperText: widget.helperText,
-                helperStyle: const TextStyle(fontSize: 12),
-                filled: true,
-                isDense: true,
-                fillColor: TailwindColors.blueGray[200],
-                prefixIcon: (widget.icon != null)
-                    ? Icon(
-                        widget.icon,
-                        color: TailwindColors.blueGray[400],
-                      )
-                    : null,
-                hintText: (_enDesktop.resolve(context) == true)
-                    ? widget.hintText
-                    : null,
-                errorStyle: TextStyle(color: TailwindColors.red[700]!),
-                errorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(5),
-                  borderSide: BorderSide(
-                    color: TailwindColors.red[700]!,
-                    width: 1.0,
-                  ),
-                ),
-                focusedErrorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(5),
-                  borderSide: BorderSide(
-                    color: TailwindColors.lightBlue[600]!,
-                    width: 1.5,
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(5),
-                  borderSide: BorderSide(
-                    color: TailwindColors.blueGray[200]!,
-                    width: 1.0,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(5),
-                  borderSide: BorderSide(
-                    color: TailwindColors.lightBlue[600]!,
-                    width: 1.5,
-                  ),
-                ),
-                hintStyle: TextStyle(
-                    fontSize: widget.tamanoFuente,
-                    color: TailwindColors.blueGray[400]))),
+                color: TailwindColors.blueGray[400]),
+          ),
+          onFieldSubmitted: (value) {
+            if (widget.onFieldSubmitted != null) {
+              widget.onFieldSubmitted!(value);
+            }
+          },
+        ),
       ),
     );
   }

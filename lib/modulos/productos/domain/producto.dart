@@ -23,6 +23,7 @@ class Producto extends Entidad {
   var _imagenURL = '';
   final CodigoProducto _codigo;
   bool _preguntarPrecio = false;
+  final bool _eliminado;
 
   String get nombre => _nombre.value;
   Moneda? get precioDeVenta => _precioDeVenta?.value;
@@ -34,6 +35,7 @@ class Producto extends Entidad {
   UnidadDeMedida get unidadMedida => _unidadDeMedida;
   List<Impuesto> get impuestos => List.unmodifiable(_impuestos);
   bool get preguntarPrecio => _preguntarPrecio;
+  bool get eliminado => _eliminado;
 
   set categoria(Categoria? val) => _categoria;
 
@@ -48,10 +50,12 @@ class Producto extends Entidad {
     String imagenURL = '',
     List<Impuesto> impuestos = const [],
     bool preguntarPrecio = false,
+    bool eliminado = false,
   })  : _codigo = codigo,
         _nombre = nombre,
         _precioDeCompra = precioDeCompra,
         _precioDeVenta = precioDeVenta,
+        _eliminado = eliminado,
         super.crear() {
     _categoria = categoria;
     _seVendePor = seVendePor;
@@ -73,10 +77,12 @@ class Producto extends Entidad {
     List<Impuesto> impuestos = const [],
     required UnidadDeMedida unidadDeMedida,
     required bool preguntarPrecio,
+    bool eliminado = false,
   })  : _codigo = codigo,
         _nombre = nombre,
         _precioDeCompra = precioDeCompra,
         _precioDeVenta = precioDeVenta,
+        _eliminado = eliminado,
         super.cargar(uid) {
     _categoria = categoria;
     _seVendePor = seVendePor;
@@ -111,6 +117,7 @@ class Producto extends Entidad {
     String? imagenURL,
     CodigoProducto? codigo,
     bool? preguntarPrecio,
+    bool? eliminado,
   }) {
     var uidAnterior = uidInterno.toString();
 
@@ -125,6 +132,7 @@ class Producto extends Entidad {
       imagenURL: imagenURL ?? _imagenURL,
       seVendePor: seVendePor ?? _seVendePor,
       impuestos: impuestos ?? _impuestos,
+      eliminado: eliminado ?? _eliminado,
     );
 
     result.uidInterno = uid ?? UID.fromString(uidAnterior);
