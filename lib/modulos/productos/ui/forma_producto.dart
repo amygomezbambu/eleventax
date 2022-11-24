@@ -131,7 +131,6 @@ class _FormaProductoState extends State<FormaProducto> {
 
   @override
   void initState() {
-    debugPrint('Iniciando estado de widget FormaProducto');
     super.initState();
     _cargarProducto();
   }

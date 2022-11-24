@@ -1,12 +1,14 @@
 import 'package:eleventa/dependencias.dart';
 import 'package:eleventa/loader.dart';
 import 'package:eleventa/modulos/common/ui/no_encontrado.dart';
-import 'package:eleventa/modulos/common/ui/rutas.dart';
+import 'package:eleventa/modulos/common/ui/ruta.dart';
+import 'package:eleventa/modulos/config/ui/sync_config_page.dart';
 import 'package:eleventa/modulos/productos/ui/modificar_producto.dart';
 import 'package:eleventa/modulos/productos/ui/nuevo_producto.dart';
 import 'package:eleventa/modulos/ventas/ui/vista_ventas.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tailwindcss_defaults/colors.dart';
 import 'package:layout/layout.dart';
@@ -19,7 +21,7 @@ void main() async {
   var loader = Loader();
   await loader.iniciar();
 
-  runApp(ProviderScope(child: EleventaApp()));
+  runApp(const ProviderScope(child: EleventaApp()));
 
   // La siguiente funcion presentará un error en la UI
   // si hay alguna excepcion no manejada
@@ -51,8 +53,44 @@ void main() async {
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
-class EleventaApp extends StatelessWidget {
-  EleventaApp({Key? key}) : super(key: key);
+class EleventaApp extends StatefulWidget {
+  const EleventaApp({Key? key}) : super(key: key);
+
+  @override
+  State<EleventaApp> createState() => _EleventaAppState();
+}
+
+class _EleventaAppState extends State<EleventaApp> {
+  @override
+  void initState() {
+    super.initState();
+    RawKeyboard.instance.addListener(_manejarAtajosConTeclado);
+  }
+
+  @override
+  void dispose() {
+    RawKeyboard.instance.removeListener(_manejarAtajosConTeclado);
+    super.dispose();
+  }
+
+  void _manejarAtajosConTeclado(RawKeyEvent value) {
+    // Definimos los atajos para navegar a las distintas vistas
+    // principales, de momento los mismos atajos que eleventa 5
+    if (value is RawKeyDownEvent) {
+      if (value.logicalKey == LogicalKeyboardKey.f1) {
+        setState(() => _router.go('/ventas'));
+      }
+
+      if (value.logicalKey == LogicalKeyboardKey.f3) {
+        setState(() => _router.go('/productos'));
+      }
+    }
+
+    // TODO: Falta ver la maneara de actualizar el NavigationRail
+    // para que refleje el boton seleccionado de la nueva seccion
+    // probablemete con Provider para "avisarle" al LayoutPrincipal
+    // que tiene un nuevo index
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +133,7 @@ class EleventaApp extends StatelessWidget {
           routes: [
             GoRoute(
               path: '/ventas',
-              name: Rutas.ventas.name,
+              name: Ruta.ventas.name,
               pageBuilder: (BuildContext context, GoRouterState state) =>
                   // TODO: Construir el arreglo de rutas de forma dinamica en base al enum de Rutas
 
@@ -108,7 +146,7 @@ class EleventaApp extends StatelessWidget {
             ),
             GoRoute(
                 path: '/productos',
-                name: Rutas.productos.name,
+                name: Ruta.productos.name,
                 pageBuilder: (context, state) => const NoTransitionPage(
                       child: VistaProductos(
                         title: 'Productos',
@@ -127,6 +165,12 @@ class EleventaApp extends StatelessWidget {
                         );
                       }),
                 ]),
+            GoRoute(
+              path: '/configuracion',
+              name: Ruta.configuracion.name,
+              pageBuilder: (BuildContext context, GoRouterState state) =>
+                  const NoTransitionPage(child: SyncConfigPage()),
+            ),
           ])
     ],
     errorBuilder: (context, state) => const VistaNoEncontrado(),

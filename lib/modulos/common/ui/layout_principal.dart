@@ -1,12 +1,12 @@
 //import 'package:eleventa/modules/common/ui/ui_consts.dart' as ui;
-import 'package:eleventa/modulos/common/ui/rutas.dart';
+import 'package:eleventa/modulos/common/ui/ruta.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:layout/layout.dart';
 
 import 'package:eleventa/modulos/common/ui/design_system.dart';
-import 'package:eleventa/modulos/common/ui/layout_desktop.dart';
-import 'package:eleventa/modulos/common/ui/layout_mobile.dart';
+import 'package:eleventa/modulos/common/ui/widgets/barra_navegacion_lateral.dart';
+import 'package:eleventa/modulos/common/ui/widgets/barra_navegacion_inferior.dart';
 
 class LayoutPrincipal extends StatefulWidget {
   final Widget child;
@@ -21,21 +21,13 @@ class LayoutPrincipal extends StatefulWidget {
 }
 
 class LayoutPrincipalState extends State<LayoutPrincipal> {
-  int index = 0;
+  // Ruta inicial default
+  Ruta _rutaSeleccionada = Ruta.ventas;
 
-  void onIndexSelect(newIndex) {
+  void _onBotonSeleccionado(Ruta nuevaRuta) {
     setState(() {
-      index = newIndex;
-
-      // TODO: Refactorizar para no depender del indice
-      switch (index) {
-        case 0:
-          context.goNamed(Rutas.ventas.name);
-          break;
-        case 1:
-          context.goNamed(Rutas.productos.name);
-          break;
-      }
+      _rutaSeleccionada = nuevaRuta;
+      context.goNamed(_rutaSeleccionada.name);
     });
   }
 
@@ -79,7 +71,8 @@ class LayoutPrincipalState extends State<LayoutPrincipal> {
         children: [
           if (context.layout.breakpoint > LayoutBreakpoint.sm) ...[
             BarraNavegacionLateral(
-                selectedIndex: index, onIndexSelect: onIndexSelect),
+                rutaSeleccionada: _rutaSeleccionada,
+                onBotonSeleccionado: _onBotonSeleccionado),
             const VerticalDivider(thickness: 1, width: 1),
           ],
           Expanded(child: widget.child),
@@ -91,8 +84,8 @@ class LayoutPrincipalState extends State<LayoutPrincipal> {
       ),
       bottomNavigationBar: context.layout.breakpoint <= LayoutBreakpoint.sm
           ? BarraNavegacionInferior(
-              selectedIndex: index,
-              onIndexSelect: onIndexSelect,
+              rutaSeleccionada: _rutaSeleccionada,
+              onBotonSeleccionado: _onBotonSeleccionado,
             )
           : null,
     );

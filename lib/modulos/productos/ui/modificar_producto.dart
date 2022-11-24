@@ -22,7 +22,6 @@ class ModificarProducto extends StatelessWidget {
     eliminarProducto.req.uidProducto = uidProducto;
 
     try {
-      debugPrint('borrando producto');
       await eliminarProducto.exec();
     } catch (e) {
       debugPrint('Ocurrió un error al borrar: ${e.toString()}');

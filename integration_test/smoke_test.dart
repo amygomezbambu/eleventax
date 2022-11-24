@@ -24,7 +24,7 @@ void main() {
 
     testWidgets('Verificar que exista botón de cobrar',
         (WidgetTester tester) async {
-      await tester.pumpWidget(app.EleventaApp());
+      await tester.pumpWidget(const app.EleventaApp());
       await tester.pumpAndSettle();
 
       expect(find.byKey(payButtonKey), findsWidgets);
@@ -33,7 +33,7 @@ void main() {
     testWidgets(
         'Agregar articulo y el boton de cobrar refleje total actualizado',
         (WidgetTester tester) async {
-      await tester.pumpWidget(app.EleventaApp());
+      await tester.pumpWidget(const app.EleventaApp());
       await tester.pumpAndSettle();
 
       await tester.enterText(find.byKey(skuFieldKey), '1');
@@ -52,7 +52,7 @@ void main() {
 
     testWidgets('Agregar articulo el total se actualice',
         (WidgetTester tester) async {
-      await tester.pumpWidget(app.EleventaApp());
+      await tester.pumpWidget(const app.EleventaApp());
       await tester.pumpAndSettle();
 
       await tester.enterText(find.byKey(skuFieldKey), '1');

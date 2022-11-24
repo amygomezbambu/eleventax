@@ -1,22 +1,28 @@
-import 'package:eleventa/modulos/common/ui/design_system.dart';
-import 'package:eleventa/modulos/common/ui/widgets/eleventa_logo.dart';
 import 'package:flutter/material.dart';
-import 'package:eleventa/modulos/common/ui/rutas.dart';
+
+import 'package:eleventa/modulos/common/ui/design_system.dart';
+import 'package:eleventa/modulos/common/ui/ruta.dart';
+import 'package:eleventa/modulos/common/ui/widgets/eleventa_logo.dart';
 
 class BarraNavegacionLateral extends StatelessWidget {
-  final int selectedIndex;
-  final Function(int) onIndexSelect;
+  final Ruta rutaSeleccionada;
+  final Function(Ruta) onBotonSeleccionado;
+
+  void _manejarIndiceSeleccionado(int indice) {
+    Ruta rutaSeleccionada = Ruta.values.firstWhere((e) => e.index == indice);
+    onBotonSeleccionado(rutaSeleccionada);
+  }
 
   const BarraNavegacionLateral({
     Key? key,
-    required this.selectedIndex,
-    required this.onIndexSelect,
+    required this.rutaSeleccionada,
+    required this.onBotonSeleccionado,
   }) : super(key: key);
 
   List<NavigationRailDestination> construirNavegacion(BuildContext context) {
     List<NavigationRailDestination> navegacion = [];
 
-    for (var ruta in Rutas.values) {
+    for (var ruta in Ruta.values) {
       var destination = NavigationRailDestination(
         padding: const EdgeInsets.only(top: 5, bottom: 15),
         icon: Icon(
@@ -36,8 +42,8 @@ class BarraNavegacionLateral extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return NavigationRail(
-      selectedIndex: selectedIndex,
-      onDestinationSelected: onIndexSelect,
+      selectedIndex: rutaSeleccionada.index,
+      onDestinationSelected: _manejarIndiceSeleccionado,
       labelType: NavigationRailLabelType.none,
       minWidth: 59,
       backgroundColor: DesignSystem.backgroundColor,
