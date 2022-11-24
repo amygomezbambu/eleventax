@@ -6,6 +6,7 @@ class Change {
   final crdtBoolean = 'B';
   final crdtString = 'S';
   final crdtNumber = 'N';
+  final crdtNull = 'Null';
 
   final _config = SyncConfig.get();
 
@@ -113,7 +114,7 @@ class Change {
 
   void _determineValueType(Object? value) {
     if (value == null) {
-      _valueType = value.toString();
+      _valueType = crdtNull;
     } else if (value.runtimeType.toString() == 'bool') {
       _valueType = crdtBoolean;
     } else if (double.tryParse(value.toString()) != null) {

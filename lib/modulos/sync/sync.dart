@@ -47,15 +47,13 @@ class Sync implements ISync {
   Sync._internal();
   // #endregion
 
-  Map<String, Object> _sanitizarFields(Map<String, Object> fields) {
-    Map<String, Object> nuevosFields = {};
+  Map<String, Object?> _sanitizarFields(Map<String, Object?> fields) {
+    Map<String, Object?> nuevosFields = {};
     for (var key in fields.keys) {
       if (fields[key] is bool) {
-        var valor = fields[key] as bool;
-        nuevosFields[key] = Utils.db.boolToInt(valor);
+        nuevosFields[key] = Utils.db.boolToInt(fields[key] as bool);
       } else {
-        var valor = fields[key];
-        nuevosFields[key] = valor!;
+        nuevosFields[key] = fields[key];
       }
     }
 
@@ -71,9 +69,10 @@ class Sync implements ISync {
   Future<void> synchronize({
     required String dataset,
     required String rowID,
-    required Map<String, Object> fields,
+    required Map<String, Object?> fields,
   }) async {
     try {
+      //TODO: verificar que se puedan enviar Nulls
       var changes =
           await _generateChanges(dataset, rowID, _sanitizarFields(fields));
       await _applyChangesToLocalDatabase(changes);

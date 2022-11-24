@@ -35,7 +35,7 @@
     {
       "label": "❌ Borrar base de datos local",
       "type": "shell",
-      "command": "rm \"~/Library/Containers/com.bambucode.eleventa/Data/Documents/eleventa.db\"",
+      "command": "rm ~/Library/Containers/com.bambucode.eleventa/Data/Documents/eleventa.db",
       "windows": {
         "command": "./tools/borrar_bd_local.ps1"
       },
@@ -50,6 +50,6 @@
         "test"
       ],
       "problemMatcher": [],
-    }    
+    }
   ]
 }

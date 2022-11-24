@@ -5,12 +5,11 @@ import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/common/utils/utils.dart';
 import 'package:eleventa/modulos/productos/config_productos.dart';
+import 'package:eleventa/modulos/productos/domain/impuesto.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/common/infra/repositorio.dart';
 import 'package:eleventa/modulos/productos/interfaces/repositorio_productos.dart';
 import 'package:eleventa/modulos/productos/mapper/producto_mapper.dart';
-
-import 'package:eleventa/modulos/common/domain/moneda.dart';
 
 class RepositorioProductos extends Repositorio
     implements IRepositorioProductos {
@@ -66,35 +65,57 @@ class RepositorioProductos extends Repositorio
   }
 
   @override
-  Future<void> modificar(Producto producto) async {
-    Producto? productoOriginal = await _consultas.obtenerProducto(producto.uid);
+  Future<void> modificar(Producto productoModificado) async {
+    Producto? productoOriginal =
+        await _consultas.obtenerProducto(productoModificado.uid);
 
     if (productoOriginal != null) {
       var diferencias = await obtenerDiferencias(
-        ProductoMapper.domainAMap(producto),
+        ProductoMapper.domainAMap(productoModificado),
         ProductoMapper.domainAMap(productoOriginal),
       );
 
-      //El motor de sincronización y la db no trabajan con entidades o value objects
-      //directamente por lo que debemos convertir los tipos especiales a un tipo que ellos
-      //entiendan
-      for (var diferencia in diferencias.keys) {
-        if (diferencias[diferencia] is Moneda) {
-          diferencias[diferencia] =
-              (diferencias[diferencia] as Moneda).toMonedaInt();
-        }
-      }
-
       await adaptadorSync.synchronize(
         dataset: 'productos',
-        rowID: producto.uid.toString(),
+        rowID: productoModificado.uid.toString(),
         fields: diferencias,
       );
+
+      var difImpuestos = obtenerDiferenciasDeListasDeRelaciones<Impuesto>(
+        productoModificado.impuestos,
+        productoOriginal.impuestos,
+      );
+
+      for (var impuesto in difImpuestos.agregados) {
+        await adaptadorSync.synchronize(
+          dataset: 'productos_impuestos',
+          rowID: UID().toString(),
+          fields: {
+            'producto_uid': productoModificado.uid.toString(),
+            'impuesto_uid': impuesto.uid.toString(),
+          },
+        );
+      }
+
+      for (var impuesto in difImpuestos.eliminados) {
+        var relacionUID = await _consultas.obtenerRelacionProductoImpuesto(
+          productoModificado.uid,
+          impuesto.uid,
+        );
+
+        await adaptadorSync.synchronize(
+          dataset: 'productos_impuestos',
+          rowID: relacionUID.toString(),
+          fields: {
+            'borrado': true,
+          },
+        );
+      }
     } else {
       throw EleventaEx(
         message:
-            'No existe la entidad en la base de datos, codigo: ${producto.uid.toString()}',
-        input: producto.toString(),
+            'No existe la entidad en la base de datos, codigo: ${productoModificado.uid.toString()}',
+        input: productoModificado.toString(),
       );
     }
   }

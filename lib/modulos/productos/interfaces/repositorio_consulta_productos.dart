@@ -12,4 +12,8 @@ abstract class IRepositorioConsultaProductos {
   Future<List<Producto>> obtenerProductos();
   Future<Producto?> obtenerProducto(UID uid);
   Future<List<Impuesto>> obtenerImpuestosParaProducto(UID productoUID);
+  Future<UID> obtenerRelacionProductoImpuesto(
+    UID productoUID,
+    UID impuestoUID,
+  );
 }

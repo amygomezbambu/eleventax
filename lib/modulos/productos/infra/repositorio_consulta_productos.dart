@@ -1,5 +1,6 @@
 import 'package:eleventa/modulos/common/app/interface/database.dart';
 import 'package:eleventa/modulos/common/domain/moneda.dart';
+import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/infra/repositorio_consulta.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/common/utils/utils.dart';
@@ -195,5 +196,27 @@ class RepositorioConsultaProductos extends RepositorioConsulta
     }
 
     return resultado;
+  }
+
+  @override
+  Future<UID> obtenerRelacionProductoImpuesto(
+    UID productoUID,
+    UID impuestoUID,
+  ) async {
+    var dbResult = await db.query(
+      sql:
+          'SELECT uid FROM productos_impuestos where producto_uid = ? and impuesto_uid = ?;',
+      params: [
+        productoUID.toString(),
+        impuestoUID.toString(),
+      ],
+    );
+
+    if (dbResult.isEmpty) {
+      throw EleventaEx(
+          message: 'No existe la relacion entre el impuesto y el producto');
+    }
+
+    return UID.fromString(dbResult[0]['uid'] as String);
   }
 }

@@ -60,7 +60,8 @@ class Migracion1 extends Migracion {
         CREATE TABLE productos_impuestos(
         uid TEXT PRIMARY KEY,
         producto_uid TEXT,
-        impuesto_uid TEXT
+        impuesto_uid TEXT,
+        borrado INTEGER NOT NULL CHECK (borrado IN (0, 1)) DEFAULT 0
         ) 
       ''';
 

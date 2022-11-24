@@ -7,7 +7,7 @@ abstract class ISync {
   Future<void> synchronize({
     required String dataset,
     required String rowID,
-    required Map<String, Object> fields,
+    required Map<String, Object?> fields,
   });
 
   /// Inicia la escucha de nuevos cambios en el servidor remoto

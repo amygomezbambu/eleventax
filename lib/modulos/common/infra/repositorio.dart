@@ -1,6 +1,12 @@
 import 'package:eleventa/modulos/common/app/interface/database.dart';
 import 'package:eleventa/modulos/common/app/interface/sync.dart';
+import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:meta/meta.dart';
+
+class DiferenciaListas<T> {
+  List<T> agregados = [];
+  List<T> eliminados = [];
+}
 
 class Repositorio {
   @protected
@@ -10,31 +16,80 @@ class Repositorio {
 
   Repositorio(this.adaptadorSync, this.db);
 
+  /// Obtiene las diferencias entre 2 listas que representan la relacion de 2 entidades
+  ///
+  /// [listaMemoria] contiene los valores relacionados de la entidad en memoria
+  /// [listaDatabase] contiene los valores relacionados de la base de datos
+  ///
+  /// Por ejemplo: una entidad Producto tiene una lista de impuestos relacionados,
+  /// si pasas los impuestos de la entidad en memoria y los impuestos de una entidad
+  /// leida de la base de datos este metodo retornara un objeto que contiene las nuevas
+  /// relaciones y las relaciones que fueron eliminadas.
+  ///
+  /// Las nuevas relaciones son las que estan en la entidad en memoria y que no existen
+  /// en la base de dato.
+  ///
+  /// Las relaciones eliminadas son las que existen en la base de datos pero ya no estan
+  /// en la entidad en memoria.
+  DiferenciaListas<T> obtenerDiferenciasDeListasDeRelaciones<T>(
+    List<T> listaMemoria,
+    List<T> listaDatabase,
+  ) {
+    //TODO: hacer algoritmo mas eficiente para evitar las 2 pasadas
+    //TODO: ver posibilidad de pasar esto al sync engine pasandole el dataset de relaciones
+    var diferencias = DiferenciaListas<T>();
+
+    for (var item in listaMemoria) {
+      var itemsDb = listaDatabase.where((itemDb) => itemDb == item).toList();
+
+      if (itemsDb.isEmpty) {
+        diferencias.agregados.add(item);
+      }
+    }
+
+    for (var item in listaDatabase) {
+      var itemsMemoria =
+          listaMemoria.where((itemMemoria) => itemMemoria == item).toList();
+
+      if (itemsMemoria.isEmpty) {
+        diferencias.eliminados.add(item);
+      }
+    }
+
+    return diferencias;
+  }
+
   /// Obtiene un mapa con las diferencias entre la entidad modificada y la entidad en la db
   ///
   /// [camposEntidad] representa el estado en memoria
   /// [camposDb] representa el estado almacenado en la base de datos
-  Future<Map<String, Object>> obtenerDiferencias(
+  ///
+  /// NOTA: no obtiene diferencias entre listas o iterables, por ejemplo un Producto
+  /// puede tener N impuestos, la lista de impuestos no se comparará correctamente, se
+  /// debe usar obtenerDiferenciaListas para cada propiedad que sea una lista.
+  Future<Map<String, Object?>> obtenerDiferencias(
     Map<String, Object?> camposEntidad,
     Map<String, Object?> camposDb,
   ) async {
-    Map<String, Object> diferencias = {};
+    Map<String, Object?> diferencias = {};
 
     for (var field in camposDb.keys) {
-      //TODO: terminar esta logica
       if (camposEntidad[field] is List<Object>) {
-        //para cada impuesto en la lista
-
-        //si existe en la base de datos ya no hago nada(ya existe nada cambio)
-
-        //si no existe en la base de datos quiere decir que es nuevo (se tiene que sincronizar)
-
-        //para cada valor de la base de datos si no existe en la entidad en memoria marcarlo como borrado
+        continue;
       }
 
       if (camposEntidad[field] != camposDb[field]) {
-        // TODO: Quitar el ! y verificar que nunca sea nulo
-        diferencias[field] = camposEntidad[field]!;
+        diferencias[field] = camposEntidad[field];
+      }
+    }
+
+    //El motor de sincronización y la db no trabajan con entidades o value objects
+    //directamente por lo que debemos convertir los tipos especiales a un tipo que ellos
+    //entiendan
+    for (var diferencia in diferencias.keys) {
+      if (diferencias[diferencia] is Moneda) {
+        diferencias[diferencia] =
+            (diferencias[diferencia] as Moneda).toMonedaInt();
       }
     }
 
