@@ -21,7 +21,7 @@ jobs:
 
       - name: Obtenemos la version de Flutter de pubspec.yaml
         id: get-flutter-version
-        uses: zgosalvez/github-actions-get-flutter-version-env@v1
+        uses: zgosalvez/github-actions-get-flutter-version-env@v2
 
       - uses: subosito/flutter-action@v2
         with:
