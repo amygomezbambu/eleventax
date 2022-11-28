@@ -31,7 +31,7 @@ jobs:
 
       - name: Descargar certificado JKS de Android
         id: android_keystore
-        uses: timheuer/base64-to-file@v1.0.3
+        uses: timheuer/base64-to-file@v1.0.4
         with:
           fileName: key.jks
           encodedString: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
