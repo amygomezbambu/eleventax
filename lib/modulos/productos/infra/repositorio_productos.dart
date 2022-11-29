@@ -1,11 +1,11 @@
 import 'package:eleventa/dependencias.dart';
 import 'package:eleventa/modulos/common/app/interface/database.dart';
 import 'package:eleventa/modulos/common/app/interface/sync.dart';
-import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/common/utils/utils.dart';
 import 'package:eleventa/modulos/productos/config_productos.dart';
+import 'package:eleventa/modulos/productos/domain/categoria.dart';
 import 'package:eleventa/modulos/productos/domain/impuesto.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/common/infra/repositorio.dart';
@@ -73,8 +73,14 @@ class RepositorioProductos extends Repositorio
   }
 
   @override
-  Future<List<Producto>> obtenerTodos() async {
-    return _consultas.obtenerProductos();
+  Future<void> agregarCategoria(Categoria categoria) async {
+    await adaptadorSync.synchronize(
+      dataset: 'categorias',
+      rowID: categoria.uid.toString(),
+      fields: {
+        'nombre': categoria.nombre,
+      },
+    );
   }
 
   @override
@@ -176,18 +182,13 @@ class RepositorioProductos extends Repositorio
   }
 
   @override
-  Future<bool> existe(UID uid) async {
-    var query = 'SELECT count(uid) as count FROM productos where uid = ?;';
-
-    var dbResult = await db.query(sql: query, params: [uid.toString()]);
-    var existe = false;
-
-    if (dbResult.isNotEmpty) {
-      if ((dbResult[0]['count'] as int) > 0) {
-        existe = true;
-      }
-    }
-
-    return existe;
+  Future<void> eliminarCategoria(UID uid) async {
+    await adaptadorSync.synchronize(
+      dataset: 'categorias',
+      rowID: uid.toString(),
+      fields: {
+        'borrado': true,
+      },
+    );
   }
 }

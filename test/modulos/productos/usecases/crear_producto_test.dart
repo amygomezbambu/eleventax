@@ -5,6 +5,7 @@ import 'package:eleventa/modulos/productos/domain/categoria.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/nombre_categoria.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_compra_producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_venta_producto.dart';
@@ -31,7 +32,7 @@ void main() {
         nombre: NombreProducto(nombre),
         precioDeVenta: PrecioDeVentaProducto(precioDeVenta),
         precioDeCompra: PrecioDeCompraProducto(precioDeCompra),
-        categoria: Categoria.crear(nombre: 'Refrescos'),
+        categoria: Categoria.crear(nombre: NombreCategoria('Refrescos')),
         unidadDeMedida: UnidadDeMedida.crear(
           nombre: 'Pieza',
           abreviacion: 'pz',
@@ -88,8 +89,8 @@ void main() {
     var crearProducto = ModuloProductos.crearProducto();
 
     crearProducto.req.producto = llenarProductoConCodigo('S34gj4');
-    crearProducto.req.producto.categoria =
-        Categoria.cargar(uid: UID.invalid(), nombre: 'Sin Categoria');
+    crearProducto.req.producto.categoria = Categoria.cargar(
+        uid: UID.invalid(), nombre: NombreCategoria.sinCategoria());
 
     await expectLater(
       crearProducto.exec(),

@@ -1,6 +1,8 @@
 import 'package:eleventa/dependencias.dart';
 import 'package:eleventa/modulos/productos/config_productos.dart';
 import 'package:eleventa/modulos/productos/interfaces/repositorio_consulta_productos.dart';
+import 'package:eleventa/modulos/productos/usecases/crear_categoria.dart';
+import 'package:eleventa/modulos/productos/usecases/eliminar_categoria.dart';
 import 'package:eleventa/modulos/productos/usecases/eliminar_producto.dart';
 import 'package:eleventa/modulos/productos/usecases/modificar_producto.dart';
 import 'package:eleventa/modulos/productos/usecases/crear_producto.dart';
@@ -24,5 +26,14 @@ class ModuloProductos {
 
   static IRepositorioConsultaProductos repositorioConsultaProductos() {
     return Dependencias.productos.repositorioConsultasProductos();
+  }
+
+  static CrearCategoria crearCategoria() {
+    return CrearCategoria(Dependencias.productos.repositorioProductos(),
+        Dependencias.productos.repositorioConsultasProductos());
+  }
+
+  static EliminarCategoria eliminarCategoria() {
+    return EliminarCategoria(Dependencias.productos.repositorioProductos());
   }
 }

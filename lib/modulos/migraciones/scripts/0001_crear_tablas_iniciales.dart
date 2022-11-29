@@ -19,7 +19,7 @@ class Migracion1 extends Migracion {
     await db.command(sql: command);
 
     command = '''
-         CREATE TABLE productos_categorias(
+         CREATE TABLE categorias(
         uid TEXT PRIMARY KEY,
         nombre TEXT NULL,
         borrado INTEGER NOT NULL CHECK (borrado IN (0, 1)) DEFAULT 0

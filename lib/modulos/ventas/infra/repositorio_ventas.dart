@@ -132,11 +132,6 @@ class RepositorioVentas extends Repositorio implements IRepositorioDeVentas {
   }
 
   @override
-  Future<List<Venta>> obtenerTodos() {
-    throw UnimplementedError();
-  }
-
-  @override
   Future<void> guardarConfigCompartida(ConfigCompartidaDeVentas config) async {
     await adaptadorSync.synchronize(
       dataset: 'config_ventas',
@@ -169,11 +164,5 @@ class RepositorioVentas extends Repositorio implements IRepositorioDeVentas {
     }
 
     return configCompartida;
-  }
-
-  @override
-  Future<bool> existe(UID uid) {
-    // TODO: implement existe
-    throw UnimplementedError();
   }
 }

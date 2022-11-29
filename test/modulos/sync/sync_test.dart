@@ -1,17 +1,9 @@
-import 'package:eleventa/dependencias.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
-import 'package:eleventa/modulos/productos/infra/repositorio_productos.dart';
-import 'package:eleventa/modulos/sync/adapter/crdt_adapter.dart';
 import 'package:eleventa/modulos/sync/adapter/sync_repository.dart';
 import 'package:eleventa/modulos/sync/adapter/sync_server.dart';
-import 'package:eleventa/modulos/sync/app/usecase/resolve_conflict.dart';
-import 'package:eleventa/modulos/sync/change.dart';
-import 'package:eleventa/modulos/sync/merkle.dart';
 import 'package:eleventa/modulos/sync/sync.dart';
 import 'package:eleventa/modulos/sync/sync_config.dart';
-import 'package:eleventa/modulos/sync/sync_container.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hlc/hlc.dart';
 import 'package:http/http.dart';
 import 'package:http/testing.dart';
 

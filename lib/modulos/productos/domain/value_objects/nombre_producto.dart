@@ -1,14 +1,9 @@
-import 'package:eleventa/modulos/common/exception/excepciones.dart';
+import 'package:eleventa/modulos/common/domain/nombre_value_object.dart';
 import 'package:eleventa/modulos/common/utils/utils.dart';
 
-class NombreProducto {
-  final _longitudMaxima = 130;
-  late String _nombre;
-  String get value => _nombre;
-
-  NombreProducto(String nombre) {
-    _nombre = _sanitizar(nombre);
-    _validar(_nombre);
+class NombreProducto extends NombreValueObject {
+  NombreProducto(String nombre) : super(nombre: nombre, longitudMaxima: 130) {
+    valor = _sanitizar(nombre);
   }
 
   String _sanitizar(String nombre) {
@@ -16,16 +11,6 @@ class NombreProducto {
     nombre = Utils.string.removerExcesoDeEspacios(nombre);
     nombre = Utils.string.capitalizar(nombre);
 
-    return nombre.trim();
-  }
-
-  void _validar(String value) {
-    if (value.isEmpty) {
-      throw DomainEx('El nombre del producto no puede estar vacío');
-    }
-
-    if (value.length > _longitudMaxima) {
-      throw DomainEx('El código no puede tener mas de $_longitudMaxima letras');
-    }
+    return nombre;
   }
 }

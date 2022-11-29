@@ -108,7 +108,7 @@ class TestsLoader {
 
   Future<void> iniciarDB() async {
     dbAdapter = Dependencias.infra.database();
-    await dbAdapter.conectar();
+    await dbAdapter.conectar(verbose: logger.logeoParaPruebasActivo);
 
     var migrateDB = MigrarDB();
     await migrateDB.exec();

@@ -9,6 +9,7 @@ import 'package:eleventa/modulos/productos/domain/impuesto.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/nombre_categoria.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_compra_producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_venta_producto.dart';
@@ -69,15 +70,14 @@ class RepositorioConsultaProductos extends RepositorioConsulta
   Future<List<Categoria>> obtenerCategorias() async {
     List<Categoria> categorias = [];
 
-    var dbResult =
-        await db.query(sql: 'SELECT uid, nombre FROM productos_categorias;');
+    var dbResult = await db.query(sql: 'SELECT uid, nombre FROM categorias;');
 
     if (dbResult.isNotEmpty) {
       for (var row in dbResult) {
         categorias.add(
           Categoria.cargar(
             uid: UID.fromString(row['uid'] as String),
-            nombre: row['nombre'] as String,
+            nombre: NombreCategoria(row['nombre'] as String),
           ),
         );
       }
@@ -168,7 +168,7 @@ class RepositorioConsultaProductos extends RepositorioConsulta
         um.nombre as unidad_medida_nombre, um.abreviacion as unidad_medida_abreviacion, um.uid AS unidad_medida_uid,  
         p.preguntar_precio
         FROM productos p 
-        LEFT JOIN productos_categorias c on p.categoria_uid = c.uid 
+        LEFT JOIN categorias c on p.categoria_uid = c.uid 
         LEFT JOIN unidades_medida um on p.unidad_medida_uid = um.uid 
         $condicionWhere''';
 
@@ -200,7 +200,7 @@ class RepositorioConsultaProductos extends RepositorioConsulta
               ? null
               : Categoria.cargar(
                   uid: UID.fromString(row['categoria_uid'] as String),
-                  nombre: row['categoria'] as String),
+                  nombre: NombreCategoria(row['categoria'] as String)),
           imagenURL: row['url_imagen'] as String,
           preguntarPrecio: Utils.db.intToBool(row['preguntar_precio'] as int),
           impuestos: impuestos,
@@ -232,5 +232,55 @@ class RepositorioConsultaProductos extends RepositorioConsulta
     }
 
     return UID.fromString(dbResult[0]['uid'] as String);
+  }
+
+  @override
+  Future<bool> existe(UID uid) async {
+    var query = 'SELECT count(uid) as count FROM productos where uid = ?;';
+
+    var dbResult = await db.query(sql: query, params: [uid.toString()]);
+    var existe = false;
+
+    if (dbResult.isNotEmpty) {
+      if ((dbResult[0]['count'] as int) > 0) {
+        existe = true;
+      }
+    }
+
+    return existe;
+  }
+
+  @override
+  Future<bool> existeCategoria({required String nombre}) async {
+    var query =
+        'SELECT count(uid) as count FROM categorias WHERE nombre = ? AND borrado = false;';
+
+    var dbResult = await db.query(sql: query, params: [nombre]);
+    var existe = false;
+
+    if (dbResult.isNotEmpty) {
+      if ((dbResult[0]['count'] as int) > 0) {
+        existe = true;
+      }
+    }
+
+    return existe;
+  }
+
+  @override
+  Future<Categoria?> obtenerCategoria(UID uid) async {
+    Categoria? categoria;
+
+    var query = 'SELECT nombre FROM categorias WHERE uid = ?';
+
+    var dbResult = await db.query(sql: query, params: [uid.toString()]);
+
+    if (dbResult.isNotEmpty) {
+      categoria = Categoria.cargar(
+        uid: uid,
+        nombre: NombreCategoria(dbResult[0]['nombre'] as String),
+      );
+    }
+    return categoria;
   }
 }

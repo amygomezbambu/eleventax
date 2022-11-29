@@ -1,6 +1,7 @@
 import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/nombre_categoria.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_compra_producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_venta_producto.dart';
@@ -125,7 +126,7 @@ class _FormaProductoState extends State<FormaProducto> {
   Categoria _obtenerSinCategoria() {
     return Categoria.cargar(
       uid: UID.invalid(),
-      nombre: 'Sin Categoria',
+      nombre: NombreCategoria.sinCategoria(),
     );
   }
 

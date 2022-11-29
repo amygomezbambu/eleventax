@@ -13,7 +13,6 @@ class RepositorioNotificaciones extends Repositorio
     required IAdaptadorDeBaseDeDatos db,
   }) : super(syncAdapter, db);
 
-  @override
   Future<void> actualizar(Entidad entity) {
     // TODO: implement actualizar
     throw UnimplementedError();
@@ -25,21 +24,8 @@ class RepositorioNotificaciones extends Repositorio
     throw UnimplementedError();
   }
 
-  @override
   Future<Notificacion?> obtener(UID uid) {
     // TODO: implement obtener
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<Notificacion>> obtenerTodos() {
-    // TODO: implement obtenerTodos
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<bool> existe(UID uid) {
-    // TODO: implement existe
     throw UnimplementedError();
   }
 

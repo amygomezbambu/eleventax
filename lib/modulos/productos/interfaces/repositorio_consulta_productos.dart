@@ -8,6 +8,7 @@ import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.
 abstract class IRepositorioConsultaProductos {
   Future<List<Impuesto>> obtenerImpuestos();
   Future<List<Categoria>> obtenerCategorias();
+  Future<Categoria?> obtenerCategoria(UID uid);
   Future<List<UnidadDeMedida>> obtenerUnidadesDeMedida();
   Future<bool> existeProducto(String codigo);
   Future<List<Producto>> obtenerProductos();
@@ -18,4 +19,6 @@ abstract class IRepositorioConsultaProductos {
     UID productoUID,
     UID impuestoUID,
   );
+  Future<bool> existeCategoria({required String nombre});
+  Future<bool> existe(UID uid);
 }

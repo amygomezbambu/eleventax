@@ -1,6 +1,5 @@
 import 'package:eleventa/modulos/sync/config.dart';
 import 'package:eleventa/modulos/sync/error.dart';
-import 'package:eleventa/modulos/sync/sync_config.dart';
 
 /// Esta clase describe un cambio que se desea sincronizar
 class Change {

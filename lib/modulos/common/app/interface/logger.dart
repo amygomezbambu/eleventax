@@ -41,6 +41,8 @@ class LoggerConfig {
 }
 
 abstract class ILogger {
+  bool get logeoParaPruebasActivo;
+
   /// Metodo que inicializa el logger
   ///
   /// Debe ser llamado antes de utilizar cualquier metodo de logeo
@@ -53,4 +55,6 @@ abstract class ILogger {
   void warn(EleventaEx ex);
   void debug({required String message, Exception? ex, StackTrace? stackTrace});
   void error({required Object ex, StackTrace? stackTrace});
+
+  void activarLogeoParaPruebas(bool activo);
 }

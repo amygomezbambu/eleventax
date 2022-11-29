@@ -10,6 +10,11 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 
 class Logger implements ILogger {
+  var _logeoParaPruebasActivo = false;
+
+  @override
+  bool get logeoParaPruebasActivo => _logeoParaPruebasActivo;
+
   final _logger = log.Logger('Main');
   late LoggerConfig _config;
 
@@ -21,7 +26,7 @@ class Logger implements ILogger {
 
     log.Logger.root.onRecord.listen((rec) {
       if (rec.level == log.Level.SEVERE) {
-        if (Platform.environment.containsKey('FLUTTER_TEST')) {
+        if (_logeoParaPruebasActivo) {
           debugPrint('\x1B[31m${rec.level.name}: ${rec.message}');
         } else {
           var msg = '\x1B[31m${rec.level.name}: ${rec.message} \n';
@@ -229,5 +234,10 @@ class Logger implements ILogger {
     );
 
     return modifiedEvent;
+  }
+
+  @override
+  void activarLogeoParaPruebas(bool activo) {
+    _logeoParaPruebasActivo = activo;
   }
 }

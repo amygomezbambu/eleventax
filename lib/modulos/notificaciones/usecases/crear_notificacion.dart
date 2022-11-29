@@ -16,6 +16,6 @@ class CrearNotificacion extends Usecase<void> {
   }
 
   Future<void> _operation() async {
-    var notificacion = Notificacion.crear(tipo: req.tipo, mensaje: req.mensaje);
+    Notificacion.crear(tipo: req.tipo, mensaje: req.mensaje);
   }
 }
