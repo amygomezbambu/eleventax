@@ -10,4 +10,5 @@ abstract class IRepositorioProductos extends IRepositorio<Producto> {
   Future<Map<String, Object>> obtenerNombreYCodigo(UID uid);
   Future<void> agregarCategoria(Categoria categoria);
   Future<void> eliminarCategoria(UID uid);
+  Future<void> modificarCategoria(Categoria categoria);
 }

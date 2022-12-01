@@ -70,7 +70,8 @@ class RepositorioConsultaProductos extends RepositorioConsulta
   Future<List<Categoria>> obtenerCategorias() async {
     List<Categoria> categorias = [];
 
-    var dbResult = await db.query(sql: 'SELECT uid, nombre FROM categorias;');
+    var dbResult =
+        await db.query(sql: 'SELECT uid, nombre, borrado FROM categorias;');
 
     if (dbResult.isNotEmpty) {
       for (var row in dbResult) {
@@ -78,6 +79,7 @@ class RepositorioConsultaProductos extends RepositorioConsulta
           Categoria.cargar(
             uid: UID.fromString(row['uid'] as String),
             nombre: NombreCategoria(row['nombre'] as String),
+            eliminado: Utils.db.intToBool(row['categoria_uid'] as int),
           ),
         );
       }
@@ -200,7 +202,9 @@ class RepositorioConsultaProductos extends RepositorioConsulta
               ? null
               : Categoria.cargar(
                   uid: UID.fromString(row['categoria_uid'] as String),
-                  nombre: NombreCategoria(row['categoria'] as String)),
+                  nombre: NombreCategoria(row['categoria'] as String),
+                  eliminado: Utils.db.intToBool(row['borrado'] as int),
+                ),
           imagenURL: row['url_imagen'] as String,
           preguntarPrecio: Utils.db.intToBool(row['preguntar_precio'] as int),
           impuestos: impuestos,
@@ -271,7 +275,7 @@ class RepositorioConsultaProductos extends RepositorioConsulta
   Future<Categoria?> obtenerCategoria(UID uid) async {
     Categoria? categoria;
 
-    var query = 'SELECT nombre FROM categorias WHERE uid = ?';
+    var query = 'SELECT nombre,borrado FROM categorias WHERE uid = ?';
 
     var dbResult = await db.query(sql: query, params: [uid.toString()]);
 
@@ -279,6 +283,7 @@ class RepositorioConsultaProductos extends RepositorioConsulta
       categoria = Categoria.cargar(
         uid: uid,
         nombre: NombreCategoria(dbResult[0]['nombre'] as String),
+        eliminado: Utils.db.intToBool(dbResult[0]['borrado'] as int),
       );
     }
     return categoria;

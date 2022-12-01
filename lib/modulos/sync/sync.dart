@@ -78,6 +78,11 @@ class Sync implements ISync {
     required String rowID,
     required Map<String, Object?> fields,
   }) async {
+    //TODO: Guardas
+    if (fields.isEmpty) {
+      return;
+    }
+
     try {
       var changes = await _generateChanges(
         dataset,

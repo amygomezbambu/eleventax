@@ -14,6 +14,37 @@ class Categoria extends Entidad {
   Categoria.cargar({
     required UID uid,
     required NombreCategoria nombre,
+    required bool eliminado,
   })  : _nombre = nombre,
-        super.cargar(uid);
+        super.cargar(uid, eliminado: eliminado);
+
+  Map<String, dynamic> toMap() {
+    final result = {
+      'uid': uid_.toString(),
+      'nombre': _nombre.value,
+    };
+
+    return result;
+  }
+
+  factory Categoria.fromMap(Map<String, dynamic> map) {
+    return Categoria.crear(nombre: NombreCategoria(map['nombre']));
+  }
+
+  Categoria copyWith({
+    UID? uid,
+    NombreCategoria? nombre,
+    bool? eliminado,
+  }) {
+    var copia = Categoria.crear(
+      nombre: nombre ?? _nombre,
+    );
+
+    copia.uid_ = uid ?? uid_;
+    copia.eliminado_ = eliminado ?? eliminado_;
+    return copia;
+  }
+
+  @override
+  String toString() => 'Categoria(_nombre: $_nombre)';
 }

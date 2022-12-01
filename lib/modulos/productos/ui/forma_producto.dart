@@ -127,6 +127,7 @@ class _FormaProductoState extends State<FormaProducto> {
     return Categoria.cargar(
       uid: UID.invalid(),
       nombre: NombreCategoria.sinCategoria(),
+      eliminado: false,
     );
   }
 

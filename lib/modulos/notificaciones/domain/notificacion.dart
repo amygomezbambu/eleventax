@@ -33,7 +33,7 @@ class Notificacion extends Entidad {
     );
 
     copia._timestamp = timestamp ?? _timestamp;
-    copia.uidInterno = uid ?? uidInterno;
+    copia.uid_ = uid ?? uid_;
 
     return copia;
   }

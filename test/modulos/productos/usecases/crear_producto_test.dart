@@ -90,7 +90,10 @@ void main() {
 
     crearProducto.req.producto = llenarProductoConCodigo('S34gj4');
     crearProducto.req.producto.categoria = Categoria.cargar(
-        uid: UID.invalid(), nombre: NombreCategoria.sinCategoria());
+      uid: UID.invalid(),
+      nombre: NombreCategoria.sinCategoria(),
+      eliminado: false,
+    );
 
     await expectLater(
       crearProducto.exec(),

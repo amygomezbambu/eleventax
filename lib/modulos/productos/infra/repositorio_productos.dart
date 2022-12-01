@@ -192,4 +192,30 @@ class RepositorioProductos extends Repositorio
       },
     );
   }
+
+  @override
+  Future<void> modificarCategoria(Categoria categoriaModificada) async {
+    Categoria? categoriaOriginal =
+        await _consultas.obtenerCategoria(categoriaModificada.uid);
+
+    if (categoriaOriginal != null) {
+      var diferencias = await obtenerDiferencias(
+        categoriaModificada.toMap(),
+        categoriaOriginal.toMap(),
+      );
+
+      await adaptadorSync.synchronize(
+        dataset: 'categorias',
+        rowID: categoriaModificada.uid.toString(),
+        fields: diferencias,
+      );
+    } else {
+      throw EleventaEx(
+        message:
+            'No existe la categoria en la base de datos, codigo: ${categoriaModificada.uid.toString()}',
+        input: categoriaModificada
+            .toString(), //TODO: definir toString para todas las entidades
+      );
+    }
+  }
 }

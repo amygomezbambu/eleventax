@@ -7,12 +7,21 @@ import 'package:meta/meta.dart';
 ///Todas las entidades deben extender esta clase
 class Entidad {
   @protected
-  UID uidInterno;
-  UID get uid => uidInterno;
+  UID uid_;
 
-  Entidad.crear() : uidInterno = UID();
+  @protected
+  bool eliminado_;
 
-  Entidad.cargar(UID uid) : uidInterno = uid;
+  UID get uid => uid_;
+  bool get eliminado => eliminado_;
+
+  Entidad.crear()
+      : uid_ = UID(),
+        eliminado_ = false;
+
+  Entidad.cargar(UID uid, {bool eliminado = false})
+      : uid_ = uid,
+        eliminado_ = eliminado;
 
   @protected
   void lanzarExcepcion({required String mensaje}) {
