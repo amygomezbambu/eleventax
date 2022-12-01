@@ -19,9 +19,17 @@ class RepositorioNotificaciones extends Repositorio
   }
 
   @override
-  Future<void> agregar(Notificacion entity) {
-    // TODO: implement agregar
-    throw UnimplementedError();
+  Future<void> agregar(Notificacion notificacion) async {
+    await adaptadorSync.synchronize(
+      dataset: 'notificaciones',
+      rowID: notificacion.uid.toString(),
+      fields: {
+        'tipo': notificacion.tipo.index,
+        'mensaje': notificacion.mensaje,
+        'cuerpo': notificacion.cuerpoToJson(),
+        'timestamp': notificacion.timestamp,
+      },
+    );
   }
 
   Future<Notificacion?> obtener(UID uid) {

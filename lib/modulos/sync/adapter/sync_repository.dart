@@ -2,10 +2,11 @@ import 'package:eleventa/dependencias.dart';
 import 'package:eleventa/modulos/common/app/interface/database.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/utils/utils.dart';
-import 'package:eleventa/modulos/sync/change.dart';
+import 'package:eleventa/modulos/sync/entity/change.dart';
 import 'package:eleventa/modulos/sync/config.dart';
+import 'package:eleventa/modulos/sync/entity/queue_entry.dart';
 import 'package:eleventa/modulos/sync/interfaces/sync_repository.dart';
-import 'package:eleventa/modulos/sync/unique_duplicate.dart';
+import 'package:eleventa/modulos/sync/entity/unique_duplicate.dart';
 
 class SyncRepository implements IRepositorioSync {
   late IAdaptadorDeBaseDeDatos _db;
@@ -179,7 +180,7 @@ class SyncRepository implements IRepositorioSync {
   @override
   Future<bool> existeRow(String dataset, String rowId) async {
     var exist = false;
-    var query = 'select count(uid) as count from $dataset where uid = ?;';
+    var query = 'SELECT count(uid) AS count FROM $dataset WHERE uid = ?;';
 
     var dbResult = await _db.query(sql: query, params: [rowId]);
 
@@ -332,5 +333,42 @@ class SyncRepository implements IRepositorioSync {
   Future<void> marcarCambioComoAplicado(Change change) async {
     await _db.command(
         sql: 'update crdt set applied = 1 where hlc = ?', params: [change.hlc]);
+  }
+
+  @override
+  Future<Object?> obtenerColumnaDeDataset({
+    required String dataset,
+    required String column,
+    required String uid,
+  }) async {
+    var query = 'select $column from $dataset where uid = ?;';
+
+    var dbResult = await _db.query(sql: query, params: [uid]);
+
+    return dbResult.isNotEmpty ? dbResult[0][column] as Object : null;
+  }
+
+  @override
+  Future<void> agregarEntradaQueue(QueueEntry entrada) async {
+    var command = 'insert into sync_queue(uid, payload) values(?, ?);';
+
+    await _db.command(sql: command, params: [entrada.uid, entrada.payload]);
+  }
+
+  @override
+  Future<void> borrarEntradaQueue(String uid) async {
+    var command = 'delete from sync_queue where uid = ?;';
+
+    await _db.command(sql: command, params: [uid]);
+  }
+
+  @override
+  Future<List<QueueEntry>> obtenerQueue() async {
+    return (await _db.query(sql: 'select uid, payload from sync_queue'))
+        .map((row) => QueueEntry(
+              uid: row['uid'] as String,
+              payload: row['payload'] as String,
+            ))
+        .toList();
   }
 }

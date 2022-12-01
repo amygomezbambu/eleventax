@@ -1,7 +1,7 @@
 import 'package:eleventa/modulos/sync/adapter/crdt_adapter.dart';
-import 'package:eleventa/modulos/sync/change.dart';
+import 'package:eleventa/modulos/sync/entity/change.dart';
 import 'package:eleventa/modulos/sync/interfaces/sync_repository.dart';
-import 'package:eleventa/modulos/sync/merkle.dart';
+import 'package:eleventa/modulos/sync/entity/merkle.dart';
 import 'package:hlc/hlc.dart';
 
 class AddChangesRequest {

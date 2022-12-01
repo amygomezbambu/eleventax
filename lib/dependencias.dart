@@ -4,6 +4,7 @@ import 'package:eleventa/modulos/common/app/interface/red.dart';
 import 'package:eleventa/modulos/common/app/interface/sync.dart';
 import 'package:eleventa/modulos/common/app/interface/logger.dart';
 import 'package:eleventa/modulos/common/app/interface/telemetria.dart';
+import 'package:eleventa/modulos/notificaciones/interfaces/repositorio_notificaciones.dart';
 import 'package:eleventa/modulos/productos/interfaces/repositorio_consulta_productos.dart';
 import 'package:eleventa/modulos/productos/interfaces/repositorio_productos.dart';
 import 'package:eleventa/modulos/ventas/app/interface/repositorio_ventas.dart';
@@ -74,6 +75,15 @@ class DependenciasDeProductos extends _RegistroDeDependencias {
   }
 }
 
+class DependenciasDeNotificaciones extends _RegistroDeDependencias {
+  DependenciasDeNotificaciones(Map<String, Object Function()> deps)
+      : super(deps);
+
+  IRepositorioNotificaciones repositorioNotificaciones() {
+    return obtenerDependencia<IRepositorioNotificaciones>();
+  }
+}
+
 class Dependencias {
   static final _deps = <String, Object Function()>{};
 
@@ -82,6 +92,9 @@ class Dependencias {
   static final DependenciasDeVentas ventas = DependenciasDeVentas(_deps);
   static final DependenciasDeProductos productos =
       DependenciasDeProductos(_deps);
+
+  static final DependenciasDeNotificaciones notificaciones =
+      DependenciasDeNotificaciones(_deps);
 
   static registrar(String interface, Object Function() builder) {
     _deps.putIfAbsent(interface, () => builder);

@@ -47,6 +47,22 @@ var syncAdapter = Sync.init(
 );
 ```
 
+Despues debemos configurar los uniques, ya que la base de datos no puede usar unique keys el sincronizador
+manejará internamente este aspecto.
+
+```dart
+  //El codigo de producto no puede repetirse
+  config.registerUniqueRule(
+    dataset: 'productos',
+    uniqueColumn: 'codigo',
+  );
+
+  config.registerUniqueRule(
+    dataset: 'categorias',
+    uniqueColumn: 'nombre',
+  );
+```
+
 una vez configurado podemos comenzar a usarlo, como ya se habia mencionado el adaptador
 de sincronización trabaja con _cambios_ asi es que debemos convertir los cambios hechos
 a un mapa de la siguiente manera:
@@ -113,6 +129,12 @@ Future<void> actualizar(Producto producto) async {
 
 - Todas las tablas que se desean sincronizar deben tener un campo uid y debe ser la llave primaria.
 - Nunca se deben usar Insert, Update o Delete directamente en la base de datos
+- No se pueden usar foreign keys 
+- No se deben usar uniques, si hay uniques deben especificarse como uniqueRules en la sincronización
+- No se deben eliminar registros, solo usar borrado logico
+- Antes de usar cualquier row se debe verificar que no este en estado "bloqueado"
+- Si se implementa la funcionalidad de recuperar un registro borrado primero se debe
+validar que no entre en conflicto con otros uniques y que no este en estado bloqueado
 
 Para saber mas acerca de la implementación interna del modulo de sincronización ir al
 ADR Global 003.

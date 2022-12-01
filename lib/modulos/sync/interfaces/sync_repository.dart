@@ -1,5 +1,6 @@
-import 'package:eleventa/modulos/sync/change.dart';
-import 'package:eleventa/modulos/sync/unique_duplicate.dart';
+import 'package:eleventa/modulos/sync/entity/change.dart';
+import 'package:eleventa/modulos/sync/entity/queue_entry.dart';
+import 'package:eleventa/modulos/sync/entity/unique_duplicate.dart';
 
 abstract class IRepositorioSync {
   Future<String> obtenerMerkle();
@@ -12,10 +13,20 @@ abstract class IRepositorioSync {
   Future<List<Change>> obtenerTodosLosCambios();
   Future<Change?> obtenerCambioPorHLC(String hlcSerializado);
 
+  Future<Object?> obtenerColumnaDeDataset({
+    required String dataset,
+    required String column,
+    required String uid,
+  });
+
+  Future<List<QueueEntry>> obtenerQueue();
+
   Future<void> actualizarHLCActual(String hlc);
   Future<void> actualizarMerkle(String merkleSerializado);
 
   Future<void> agregarCambio(Change cambio);
+
+  Future<void> agregarEntradaQueue(QueueEntry entrada);
 
   Future<void> ejecutarComandoRaw(String command, List<Object?> params);
 
@@ -27,6 +38,7 @@ abstract class IRepositorioSync {
   );
 
   Future<void> borrarMerkle();
+  Future<void> borrarEntradaQueue(String uid);
 
   Future<bool> existeRow(String dataset, String rowId);
 

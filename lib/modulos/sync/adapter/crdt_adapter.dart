@@ -1,23 +1,29 @@
 import 'package:eleventa/modulos/common/utils/uid.dart';
+import 'package:eleventa/modulos/notificaciones/domain/notificacion_sync.dart';
+import 'package:eleventa/modulos/notificaciones/modulo_notificaciones.dart';
+import 'package:eleventa/modulos/notificaciones/usecases/crear_notificacion.dart';
 import 'package:eleventa/modulos/sync/config.dart';
+import 'package:eleventa/modulos/sync/interfaces/sync_repository.dart';
+import 'package:eleventa/modulos/sync/sync_container.dart';
 import 'package:hlc/hlc.dart';
-
-import 'package:eleventa/modulos/sync/adapter/sync_repository.dart';
-import 'package:eleventa/modulos/sync/change.dart';
+import 'package:eleventa/modulos/sync/entity/change.dart';
 
 /// Controla la aplicacion de los cambios a la base de datos
 ///
 /// Decide si un cambio debe ser aplicado o descartado
 class CRDTAdapter {
-  final _repo = SyncRepository();
+  final IRepositorioSync _repo;
+  final crearNotificacion = ModuloNotificaciones.crearNotificacion();
 
-  CRDTAdapter();
+  CRDTAdapter([IRepositorioSync? syncRepo])
+      : _repo = syncRepo ?? SyncContainer.repositorioSync();
 
   Future<void> applyPendingChanges() async {
     var pendingChanges = await _repo.obtenerCambiosNoAplicados();
 
     for (var change in pendingChanges) {
       await processUniques(change);
+
       var newerChangesCount =
           await _repo.obtenerNumeroDeCambiosMasRecientes(change);
 
@@ -29,8 +35,6 @@ class CRDTAdapter {
       }
     }
   }
-
-  Future<void> processAutomaticResolution() async {}
 
   Future<void> processUniques(Change change) async {
     for (var rule in syncConfig!.uniqueRules) {
@@ -61,8 +65,10 @@ class CRDTAdapter {
               'insert into sync_duplicados(uid,dataset,column,sucedio_primero,sucedio_despues) '
               'values(?,?,?,?,?)';
 
+          var duplicadoUID = UID();
+
           await _repo.ejecutarComandoRaw(command, [
-            UID().toString(),
+            duplicadoUID.toString(),
             rule.dataset,
             rule.column,
             sucedioPrimero,
@@ -76,7 +82,15 @@ class CRDTAdapter {
           command = 'update ${change.dataset} set bloqueado = ? where uid = ?;';
 
           await _repo.ejecutarComandoRaw(command, [true, sucedioDespues]);
-          //CREAR LA ALERTA
+
+          crearNotificacion.req.notificacion = NotificacionSync.crear(
+            uidDuplicados: duplicadoUID,
+            tipo: TipoNotificacion.conflictoSync,
+            mensaje:
+                'Se ha detectado un duplicado en [${change.dataset}:${change.column}]',
+          );
+
+          await crearNotificacion.exec();
         }
 
         break;

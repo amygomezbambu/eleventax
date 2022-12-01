@@ -1,5 +1,5 @@
 import 'package:eleventa/modulos/sync/error.dart';
-import 'package:eleventa/modulos/sync/sync_unique_rule.dart';
+import 'package:eleventa/modulos/sync/entity/sync_unique_rule.dart';
 
 enum SyncMethod { pull, realtime }
 
@@ -13,6 +13,7 @@ class SyncConfig {
   var _groupId = '';
   var _deviceId = '';
   var _pullInterval = 30000;
+  var _queueInterval = 30000;
   var _syncMethod = SyncMethod.pull;
   var _sendChangesInmediatly = true;
   final List<SyncUniqueRule> _uniqueRules = [];
@@ -24,6 +25,7 @@ class SyncConfig {
   String get groupId => _groupId;
   String get deviceId => _deviceId;
   int get pullInterval => _pullInterval;
+  int get queueInterval => _queueInterval;
   SyncMethod get syncMethod => _syncMethod;
   String get addChangesEndpoint => _addChangesEndpoint;
   String get getChangesEndpoint => _getChangesEndpoint;
@@ -61,6 +63,7 @@ class SyncConfig {
     required String deleteChangesEndpoint,
     void Function(Object, StackTrace)? onError,
     int pullInterval = 30000,
+    int queueInterval = 30000,
     SyncMethod syncMethod = SyncMethod.pull,
     bool sendChangesInmediatly = true,
   }) {
@@ -78,6 +81,9 @@ class SyncConfig {
 
     _syncMethod = syncMethod;
     _sendChangesInmediatly = sendChangesInmediatly;
+
+    //TODO: agregar setter al igual que el pullInterval
+    _queueInterval = queueInterval;
   }
 
   void registerUniqueRule({

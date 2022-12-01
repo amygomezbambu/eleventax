@@ -41,6 +41,15 @@ class Migracion3 extends Migracion {
         ');';
 
     await db.command(sql: command);
+
+    command = ''' 
+      CREATE TABLE sync_queue(
+        uid TEXT PRIMARY KEY,
+        payload TEXT NOT NULL
+      );
+    ''';
+
+    await db.command(sql: command);
   }
 
   @override

@@ -20,11 +20,27 @@ class Notificacion extends Entidad {
     _timestamp = DateTime.now().millisecondsSinceEpoch;
   }
 
-  Notificacion.cargar({
-    required UID uid,
-    required TipoNotificacion tipo,
-    required String mensaje,
-  })  : _tipo = tipo,
-        _mensaje = mensaje,
-        super.cargar(uid);
+  Notificacion copyWith({
+    UID? uid,
+    TipoNotificacion? tipo,
+    String? mensaje,
+    String? cuerpo,
+    int? timestamp,
+  }) {
+    var copia = Notificacion.crear(
+      tipo: tipo ?? _tipo,
+      mensaje: mensaje ?? _mensaje,
+    );
+
+    copia._timestamp = timestamp ?? _timestamp;
+    copia.uidInterno = uid ?? uidInterno;
+
+    return copia;
+  }
+
+  String cuerpoToJson() {
+    return '';
+  }
+
+  void cargarCuerpoFromJson(String cuerpo) {}
 }

@@ -27,7 +27,12 @@ class Logger implements ILogger {
     log.Logger.root.onRecord.listen((rec) {
       if (rec.level == log.Level.SEVERE) {
         if (_logeoParaPruebasActivo) {
-          debugPrint('\x1B[31m${rec.level.name}: ${rec.message}');
+          var msg = '\x1B[31m${rec.level.name}: ${rec.message} \n';
+          msg += rec.error != null ? '[INNER EX]: ${rec.error} \n' : '';
+          msg += rec.stackTrace != null ? '[STACK]: ${rec.stackTrace} \n' : '';
+          msg += '\x1B[0m';
+
+          debugPrint(msg);
         } else {
           var msg = '\x1B[31m${rec.level.name}: ${rec.message} \n';
           msg += rec.error != null ? '[INNER EX]: ${rec.error} \n' : '';

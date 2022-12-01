@@ -247,6 +247,7 @@ class AdaptadorSQLite implements IAdaptadorDeBaseDeDatos {
         result.addAll(dbResult);
       }
     } catch (e, stack) {
+      //TODO: NO LOGEA LOS ERRORES INTERNOS DE SQLITE
       throw InfraEx(
         message: 'Ocurrió un error al consultar la base de datos',
         innerException: e,
@@ -271,5 +272,10 @@ class AdaptadorSQLite implements IAdaptadorDeBaseDeDatos {
   @override
   Future<void> transaction() async {
     await command(sql: 'BEGIN TRANSACTION');
+  }
+
+  @override
+  set verbose(bool value) {
+    _verbose = value;
   }
 }

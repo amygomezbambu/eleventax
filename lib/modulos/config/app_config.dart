@@ -17,7 +17,7 @@ class Secrets {
     _tokenTelemetria = Env.mixpanelProjectID;
     _tokenLoggingRemoto = Env.sentryDSN;
 
-    //TODO: no debe tener el default
+    //TODO: no debe tener el default, usar 1Password como en los otros secrets ?
     _dbPassword =
         const String.fromEnvironment('DB_PASSWORD', defaultValue: '12345');
   }
@@ -49,6 +49,7 @@ class AppConfig extends ConfigLocal {
   var sucursalID = 'ABCDF';
   var usuarioLogeado = 'Jhon Doe';
   var negocio = Negocio();
+  var dbVersion = 0;
 
   /* #region Singleton */
   static final AppConfig _instance = AppConfig._internal();

@@ -1,4 +1,7 @@
 abstract class IAdaptadorDeBaseDeDatos {
+  /// Activa el logeo en consola de los queries y commands de sqlite
+  set verbose(bool value);
+
   /// Create a connection to the dabatase
   Future<void> conectar({bool verbose = false});
   Future<void> command({

@@ -1,5 +1,5 @@
 import 'package:eleventa/dependencias.dart';
-import 'package:eleventa/loader.dart';
+import 'package:eleventa/modulos/loader/loader.dart';
 import 'package:eleventa/modulos/common/ui/no_encontrado.dart';
 import 'package:eleventa/modulos/common/ui/ruta.dart';
 import 'package:eleventa/modulos/config/ui/sync_config_page.dart';

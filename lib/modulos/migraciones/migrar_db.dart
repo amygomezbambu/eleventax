@@ -1,3 +1,4 @@
+import 'package:eleventa/globals.dart';
 import 'package:eleventa/modulos/migraciones/repositorio_migraciones.dart';
 import 'package:eleventa/modulos/migraciones/registro_de_migraciones.dart'
     as registro_de_migraciones;
@@ -38,5 +39,7 @@ class MigrarDB {
       //por lo pronto solo hacemos rethrow
       throw error;
     }
+
+    appConfig.dbVersion = version;
   }
 }

@@ -21,6 +21,7 @@ class RepositorioProductos extends Repositorio
     required IAdaptadorDeBaseDeDatos db,
   }) : super(syncAdapter, db);
 
+  @override
   Future<Map<String, Object>> obtenerNombreYCodigo(UID uid) async {
     var query =
         'SELECT nombre, codigo, bloqueado, borrado from productos WHERE uid = ?';

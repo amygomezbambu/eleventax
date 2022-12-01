@@ -13,7 +13,8 @@ class Migracion5 extends Migracion {
         'uid TEXT PRIMARY KEY,'
         'tipo INTEGER NULL,'
         'timestamp INTEGER NULL,'
-        'mensaje TEXT NULL'
+        'mensaje TEXT NULL,'
+        'cuerpo TEXT NULL'
         ') ';
 
     await db.command(sql: command);

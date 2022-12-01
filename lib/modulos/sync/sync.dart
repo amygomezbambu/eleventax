@@ -1,6 +1,9 @@
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
-import 'package:eleventa/modulos/sync/app/usecase/add_local_changes.dart';
+import 'package:eleventa/modulos/common/utils/uid.dart';
+import 'package:eleventa/modulos/sync/usecase/add_local_changes.dart';
+import 'package:eleventa/modulos/sync/usecase/process_queue.dart';
 import 'package:eleventa/modulos/sync/config.dart';
+import 'package:eleventa/modulos/sync/entity/queue_entry.dart';
 import 'package:eleventa/modulos/sync/interfaces/sync_repository.dart';
 import 'package:eleventa/modulos/sync/interfaces/sync_server.dart';
 import 'package:eleventa/modulos/sync/sync_container.dart';
@@ -8,8 +11,8 @@ import 'package:hlc/hlc.dart';
 
 import 'package:eleventa/modulos/common/app/interface/sync.dart';
 import 'package:eleventa/modulos/common/utils/utils.dart';
-import 'package:eleventa/modulos/sync/app/usecase/obtain_remote_changes.dart';
-import 'package:eleventa/modulos/sync/change.dart';
+import 'package:eleventa/modulos/sync/usecase/obtain_remote_changes.dart';
+import 'package:eleventa/modulos/sync/entity/change.dart';
 import 'package:eleventa/modulos/sync/sync_config.dart';
 
 /// Clase principal de Sincronización
@@ -20,6 +23,7 @@ class Sync implements ISync {
   late IServidorSync _servidorSync;
 
   late ObtainRemoteChanges _obtainRemoteChanges;
+  late ProcessQueue _processQueue;
   late AddLocalChanges _addLocalChanges;
 
   static final Sync _instance = Sync._internal();
@@ -41,6 +45,11 @@ class Sync implements ISync {
     instance._obtainRemoteChanges = ObtainRemoteChanges(
       repoSync: instance._repoSync,
       servidorSync: instance._servidorSync,
+    );
+
+    instance._processQueue = ProcessQueue(
+      repo: instance._repoSync,
+      server: instance._servidorSync,
     );
 
     return instance;
@@ -110,7 +119,18 @@ class Sync implements ISync {
 
   Future<void> _sendChangesToRemoteServer(List<Change> changes) async {
     if (syncConfig!.sendChangesInmediatly) {
-      await _servidorSync.enviarCambios(changes);
+      try {
+        await _servidorSync.enviarCambios(changes);
+      } catch (e) {
+        await _repoSync.agregarEntradaQueue(
+          QueueEntry(
+            uid: UID().toString(),
+            payload: _servidorSync.changesToJsonPayload(changes),
+          ),
+        );
+
+        rethrow;
+      }
     }
   }
 
@@ -142,5 +162,18 @@ class Sync implements ISync {
     }
 
     return changes;
+  }
+
+  @override
+  Future<void> initQueueProcessing() async {
+    _processQueue.req.retryInterval =
+        Duration(milliseconds: syncConfig!.queueInterval);
+
+    await _processQueue.exec();
+  }
+
+  @override
+  void stopQueueProcessing() {
+    _processQueue.detener();
   }
 }

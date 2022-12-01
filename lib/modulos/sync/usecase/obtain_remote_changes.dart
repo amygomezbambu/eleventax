@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:eleventa/modulos/sync/adapter/crdt_adapter.dart';
-import 'package:eleventa/modulos/sync/change.dart';
+import 'package:eleventa/modulos/sync/entity/change.dart';
 import 'package:eleventa/modulos/sync/interfaces/sync_repository.dart';
 import 'package:eleventa/modulos/sync/interfaces/sync_server.dart';
-import 'package:eleventa/modulos/sync/merkle.dart';
+import 'package:eleventa/modulos/sync/entity/merkle.dart';
 
 class ObtainRemoteChangesRequest {
   var interval = 30000;

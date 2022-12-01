@@ -1,6 +1,6 @@
 import 'package:eleventa/modulos/sync/adapter/sync_repository.dart';
 import 'package:eleventa/modulos/sync/sync.dart';
-import 'package:eleventa/modulos/sync/unique_duplicate.dart';
+import 'package:eleventa/modulos/sync/entity/unique_duplicate.dart';
 
 /// Metodos de resolución posibles
 ///

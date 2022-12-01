@@ -1,4 +1,4 @@
-import 'package:eleventa/loader.dart';
+import 'package:eleventa/modulos/loader/loader.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_boton_primario.dart';
 import 'package:eleventa/modulos/ventas/ui/vista_ventas.dart';
 import 'package:flutter/material.dart';

@@ -15,4 +15,10 @@ abstract class ISync {
 
   /// Detiene la escucha de nuevos cambios en el servidor remoto
   void stopListening();
+
+  /// Inicia el proceso que observa el queue y reintenta enviar los cambios
+  Future<void> initQueueProcessing();
+
+  /// Detiene el procesamiento del Queue
+  void stopQueueProcessing();
 }

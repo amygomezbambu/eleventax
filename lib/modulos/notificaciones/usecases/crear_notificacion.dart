@@ -1,21 +1,25 @@
 import 'package:eleventa/modulos/common/app/usecase/usecase.dart';
 import 'package:eleventa/modulos/notificaciones/domain/notificacion.dart';
+import 'package:eleventa/modulos/notificaciones/interfaces/repositorio_notificaciones.dart';
 
 enum TipoNotificacion { info, alerta, conflictoSync, error }
 
 class CrearNotificacionRequest {
-  var tipo = TipoNotificacion.info;
-  var mensaje = '';
+  late TipoNotificacion tipo;
+  late Notificacion notificacion;
 }
 
 class CrearNotificacion extends Usecase<void> {
-  var req = CrearNotificacionRequest();
+  final req = CrearNotificacionRequest();
+  final IRepositorioNotificaciones _notificaciones;
 
-  CrearNotificacion() : super() {
+  CrearNotificacion(IRepositorioNotificaciones notificaciones)
+      : _notificaciones = notificaciones,
+        super(notificaciones) {
     operation = _operation;
   }
 
   Future<void> _operation() async {
-    Notificacion.crear(tipo: req.tipo, mensaje: req.mensaje);
+    await _notificaciones.agregar(req.notificacion);
   }
 }
