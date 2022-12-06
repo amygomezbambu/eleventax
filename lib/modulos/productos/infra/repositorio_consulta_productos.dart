@@ -79,7 +79,7 @@ class RepositorioConsultaProductos extends RepositorioConsulta
           Categoria.cargar(
             uid: UID.fromString(row['uid'] as String),
             nombre: NombreCategoria(row['nombre'] as String),
-            eliminado: Utils.db.intToBool(row['categoria_uid'] as int),
+            eliminado: Utils.db.intToBool(row['borrado'] as int),
           ),
         );
       }
@@ -161,18 +161,19 @@ class RepositorioConsultaProductos extends RepositorioConsulta
     }
   }
 
+  //TODO: crear objetos CRITERIA
   Future<List<Producto>> _obtenerProductos(
       String condicionWhere, List<Object?> params) async {
     var query = '''
         SELECT p.uid,p.codigo,p.nombre,p.categoria_uid,p.precio_compra,p.precio_venta,
         p.se_vende_por,p.url_imagen, p.borrado AS eliminado,
-        c.uid AS categoria_uid, c.nombre AS categoria,
+        c.uid AS categoria_uid, c.nombre AS categoria_nombre, c.borrado as categoria_borrado,
         um.nombre as unidad_medida_nombre, um.abreviacion as unidad_medida_abreviacion, um.uid AS unidad_medida_uid,  
         p.preguntar_precio
         FROM productos p 
-        LEFT JOIN categorias c on p.categoria_uid = c.uid 
-        LEFT JOIN unidades_medida um on p.unidad_medida_uid = um.uid 
-        $condicionWhere''';
+        LEFT JOIN categorias c on p.categoria_uid = c.uid   
+        LEFT JOIN unidades_medida um on p.unidad_medida_uid = um.uid
+        $condicionWhere  ''';
 
     var result = await db.query(sql: query, params: params);
 
@@ -198,12 +199,13 @@ class RepositorioConsultaProductos extends RepositorioConsulta
             abreviacion: row['unidad_medida_abreviacion'] as String,
           ),
           seVendePor: ProductoSeVendePor.values[row['se_vende_por'] as int],
-          categoria: row['categoria_uid'] == null
+          categoria: (row['categoria_uid'] == null) ||
+                  (Utils.db.intToBool(row['categoria_borrado'] as int) == true)
               ? null
               : Categoria.cargar(
                   uid: UID.fromString(row['categoria_uid'] as String),
-                  nombre: NombreCategoria(row['categoria'] as String),
-                  eliminado: Utils.db.intToBool(row['borrado'] as int),
+                  nombre: NombreCategoria(row['categoria_nombre'] as String),
+                  eliminado: false,
                 ),
           imagenURL: row['url_imagen'] as String,
           preguntarPrecio: Utils.db.intToBool(row['preguntar_precio'] as int),

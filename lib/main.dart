@@ -17,7 +17,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:eleventa/modulos/productos/ui/vista_productos.dart';
 
-void main() async {
+Future<void> main() async {
   var loader = Loader();
   await loader.iniciar();
 

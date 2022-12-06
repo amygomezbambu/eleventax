@@ -96,7 +96,7 @@ class _ListadoProductos extends ConsumerWidget {
     return Column(
       children: [
         SizedBox(
-          height: 125,
+          height: 135,
           child: Card(
             color: TailwindColors.coolGray[100],
             elevation: 1,
@@ -152,11 +152,10 @@ class _ListadoProductos extends ConsumerWidget {
                     icon: Icons.create_outlined,
                     label: 'Crear producto',
                     onTap: () {
-                      debugPrint(
-                          'Ir a crear producto, desktop: ${esDesktop.resolve(context)}');
+                      // debugPrint(
+                      //     'Ir a crear producto, desktop: ${esDesktop.resolve(context)}');
 
                       if (!esDesktop.resolve(context)) {
-                        debugPrint('sup!');
                         GoRouter.of(context).go('/productos/nuevo');
                       } else {
                         onNuevoProducto();

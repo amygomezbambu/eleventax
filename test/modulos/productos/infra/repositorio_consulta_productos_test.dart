@@ -41,6 +41,43 @@ void main() {
         reason: 'El producto recien creado se debió haber obtenido');
   });
 
+  test(
+      'debe asignar categoria nula para aquellos productos con categoria borrada',
+      () async {
+    var repo = ModuloProductos.repositorioConsultaProductos();
+    var unidadesMedida = await repo.obtenerUnidadesDeMedida();
+    var categorias = await repo.obtenerCategorias();
+
+    var crearProducto = ModuloProductos.crearProducto();
+
+    var productoCreado = Producto.crear(
+        codigo: CodigoProducto('123456AAAABB'),
+        nombre: NombreProducto('Producto con categoria borrada'),
+        precioDeCompra: PrecioDeCompraProducto(Moneda(11.42)),
+        precioDeVenta: PrecioDeVentaProducto(Moneda(11.50)),
+        unidadDeMedida: unidadesMedida.first,
+        impuestos: [],
+        categoria: categorias.first);
+
+    crearProducto.req.producto = productoCreado;
+
+    await crearProducto.exec();
+
+    var eliminarCategoria = ModuloProductos.eliminarCategoria();
+    eliminarCategoria.req.uidCategoria = categorias.first.uid;
+    await eliminarCategoria.exec();
+
+    var productoEsperado = await repo.obtenerProducto(productoCreado.uid);
+
+    expect(productoEsperado!.categoria, isNull,
+        reason: 'La categoria del producto que fue eliminada debe ser nula');
+  });
+
+  test('debe obtener las categorias activas', () async {
+    // TODO: Hacer esta prueba
+    expect(true, true);
+  });
+
   test('debe de obtener un producto solo con sus impuestos activos', () async {
     var repo = ModuloProductos.repositorioConsultaProductos();
 
