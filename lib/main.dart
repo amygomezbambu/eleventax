@@ -1,8 +1,9 @@
 import 'package:eleventa/dependencias.dart';
+import 'package:eleventa/modulos/common/ui/widgets/ex_scaffold.dart';
 import 'package:eleventa/modulos/loader/loader.dart';
 import 'package:eleventa/modulos/common/ui/no_encontrado.dart';
 import 'package:eleventa/modulos/common/ui/ruta.dart';
-import 'package:eleventa/modulos/config/ui/sync_config_page.dart';
+import 'package:eleventa/modulos/config/ui/vista_configuracion.dart';
 import 'package:eleventa/modulos/productos/ui/modificar_producto.dart';
 import 'package:eleventa/modulos/productos/ui/nuevo_producto.dart';
 import 'package:eleventa/modulos/ventas/ui/vista_ventas.dart';
@@ -12,7 +13,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tailwindcss_defaults/colors.dart';
 import 'package:layout/layout.dart';
-import 'package:eleventa/modulos/common/ui/layout_principal.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:eleventa/modulos/productos/ui/vista_productos.dart';
@@ -98,6 +98,7 @@ class _EleventaAppState extends State<EleventaApp> {
       child: MaterialApp.router(
         routerConfig: _router,
         debugShowCheckedModeBanner: false,
+
         restorationScopeId: 'eleventa',
         //onGenerateTitle: (BuildContext context) => 'My Shop',
         theme: ThemeData(
@@ -111,6 +112,10 @@ class _EleventaAppState extends State<EleventaApp> {
           highlightColor: Colors.transparent,
           hoverColor: Colors.transparent,
           splashFactory: NoSplash.splashFactory,
+          appBarTheme: const AppBarTheme(
+            iconTheme: IconThemeData(color: Colors.red),
+            color: Colors.red,
+          ),
         ),
       ),
     );
@@ -123,12 +128,7 @@ class _EleventaAppState extends State<EleventaApp> {
       ShellRoute(
           navigatorKey: _shellNavigatorKey,
           builder: (context, state, child) {
-            // Definimos el layout comun para todas las rutas hijas
-            return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(child: LayoutPrincipal(child: child)),
-                ]);
+            return ScaffoldWithBottomNavBar(child: child);
           },
           routes: [
             GoRoute(
@@ -169,7 +169,7 @@ class _EleventaAppState extends State<EleventaApp> {
               path: '/configuracion',
               name: Ruta.configuracion.name,
               pageBuilder: (BuildContext context, GoRouterState state) =>
-                  const NoTransitionPage(child: SyncConfigPage()),
+                  const NoTransitionPage(child: VistaConfiguracion()),
             ),
           ])
     ],

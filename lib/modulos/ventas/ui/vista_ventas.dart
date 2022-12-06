@@ -1,3 +1,4 @@
+import 'package:eleventa/modulos/common/ui/widgets/ex_vista_principal_scaffold.dart';
 import 'package:eleventa/modulos/ventas/modulo_ventas.dart';
 import 'package:eleventa/modulos/ventas/ui/boton_cobrar.dart';
 import 'package:flutter/material.dart';
@@ -21,8 +22,9 @@ class VistaVentas extends StatefulWidget {
 class _VistaVentasState extends State<VistaVentas> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: AdaptiveBuilder(
+    return VistaPrincipalScaffold(
+      titulo: 'Ventas',
+      child: AdaptiveBuilder(
         xs: (context) => Column(
           children: const [VentaActual()],
         ),

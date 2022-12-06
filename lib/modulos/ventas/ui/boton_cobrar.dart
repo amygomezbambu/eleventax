@@ -1,3 +1,4 @@
+import 'package:eleventa/modulos/common/ui/ex_icons.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_boton_primario.dart';
 import 'package:flutter/material.dart';
 
@@ -23,7 +24,7 @@ class BotonCobrarVenta extends StatelessWidget {
       child: ExBotonPrimario(
           label: 'Cobrar \$${totalDeVenta.toStringAsFixed(2)}',
           tamanoFuente: dense ? 20 : 25,
-          icon: Icons.attach_money_outlined,
+          icon: Iconos.register,
           onTap: () => {onTap()},
           key: const ValueKey('payButton')),
     );

@@ -1,3 +1,4 @@
+import 'package:eleventa/modulos/common/ui/widgets/ex_vista_principal_scaffold.dart';
 import 'package:eleventa/modulos/productos/ui/forma_producto.dart';
 import 'package:flutter/material.dart';
 
@@ -6,9 +7,7 @@ class NuevoProducto extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Nuevo Producto')),
-      body: FormaProducto(context),
-    );
+    return VistaPrincipalScaffold(
+        titulo: 'Nuevo Producto', child: FormaProducto(context));
   }
 }

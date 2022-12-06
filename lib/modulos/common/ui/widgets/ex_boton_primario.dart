@@ -33,8 +33,12 @@ class ExBotonPrimario extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon,
-                  color: const Color.fromARGB(255, 137, 196, 251), size: 18),
+              Padding(
+                padding: const EdgeInsets.only(right: 2.0),
+                child: Icon(icon,
+                    color: const Color.fromARGB(255, 137, 196, 251),
+                    size: tamanoFuente + 3),
+              ),
               Padding(
                 padding: const EdgeInsets.only(left: 5.0),
                 child: Text(label,

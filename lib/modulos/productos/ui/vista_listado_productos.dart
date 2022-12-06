@@ -1,3 +1,4 @@
+import 'package:eleventa/modulos/common/ui/widgets/ex_vista_principal_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tailwindcss_defaults/colors.dart';
@@ -40,8 +41,9 @@ class VistaListadoProductosState extends State<VistaListadoProductos> {
   @override
   Widget build(BuildContext context) {
     return AdaptiveBuilder(
-      md: (BuildContext context) => Scaffold(
-        body: Row(
+      md: (BuildContext context) => VistaPrincipalScaffold(
+        titulo: 'Productos',
+        child: Row(
           children: [
             Flexible(
               flex: 2,
@@ -65,8 +67,9 @@ class VistaListadoProductosState extends State<VistaListadoProductos> {
           ],
         ),
       ),
-      xs: (BuildContext context) => Scaffold(
-          body: _ListadoProductos(
+      xs: (BuildContext context) => VistaPrincipalScaffold(
+          titulo: 'Productos',
+          child: _ListadoProductos(
               onTap: _mandarModificarProducto,
               onNuevoProducto: _mostrarNuevoProducto)),
     );
@@ -78,6 +81,7 @@ class _ListadoProductos extends ConsumerWidget {
   final Function(Producto) onTap;
   final VoidCallback onNuevoProducto;
   final controllerBusqueda = TextEditingController();
+  final _scrollController = ScrollController(initialScrollOffset: 0.0);
 
   _ListadoProductos({
     Key? key,
@@ -88,7 +92,6 @@ class _ListadoProductos extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref, [bool mounted = true]) {
     final productos = ref.watch(providerListadoProductos);
-    final scrollController = ScrollController();
 
     return Column(
       children: [
@@ -148,11 +151,16 @@ class _ListadoProductos extends ConsumerWidget {
                   ExBotonPrimario(
                     icon: Icons.create_outlined,
                     label: 'Crear producto',
-                    onTap: () => {
-                      if (!esDesktop.resolve(context))
-                        {GoRouter.of(context).go('/productos/nuevo')}
-                      else
-                        {onNuevoProducto()}
+                    onTap: () {
+                      debugPrint(
+                          'Ir a crear producto, desktop: ${esDesktop.resolve(context)}');
+
+                      if (!esDesktop.resolve(context)) {
+                        debugPrint('sup!');
+                        GoRouter.of(context).go('/productos/nuevo');
+                      } else {
+                        onNuevoProducto();
+                      }
                     },
                   )
                 ],
@@ -165,13 +173,14 @@ class _ListadoProductos extends ConsumerWidget {
           padding: const EdgeInsets.only(top: 8.0),
           child: Scrollbar(
             thumbVisibility: esDesktop.resolve(context),
-            controller: scrollController,
-            //scrollbarOrientation: ScrollbarOrientation.bottom,
+            trackVisibility: esDesktop.resolve(context),
+            controller: _scrollController,
+            scrollbarOrientation: ScrollbarOrientation.bottom,
             child: ListView.separated(
               scrollDirection: Axis.vertical,
               shrinkWrap: true,
               itemCount: productos.length,
-              controller: scrollController,
+              controller: _scrollController,
               itemBuilder: (BuildContext context, int index) {
                 return ListTile(
                     contentPadding: EdgeInsets.only(
@@ -195,7 +204,7 @@ class _ListadoProductos extends ConsumerWidget {
                     title: Text(
                       productos[index].nombre,
                       style: TextStyle(
-                          fontSize: esDesktop.resolve(context) ? 16 : 14,
+                          fontSize: esDesktop.resolve(context) ? 14 : 16,
                           fontWeight: FontWeight.w500),
                     ),
                     hoverColor: TailwindColors.blueGray[200],
@@ -207,7 +216,7 @@ class _ListadoProductos extends ConsumerWidget {
                           Text(
                             productos[index].precioDeVenta.toString(),
                             style: TextStyle(
-                                fontSize: esDesktop.resolve(context) ? 18 : 16,
+                                fontSize: esDesktop.resolve(context) ? 16 : 18,
                                 color: const Color.fromARGB(255, 38, 119, 181),
                                 fontWeight: FontWeight.w600),
                           )

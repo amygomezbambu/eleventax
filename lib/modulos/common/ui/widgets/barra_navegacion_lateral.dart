@@ -45,12 +45,12 @@ class BarraNavegacionLateral extends StatelessWidget {
       selectedIndex: rutaSeleccionada.index,
       onDestinationSelected: _manejarIndiceSeleccionado,
       labelType: NavigationRailLabelType.none,
-      minWidth: 59,
+      minWidth: 65,
       backgroundColor: DesignSystem.backgroundColor,
       indicatorColor: const Color(0xFF1d415f),
       useIndicator: true,
       leading: Padding(
-        padding: const EdgeInsets.only(top: 10),
+        padding: const EdgeInsets.only(top: 32),
         child: Column(
           children: [
             const EleventaLogo(),

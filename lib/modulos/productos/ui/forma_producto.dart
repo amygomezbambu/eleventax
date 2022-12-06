@@ -1,5 +1,6 @@
 import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
+import 'package:eleventa/modulos/common/ui/ex_icons.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/nombre_categoria.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
@@ -38,6 +39,7 @@ class FormaProducto extends StatefulWidget {
 typedef EstadoFormField = FormFieldState<String>;
 
 class _FormaProductoState extends State<FormaProducto> {
+  final esDesktop = LayoutValue(xs: false, md: true);
   final mostrarMargenLabel = LayoutValue(xs: false, md: true);
 
   final FocusNode _focusNode = FocusNode();
@@ -63,6 +65,8 @@ class _FormaProductoState extends State<FormaProducto> {
   final _controllerPrecioDeCompra = TextEditingController();
   final _controllerImagen = TextEditingController();
   final _controllerUtilidad = TextEditingController();
+
+  final _scrollController = ScrollController(initialScrollOffset: 0.0);
 
   var lecturas = ModuloProductos.repositorioConsultaProductos();
 
@@ -268,13 +272,13 @@ class _FormaProductoState extends State<FormaProducto> {
   @override
   Widget build(BuildContext context) {
     return Scrollbar(
-      thumbVisibility: true,
-      child: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: SingleChildScrollView(
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          primary: true,
-          scrollDirection: Axis.vertical,
+      thumbVisibility: esDesktop.resolve(context),
+      trackVisibility: esDesktop.resolve(context),
+      controller: _scrollController,
+      child: SingleChildScrollView(
+        controller: _scrollController,
+        child: Padding(
+          padding: const EdgeInsets.all(15.0),
           child: Container(
             color: Colors.white10,
             width: 600,
@@ -295,7 +299,7 @@ class _FormaProductoState extends State<FormaProducto> {
                               fieldKey: _codigoField,
                               hintText: 'Código',
                               controller: _controllerCodigo,
-                              icon: Icons.document_scanner,
+                              icon: Iconos.barcode_scan,
 
                               // icon: state.existeCodigo
                               //     ? Icons.error
@@ -595,7 +599,7 @@ class _FormaProductoState extends State<FormaProducto> {
                             builder: (context, ref, child) {
                               return ExBotonPrimario(
                                   label: 'Guardar',
-                                  icon: Icons.save,
+                                  icon: Iconos.edit,
                                   tamanoFuente: 15,
                                   onTap: () async {
                                     if (await _guardarProducto()) {
@@ -624,7 +628,7 @@ class _FormaProductoState extends State<FormaProducto> {
                           child: ExBotonPrimario(
                               label: 'Cancelar',
                               tamanoFuente: 15,
-                              icon: Icons.cancel,
+                              icon: Iconos.delete,
                               onTap: () {
                                 limpiarCampos();
                               }),

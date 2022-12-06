@@ -1,12 +1,13 @@
+import 'package:eleventa/modulos/common/ui/ex_icons.dart';
+import 'package:eleventa/modulos/common/ui/widgets/ex_vista_principal_scaffold.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/productos/modulo_productos.dart';
-import 'package:eleventa/modulos/productos/ui/listado_productos_provider.dart';
 import 'package:flutter/material.dart';
-
-import 'package:eleventa/modulos/productos/ui/forma_producto.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:layout/layout.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:eleventa/modulos/productos/ui/listado_productos_provider.dart';
+import 'package:eleventa/modulos/productos/ui/forma_producto.dart';
 
 class ModificarProducto extends StatelessWidget {
   final Object producto;
@@ -32,13 +33,12 @@ class ModificarProducto extends StatelessWidget {
 
   @override
   Widget build(BuildContext context, [bool mounted = true]) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Modificar Producto'),
+    return VistaPrincipalScaffold(
+        titulo: 'Nuevo Producto',
         actions: [
           Consumer(
             builder: (context, ref, child) => IconButton(
-              icon: const Icon(Icons.delete),
+              icon: const Icon(Iconos.trash, color: Colors.white),
               tooltip: 'Eliminar producto',
               onPressed: () async {
                 await _eliminarProducto();
@@ -56,10 +56,8 @@ class ModificarProducto extends StatelessWidget {
                     content: Text('Producto eliminado con éxito!')));
               },
             ),
-          ),
+          )
         ],
-      ),
-      body: FormaProducto(context, producto: (producto as Producto)),
-    );
+        child: FormaProducto(context, producto: (producto as Producto)));
   }
 }
