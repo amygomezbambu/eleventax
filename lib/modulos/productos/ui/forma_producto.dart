@@ -24,7 +24,26 @@ import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
 import 'package:eleventa/modulos/productos/modulo_productos.dart';
 
 class FormaProducto extends StatefulWidget {
+  static final scrollController = ScrollController(initialScrollOffset: 0.0);
   final Producto? producto;
+  static final keyCodigo =
+      GlobalKey<FormFieldState<dynamic>>(debugLabel: 'keyCodigo');
+  static final keyNombre =
+      GlobalKey<FormFieldState<dynamic>>(debugLabel: 'keyNombre');
+  static final keyPrecioCompra =
+      GlobalKey<FormFieldState<dynamic>>(debugLabel: 'keyPrecioCompra');
+
+  static final keyPrecioVenta = GlobalKey<FormFieldState<dynamic>>();
+
+  static final keyCategoria = GlobalKey<EstadoFormField>();
+  static final keyImpuestos = GlobalKey<EstadoFormField>();
+  static final keyUnidadDeMedida = GlobalKey<EstadoFormField>();
+  static const keyBotonGuardar = Key('btnGuardar');
+
+  static final keySeVendePorUnidad =
+      GlobalKey<EstadoFormField>(debugLabel: 'keySeVendePorUnidad');
+  static final keySeVendePorPeso =
+      GlobalKey<EstadoFormField>(debugLabel: 'keySeVendePorPeso');
 
   const FormaProducto(
     BuildContext context, {
@@ -43,15 +62,9 @@ class _FormaProductoState extends State<FormaProducto> {
   final mostrarMargenLabel = LayoutValue(xs: false, md: true);
 
   final FocusNode _focusNode = FocusNode();
-  final _keyCategoria = GlobalKey<EstadoFormField>();
-  final _keyImpuestos = GlobalKey<EstadoFormField>();
-  final _keyUnidadDeMedida = GlobalKey<EstadoFormField>();
+
   final _formKey = GlobalKey<FormState>();
 
-  final _codigoField = GlobalKey<FormFieldState<dynamic>>();
-  final _nombreField = GlobalKey<FormFieldState<dynamic>>();
-  final _precioCompraField = GlobalKey<FormFieldState<dynamic>>();
-  final _precioVentaField = GlobalKey<FormFieldState<dynamic>>();
   final _imagenURL = GlobalKey<FormFieldState<dynamic>>();
 
   late final Future<List<Impuesto>> _impuestos = lecturas.obtenerImpuestos();
@@ -65,8 +78,6 @@ class _FormaProductoState extends State<FormaProducto> {
   final _controllerPrecioDeCompra = TextEditingController();
   final _controllerImagen = TextEditingController();
   final _controllerUtilidad = TextEditingController();
-
-  final _scrollController = ScrollController(initialScrollOffset: 0.0);
 
   var lecturas = ModuloProductos.repositorioConsultaProductos();
 
@@ -238,11 +249,11 @@ class _FormaProductoState extends State<FormaProducto> {
 
   void _cargarProducto() {
     // Reiniciamos el estado de validacion de los campos
-    if (_codigoField.currentState != null) {
-      _codigoField.currentState!.reset();
-      _nombreField.currentState!.reset();
-      _precioCompraField.currentState!.reset();
-      _precioVentaField.currentState!.reset();
+    if (FormaProducto.keyCodigo.currentState != null) {
+      FormaProducto.keyCodigo.currentState!.reset();
+      FormaProducto.keyNombre.currentState!.reset();
+      FormaProducto.keyPrecioCompra.currentState!.reset();
+      FormaProducto.keyPrecioVenta.currentState!.reset();
       _imagenURL.currentState!.reset();
     }
 
@@ -274,9 +285,10 @@ class _FormaProductoState extends State<FormaProducto> {
     return Scrollbar(
       thumbVisibility: esDesktop.resolve(context),
       trackVisibility: esDesktop.resolve(context),
-      controller: _scrollController,
+      controller: FormaProducto.scrollController,
       child: SingleChildScrollView(
-        controller: _scrollController,
+        key: const Key('frmScrollable'),
+        controller: FormaProducto.scrollController,
         child: Padding(
           padding: const EdgeInsets.all(15.0),
           child: Container(
@@ -296,7 +308,7 @@ class _FormaProductoState extends State<FormaProducto> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           ExTextField(
-                              fieldKey: _codigoField,
+                              fieldKey: FormaProducto.keyCodigo,
                               hintText: 'Código',
                               controller: _controllerCodigo,
                               icon: Iconos.barcode_scan,
@@ -338,7 +350,7 @@ class _FormaProductoState extends State<FormaProducto> {
                                 }
                               }),
                           ExTextField(
-                              fieldKey: _nombreField,
+                              fieldKey: FormaProducto.keyNombre,
                               hintText: 'Nombre',
                               controller: _controllerNombre,
                               validator: (value) async {
@@ -382,7 +394,7 @@ class _FormaProductoState extends State<FormaProducto> {
 
                                   return ExDropDown<Categoria>(
                                     hintText: 'Categoría',
-                                    dropDownKey: _keyCategoria,
+                                    dropDownKey: FormaProducto.keyCategoria,
                                     value: categoriaSeleccionada!,
                                     onChanged: (Categoria? categoria) {
                                       setState(() {
@@ -407,6 +419,7 @@ class _FormaProductoState extends State<FormaProducto> {
                                 }
                               }),
                           ExRadioButton<ProductoSeVendePor>(
+                              key: FormaProducto.keySeVendePorUnidad,
                               value: ProductoSeVendePor.unidad,
                               groupValue: seVendePor,
                               label: 'Unidad',
@@ -417,6 +430,7 @@ class _FormaProductoState extends State<FormaProducto> {
                                 });
                               }),
                           ExRadioButton<ProductoSeVendePor>(
+                              key: FormaProducto.keySeVendePorPeso,
                               value: ProductoSeVendePor.peso,
                               groupValue: seVendePor,
                               label: 'Peso',
@@ -442,7 +456,8 @@ class _FormaProductoState extends State<FormaProducto> {
                                   return ExDropDown<UnidadDeMedida>(
                                     hintText: 'Unidad de Medida',
                                     width: 300,
-                                    dropDownKey: _keyUnidadDeMedida,
+                                    dropDownKey:
+                                        FormaProducto.keyUnidadDeMedida,
                                     value: unidadDeMedidaSeleccionada!,
                                     onChanged:
                                         (UnidadDeMedida? unidadDeMedida) {
@@ -483,7 +498,7 @@ class _FormaProductoState extends State<FormaProducto> {
                                   return ExDropDown<Impuesto>(
                                     hintText: 'Impuesto',
                                     width: 160,
-                                    dropDownKey: _keyImpuestos,
+                                    dropDownKey: FormaProducto.keyImpuestos,
                                     value: impuestoSeleccionado!,
                                     onChanged: (Impuesto? impuesto) {
                                       setState(() {
@@ -508,7 +523,7 @@ class _FormaProductoState extends State<FormaProducto> {
                                 }
                               }),
                           ExTextField(
-                            fieldKey: _precioCompraField,
+                            fieldKey: FormaProducto.keyPrecioCompra,
                             hintText: 'Precio de compra',
                             controller: _controllerPrecioDeCompra,
                             helperText: 'Con Impuestos',
@@ -547,7 +562,7 @@ class _FormaProductoState extends State<FormaProducto> {
                           //   inputType: InputType.numerico,
                           // ),
                           ExTextField(
-                              fieldKey: _precioVentaField,
+                              fieldKey: FormaProducto.keyPrecioVenta,
                               hintText: 'Precio de venta',
                               controller: _controllerPrecioDeVenta,
                               prefixText: '\$ ',
@@ -598,6 +613,7 @@ class _FormaProductoState extends State<FormaProducto> {
                           child: Consumer(
                             builder: (context, ref, child) {
                               return ExBotonPrimario(
+                                  key: FormaProducto.keyBotonGuardar,
                                   label: 'Guardar',
                                   icon: Iconos.edit,
                                   tamanoFuente: 15,

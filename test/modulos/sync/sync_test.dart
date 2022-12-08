@@ -92,6 +92,7 @@ void main() async {
         dataset: 'productos',
         rowID: productoUID.toString(),
         fields: {'codigo': codigo, 'nombre': nombre},
+        awaitServerResponse: true,
       );
 
       var existeCRDTRow =
@@ -194,6 +195,7 @@ void main() async {
         dataset: 'productos',
         rowID: productoUID.toString(),
         fields: {'codigo': codigo, 'nombre': nombre},
+        awaitServerResponse: true,
       );
 
       var queueEntries = await syncRepo.obtenerQueue();
@@ -247,6 +249,7 @@ void main() async {
         dataset: 'productos',
         rowID: productoUID.toString(),
         fields: {'codigo': codigo, 'nombre': nombre},
+        awaitServerResponse: true,
       );
 
       //PARTE 2 recibir cambios del servidor remoto con el mismo unique para provocar el conflicto

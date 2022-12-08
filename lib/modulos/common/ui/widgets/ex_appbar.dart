@@ -40,6 +40,7 @@ class ExAppBar extends StatelessWidget implements PreferredSizeWidget {
       } else {
         if (canPop) {
           leadingIcon = IconButton(
+            tooltip: 'Regresar',
             onPressed: () => Navigator.of(context).pop(),
             icon: const Icon(
               Icons.chevron_left_outlined,

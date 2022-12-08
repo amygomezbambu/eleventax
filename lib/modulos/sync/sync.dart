@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/sync/usecase/add_local_changes.dart';
@@ -77,6 +79,7 @@ class Sync implements ISync {
     required String dataset,
     required String rowID,
     required Map<String, Object?> fields,
+    bool awaitServerResponse = false,
   }) async {
     //TODO: Guardas
     if (fields.isEmpty) {
@@ -91,8 +94,12 @@ class Sync implements ISync {
       );
 
       await _applyChangesToLocalDatabase(changes);
-      //TODO: esta linea es la que hace que la UI se tarde demasiado al guardar un producto
-      await _sendChangesToRemoteServer(changes);
+
+      if (awaitServerResponse) {
+        await _sendChangesToRemoteServer(changes);
+      } else {
+        unawaited(_sendChangesToRemoteServer(changes));
+      }
     } catch (e, stack) {
       if (syncConfig?.onError != null) {
         syncConfig?.onError!(e, stack);
@@ -122,6 +129,8 @@ class Sync implements ISync {
     _obtainRemoteChanges.stop();
   }
 
+  //TODO: Como o que debemos hacer si hay un error de sync , aparte de poner los cambios
+  //en el queue de sync
   Future<void> _sendChangesToRemoteServer(List<Change> changes) async {
     if (syncConfig!.sendChangesInmediatly) {
       try {

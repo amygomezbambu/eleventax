@@ -8,6 +8,7 @@ abstract class ISync {
     required String dataset,
     required String rowID,
     required Map<String, Object?> fields,
+    bool awaitServerResponse = false,
   });
 
   /// Inicia la escucha de nuevos cambios en el servidor remoto

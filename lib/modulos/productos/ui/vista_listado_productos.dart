@@ -15,6 +15,8 @@ import 'package:eleventa/modulos/productos/ui/modificar_producto.dart';
 import 'package:eleventa/modulos/productos/ui/nuevo_producto.dart';
 
 class VistaListadoProductos extends StatefulWidget {
+  static const keyBotonCobrar = Key('btnCrearProducto');
+
   const VistaListadoProductos({Key? key}) : super(key: key);
 
   @override
@@ -149,6 +151,7 @@ class _ListadoProductos extends ConsumerWidget {
                     },
                   ),
                   ExBotonPrimario(
+                    key: VistaListadoProductos.keyBotonCobrar,
                     icon: Icons.create_outlined,
                     label: 'Crear producto',
                     onTap: () {
