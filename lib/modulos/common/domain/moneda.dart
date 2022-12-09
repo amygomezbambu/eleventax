@@ -6,8 +6,6 @@ import 'package:eleventa/modulos/common/exception/excepciones.dart';
 typedef MonedaInt = int;
 
 class Moneda {
-  var _parteEntera = 0;
-  var _parteDecimal = 0;
   MonedaInt _montoInterno = 0;
 
   static const _digitosDecimales = 6;
@@ -46,17 +44,6 @@ class Moneda {
   /// ```
   Moneda.fromMonedaInt(MonedaInt monto) {
     _montoInterno = monto;
-
-    var montoString = monto.toString();
-
-    _parteEntera = int.parse(
-      montoString.substring(0, montoString.length - _digitosDecimales),
-    );
-
-    _parteDecimal = int.parse(
-      montoString.substring(
-          montoString.length - _digitosDecimales, montoString.length),
-    );
   }
 
   MonedaInt toMonedaInt() {
@@ -64,13 +51,7 @@ class Moneda {
   }
 
   void _fromDouble(double monto) {
-    _parteEntera = monto.truncate();
-
-    _parteDecimal =
-        ((monto - _parteEntera) * (pow(10, _digitosDecimales))).round();
-
-    _montoInterno = int.parse((_parteEntera.toString() +
-        _parteDecimal.toString().padRight(_digitosDecimales, '0')));
+    _montoInterno = (monto * pow(10, _digitosDecimales)).round();
   }
 
   /// Crear un objeto Moneda desde una cadena
@@ -93,24 +74,21 @@ class Moneda {
   }
 
   void _validar(dynamic monto) {
-    //debe ser positivo
     if (monto is num && monto < 0) {
       throw ValidationEx(mensaje: 'El monto debe ser positivo');
     }
 
-    //debe ser positivo
     if (monto is String && monto.contains('-')) {
       throw ValidationEx(mensaje: 'El monto debe ser positivo');
     }
 
-    //12 en la parte entera -> 999 999 999 999
     if (monto is double) {
       if (monto.truncate().toString().length > 12) {
         throw ValidationEx(mensaje: 'El valor máximo es 999 999 999 999');
       }
     } else if (monto is String) {
       _fromString(monto);
-      if (_parteEntera > 999999999999) {
+      if (_montoInterno.truncate() > 999999999999) {
         throw ValidationEx(mensaje: 'El valor máximo es 999 999 999 999');
       }
     } else if (monto is int) {
@@ -124,28 +102,20 @@ class Moneda {
     }
   }
 
-  //TODO: checar si es posible una mejorar manera ya que el parse puede hacer redondeos
   double toDouble() {
-    var valor = double.parse('$_parteEntera.$_parteDecimal');
-
-    return valor;
+    return _montoInterno / (pow(10, _digitosDecimales));
   }
 
   @override
   String toString() {
-    var valorCompleto = double.parse('$_parteEntera.$_parteDecimal');
-
-    return '\$ ${valorCompleto.toStringAsFixed(appConfig.decimalesAMostrar)}';
+    return '\$ ${toDouble().toStringAsFixed(appConfig.decimalesAMostrar)}';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is Moneda &&
-        other._parteEntera == _parteEntera &&
-        other._parteDecimal == _parteDecimal &&
-        other._montoInterno == _montoInterno;
+    return other is Moneda && other._montoInterno == _montoInterno;
   }
 
   Moneda operator +(Moneda v) =>
@@ -159,6 +129,5 @@ class Moneda {
   bool operator >=(Moneda other) => _montoInterno >= other.montoInterno;
 
   @override
-  int get hashCode =>
-      _parteEntera.hashCode ^ _parteDecimal.hashCode ^ _montoInterno.hashCode;
+  int get hashCode => _montoInterno.hashCode;
 }
