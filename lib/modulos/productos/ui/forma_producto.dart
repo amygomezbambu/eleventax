@@ -24,31 +24,23 @@ import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
 import 'package:eleventa/modulos/productos/modulo_productos.dart';
 
 class FormaProducto extends StatefulWidget {
-  static final scrollController = ScrollController(initialScrollOffset: 0.0);
-  final Producto? producto;
-  static final keyCodigo =
-      GlobalKey<FormFieldState<dynamic>>(debugLabel: 'keyCodigo');
-  static final keyNombre =
-      GlobalKey<FormFieldState<dynamic>>(debugLabel: 'keyNombre');
-  static final keyPrecioCompra =
-      GlobalKey<FormFieldState<dynamic>>(debugLabel: 'keyPrecioCompra');
+  static const txtNombre = Key('txtNombreProducto');
+  static const btnGuardar = Key('btnGuardar');
+  static const txtCodigo = Key('txtCodigo');
+  static const txtPrecioCompra = Key('txtPrecioCompra');
+  static const txtPrecioVenta = Key('txtPrecioVenta');
+  static const cbxUnidadMedida = Key('cbxUnidadMedida');
+  static const cbxImpuestos = Key('cbxImpuestos');
+  static const cbxCategoria = Key('cbxCategoria');
+  static const rdbSeVendePorUnidad = Key('rdbSeVendePorUnidad');
+  static const rdbSeVendePorPeso = Key('rdbSeVendePorPeso');
 
-  static final keyPrecioVenta = GlobalKey<FormFieldState<dynamic>>();
-
-  static final keyCategoria = GlobalKey<EstadoFormField>();
-  static final keyImpuestos = GlobalKey<EstadoFormField>();
-  static final keyUnidadDeMedida = GlobalKey<EstadoFormField>();
-  static const keyBotonGuardar = Key('btnGuardar');
-
-  static final keySeVendePorUnidad =
-      GlobalKey<EstadoFormField>(debugLabel: 'keySeVendePorUnidad');
-  static final keySeVendePorPeso =
-      GlobalKey<EstadoFormField>(debugLabel: 'keySeVendePorPeso');
+  final String? productoEnModificacionId;
 
   const FormaProducto(
     BuildContext context, {
     Key? key,
-    this.producto,
+    this.productoEnModificacionId,
   }) : super(key: key);
 
   @override
@@ -60,8 +52,18 @@ typedef EstadoFormField = FormFieldState<String>;
 class _FormaProductoState extends State<FormaProducto> {
   final esDesktop = LayoutValue(xs: false, md: true);
   final mostrarMargenLabel = LayoutValue(xs: false, md: true);
+  Producto? productoEnModificacion;
 
   final FocusNode _focusNode = FocusNode();
+  final scrollController = ScrollController(initialScrollOffset: 0.0);
+
+  final keyCodigo = GlobalKey<FormFieldState<dynamic>>();
+  final keyNombre = GlobalKey<FormFieldState<dynamic>>();
+  final keyPrecioCompra = GlobalKey<FormFieldState<dynamic>>();
+  final keyPrecioVenta = GlobalKey<FormFieldState<dynamic>>();
+  final keyCategoria = GlobalKey<EstadoFormField>();
+  final keyImpuestos = GlobalKey<EstadoFormField>();
+  final keyUnidadDeMedida = GlobalKey<EstadoFormField>();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -79,7 +81,8 @@ class _FormaProductoState extends State<FormaProducto> {
   final _controllerImagen = TextEditingController();
   final _controllerUtilidad = TextEditingController();
 
-  var lecturas = ModuloProductos.repositorioConsultaProductos();
+  final lecturas = ModuloProductos.repositorioConsultaProductos();
+  bool _formaCargada = false;
 
   // Almacenamos el estado de las dropdowns seleccionados
   UnidadDeMedida? unidadDeMedidaSeleccionada;
@@ -114,6 +117,7 @@ class _FormaProductoState extends State<FormaProducto> {
     _controllerImagen.dispose();
     _controllerUtilidad.dispose();
     _focusNode.dispose();
+    scrollController.dispose();
 
     super.dispose();
   }
@@ -138,6 +142,48 @@ class _FormaProductoState extends State<FormaProducto> {
     }
   }
 
+  Future<void> _cargarFormaProducto() async {
+    // Para evitar re-setear la forma cada que se manda llamar el build()
+    // manejamos la siguiente bandera
+    if (_formaCargada) {
+      return;
+    }
+
+    // Reiniciamos el estado de validacion de los campos
+    if (keyCodigo.currentState != null) {
+      keyCodigo.currentState!.reset();
+      keyNombre.currentState!.reset();
+      keyPrecioCompra.currentState!.reset();
+      keyPrecioVenta.currentState!.reset();
+      _imagenURL.currentState!.reset();
+    }
+
+    if (widget.productoEnModificacionId != null) {
+      productoEnModificacion = await lecturas
+          .obtenerProducto(UID.fromString(widget.productoEnModificacionId!));
+      _controllerCodigo.text = productoEnModificacion!.codigo;
+      _controllerNombre.text = productoEnModificacion!.nombre;
+      _controllerPrecioDeCompra.text =
+          productoEnModificacion!.precioDeCompra.toDouble().toString();
+      if (productoEnModificacion!.precioDeVenta != null) {
+        _controllerPrecioDeVenta.text =
+            productoEnModificacion!.precioDeVenta!.toDouble().toString();
+      }
+      _controllerImagen.text = productoEnModificacion!.imagenURL;
+
+      categoriaSeleccionada = productoEnModificacion!.categoria;
+      unidadDeMedidaSeleccionada = productoEnModificacion!.unidadMedida;
+
+      if (productoEnModificacion!.impuestos.isNotEmpty) {
+        impuestoSeleccionado = productoEnModificacion!.impuestos.first;
+      }
+
+      seVendePor = productoEnModificacion!.seVendePor;
+    }
+
+    _formaCargada = true;
+  }
+
   Categoria _obtenerSinCategoria() {
     return Categoria.cargar(
       uid: UID.invalid(),
@@ -149,26 +195,24 @@ class _FormaProductoState extends State<FormaProducto> {
   @override
   void initState() {
     super.initState();
-    _cargarProducto();
   }
 
   @override
   void didUpdateWidget(FormaProducto oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.producto != oldWidget.producto) {
-      _cargarProducto();
-      // TODO: Resetear validaciones para que cuando se cambie de producto
-      // no aparezca error de codigo existente
+    if (widget.productoEnModificacionId != oldWidget.productoEnModificacionId) {
+      // Forzamos a que se vuelva a cargar la forma
+      _formaCargada = false;
     }
   }
 
   Future<bool> _verificarExistenciaDeCodigo(String codigo) async {
     var consultas = ModuloProductos.repositorioConsultaProductos();
 
-    if (widget.producto == null) {
+    if (productoEnModificacion == null) {
       return await consultas.existeProducto(codigo);
     } else {
-      if (widget.producto!.codigo != codigo) {
+      if (productoEnModificacion!.codigo != codigo) {
         return await consultas.existeProducto(codigo);
       }
     }
@@ -177,7 +221,7 @@ class _FormaProductoState extends State<FormaProducto> {
   }
 
   Future<bool> _guardarProducto() async {
-    if (widget.producto == null) {
+    if (productoEnModificacion == null) {
       await _crearProducto();
     } else {
       await _modificarProducto();
@@ -189,11 +233,11 @@ class _FormaProductoState extends State<FormaProducto> {
   Future<void> _modificarProducto() async {
     var modificarProducto = ModuloProductos.modificarProducto();
 
-    var producto = _llenarProducto();
+    var productoModificado = _llenarProducto();
+    productoModificado =
+        productoModificado.copyWith(uid: productoEnModificacion!.uid);
+    modificarProducto.req.producto = productoModificado;
 
-    producto = producto.copyWith(uid: widget.producto!.uid);
-
-    modificarProducto.req.producto = producto;
     try {
       await modificarProducto.exec();
     } catch (e) {
@@ -247,417 +291,405 @@ class _FormaProductoState extends State<FormaProducto> {
     return producto;
   }
 
-  void _cargarProducto() {
-    // Reiniciamos el estado de validacion de los campos
-    if (FormaProducto.keyCodigo.currentState != null) {
-      FormaProducto.keyCodigo.currentState!.reset();
-      FormaProducto.keyNombre.currentState!.reset();
-      FormaProducto.keyPrecioCompra.currentState!.reset();
-      FormaProducto.keyPrecioVenta.currentState!.reset();
-      _imagenURL.currentState!.reset();
-    }
-
-    if (widget.producto != null) {
-      _controllerCodigo.text = widget.producto!.codigo;
-
-      _controllerNombre.text = widget.producto!.nombre;
-      _controllerPrecioDeCompra.text =
-          widget.producto!.precioDeCompra.toDouble().toString();
-      if (widget.producto!.precioDeVenta != null) {
-        _controllerPrecioDeVenta.text =
-            widget.producto!.precioDeVenta!.toDouble().toString();
-      }
-      _controllerImagen.text = widget.producto!.imagenURL;
-
-      categoriaSeleccionada = widget.producto!.categoria;
-      unidadDeMedidaSeleccionada = widget.producto!.unidadMedida;
-
-      if (widget.producto!.impuestos.isNotEmpty) {
-        impuestoSeleccionado = widget.producto!.impuestos.first;
-      }
-
-      seVendePor = widget.producto!.seVendePor;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scrollbar(
-      thumbVisibility: esDesktop.resolve(context),
-      trackVisibility: esDesktop.resolve(context),
-      controller: FormaProducto.scrollController,
-      child: SingleChildScrollView(
-        key: const Key('frmScrollable'),
-        controller: FormaProducto.scrollController,
-        child: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Container(
-            color: Colors.white10,
-            width: 600,
-            child: KeyboardListener(
-              focusNode: _focusNode,
-              onKeyEvent: (KeyEvent key) => _cambiarControlEnFoco(key),
-              child: FocusTraversalGroup(
-                policy: OrderedTraversalPolicy(),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Form(
-                      key: _formKey,
+    return FutureBuilder(
+      future: _cargarFormaProducto(),
+      builder: (BuildContext context, snapshot) {
+        if (true) {
+          return Scrollbar(
+            thumbVisibility: esDesktop.resolve(context),
+            trackVisibility: esDesktop.resolve(context),
+            controller: scrollController,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              controller: scrollController,
+              child: Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Container(
+                  color: Colors.white10,
+                  width: 600,
+                  child: KeyboardListener(
+                    focusNode: _focusNode,
+                    onKeyEvent: (KeyEvent key) => _cambiarControlEnFoco(key),
+                    child: FocusTraversalGroup(
+                      policy: OrderedTraversalPolicy(),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          ExTextField(
-                              fieldKey: FormaProducto.keyCodigo,
-                              hintText: 'Código',
-                              controller: _controllerCodigo,
-                              icon: Iconos.barcode_scan,
+                          Form(
+                            key: _formKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ExTextField(
+                                    key: FormaProducto.txtCodigo,
+                                    fieldKey: keyCodigo,
+                                    hintText: 'Código',
+                                    controller: _controllerCodigo,
+                                    icon: Iconos.barcode_scan,
 
-                              // icon: state.existeCodigo
-                              //     ? Icons.error
-                              //     : Icons.document_scanner,
-                              width: 300,
-                              validator: (value) async {
-                                if (value == null) {
-                                  return 'No se aceptan valores Nulos';
-                                }
-
-                                try {
-                                  var codigoSanitizado = CodigoProducto(value);
-
-                                  setState(() {
-                                    debugPrint(
-                                        'estableciendo código a: ${codigoSanitizado.value}');
-                                    _controllerCodigo.text =
-                                        codigoSanitizado.value;
-                                  });
-
-                                  var existeCodigo =
-                                      await _verificarExistenciaDeCodigo(
-                                          codigoSanitizado.value);
-
-                                  if (existeCodigo) {
-                                    return 'El código ya existe, verificar';
-                                  }
-
-                                  return null;
-                                } catch (e) {
-                                  if (e is DomainEx) {
-                                    return e.message;
-                                  } else {
-                                    return e.toString();
-                                  }
-                                }
-                              }),
-                          ExTextField(
-                              fieldKey: FormaProducto.keyNombre,
-                              hintText: 'Nombre',
-                              controller: _controllerNombre,
-                              validator: (value) async {
-                                if (value == null) {
-                                  return 'No se aceptan valores vacios';
-                                }
-
-                                try {
-                                  var nombreSanitizado = NombreProducto(value);
-
-                                  setState(() {
-                                    _controllerNombre.text =
-                                        nombreSanitizado.value;
-                                  });
-                                  return null;
-                                } catch (e) {
-                                  if (e is DomainEx) {
-                                    return e.message;
-                                  } else {
-                                    return e.toString();
-                                  }
-                                }
-                              }),
-                          FutureBuilder<List<Categoria>>(
-                              future: _categorias,
-                              builder: (BuildContext context,
-                                  AsyncSnapshot<List<Categoria>> snapshot) {
-                                if (snapshot.hasData) {
-                                  List<Categoria> listadoCategorias =
-                                      snapshot.data!;
-                                  if (UID.isValid(
-                                      listadoCategorias.first.uid.toString())) {
-                                    listadoCategorias.insert(
-                                      0,
-                                      _obtenerSinCategoria(),
-                                    );
-                                  }
-
-                                  categoriaSeleccionada ??=
-                                      listadoCategorias.first;
-
-                                  return ExDropDown<Categoria>(
-                                    hintText: 'Categoría',
-                                    dropDownKey: FormaProducto.keyCategoria,
-                                    value: categoriaSeleccionada!,
-                                    onChanged: (Categoria? categoria) {
-                                      setState(() {
-                                        categoriaSeleccionada = categoria!;
-                                      });
-                                    },
-                                    items: listadoCategorias
-                                        .map<DropdownMenuItem<Categoria>>(
-                                            (Categoria value) {
-                                      return DropdownMenuItem<Categoria>(
-                                        value: value,
-                                        child: Text(value.nombre),
-                                      );
-                                    }).toList(),
-                                  );
-                                } else {
-                                  return const SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(),
-                                  );
-                                }
-                              }),
-                          ExRadioButton<ProductoSeVendePor>(
-                              key: FormaProducto.keySeVendePorUnidad,
-                              value: ProductoSeVendePor.unidad,
-                              groupValue: seVendePor,
-                              label: 'Unidad',
-                              hint: 'Se vende por',
-                              onChange: (ProductoSeVendePor? value) {
-                                setState(() {
-                                  seVendePor = value!;
-                                });
-                              }),
-                          ExRadioButton<ProductoSeVendePor>(
-                              key: FormaProducto.keySeVendePorPeso,
-                              value: ProductoSeVendePor.peso,
-                              groupValue: seVendePor,
-                              label: 'Peso',
-                              hint: '',
-                              onChange: (ProductoSeVendePor? value) {
-                                setState(() {
-                                  seVendePor = value!;
-                                });
-                              }),
-
-                          FutureBuilder<List<UnidadDeMedida>>(
-                              future: _unidadesDeMedida,
-                              builder: (BuildContext context,
-                                  AsyncSnapshot<List<UnidadDeMedida>>
-                                      snapshot) {
-                                if (snapshot.hasData) {
-                                  List<UnidadDeMedida> listadoUnidadesDeMedida =
-                                      snapshot.data!;
-
-                                  unidadDeMedidaSeleccionada ??=
-                                      listadoUnidadesDeMedida.first;
-
-                                  return ExDropDown<UnidadDeMedida>(
-                                    hintText: 'Unidad de Medida',
+                                    // icon: state.existeCodigo
+                                    //     ? Icons.error
+                                    //     : Icons.document_scanner,
                                     width: 300,
-                                    dropDownKey:
-                                        FormaProducto.keyUnidadDeMedida,
-                                    value: unidadDeMedidaSeleccionada!,
-                                    onChanged:
-                                        (UnidadDeMedida? unidadDeMedida) {
-                                      setState(() {
-                                        unidadDeMedidaSeleccionada =
-                                            unidadDeMedida!;
-                                        debugPrint(
-                                            'nueva undiad de medida: ${unidadDeMedidaSeleccionada?.nombre}');
-                                      });
-                                    },
-                                    items: listadoUnidadesDeMedida
-                                        .map<DropdownMenuItem<UnidadDeMedida>>(
-                                            (UnidadDeMedida value) {
-                                      return DropdownMenuItem<UnidadDeMedida>(
-                                        value: value,
-                                        child: Text(value.nombre),
-                                      );
-                                    }).toList(),
-                                  );
-                                } else {
-                                  return const SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(),
-                                  );
-                                }
-                              }), //loaading, //ya termine
-                          FutureBuilder<List<Impuesto>>(
-                              future: _impuestos,
-                              builder: (BuildContext context,
-                                  AsyncSnapshot<List<Impuesto>> snapshot) {
-                                if (snapshot.hasData) {
-                                  List<Impuesto> listadoImpuestos =
-                                      snapshot.data!;
-                                  impuestoSeleccionado ??=
-                                      listadoImpuestos.first;
+                                    validator: (value) async {
+                                      if (value == null) {
+                                        return 'No se aceptan valores Nulos';
+                                      }
 
-                                  return ExDropDown<Impuesto>(
-                                    hintText: 'Impuesto',
-                                    width: 160,
-                                    dropDownKey: FormaProducto.keyImpuestos,
-                                    value: impuestoSeleccionado!,
-                                    onChanged: (Impuesto? impuesto) {
-                                      setState(() {
-                                        impuestoSeleccionado = impuesto!;
-                                      });
-                                    },
-                                    items: listadoImpuestos
-                                        .map<DropdownMenuItem<Impuesto>>(
-                                            (Impuesto value) {
-                                      return DropdownMenuItem<Impuesto>(
-                                        value: value,
-                                        child: Text(value.nombre),
-                                      );
-                                    }).toList(),
-                                  );
-                                } else {
-                                  return const SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(),
-                                  );
-                                }
-                              }),
-                          ExTextField(
-                            fieldKey: FormaProducto.keyPrecioCompra,
-                            hintText: 'Precio de compra',
-                            controller: _controllerPrecioDeCompra,
-                            helperText: 'Con Impuestos',
-                            prefixText: '\$ ',
-                            width: 170,
-                            inputType: InputType.numerico,
-                            validator: (value) async {
-                              if (value == null || value.isEmpty) {
-                                return 'No puede estar vacio';
-                              }
+                                      try {
+                                        var codigoSanitizado =
+                                            CodigoProducto(value);
 
-                              try {
-                                var precioSanitizado =
-                                    PrecioDeCompraProducto(Moneda(value));
-                                setState(() {
-                                  _controllerPrecioDeCompra.text =
-                                      precioSanitizado.value
-                                          .toDouble()
-                                          .toString();
-                                });
-                                return null;
-                              } catch (e) {
-                                if (e is DomainEx) {
-                                  return e.message;
-                                } else {
-                                  return e.toString();
-                                }
-                              }
-                            },
+                                        setState(() {
+                                          _controllerCodigo.text =
+                                              codigoSanitizado.value;
+                                        });
+
+                                        var existeCodigo =
+                                            await _verificarExistenciaDeCodigo(
+                                                codigoSanitizado.value);
+
+                                        if (existeCodigo) {
+                                          return 'El código ya existe, verificar';
+                                        }
+
+                                        return null;
+                                      } catch (e) {
+                                        if (e is DomainEx) {
+                                          return e.message;
+                                        } else {
+                                          return e.toString();
+                                        }
+                                      }
+                                    }),
+                                ExTextField(
+                                    key: FormaProducto.txtNombre,
+                                    fieldKey: keyNombre,
+                                    hintText: 'Nombre',
+                                    controller: _controllerNombre,
+                                    validator: (value) async {
+                                      if (value == null) {
+                                        return 'No se aceptan valores vacios';
+                                      }
+
+                                      try {
+                                        var nombreSanitizado =
+                                            NombreProducto(value);
+
+                                        setState(() {
+                                          _controllerNombre.text =
+                                              nombreSanitizado.value;
+                                        });
+                                        return null;
+                                      } catch (e) {
+                                        if (e is DomainEx) {
+                                          return e.message;
+                                        } else {
+                                          return e.toString();
+                                        }
+                                      }
+                                    }),
+                                FutureBuilder<List<Categoria>>(
+                                    future: _categorias,
+                                    builder: (BuildContext context,
+                                        AsyncSnapshot<List<Categoria>>
+                                            snapshot) {
+                                      if (snapshot.hasData) {
+                                        List<Categoria> listadoCategorias =
+                                            snapshot.data!;
+                                        if (UID.isValid(listadoCategorias
+                                            .first.uid
+                                            .toString())) {
+                                          listadoCategorias.insert(
+                                            0,
+                                            _obtenerSinCategoria(),
+                                          );
+                                        }
+
+                                        categoriaSeleccionada ??=
+                                            listadoCategorias.first;
+
+                                        return ExDropDown<Categoria>(
+                                          key: FormaProducto.cbxCategoria,
+                                          hintText: 'Categoría',
+                                          dropDownKey: keyCategoria,
+                                          value: categoriaSeleccionada!,
+                                          onChanged: (Categoria? categoria) {
+                                            setState(() {
+                                              categoriaSeleccionada =
+                                                  categoria!;
+                                            });
+                                          },
+                                          items: listadoCategorias
+                                              .map<DropdownMenuItem<Categoria>>(
+                                                  (Categoria value) {
+                                            return DropdownMenuItem<Categoria>(
+                                              value: value,
+                                              child: Text(value.nombre),
+                                            );
+                                          }).toList(),
+                                        );
+                                      } else {
+                                        return const SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(),
+                                        );
+                                      }
+                                    }),
+                                ExRadioButton<ProductoSeVendePor>(
+                                    key: FormaProducto.rdbSeVendePorUnidad,
+                                    value: ProductoSeVendePor.unidad,
+                                    groupValue: seVendePor,
+                                    label: 'Unidad',
+                                    hint: 'Se vende por',
+                                    onChange: (ProductoSeVendePor? value) {
+                                      setState(() {
+                                        seVendePor = value!;
+                                      });
+                                    }),
+                                ExRadioButton<ProductoSeVendePor>(
+                                    key: FormaProducto.rdbSeVendePorPeso,
+                                    value: ProductoSeVendePor.peso,
+                                    groupValue: seVendePor,
+                                    label: 'Peso',
+                                    hint: '',
+                                    onChange: (ProductoSeVendePor? value) {
+                                      setState(() {
+                                        seVendePor = value!;
+                                      });
+                                    }),
+
+                                FutureBuilder<List<UnidadDeMedida>>(
+                                    future: _unidadesDeMedida,
+                                    builder: (BuildContext context,
+                                        AsyncSnapshot<List<UnidadDeMedida>>
+                                            snapshot) {
+                                      if (snapshot.hasData) {
+                                        List<UnidadDeMedida>
+                                            listadoUnidadesDeMedida =
+                                            snapshot.data!;
+
+                                        unidadDeMedidaSeleccionada ??=
+                                            listadoUnidadesDeMedida.first;
+
+                                        return ExDropDown<UnidadDeMedida>(
+                                          key: FormaProducto.cbxUnidadMedida,
+                                          hintText: 'Unidad de Medida',
+                                          width: 300,
+                                          dropDownKey: keyUnidadDeMedida,
+                                          value: unidadDeMedidaSeleccionada!,
+                                          onChanged:
+                                              (UnidadDeMedida? unidadDeMedida) {
+                                            setState(() {
+                                              unidadDeMedidaSeleccionada =
+                                                  unidadDeMedida!;
+                                            });
+                                          },
+                                          items: listadoUnidadesDeMedida.map<
+                                                  DropdownMenuItem<
+                                                      UnidadDeMedida>>(
+                                              (UnidadDeMedida value) {
+                                            return DropdownMenuItem<
+                                                UnidadDeMedida>(
+                                              value: value,
+                                              child: Text(value.nombre),
+                                            );
+                                          }).toList(),
+                                        );
+                                      } else {
+                                        return const SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(),
+                                        );
+                                      }
+                                    }), //loaading, //ya termine
+                                FutureBuilder<List<Impuesto>>(
+                                    future: _impuestos,
+                                    builder: (BuildContext context,
+                                        AsyncSnapshot<List<Impuesto>>
+                                            snapshot) {
+                                      if (snapshot.hasData) {
+                                        List<Impuesto> listadoImpuestos =
+                                            snapshot.data!;
+                                        impuestoSeleccionado ??=
+                                            listadoImpuestos.first;
+
+                                        return ExDropDown<Impuesto>(
+                                          key: FormaProducto.cbxImpuestos,
+                                          hintText: 'Impuesto',
+                                          width: 160,
+                                          dropDownKey: keyImpuestos,
+                                          value: impuestoSeleccionado!,
+                                          onChanged: (Impuesto? impuesto) {
+                                            setState(() {
+                                              impuestoSeleccionado = impuesto!;
+                                            });
+                                          },
+                                          items: listadoImpuestos
+                                              .map<DropdownMenuItem<Impuesto>>(
+                                                  (Impuesto value) {
+                                            return DropdownMenuItem<Impuesto>(
+                                              value: value,
+                                              child: Text(value.nombre),
+                                            );
+                                          }).toList(),
+                                        );
+                                      } else {
+                                        return const SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(),
+                                        );
+                                      }
+                                    }),
+                                ExTextField(
+                                  key: FormaProducto.txtPrecioCompra,
+                                  fieldKey: keyPrecioCompra,
+                                  hintText: 'Precio de compra',
+                                  controller: _controllerPrecioDeCompra,
+                                  helperText: 'Con Impuestos',
+                                  prefixText: '\$ ',
+                                  width: 170,
+                                  inputType: InputType.numerico,
+                                  validator: (value) async {
+                                    if (value == null || value.isEmpty) {
+                                      return 'No puede estar vacio';
+                                    }
+
+                                    try {
+                                      var precioSanitizado =
+                                          PrecioDeCompraProducto(Moneda(value));
+                                      setState(() {
+                                        _controllerPrecioDeCompra.text =
+                                            precioSanitizado.value
+                                                .toDouble()
+                                                .toString();
+                                      });
+                                      return null;
+                                    } catch (e) {
+                                      if (e is DomainEx) {
+                                        return e.message;
+                                      } else {
+                                        return e.toString();
+                                      }
+                                    }
+                                  },
+                                ),
+                                // ExTextField(
+                                //   hintText: 'Utilidad',
+                                //   controller: _controllerUtilidad,
+                                //   suffixText: '%',
+                                //   width: 160,
+                                //   inputType: InputType.numerico,
+                                // ),
+                                ExTextField(
+                                    key: FormaProducto.txtPrecioVenta,
+                                    fieldKey: keyPrecioVenta,
+                                    hintText: 'Precio de venta',
+                                    controller: _controllerPrecioDeVenta,
+                                    prefixText: '\$ ',
+                                    width: 170,
+                                    inputType: InputType.numerico,
+                                    validator: (value) async {
+                                      if (value == null || value.isEmpty) {
+                                        return 'No puede estar vacio';
+                                      }
+
+                                      try {
+                                        var precioSanitizado =
+                                            PrecioDeVentaProducto(
+                                                Moneda(value));
+                                        setState(() {
+                                          _controllerPrecioDeVenta.text =
+                                              precioSanitizado.value
+                                                  .toDouble()
+                                                  .toString();
+                                        });
+                                        return null;
+                                      } catch (e) {
+                                        if (e is DomainEx) {
+                                          return e.message;
+                                        } else {
+                                          return e.toString();
+                                        }
+                                      }
+                                    }),
+                                ExTextField(
+                                  fieldKey: _imagenURL,
+                                  inputType: InputType.texto,
+                                  hintText: 'Imagen URL',
+                                  controller: _controllerImagen,
+                                ),
+                              ],
+                            ),
                           ),
-                          // ExTextField(
-                          //   hintText: 'Utilidad',
-                          //   controller: _controllerUtilidad,
-                          //   suffixText: '%',
-                          //   width: 160,
-                          //   inputType: InputType.numerico,
-                          // ),
-                          ExTextField(
-                              fieldKey: FormaProducto.keyPrecioVenta,
-                              hintText: 'Precio de venta',
-                              controller: _controllerPrecioDeVenta,
-                              prefixText: '\$ ',
-                              width: 170,
-                              inputType: InputType.numerico,
-                              validator: (value) async {
-                                if (value == null || value.isEmpty) {
-                                  return 'No puede estar vacio';
-                                }
+                          Row(
+                            children: [
+                              SizedBox(
+                                width: (mostrarMargenLabel.resolve(context) ==
+                                        true)
+                                    ? 160
+                                    : 0,
+                              ),
+                              SizedBox(
+                                width: 150,
+                                height: 45,
+                                child: Consumer(
+                                  builder: (context, ref, child) {
+                                    return ExBotonPrimario(
+                                        key: FormaProducto.btnGuardar,
+                                        label: 'Guardar',
+                                        icon: Iconos.edit,
+                                        tamanoFuente: 15,
+                                        onTap: () async {
+                                          if (await _guardarProducto()) {
+                                            if (!mounted) return;
+                                            // ScaffoldMessenger.of(context)
+                                            //     .showSnackBar(const SnackBar(
+                                            //   content: Text(
+                                            //       'Producto creado exitosamente 🎉'),
+                                            //   duration: Duration(seconds: 1),
+                                            // ));
+                                          }
 
-                                try {
-                                  var precioSanitizado =
-                                      PrecioDeVentaProducto(Moneda(value));
-                                  setState(() {
-                                    _controllerPrecioDeVenta.text =
-                                        precioSanitizado.value
-                                            .toDouble()
-                                            .toString();
-                                  });
-                                  return null;
-                                } catch (e) {
-                                  if (e is DomainEx) {
-                                    return e.message;
-                                  } else {
-                                    return e.toString();
-                                  }
-                                }
-                              }),
-                          ExTextField(
-                            fieldKey: _imagenURL,
-                            inputType: InputType.texto,
-                            hintText: 'Imagen URL',
-                            controller: _controllerImagen,
+                                          ref
+                                              .read(providerListadoProductos
+                                                  .notifier)
+                                              .obtenerProductos();
+                                        });
+                                  },
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              SizedBox(
+                                width: 150,
+                                height: 45,
+                                child: ExBotonPrimario(
+                                    label: 'Cancelar',
+                                    tamanoFuente: 15,
+                                    icon: Iconos.delete,
+                                    onTap: () {
+                                      limpiarCampos();
+                                    }),
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ),
-                    Row(
-                      children: [
-                        SizedBox(
-                          width: (mostrarMargenLabel.resolve(context) == true)
-                              ? 160
-                              : 0,
-                        ),
-                        SizedBox(
-                          width: 150,
-                          height: 45,
-                          child: Consumer(
-                            builder: (context, ref, child) {
-                              return ExBotonPrimario(
-                                  key: FormaProducto.keyBotonGuardar,
-                                  label: 'Guardar',
-                                  icon: Iconos.edit,
-                                  tamanoFuente: 15,
-                                  onTap: () async {
-                                    if (await _guardarProducto()) {
-                                      if (!mounted) return;
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                        content: Text(
-                                            'Producto creado exitosamente 🎉'),
-                                        duration: Duration(seconds: 3),
-                                      ));
-                                    }
-
-                                    ref
-                                        .read(providerListadoProductos.notifier)
-                                        .obtenerProductos();
-                                  });
-                            },
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        SizedBox(
-                          width: 150,
-                          height: 45,
-                          child: ExBotonPrimario(
-                              label: 'Cancelar',
-                              tamanoFuente: 15,
-                              icon: Iconos.delete,
-                              onTap: () {
-                                limpiarCampos();
-                              }),
-                        ),
-                      ],
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
-      ),
+          );
+        }
+      },
     );
   }
 }

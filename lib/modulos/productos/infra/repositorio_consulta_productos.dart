@@ -66,12 +66,16 @@ class RepositorioConsultaProductos extends RepositorioConsulta
     return res;
   }
 
+  //TODO: estudiar si es posible no usar borrado logico, es decir usar borrado real
   @override
-  Future<List<Categoria>> obtenerCategorias() async {
+  Future<List<Categoria>> obtenerCategorias(
+      [bool incluirBorrados = false]) async {
     List<Categoria> categorias = [];
 
-    var dbResult =
-        await db.query(sql: 'SELECT uid, nombre, borrado FROM categorias;');
+    var dbResult = await db.query(
+      sql: 'SELECT uid, nombre, borrado FROM categorias WHERE borrado = ?;',
+      params: [incluirBorrados],
+    );
 
     if (dbResult.isNotEmpty) {
       for (var row in dbResult) {

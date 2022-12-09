@@ -29,6 +29,10 @@ class DomainEx extends EleventaEx {
   DomainEx(String message) : super(message: message);
 }
 
+class ValidationEx extends DomainEx {
+  ValidationEx({required String mensaje}) : super(mensaje);
+}
+
 class AppEx extends EleventaEx {
   AppEx({required String message, String? input})
       : super(message: message, input: input);

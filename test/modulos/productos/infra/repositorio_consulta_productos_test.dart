@@ -1,6 +1,8 @@
 import 'package:eleventa/modulos/common/domain/moneda.dart';
+import 'package:eleventa/modulos/productos/domain/categoria.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/nombre_categoria.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_compra_producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_venta_producto.dart';
@@ -74,8 +76,27 @@ void main() {
   });
 
   test('debe obtener las categorias activas', () async {
-    // TODO: Hacer esta prueba
-    expect(true, true);
+    //crear una categoria
+    final crearCategoria = ModuloProductos.crearCategoria();
+    final eliminarCategoria = ModuloProductos.eliminarCategoria();
+    final consultas = ModuloProductos.repositorioConsultaProductos();
+
+    final categoria = Categoria.crear(nombre: NombreCategoria('Abarrotes'));
+
+    crearCategoria.req.categoria = categoria;
+
+    await crearCategoria.exec();
+    //borarla
+
+    eliminarCategoria.req.uidCategoria = categoria.uid;
+    await eliminarCategoria.exec();
+
+    //hacer un query y validar que no traiga la categoria borrada
+    final categorias = await consultas.obtenerCategorias();
+
+    final countCategoriasEliminadas = categorias.where((cat) => cat.eliminado);
+
+    expect(countCategoriasEliminadas.length, 0);
   });
 
   test('debe de obtener un producto solo con sus impuestos activos', () async {

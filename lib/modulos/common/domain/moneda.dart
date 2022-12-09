@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:eleventa/globals.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
 
 typedef MonedaInt = int;
@@ -9,8 +10,7 @@ class Moneda {
   var _parteDecimal = 0;
   MonedaInt _montoInterno = 0;
 
-  final _digitosDecimales = 6;
-  final _numeroDigitosAMostrar = 2;
+  static const _digitosDecimales = 6;
 
   MonedaInt get montoInterno => _montoInterno;
 
@@ -38,7 +38,7 @@ class Moneda {
 
   /// Crear un objeto Moneda desde un int
   ///
-  /// [monto] debe ser un entero
+  /// [monto] debe ser un entero positivo
   ///
   /// ```dart
   /// var moneda = Moneda(100500000); //moneda.digitosDecimales = 6;
@@ -93,23 +93,34 @@ class Moneda {
   }
 
   void _validar(dynamic monto) {
+    //debe ser positivo
+    if (monto is num && monto < 0) {
+      throw ValidationEx(mensaje: 'El monto debe ser positivo');
+    }
+
+    //debe ser positivo
+    if (monto is String && monto.contains('-')) {
+      throw ValidationEx(mensaje: 'El monto debe ser positivo');
+    }
+
     //12 en la parte entera -> 999 999 999 999
     if (monto is double) {
       if (monto.truncate().toString().length > 12) {
-        throw EleventaEx(message: 'El valor máximo es 999 999 999 999');
+        throw ValidationEx(mensaje: 'El valor máximo es 999 999 999 999');
       }
     } else if (monto is String) {
       _fromString(monto);
       if (_parteEntera > 999999999999) {
-        throw EleventaEx(message: 'El valor máximo es 999 999 999 999');
+        throw ValidationEx(mensaje: 'El valor máximo es 999 999 999 999');
       }
     } else if (monto is int) {
       if (monto > 999999999999) {
-        throw EleventaEx(message: 'El valor máximo es 999 999 999 999');
+        throw ValidationEx(mensaje: 'El valor máximo es 999 999 999 999');
       }
       _fromDouble(monto.toDouble());
     } else {
-      throw EleventaEx(message: 'Moneda solo acepta un double, int o String.');
+      throw ValidationEx(
+          mensaje: 'Moneda solo acepta un double, int o String.');
     }
   }
 
@@ -124,7 +135,7 @@ class Moneda {
   String toString() {
     var valorCompleto = double.parse('$_parteEntera.$_parteDecimal');
 
-    return '\$ ${valorCompleto.toStringAsFixed(_numeroDigitosAMostrar)}';
+    return '\$ ${valorCompleto.toStringAsFixed(appConfig.decimalesAMostrar)}';
   }
 
   @override

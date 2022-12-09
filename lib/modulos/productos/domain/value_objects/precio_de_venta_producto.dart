@@ -13,7 +13,7 @@ class PrecioDeVentaProducto {
 
   void _validar(Moneda value) {
     if (value <= Moneda(0)) {
-      throw DomainEx('El precio de venta debe ser mayor a cero');
+      throw ValidationEx(mensaje: 'El precio de venta debe ser mayor a cero');
     }
   }
 }

@@ -15,12 +15,14 @@ class PrecioDeCompraProducto {
 
   void _validar(Moneda value) {
     if (value.montoInterno < _cero) {
-      throw DomainEx('El precio de compra del producto no puede ser negativo');
+      throw ValidationEx(
+          mensaje: 'El precio de compra del producto no puede ser negativo');
     }
 
     if (!ModuloProductos.config.compartida.permitirPrecioCompraCero &&
         value.montoInterno == _cero) {
-      throw DomainEx('El precio de compra del producto no puede ser cero');
+      throw ValidationEx(
+          mensaje: 'El precio de compra del producto no puede ser cero');
     }
   }
 }

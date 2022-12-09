@@ -63,7 +63,7 @@ class VistaListadoProductosState extends State<VistaListadoProductos> {
             Flexible(
               flex: 4,
               child: editando
-                  ? ModificarProducto(producto: producto!)
+                  ? ModificarProducto(productoId: producto!.uid.toString())
                   : const NuevoProducto(),
             ),
           ],
@@ -133,7 +133,7 @@ class _ListadoProductos extends ConsumerWidget {
                           if (!esDesktop.resolve(context)) {
                             context.push(
                               '/productos/modificar',
-                              extra: producto,
+                              extra: producto.uid.toString(),
                             );
                           } else {
                             onTap(producto);
@@ -177,7 +177,6 @@ class _ListadoProductos extends ConsumerWidget {
             thumbVisibility: esDesktop.resolve(context),
             trackVisibility: esDesktop.resolve(context),
             controller: _scrollController,
-            scrollbarOrientation: ScrollbarOrientation.bottom,
             child: ListView.separated(
               scrollDirection: Axis.vertical,
               shrinkWrap: true,
@@ -223,15 +222,14 @@ class _ListadoProductos extends ConsumerWidget {
                                 fontWeight: FontWeight.w600),
                           )
                         ]),
-                    onTap: () => {
-                          if (!esDesktop.resolve(context))
-                            {
-                              context.push('/productos/modificar',
-                                  extra: productos[index])
-                            }
-                          else
-                            {onTap(productos[index])}
-                        });
+                    onTap: () {
+                      if (!esDesktop.resolve(context)) {
+                        context.push('/productos/modificar',
+                            extra: productos[index].uid.toString());
+                      } else {
+                        onTap(productos[index]);
+                      }
+                    });
               },
               separatorBuilder: (context, index) => Margin(
                 margin: EdgeInsets.only(

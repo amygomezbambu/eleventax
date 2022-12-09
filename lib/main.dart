@@ -25,29 +25,32 @@ Future<void> main() async {
 
   // La siguiente funcion presentará un error en la UI
   // si hay alguna excepcion no manejada
-  FlutterError.onError = (FlutterErrorDetails details) {
-    Dependencias.infra.logger().error(
-          ex: details.exception,
-          stackTrace: details.stack,
-        );
+  // solo en modo release
+  if (kReleaseMode) {
+    FlutterError.onError = (FlutterErrorDetails details) {
+      Dependencias.infra.logger().error(
+            ex: details.exception,
+            stackTrace: details.stack,
+          );
 
-    FlutterError.presentError(details);
-  };
+      FlutterError.presentError(details);
+    };
 
-  ErrorWidget.builder = (FlutterErrorDetails details) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.red,
-        title: const Text('Ocurrió un problema'),
-      ),
-      body: Center(child: Text(details.toString())),
-    );
-  };
+    ErrorWidget.builder = (FlutterErrorDetails details) {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.red,
+          title: const Text('Ocurrió un problema'),
+        ),
+        body: Center(child: Text(details.toString())),
+      );
+    };
 
-  PlatformDispatcher.instance.onError = (error, stack) {
-    Dependencias.infra.logger().error(ex: error, stackTrace: stack);
-    return true;
-  };
+    PlatformDispatcher.instance.onError = (error, stack) {
+      Dependencias.infra.logger().error(ex: error, stackTrace: stack);
+      return true;
+    };
+  }
 }
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -161,7 +164,7 @@ class _EleventaAppState extends State<EleventaApp> {
                       path: 'modificar',
                       builder: (context, state) {
                         return ModificarProducto(
-                          producto: state.extra!,
+                          productoId: (state.extra! as String),
                         );
                       }),
                 ]),

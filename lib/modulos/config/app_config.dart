@@ -50,6 +50,7 @@ class AppConfig extends ConfigLocal {
   var usuarioLogeado = 'Jhon Doe';
   var negocio = Negocio();
   var dbVersion = 0;
+  var decimalesAMostrar = 2;
 
   /* #region Singleton */
   static final AppConfig _instance = AppConfig._internal();

@@ -1,6 +1,6 @@
 import 'package:eleventa/modulos/common/ui/ex_icons.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_vista_principal_scaffold.dart';
-import 'package:eleventa/modulos/productos/domain/producto.dart';
+import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/productos/modulo_productos.dart';
 import 'package:flutter/material.dart';
 import 'package:layout/layout.dart';
@@ -10,31 +10,28 @@ import 'package:eleventa/modulos/productos/ui/listado_productos_provider.dart';
 import 'package:eleventa/modulos/productos/ui/forma_producto.dart';
 
 class ModificarProducto extends StatelessWidget {
-  final Object producto;
+  final String productoId;
 
   const ModificarProducto({
     Key? key,
-    required this.producto,
+    required this.productoId,
   }) : super(key: key);
 
   Future<void> _eliminarProducto() async {
-    var uidProducto = (producto as Producto).uid;
     var eliminarProducto = ModuloProductos.eliminarProducto();
-    eliminarProducto.req.uidProducto = uidProducto;
+    eliminarProducto.req.uidProducto = UID.fromString(productoId);
 
     try {
       await eliminarProducto.exec();
     } catch (e) {
       debugPrint('Ocurrió un error al borrar: ${e.toString()}');
     }
-
-    // TODO: Avisarle al listado de productos para que se actualcie
   }
 
   @override
   Widget build(BuildContext context, [bool mounted = true]) {
     return VistaPrincipalScaffold(
-        titulo: 'Nuevo Producto',
+        titulo: 'Modificar Producto',
         actions: [
           Consumer(
             builder: (context, ref, child) => IconButton(
@@ -52,12 +49,12 @@ class ModificarProducto extends StatelessWidget {
 
                 ref.read(providerListadoProductos.notifier).obtenerProductos();
 
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text('Producto eliminado con éxito!')));
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Producto eliminado')));
               },
             ),
           )
         ],
-        child: FormaProducto(context, producto: (producto as Producto)));
+        child: FormaProducto(context, productoEnModificacionId: productoId));
   }
 }
