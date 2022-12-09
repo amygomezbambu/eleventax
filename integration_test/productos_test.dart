@@ -18,6 +18,8 @@ void main() {
 
     testWidgets('debe de crear y modificar producto correctamente',
         (tester) async {
+      WidgetController.hitTestWarningShouldBeFatal = true;
+
       if (Platform.isWindows || Platform.isMacOS) {
         await binding.setSurfaceSize(const Size(400, 600));
         binding.window.physicalSizeTestValue = const Size(400, 600);
@@ -27,6 +29,7 @@ void main() {
       // Almacenamos el manejador onError que trae el integration_test framework
       // ya que nosotros lo re-asignamos
       final originalOnError = FlutterError.onError!;
+      //final originalErrorBuilder = ErrorWidget.builder;
 
       await app.main();
 
@@ -113,9 +116,6 @@ void main() {
 
       await tester.pump(const Duration(seconds: 2));
 
-      await tester.tap(find.byTooltip('Regresar'), warnIfMissed: false);
-      await tester.pumpAndSettle();
-
       final productoListItem =
           find.widgetWithText(ListTile, nombreProductoEsperado);
 
@@ -155,8 +155,6 @@ void main() {
       await tester.pump(const Duration(seconds: 1));
       await tester.pump(const Duration(seconds: 2));
 
-      await tester.tap(find.byTooltip('Regresar'));
-      await tester.pumpAndSettle();
       var nuevoItemNombre = find.widgetWithText(ListTile, nombreNuevo);
       expect(
         nuevoItemNombre,

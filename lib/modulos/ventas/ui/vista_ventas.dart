@@ -1,3 +1,4 @@
+import 'package:eleventa/modulos/common/ui/widgets/dismiss_keyboard.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_vista_principal_scaffold.dart';
 import 'package:eleventa/modulos/ventas/modulo_ventas.dart';
 import 'package:eleventa/modulos/ventas/ui/boton_cobrar.dart';
@@ -230,35 +231,39 @@ class ControlesVentaActual extends StatelessWidget {
     return Expanded(
       child: Column(
         children: [
-          Card(
-              margin: const EdgeInsets.all(0),
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: TailwindColors.blueGray[200], //ui.neutral300,
-                    borderRadius: BorderRadius.circular(5),
+          DismissKeyboard(
+            child: Card(
+                margin: const EdgeInsets.all(0),
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: TailwindColors.blueGray[200], //ui.neutral300,
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: TextField(
+                      key: const ValueKey('skuField'),
+                      obscureText: false,
+                      autofocus: true,
+                      focusNode: focusNode,
+                      controller: editingController,
+                      onSubmitted: (String val) => {onBuscarCodigo(val)},
+                      autocorrect: false,
+                      decoration: InputDecoration(
+                          prefixIcon: Icon(
+                            Icons.document_scanner,
+                            color: TailwindColors.blueGray[300],
+                          ),
+                          border: InputBorder.none,
+                          hintText:
+                              "Escanea o ingresa un código de producto...",
+                          hintStyle: TextStyle(
+                              fontSize: 15,
+                              color: TailwindColors.blueGray[400])),
+                    ),
                   ),
-                  child: TextField(
-                    key: const ValueKey('skuField'),
-                    obscureText: false,
-                    autofocus: true,
-                    focusNode: focusNode,
-                    controller: editingController,
-                    onSubmitted: (String val) => {onBuscarCodigo(val)},
-                    autocorrect: false,
-                    decoration: InputDecoration(
-                        prefixIcon: Icon(
-                          Icons.document_scanner,
-                          color: TailwindColors.blueGray[300],
-                        ),
-                        border: InputBorder.none,
-                        hintText: "Escanea o ingresa un código de producto...",
-                        hintStyle: TextStyle(
-                            fontSize: 15, color: TailwindColors.blueGray[400])),
-                  ),
-                ),
-              )),
+                )),
+          ),
           Expanded(
               child: ListadoArticulos(
                   articulos: UiCart.items,

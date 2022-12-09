@@ -1,3 +1,4 @@
+import 'package:eleventa/modulos/common/ui/widgets/dismiss_keyboard.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_vista_principal_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -99,73 +100,76 @@ class _ListadoProductos extends ConsumerWidget {
       children: [
         SizedBox(
           height: 135,
-          child: Card(
-            color: TailwindColors.coolGray[100],
-            elevation: 1,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(2.0),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  // TODO: Mostrar buscador cuando tengamos la funcionalidad
-                  ExTextField(
-                    controller: controllerBusqueda,
-                    hintText: 'Buscar productos',
-                    onFieldSubmitted: (value) async {
-                      try {
-                        CodigoProducto codigo = CodigoProducto(value);
+          child: DismissKeyboard(
+            child: Card(
+              color: TailwindColors.coolGray[100],
+              elevation: 1,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(2.0),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    // TODO: Mostrar buscador cuando tengamos la funcionalidad
+                    ExTextField(
+                      controller: controllerBusqueda,
+                      hintText: 'Buscar productos',
+                      onFieldSubmitted: (value) async {
+                        try {
+                          CodigoProducto codigo = CodigoProducto(value);
 
-                        var producto =
-                            await ModuloProductos.repositorioConsultaProductos()
-                                .obtenerProductoPorCodigo(codigo);
+                          var producto = await ModuloProductos
+                                  .repositorioConsultaProductos()
+                              .obtenerProductoPorCodigo(codigo);
 
-                        if (!mounted) return;
+                          if (!mounted) return;
 
-                        if (producto == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Producto no encontrado!'),
-                            ),
-                          );
-                        } else {
-                          if (!esDesktop.resolve(context)) {
-                            context.push(
-                              '/productos/modificar',
-                              extra: producto.uid.toString(),
+                          if (producto == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Producto no encontrado!'),
+                              ),
                             );
                           } else {
-                            onTap(producto);
+                            if (!esDesktop.resolve(context)) {
+                              context.push(
+                                '/productos/modificar',
+                                extra: producto.uid.toString(),
+                              );
+                            } else {
+                              onTap(producto);
+                            }
                           }
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Código inválido!'),
+                            ),
+                          );
                         }
-                      } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Código inválido!'),
-                          ),
-                        );
-                      }
 
-                      controllerBusqueda.clear();
-                    },
-                  ),
-                  ExBotonPrimario(
-                    key: VistaListadoProductos.keyBotonCobrar,
-                    icon: Icons.create_outlined,
-                    label: 'Crear producto',
-                    onTap: () {
-                      // debugPrint(
-                      //     'Ir a crear producto, desktop: ${esDesktop.resolve(context)}');
+                        controllerBusqueda.clear();
+                      },
+                    ),
+                    ExBotonPrimario(
+                      key: VistaListadoProductos.keyBotonCobrar,
+                      icon: Icons.create_outlined,
+                      label: 'Crear producto',
+                      onTap: () async {
+                        debugPrint(
+                            'Ir a crear producto, desktop: ${esDesktop.resolve(context)}');
 
-                      if (!esDesktop.resolve(context)) {
-                        GoRouter.of(context).go('/productos/nuevo');
-                      } else {
-                        onNuevoProducto();
-                      }
-                    },
-                  )
-                ],
+                        if (!esDesktop.resolve(context)) {
+                          context.go('/productos/nuevo');
+                          GoRouter.of(context).refresh();
+                        } else {
+                          onNuevoProducto();
+                        }
+                      },
+                    )
+                  ],
+                ),
               ),
             ),
           ),
