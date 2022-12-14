@@ -48,7 +48,7 @@ dependencies:
   hlc: ^1.0.3
   logging: ^1.1.0 # [ADR-0004]
   sentry_flutter: ^6.14.0 # [ADR-0004]
-  sentry_logging: ^6.17.0 # [ADR-0004]
+  sentry_logging: ^6.18.1 # [ADR-0004]
   path_provider_macos: ^2.0.6
   path_provider: ^2.0.11
   layout: ^1.0.3 # [ADR-0009]
