@@ -111,7 +111,6 @@ class _ListadoProductos extends ConsumerWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   children: [
-                    // TODO: Mostrar buscador cuando tengamos la funcionalidad
                     ExTextField(
                       controller: controllerBusqueda,
                       hintText: 'Buscar productos',

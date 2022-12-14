@@ -17,12 +17,12 @@ class ScaffoldWithBottomNavBar extends StatefulWidget {
 }
 
 class _ScaffoldWithBottomNavBarState extends State<ScaffoldWithBottomNavBar> {
-  Ruta _rutaSeleccionada = Ruta.ventas;
+  Ruta _rutaSeleccionada = Rutas.rutas.first;
 
   void _onBotonSeleccionado(Ruta nuevaRuta) {
     setState(() {
       _rutaSeleccionada = nuevaRuta;
-      context.goNamed(_rutaSeleccionada.name);
+      context.go(_rutaSeleccionada.rutaURL);
     });
   }
 

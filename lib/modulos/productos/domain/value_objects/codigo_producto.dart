@@ -5,8 +5,7 @@ class CodigoProducto {
   //Constantes
   final _codigoReservado = '0';
   final _longitudMaxima = 20;
-  //TODO: revisar la correcta validacion del codigo y qué caracteres
-  final _regex = RegExp(r'[a-zA-Z0-9_\-=@,\.;]+$');
+  //final _regex = RegExp(r'[À-ÿa-zA-Z0-9_\-=@,\.\+;*\$&:"\/\s]+$');
 
   late String _codigo;
 
@@ -27,19 +26,17 @@ class CodigoProducto {
 
   void _validar(String codigo) {
     if (codigo.isEmpty) {
-      throw DomainEx('El código no puede estar vacío');
+      throw ValidationEx(mensaje: 'El código no puede estar vacío');
     }
 
     if (codigo.length > _longitudMaxima) {
-      throw DomainEx('El código no puede tener mas de $_longitudMaxima letras');
+      throw ValidationEx(
+          mensaje: 'El código no puede tener mas de $_longitudMaxima letras');
     }
 
     if (codigo == _codigoReservado) {
-      throw DomainEx('El codigo $_codigoReservado no es un código valido');
-    }
-
-    if (!_regex.hasMatch(codigo)) {
-      throw DomainEx('El codigo contiene caracteres invalidos');
+      throw ValidationEx(
+          mensaje: 'El codigo $_codigoReservado no es un código valido');
     }
   }
 }

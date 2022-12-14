@@ -1,4 +1,5 @@
 import 'package:eleventa/modulos/common/app/interface/database.dart';
+import 'package:eleventa/modulos/common/app/interface/logger.dart';
 import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/infra/repositorio_consulta.dart';
@@ -21,19 +22,20 @@ class RepositorioConsultaProductos extends RepositorioConsulta
     implements IRepositorioConsultaProductos {
   RepositorioConsultaProductos({
     required IAdaptadorDeBaseDeDatos db,
-  }) : super(db);
+    required ILogger logger,
+  }) : super(db, logger);
 
   @override
   Future<List<Impuesto>> obtenerImpuestosParaProducto(UID productoUID) async {
     List<Impuesto> impuestos = [];
 
-    var sql = ''' 
+    const sql = ''' 
       SELECT pi.impuesto_uid, i.nombre, i.porcentaje FROM productos_impuestos pi
       JOIN impuestos i on i.uid = pi.impuesto_uid 
       WHERE pi.producto_uid = ? and pi.borrado = false 
     ''';
 
-    var dbResult = await db.query(sql: sql, params: [productoUID.toString()]);
+    var dbResult = await query(sql: sql, params: [productoUID.toString()]);
 
     if (dbResult.isNotEmpty) {
       for (var row in dbResult) {
@@ -50,7 +52,7 @@ class RepositorioConsultaProductos extends RepositorioConsulta
   @override
   Future<List<Impuesto>> obtenerImpuestos() async {
     List<Impuesto> res = [];
-    var dbResult = await db.query(
+    var dbResult = await query(
         sql:
             'SELECT uid, nombre, porcentaje FROM impuestos WHERE borrado=false;');
 
@@ -72,7 +74,7 @@ class RepositorioConsultaProductos extends RepositorioConsulta
       [bool incluirBorrados = false]) async {
     List<Categoria> categorias = [];
 
-    var dbResult = await db.query(
+    var dbResult = await query(
       sql: 'SELECT uid, nombre, borrado FROM categorias WHERE borrado = ?;',
       params: [incluirBorrados],
     );
@@ -95,7 +97,7 @@ class RepositorioConsultaProductos extends RepositorioConsulta
   @override
   Future<List<UnidadDeMedida>> obtenerUnidadesDeMedida() async {
     List<UnidadDeMedida> res = [];
-    var dbResult = await db.query(
+    var dbResult = await query(
         sql: 'SELECT uid, nombre, abreviacion FROM unidades_medida;');
 
     if (dbResult.isNotEmpty) {
@@ -112,7 +114,7 @@ class RepositorioConsultaProductos extends RepositorioConsulta
 
   @override
   Future<bool> existeProducto(String codigo) async {
-    var dbResult = await db.query(
+    var dbResult = await query(
       sql:
           'SELECT COUNT(codigo) as existe FROM productos where codigo = ? and borrado = ?;',
       params: [codigo, false],
@@ -168,7 +170,7 @@ class RepositorioConsultaProductos extends RepositorioConsulta
   //TODO: crear objetos CRITERIA
   Future<List<Producto>> _obtenerProductos(
       String condicionWhere, List<Object?> params) async {
-    var query = '''
+    var sql = '''
         SELECT p.uid,p.codigo,p.nombre,p.categoria_uid,p.precio_compra,p.precio_venta,
         p.se_vende_por,p.url_imagen, p.borrado AS eliminado,
         c.uid AS categoria_uid, c.nombre AS categoria_nombre, c.borrado as categoria_borrado,
@@ -179,7 +181,7 @@ class RepositorioConsultaProductos extends RepositorioConsulta
         LEFT JOIN unidades_medida um on p.unidad_medida_uid = um.uid
         $condicionWhere  ''';
 
-    var result = await db.query(sql: query, params: params);
+    var result = await query(sql: sql, params: params);
 
     List<Producto> resultado = [];
 
@@ -227,7 +229,7 @@ class RepositorioConsultaProductos extends RepositorioConsulta
     UID productoUID,
     UID impuestoUID,
   ) async {
-    var dbResult = await db.query(
+    var dbResult = await query(
       sql:
           'SELECT uid FROM productos_impuestos where producto_uid = ? and impuesto_uid = ?;',
       params: [
@@ -246,9 +248,9 @@ class RepositorioConsultaProductos extends RepositorioConsulta
 
   @override
   Future<bool> existe(UID uid) async {
-    var query = 'SELECT count(uid) as count FROM productos where uid = ?;';
+    const sql = 'SELECT count(uid) as count FROM productos where uid = ?;';
 
-    var dbResult = await db.query(sql: query, params: [uid.toString()]);
+    var dbResult = await query(sql: sql, params: [uid.toString()]);
     var existe = false;
 
     if (dbResult.isNotEmpty) {
@@ -262,10 +264,10 @@ class RepositorioConsultaProductos extends RepositorioConsulta
 
   @override
   Future<bool> existeCategoria({required String nombre}) async {
-    var query =
+    const sql =
         'SELECT count(uid) as count FROM categorias WHERE nombre = ? AND borrado = false;';
 
-    var dbResult = await db.query(sql: query, params: [nombre]);
+    var dbResult = await query(sql: sql, params: [nombre]);
     var existe = false;
 
     if (dbResult.isNotEmpty) {
@@ -281,9 +283,9 @@ class RepositorioConsultaProductos extends RepositorioConsulta
   Future<Categoria?> obtenerCategoria(UID uid) async {
     Categoria? categoria;
 
-    var query = 'SELECT nombre,borrado FROM categorias WHERE uid = ?';
+    const sql = 'SELECT nombre,borrado FROM categorias WHERE uid = ?';
 
-    var dbResult = await db.query(sql: query, params: [uid.toString()]);
+    var dbResult = await query(sql: sql, params: [uid.toString()]);
 
     if (dbResult.isNotEmpty) {
       categoria = Categoria.cargar(

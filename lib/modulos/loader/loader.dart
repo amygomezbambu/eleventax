@@ -52,18 +52,27 @@ class Loader {
     await telemetria.exec();
   }
 
-  //TODO: DIVIDIR EN iniciar sistemas criticos y no criticos, los no criticos
-  //no deben detener la carga del programa, solo se logea
   Future<void> iniciar() async {
     WidgetsFlutterBinding.ensureInitialized();
 
     DependenciasLoader.init();
 
+    await _iniciarSistemasCriticos();
+    await _iniciarSistemasNoCriticos();
+  }
+
+  Future<void> _iniciarSistemasCriticos() async {
     await appConfig.cargar();
     await iniciarLogging();
     await iniciarDB();
     await SincronizacionLoader.iniciar();
+  }
 
-    await enviarMetricasIniciales();
+  Future<void> _iniciarSistemasNoCriticos() async {
+    try {
+      await enviarMetricasIniciales();
+    } catch (e) {
+      logger.error(ex: e);
+    }
   }
 }

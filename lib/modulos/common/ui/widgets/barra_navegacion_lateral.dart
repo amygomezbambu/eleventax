@@ -9,7 +9,8 @@ class BarraNavegacionLateral extends StatelessWidget {
   final Function(Ruta) onBotonSeleccionado;
 
   void _manejarIndiceSeleccionado(int indice) {
-    Ruta rutaSeleccionada = Ruta.values.firstWhere((e) => e.index == indice);
+    Ruta rutaSeleccionada =
+        Rutas.rutas.firstWhere((e) => Rutas.rutas.indexOf(e) == indice);
     onBotonSeleccionado(rutaSeleccionada);
   }
 
@@ -22,7 +23,7 @@ class BarraNavegacionLateral extends StatelessWidget {
   List<NavigationRailDestination> construirNavegacion(BuildContext context) {
     List<NavigationRailDestination> navegacion = [];
 
-    for (var ruta in Ruta.values) {
+    for (var ruta in Rutas.rutas) {
       var destination = NavigationRailDestination(
         padding: const EdgeInsets.only(top: 5, bottom: 15),
         icon: Icon(
@@ -42,7 +43,7 @@ class BarraNavegacionLateral extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return NavigationRail(
-      selectedIndex: rutaSeleccionada.index,
+      selectedIndex: Rutas.rutas.indexOf(rutaSeleccionada),
       onDestinationSelected: _manejarIndiceSeleccionado,
       labelType: NavigationRailLabelType.none,
       minWidth: 65,

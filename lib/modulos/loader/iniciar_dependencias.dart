@@ -64,6 +64,7 @@ class DependenciasLoader {
       (IRepositorioConsultaProductos).toString(),
       () => RepositorioConsultaProductos(
         db: Dependencias.infra.database(),
+        logger: Dependencias.infra.logger(),
       ),
     );
 

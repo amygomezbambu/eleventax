@@ -1,3 +1,6 @@
+typedef QueryResult = List<Map<String, Object?>>;
+typedef QueryParams = List<Object?>?;
+
 abstract class IAdaptadorDeBaseDeDatos {
   /// Activa el logeo en consola de los queries y commands de sqlite
   set verbose(bool value);
@@ -8,9 +11,9 @@ abstract class IAdaptadorDeBaseDeDatos {
     required String sql,
     List<Object?>? params,
   });
-  Future<List<Map<String, Object?>>> query({
+  Future<QueryResult> query({
     required String sql,
-    List<Object?>? params,
+    QueryParams params,
   });
 
   Future<void> transaction();
