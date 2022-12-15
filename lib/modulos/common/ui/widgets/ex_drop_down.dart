@@ -1,10 +1,8 @@
+import 'package:eleventa/modulos/common/ui/tema/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tailwindcss_defaults/colors.dart';
 import 'package:layout/layout.dart';
 
 import 'package:eleventa/modulos/common/ui/widgets/ex_text_field.dart';
-
-const _fontSizeMD = 14.0;
 
 class ExDropDown<T> extends StatelessWidget {
   final Function(T?) onChanged;
@@ -48,12 +46,12 @@ class ExDropDown<T> extends StatelessWidget {
       md: (context) => Row(
         children: [
           SizedBox(
-              width: 160,
+              width: Sizes.p40,
               child: Padding(
-                padding: const EdgeInsets.only(right: 10),
+                padding: const EdgeInsets.only(right: Sizes.p2),
                 child: EditLabel(
                   hintText: hintText,
-                  tamanoFuente: _fontSizeMD,
+                  tamanoFuente: DesignSystem.campoTamanoTexto,
                 ),
               )),
           Flexible(
@@ -99,34 +97,35 @@ class _ExDropDownState<T> extends State<_ExDropDown<T>> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: Sizes.p2),
       child: DropdownButtonFormField<T>(
         key: widget.dropDownKey,
         value: widget.value,
-        style: TextStyle(
-            fontSize: 14.0,
-            color: TailwindColors.trueGray[700],
-            fontWeight: FontWeight.normal),
-        borderRadius: BorderRadius.circular(5),
+        isDense: true,
+        style: const TextStyle(
+            fontSize: DesignSystem.campoTamanoTexto,
+            color: ColoresBase.neutral700,
+            fontWeight: FontWeight.normal,
+            height: 0.0),
+        borderRadius: BorderRadius.circular(Sizes.p1),
         decoration: InputDecoration(
-          contentPadding:
-              const EdgeInsets.only(top: 0, bottom: 0, left: 8, right: 10),
+          contentPadding: const EdgeInsets.only(
+              top: Sizes.p0, bottom: Sizes.p0, left: Sizes.p2, right: Sizes.p2),
           filled: true,
-          fillColor: TailwindColors.blueGray[200],
-          //prefixIcon: Icon(Icons.category, color: TailwindColors.blueGray[400]),
-          prefixIconColor: TailwindColors.blueGray[400],
+          fillColor: ColoresBase.white,
+          prefixIconColor: ColoresBase.neutral700,
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5),
-            borderSide: BorderSide(
-              color: TailwindColors.blueGray[200]!,
-              width: 1.0,
+            borderRadius: BorderRadius.circular(Sizes.p1),
+            borderSide: const BorderSide(
+              color: ColoresBase.neutral300,
+              width: Sizes.px,
             ),
           ),
           focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(5),
-              borderSide: BorderSide(
-                color: TailwindColors.lightBlue[600]!,
-                width: 1.5,
+              borderRadius: BorderRadius.circular(Sizes.p1),
+              borderSide: const BorderSide(
+                color: ColoresBase.neutral300,
+                width: Sizes.px,
               )),
         ),
         onChanged: widget.onChanged,

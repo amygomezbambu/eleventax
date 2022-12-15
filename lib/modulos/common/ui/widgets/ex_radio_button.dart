@@ -1,10 +1,8 @@
-import 'package:eleventa/modulos/common/ui/design_system.dart';
+import 'package:eleventa/modulos/common/ui/tema/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:layout/layout.dart';
 
 import 'package:eleventa/modulos/common/ui/widgets/ex_text_field.dart';
-
-const _fontSizeMD = 14.0;
 
 class ExRadioButton<T> extends StatelessWidget {
   final Function(T?) onChange;
@@ -48,12 +46,12 @@ class ExRadioButton<T> extends StatelessWidget {
       md: (context) => Row(
         children: [
           SizedBox(
-              width: 160,
+              width: Sizes.p40,
               child: Padding(
-                padding: const EdgeInsets.only(right: 10),
+                padding: const EdgeInsets.only(right: Sizes.p2_5),
                 child: EditLabel(
                   hintText: hint,
-                  tamanoFuente: _fontSizeMD,
+                  tamanoFuente: DesignSystem.campoTamanoTexto,
                 ),
               )),
           Flexible(
@@ -99,13 +97,13 @@ class _ExRadioButtonState<T> extends State<_ExRadioButton<T>> {
   @override
   Widget build(BuildContext context) {
     return RadioListTile<T>(
-        activeColor: DesignSystem.accionPrimaria,
+        activeColor: ColoresBase.primario600,
         dense: true,
         contentPadding: EdgeInsets.zero,
-        //visualDensity: VisualDensity.compact,
         title: Text(widget.label,
-            style:
-                const TextStyle(fontSize: 14, fontWeight: FontWeight.normal)),
+            style: const TextStyle(
+                fontSize: DesignSystem.campoTamanoTexto,
+                fontWeight: FontWeight.normal)),
         value: widget.value,
         toggleable: true,
         groupValue: widget.groupValue,

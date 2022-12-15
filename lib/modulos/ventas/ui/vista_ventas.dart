@@ -1,9 +1,9 @@
+import 'package:eleventa/modulos/common/ui/tema/colores.dart';
 import 'package:eleventa/modulos/common/ui/widgets/dismiss_keyboard.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_vista_principal_scaffold.dart';
 import 'package:eleventa/modulos/ventas/modulo_ventas.dart';
 import 'package:eleventa/modulos/ventas/ui/boton_cobrar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tailwindcss_defaults/colors.dart';
 import 'package:eleventa/modulos/ventas/domain/entity/venta.dart';
 import 'package:eleventa/modulos/ventas/ui/acciones_de_venta.dart';
 import 'package:eleventa/modulos/ventas/ui/ui_sale_item.dart';
@@ -238,7 +238,7 @@ class ControlesVentaActual extends StatelessWidget {
                   padding: const EdgeInsets.all(12.0),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: TailwindColors.blueGray[200], //ui.neutral300,
+                      color: ColoresBase.neutral200,
                       borderRadius: BorderRadius.circular(5),
                     ),
                     child: TextField(
@@ -249,17 +249,16 @@ class ControlesVentaActual extends StatelessWidget {
                       controller: editingController,
                       onSubmitted: (String val) => {onBuscarCodigo(val)},
                       autocorrect: false,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                           prefixIcon: Icon(
                             Icons.document_scanner,
-                            color: TailwindColors.blueGray[300],
+                            color: ColoresBase.neutral300,
                           ),
                           border: InputBorder.none,
                           hintText:
                               "Escanea o ingresa un código de producto...",
                           hintStyle: TextStyle(
-                              fontSize: 15,
-                              color: TailwindColors.blueGray[400])),
+                              fontSize: 15, color: ColoresBase.neutral400)),
                     ),
                   ),
                 )),

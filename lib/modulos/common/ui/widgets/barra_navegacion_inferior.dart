@@ -1,6 +1,5 @@
+import 'package:eleventa/modulos/common/ui/tema/theme.dart';
 import 'package:flutter/material.dart';
-
-import 'package:eleventa/modulos/common/ui/design_system.dart';
 import 'package:eleventa/modulos/common/ui/ruta.dart';
 
 class BarraNavegacionInferior extends StatelessWidget {
@@ -24,7 +23,7 @@ class BarraNavegacionInferior extends StatelessWidget {
 
     for (var ruta in Rutas.rutas) {
       var destination = BottomNavigationBarItem(
-        backgroundColor: DesignSystem.backgroundColor,
+        backgroundColor: Colores.navegacionBackground,
         icon: Icon(ruta.icon),
         activeIcon: Icon(ruta.icon),
         tooltip: ruta.nombre,
@@ -41,19 +40,21 @@ class BarraNavegacionInferior extends StatelessWidget {
   Widget build(BuildContext context) {
     return BottomNavigationBar(
       currentIndex: Rutas.rutas.indexOf(rutaSeleccionada),
-      selectedItemColor: DesignSystem.accionPrimaria,
-      backgroundColor: DesignSystem.backgroundColor,
-      unselectedItemColor: const Color.fromARGB(255, 197, 196, 196),
-      enableFeedback: false,
+      selectedItemColor: ColoresBase.primario100,
+      backgroundColor: Colores.navegacionBackground,
+      unselectedItemColor: ColoresBase.neutral400,
+      elevation: 0,
+      type: BottomNavigationBarType.fixed,
+      enableFeedback: true,
       showSelectedLabels: true,
       showUnselectedLabels: true,
-      selectedFontSize: 11,
-      unselectedFontSize: 11,
+      selectedFontSize: TextSizes.textXs,
+      unselectedFontSize: TextSizes.textXxs,
       selectedIconTheme: const IconThemeData(
-        size: 22,
-        color: DesignSystem.accionPrimaria,
+        size: Sizes.p6,
+        color: ColoresBase.primario500,
       ),
-      unselectedIconTheme: const IconThemeData(size: 22),
+      unselectedIconTheme: const IconThemeData(size: Sizes.p5),
       onTap: _manejarIndiceSeleccionado,
       items: [
         ...construirNavegacion(context),

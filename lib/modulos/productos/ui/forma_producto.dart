@@ -1,7 +1,9 @@
 import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/ui/ex_icons.dart';
+import 'package:eleventa/modulos/common/ui/tema/theme.dart';
 import 'package:eleventa/modulos/common/ui/widgets/dismiss_keyboard.dart';
+import 'package:eleventa/modulos/common/ui/widgets/ex_boton_secundario.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/nombre_categoria.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
@@ -36,6 +38,7 @@ class FormaProducto extends StatefulWidget {
   static const cbxCategoria = Key('cbxCategoria');
   static const rdbSeVendePorUnidad = Key('rdbSeVendePorUnidad');
   static const rdbSeVendePorPeso = Key('rdbSeVendePorPeso');
+  static const anchoCamposDefault = Sizes.p72;
 
   final String? productoEnModificacionId;
 
@@ -308,10 +311,9 @@ class _FormaProductoState extends State<FormaProducto> {
                 scrollDirection: Axis.vertical,
                 controller: scrollController,
                 child: Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Container(
-                    color: Colors.white10,
-                    width: 600,
+                  padding: const EdgeInsets.all(Sizes.p4),
+                  child: SizedBox(
+                    width: Sizes.p96 * 2,
                     child: KeyboardListener(
                       focusNode: _focusNode,
                       onKeyEvent: (KeyEvent key) => _cambiarControlEnFoco(key),
@@ -335,7 +337,7 @@ class _FormaProductoState extends State<FormaProducto> {
                                       // icon: state.existeCodigo
                                       //     ? Icons.error
                                       //     : Icons.document_scanner,
-                                      width: 300,
+                                      width: FormaProducto.anchoCamposDefault,
                                       validator: (value) async {
                                         if (value == null) {
                                           return 'No se aceptan valores Nulos';
@@ -438,8 +440,8 @@ class _FormaProductoState extends State<FormaProducto> {
                                           );
                                         } else {
                                           return const SizedBox(
-                                            width: 20,
-                                            height: 20,
+                                            width: Sizes.p5,
+                                            height: Sizes.p5,
                                             child: CircularProgressIndicator(),
                                           );
                                         }
@@ -452,7 +454,9 @@ class _FormaProductoState extends State<FormaProducto> {
                                       hint: 'Se vende por',
                                       onChange: (ProductoSeVendePor? value) {
                                         setState(() {
-                                          seVendePor = value!;
+                                          if (value != null) {
+                                            seVendePor = value;
+                                          }
                                         });
                                       }),
                                   ExRadioButton<ProductoSeVendePor>(
@@ -463,7 +467,9 @@ class _FormaProductoState extends State<FormaProducto> {
                                       hint: '',
                                       onChange: (ProductoSeVendePor? value) {
                                         setState(() {
-                                          seVendePor = value!;
+                                          if (value != null) {
+                                            seVendePor = value;
+                                          }
                                         });
                                       }),
 
@@ -483,7 +489,8 @@ class _FormaProductoState extends State<FormaProducto> {
                                           return ExDropDown<UnidadDeMedida>(
                                             key: FormaProducto.cbxUnidadMedida,
                                             hintText: 'Unidad de Medida',
-                                            width: 300,
+                                            width: FormaProducto
+                                                .anchoCamposDefault,
                                             dropDownKey: keyUnidadDeMedida,
                                             value: unidadDeMedidaSeleccionada!,
                                             onChanged: (UnidadDeMedida?
@@ -506,8 +513,8 @@ class _FormaProductoState extends State<FormaProducto> {
                                           );
                                         } else {
                                           return const SizedBox(
-                                            width: 20,
-                                            height: 20,
+                                            width: Sizes.p5,
+                                            height: Sizes.p5,
                                             child: CircularProgressIndicator(),
                                           );
                                         }
@@ -526,7 +533,7 @@ class _FormaProductoState extends State<FormaProducto> {
                                           return ExDropDown<Impuesto>(
                                             key: FormaProducto.cbxImpuestos,
                                             hintText: 'Impuesto',
-                                            width: 160,
+                                            width: Sizes.p44,
                                             dropDownKey: keyImpuestos,
                                             value: impuestoSeleccionado!,
                                             onChanged: (Impuesto? impuesto) {
@@ -546,7 +553,7 @@ class _FormaProductoState extends State<FormaProducto> {
                                           );
                                         } else {
                                           return const SizedBox(
-                                            width: 20,
+                                            width: Sizes.p5,
                                             height: 20,
                                             child: CircularProgressIndicator(),
                                           );
@@ -557,9 +564,9 @@ class _FormaProductoState extends State<FormaProducto> {
                                     fieldKey: keyPrecioCompra,
                                     hintText: 'Precio de compra',
                                     controller: _controllerPrecioDeCompra,
-                                    helperText: 'Con Impuestos',
+                                    //helperText: 'Con Impuestos',
                                     prefixText: '\$ ',
-                                    width: 170,
+                                    width: Sizes.p44,
                                     inputType: InputType.numerico,
                                     validator: (value) async {
                                       if (value == null || value.isEmpty) {
@@ -599,7 +606,7 @@ class _FormaProductoState extends State<FormaProducto> {
                                       hintText: 'Precio de venta',
                                       controller: _controllerPrecioDeVenta,
                                       prefixText: '\$ ',
-                                      width: 170,
+                                      width: Sizes.p44,
                                       inputType: InputType.numerico,
                                       validator: (value) async {
                                         if (value == null || value.isEmpty) {
@@ -639,19 +646,19 @@ class _FormaProductoState extends State<FormaProducto> {
                                 SizedBox(
                                   width: (mostrarMargenLabel.resolve(context) ==
                                           true)
-                                      ? 160
+                                      ? Sizes.p40
                                       : 0,
                                 ),
                                 SizedBox(
-                                  width: 150,
-                                  height: 45,
+                                  width: Sizes.p40,
+                                  height: Sizes.p12,
                                   child: Consumer(
                                     builder: (context, ref, child) {
                                       return ExBotonPrimario(
                                           key: FormaProducto.btnGuardar,
                                           label: 'Guardar',
                                           icon: Iconos.edit,
-                                          tamanoFuente: 15,
+                                          tamanoFuente: TextSizes.textSm,
                                           onTap: () async {
                                             if (await _guardarProducto()) {
                                               if (!mounted) return;
@@ -681,11 +688,11 @@ class _FormaProductoState extends State<FormaProducto> {
                                   width: 5,
                                 ),
                                 SizedBox(
-                                  width: 150,
-                                  height: 45,
-                                  child: ExBotonPrimario(
+                                  width: Sizes.p40,
+                                  height: Sizes.p12,
+                                  child: ExBotonSecundario(
                                       label: 'Cancelar',
-                                      tamanoFuente: 15,
+                                      tamanoFuente: TextSizes.textSm,
                                       icon: Iconos.delete,
                                       onTap: () {
                                         limpiarCampos();

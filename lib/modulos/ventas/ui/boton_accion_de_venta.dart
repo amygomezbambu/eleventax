@@ -1,5 +1,5 @@
+import 'package:eleventa/modulos/common/ui/tema/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tailwindcss_defaults/colors.dart';
 
 class BotonAccionDeVenta extends StatelessWidget {
   final String _label;
@@ -15,18 +15,19 @@ class BotonAccionDeVenta extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: SizedBox(
-        height: 130,
+        height: Sizes.p36,
         child: Card(
-          elevation: 0,
-          margin: const EdgeInsets.all(7),
-          color: TailwindColors.blueGray[200],
+          elevation: Sizes.p0,
+          margin: const EdgeInsets.all(Sizes.p1_5),
+          color: ColoresBase.primario100,
           shape: RoundedRectangleBorder(
-              side: BorderSide(color: TailwindColors.blueGray[200]!, width: 1),
-              borderRadius: BorderRadius.circular(5.0)),
+              side: const BorderSide(
+                  color: ColoresBase.primario100, width: Sizes.px),
+              borderRadius: BorderRadius.circular(Sizes.p2)),
           child: InkWell(
-            hoverColor: TailwindColors.blueGray[300],
-            highlightColor: TailwindColors.blueGray[400],
-            borderRadius: BorderRadius.circular(5.0),
+            hoverColor: ColoresBase.primario200,
+            highlightColor: ColoresBase.primario300,
+            borderRadius: BorderRadius.circular(Sizes.p2),
             onTap: () => {debugPrint('Se hizo clic en accion')},
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -34,17 +35,16 @@ class BotonAccionDeVenta extends StatelessWidget {
               children: <Widget>[
                 Icon(
                   _icon,
-                  color: TailwindColors.blueGray[500],
-                  size: 30,
+                  color: ColoresBase.neutral500,
+                  size: Sizes.p8,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: Sizes.p2),
                 Text(
                   _label,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontFamily: 'Figtree',
-                      fontSize: 13,
-                      color: TailwindColors.blueGray[600]),
+                  style: const TextStyle(
+                      fontSize: TextSizes.textXs,
+                      color: ColoresBase.neutral600),
                 )
               ],
             ),

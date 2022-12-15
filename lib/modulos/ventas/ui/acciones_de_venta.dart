@@ -1,3 +1,4 @@
+import 'package:eleventa/modulos/common/ui/tema/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:eleventa/modulos/ventas/ui/boton_accion_de_venta.dart';
 
@@ -9,7 +10,7 @@ class AccionesDeVenta extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+      padding: const EdgeInsets.symmetric(horizontal: Sizes.p2),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisAlignment: MainAxisAlignment.start,

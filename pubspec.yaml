@@ -42,7 +42,6 @@ dependencies:
   http: ^0.13.5
   path:
   google_fonts: ^3.0.1
-  flutter_tailwindcss_defaults: ^0.2.0
   any_base: ^2.0.0
   murmurhash: ^1.0.1
   hlc: ^1.0.3

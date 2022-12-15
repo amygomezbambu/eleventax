@@ -1,3 +1,4 @@
+import 'package:eleventa/modulos/common/ui/tema/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -10,9 +11,9 @@ class EleventaLogo extends StatelessWidget {
   Widget build(BuildContext context) {
     return SvgPicture.asset(
       'assets/eleventa.svg',
-      width: 30.0,
-      height: 30.0,
-      color: const Color(0xFF459BF1),
+      width: Sizes.p8,
+      height: Sizes.p8,
+      color: ColoresBase.primario500, //const Color(0xFF459BF1),
     );
   }
 }

@@ -1,5 +1,5 @@
+import 'package:eleventa/modulos/common/ui/tema/colores.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tailwindcss_defaults/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:eleventa/modulos/ventas/ui/ui_sale_item.dart';
 import 'package:layout/layout.dart';
@@ -38,7 +38,7 @@ class ListadoArticulos extends StatelessWidget {
             subtitle: Text(articulos[index].code),
             selected: !soportaTouch && UiCart.isSelectedItem(articulos[index]),
             selectedColor: Colors.white,
-            selectedTileColor: TailwindColors.coolGray[500],
+            selectedTileColor: ColoresBase.neutral300,
             title: Text(
               articulos[index].description,
               style: GoogleFonts.openSans(fontWeight: FontWeight.w500),
@@ -53,7 +53,7 @@ class ListadoArticulos extends StatelessWidget {
                         color: !soportaTouch &&
                                 UiCart.isSelectedItem(articulos[index])
                             ? Colors.white
-                            : const Color.fromARGB(255, 38, 119, 181),
+                            : Colores.accionPrimaria,
                         fontWeight: FontWeight.w600),
                   )
                 ]),
@@ -61,10 +61,8 @@ class ListadoArticulos extends StatelessWidget {
       },
       separatorBuilder: (context, index) => const Padding(
         padding: EdgeInsets.only(left: 80, right: 15),
-        child: Divider(
-            height: 0,
-            color: Color.fromARGB(255, 208, 208, 208),
-            thickness: 0.5),
+        child:
+            Divider(height: 0, color: ColoresBase.neutral200, thickness: 0.5),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:eleventa/dependencias.dart';
+import 'package:eleventa/modulos/common/ui/tema/colores.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_scaffold.dart';
 import 'package:eleventa/modulos/loader/loader.dart';
 import 'package:eleventa/modulos/common/ui/no_encontrado.dart';
@@ -7,7 +8,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_tailwindcss_defaults/colors.dart';
 import 'package:layout/layout.dart';
 import 'package:go_router/go_router.dart';
 
@@ -95,24 +95,22 @@ class _EleventaAppState extends State<EleventaApp> {
       child: MaterialApp.router(
         routerConfig: _router,
         debugShowCheckedModeBanner: false,
-
         restorationScopeId: 'eleventa',
-        //onGenerateTitle: (BuildContext context) => 'My Shop',
         theme: ThemeData(
-          //colorSchemeSeed: Colors.blueAccent,
-          fontFamily: 'Inter',
-          scaffoldBackgroundColor:
-              TailwindColors.blueGray[50], //const Color(0xFFF2F3F6),
+          brightness: Brightness.light,
+          primaryColor: ColoresBase.primario600,
+          fontFamily: 'Open Sans',
+          navigationBarTheme: const NavigationBarThemeData(
+            height: 20,
+          ),
+
+          scaffoldBackgroundColor: ColoresBase.neutral100,
           useMaterial3: true,
           // Deshabilitamos el efecto "Splash" de Material
           splashColor: Colors.transparent,
           highlightColor: Colors.transparent,
           hoverColor: Colors.transparent,
           splashFactory: NoSplash.splashFactory,
-          appBarTheme: const AppBarTheme(
-            iconTheme: IconThemeData(color: Colors.red),
-            color: Colors.red,
-          ),
         ),
       ),
     );

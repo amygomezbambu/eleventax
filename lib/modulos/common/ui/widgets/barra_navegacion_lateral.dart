@@ -1,6 +1,7 @@
+import 'package:eleventa/modulos/common/ui/tema/colores.dart';
+import 'package:eleventa/modulos/common/ui/tema/dimensiones.dart';
 import 'package:flutter/material.dart';
 
-import 'package:eleventa/modulos/common/ui/design_system.dart';
 import 'package:eleventa/modulos/common/ui/ruta.dart';
 import 'package:eleventa/modulos/common/ui/widgets/eleventa_logo.dart';
 
@@ -25,13 +26,13 @@ class BarraNavegacionLateral extends StatelessWidget {
 
     for (var ruta in Rutas.rutas) {
       var destination = NavigationRailDestination(
-        padding: const EdgeInsets.only(top: 5, bottom: 15),
+        padding: const EdgeInsets.only(top: Sizes.p1, bottom: Sizes.p4),
         icon: Icon(
           ruta.icon,
           semanticLabel: ruta.nombre,
         ),
         selectedIcon: Icon(ruta.icon),
-        label: const Text('Ventas'),
+        label: Text(ruta.nombre),
       );
 
       navegacion.add(destination);
@@ -46,35 +47,32 @@ class BarraNavegacionLateral extends StatelessWidget {
       selectedIndex: Rutas.rutas.indexOf(rutaSeleccionada),
       onDestinationSelected: _manejarIndiceSeleccionado,
       labelType: NavigationRailLabelType.none,
-      minWidth: 65,
-      backgroundColor: DesignSystem.backgroundColor,
-      indicatorColor: const Color(0xFF1d415f),
+      minWidth: Sizes.p16,
+      backgroundColor: ColoresBase.primario900,
+      indicatorColor: ColoresBase.primario800,
       useIndicator: true,
       leading: Padding(
-        padding: const EdgeInsets.only(top: 32),
+        padding: const EdgeInsets.only(top: Sizes.p8),
         child: Column(
           children: [
             const EleventaLogo(),
             Container(
-              width: 50,
-              padding: const EdgeInsets.only(top: 20, bottom: 10),
-              child:
-                  Divider(height: 1, color: Colors.blueGrey[800], thickness: 1),
+              width: Sizes.p12,
+              padding: const EdgeInsets.only(top: Sizes.p5, bottom: Sizes.p1),
+              child: const Divider(
+                  height: Sizes.p0,
+                  color: ColoresBase.primario800,
+                  thickness: Sizes.p0),
             ),
           ],
         ),
       ),
       extended: false,
-      //minExtendedWidth: 170,
-      unselectedIconTheme: const IconThemeData(
-          color: Color.fromARGB(255, 219, 219, 219), size: 20),
-      selectedIconTheme: const IconThemeData(color: Colors.white, size: 20),
-      selectedLabelTextStyle: const TextStyle(
-          color: Colors.white, fontFamily: 'Inter', fontSize: 12),
-      unselectedLabelTextStyle: const TextStyle(
-          color: Color.fromARGB(255, 197, 196, 196),
-          fontFamily: 'Inter',
-          fontSize: 13),
+      elevation: Sizes.p2_0,
+      unselectedIconTheme:
+          const IconThemeData(color: ColoresBase.neutral500, size: Sizes.p5),
+      selectedIconTheme:
+          const IconThemeData(color: ColoresBase.primario50, size: Sizes.p5),
       destinations: [
         ...construirNavegacion(context),
       ],

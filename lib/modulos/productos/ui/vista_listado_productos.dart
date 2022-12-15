@@ -1,8 +1,9 @@
+import 'package:eleventa/modulos/common/ui/ex_icons.dart';
+import 'package:eleventa/modulos/common/ui/tema/theme.dart';
 import 'package:eleventa/modulos/common/ui/widgets/dismiss_keyboard.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_vista_principal_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_tailwindcss_defaults/colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:layout/layout.dart';
 
@@ -53,7 +54,7 @@ class VistaListadoProductosState extends State<VistaListadoProductos> {
               child: Card(
                 elevation: 1,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(2.0),
+                  borderRadius: BorderRadius.circular(Sizes.p2_0),
                 ),
                 child: _ListadoProductos(
                   onTap: _mandarModificarProducto,
@@ -84,7 +85,7 @@ class _ListadoProductos extends ConsumerWidget {
   final Function(Producto) onTap;
   final VoidCallback onNuevoProducto;
   final controllerBusqueda = TextEditingController();
-  final _scrollController = ScrollController(initialScrollOffset: 0.0);
+  final _scrollController = ScrollController(initialScrollOffset: Sizes.p0);
 
   _ListadoProductos({
     Key? key,
@@ -99,21 +100,23 @@ class _ListadoProductos extends ConsumerWidget {
     return Column(
       children: [
         SizedBox(
-          height: 135,
+          height: Sizes.p32,
           child: DismissKeyboard(
             child: Card(
-              color: TailwindColors.coolGray[100],
+              color: ColoresBase.neutral100,
               elevation: 1,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(2.0),
+                borderRadius: BorderRadius.circular(Sizes.p2_0),
               ),
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(Sizes.p3),
                 child: Column(
                   children: [
                     ExTextField(
                       controller: controllerBusqueda,
+                      icon: Iconos.search,
                       hintText: 'Buscar productos',
+                      aplicarResponsividad: false,
                       onFieldSubmitted: (value) async {
                         try {
                           CodigoProducto codigo = CodigoProducto(value);
@@ -155,6 +158,7 @@ class _ListadoProductos extends ConsumerWidget {
                       key: VistaListadoProductos.keyBotonCobrar,
                       icon: Icons.create_outlined,
                       label: 'Crear producto',
+                      height: Sizes.p10,
                       onTap: () async {
                         debugPrint(
                             'Ir a crear producto, desktop: ${esDesktop.resolve(context)}');
@@ -175,7 +179,7 @@ class _ListadoProductos extends ConsumerWidget {
         ),
         Expanded(
             child: Padding(
-          padding: const EdgeInsets.only(top: 8.0),
+          padding: const EdgeInsets.only(top: Sizes.p1),
           child: Scrollbar(
             thumbVisibility: esDesktop.resolve(context),
             trackVisibility: esDesktop.resolve(context),
@@ -188,40 +192,42 @@ class _ListadoProductos extends ConsumerWidget {
               itemBuilder: (BuildContext context, int index) {
                 return ListTile(
                     contentPadding: EdgeInsets.only(
-                        top: 4.0,
-                        bottom: 4.0,
-                        left: (context.breakpoint >= LayoutBreakpoint.sm)
-                            ? 4.0
-                            : 10.0,
-                        right: 15.0),
+                        top: Sizes.p1,
+                        bottom: Sizes.p1,
+                        left: (context.breakpoint > LayoutBreakpoint.sm)
+                            ? Sizes.p2
+                            : Sizes.p3,
+                        right: Sizes.p3),
                     dense: (context.breakpoint <= LayoutBreakpoint.sm),
                     leading: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(Sizes.p2),
                         child: Image.network(
                           'https://source.unsplash.com/random/200×200/?${productos[index].nombre}',
                           // Le indicamos que que tamaño será la imagen para que consuma
                           // menos memoria aunque la imagen original sea más grande
-                          cacheHeight: 50,
-                          cacheWidth: 50,
+                          cacheHeight: Sizes.p12.toInt(),
+                          cacheWidth: Sizes.p12.toInt(),
                           fit: BoxFit.cover,
                         )),
                     title: Text(
                       productos[index].nombre,
-                      style: TextStyle(
-                          fontSize: esDesktop.resolve(context) ? 14 : 16,
+                      style: const TextStyle(
+                          fontSize: TextSizes.textSm,
                           fontWeight: FontWeight.w500),
                     ),
-                    hoverColor: TailwindColors.blueGray[200],
+                    hoverColor: ColoresBase.neutral300,
                     trailing: Wrap(
-                        spacing: (context.breakpoint >= LayoutBreakpoint.sm)
-                            ? 80
-                            : 31,
+                        spacing: (context.breakpoint > LayoutBreakpoint.sm)
+                            ? Sizes.p40
+                            : Sizes.p28,
                         children: <Widget>[
                           Text(
                             productos[index].precioDeVenta.toString(),
                             style: TextStyle(
-                                fontSize: esDesktop.resolve(context) ? 16 : 18,
-                                color: const Color.fromARGB(255, 38, 119, 181),
+                                fontSize: esDesktop.resolve(context)
+                                    ? TextSizes.textBase
+                                    : TextSizes.textBase,
+                                color: ColoresBase.primario600,
                                 fontWeight: FontWeight.w600),
                           )
                         ]),
@@ -234,16 +240,16 @@ class _ListadoProductos extends ConsumerWidget {
                       }
                     });
               },
-              separatorBuilder: (context, index) => Margin(
+              separatorBuilder: (context, index) => const Margin(
                 margin: EdgeInsets.only(
-                    left: (context.breakpoint >= LayoutBreakpoint.sm) ? 65 : 55,
-                    right: 15,
-                    top: 0.0,
-                    bottom: 0.0),
-                child: const Divider(
-                    height: 0,
-                    color: Color.fromARGB(255, 208, 208, 208),
-                    thickness: 0.5),
+                    left: Sizes.p16,
+                    right: Sizes.p3,
+                    top: Sizes.p0,
+                    bottom: Sizes.p0),
+                child: Divider(
+                    height: Sizes.p0,
+                    color: ColoresBase.neutral300,
+                    thickness: Sizes.p0_5),
               ),
             ),
           ),

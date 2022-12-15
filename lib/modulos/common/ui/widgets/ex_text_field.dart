@@ -1,11 +1,7 @@
+import 'package:eleventa/modulos/common/ui/tema/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_tailwindcss_defaults/colors.dart';
 import 'package:layout/layout.dart';
-
-const _fontFamily = 'Inter';
-const _fontSizeXS = 15.0;
-const _fontSizeMD = 14.0;
 
 typedef ValidadorTextField = Future<String?> Function(String? value)?;
 
@@ -21,6 +17,7 @@ class ExTextField extends StatelessWidget {
   final IconData? icon;
   final GlobalKey? fieldKey;
   final InputType inputType;
+  final bool aplicarResponsividad;
 
   /// Evento lanzado cuando el widget pierde el foco,
   /// usualmente usado para validaciones
@@ -44,73 +41,72 @@ class ExTextField extends StatelessWidget {
     this.validator,
     this.inputType = InputType.texto,
     this.onFieldSubmitted,
+    this.aplicarResponsividad = true,
   }) : super(key: key);
+
+  Widget _textField() {
+    return _ExTextField(
+      hintText: hintText,
+      controller: controller,
+      tamanoFuente: DesignSystem.campoTamanoTexto,
+      prefixText: prefixText,
+      suffixText: suffixText,
+      helperText: helperText,
+      icon: icon,
+      onExit: onExit,
+      onFieldSubmitted: onFieldSubmitted,
+      validator: validator,
+      fieldKey: fieldKey,
+      inputType: inputType,
+      aplicarResponsividad: aplicarResponsividad,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return AdaptiveBuilder(
-      xs: (context) => Column(
-        children: [
-          // Solo encerramos el textifield en un SizedBox si tiene width
-          ConditionalParentWidget(
-            condition: (width != null),
-            child: _ExTextField(
-                hintText: hintText,
-                controller: controller,
-                tamanoFuente: _fontSizeXS,
-                prefixText: prefixText,
-                suffixText: suffixText,
-                helperText: helperText,
-                icon: icon,
-                onExit: onExit,
-                onFieldSubmitted: onFieldSubmitted,
-                validator: validator,
-                fieldKey: fieldKey,
-                inputType: inputType),
-            parentBuilder: (Widget child) => SizedBox(
-              width: width,
-              child: child,
-            ),
-          ),
-        ],
-      ),
-      md: (context) => Row(
-        children: [
-          SizedBox(
-              width: 160,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: EditLabel(
-                  hintText: hintText,
-                  tamanoFuente: _fontSizeMD,
-                ),
-              )),
-          Flexible(
-            child: ConditionalParentWidget(
+    if (aplicarResponsividad) {
+      return AdaptiveBuilder(
+        xs: (context) => Column(
+          children: [
+            // Solo encerramos el textifield en un SizedBox si tiene width
+            ConditionalParentWidget(
               condition: (width != null),
-              child: _ExTextField(
-                hintText: hintText,
-                controller: controller,
-                tamanoFuente: _fontSizeMD,
-                prefixText: prefixText,
-                suffixText: suffixText,
-                helperText: helperText,
-                onFieldSubmitted: onFieldSubmitted,
-                icon: icon,
-                onExit: onExit,
-                fieldKey: fieldKey,
-                validator: validator,
-                inputType: inputType,
-              ),
+              child: _textField(),
               parentBuilder: (Widget child) => SizedBox(
                 width: width,
                 child: child,
               ),
             ),
-          )
-        ],
-      ),
-    );
+          ],
+        ),
+        md: (context) => Row(
+          children: [
+            SizedBox(
+                width: Sizes.p40,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                      Sizes.p0, Sizes.p0, Sizes.p2, Sizes.p2),
+                  child: EditLabel(
+                    hintText: hintText,
+                    tamanoFuente: DesignSystem.campoTamanoTexto,
+                  ),
+                )),
+            Flexible(
+              child: ConditionalParentWidget(
+                condition: (width != null),
+                child: _textField(),
+                parentBuilder: (Widget child) => SizedBox(
+                  width: width,
+                  child: child,
+                ),
+              ),
+            )
+          ],
+        ),
+      );
+    } else {
+      return _textField();
+    }
   }
 }
 
@@ -131,9 +127,8 @@ class EditLabel extends StatelessWidget {
       hintText,
       textAlign: TextAlign.right,
       style: TextStyle(
-          fontFamily: _fontFamily,
           fontSize: tamanoFuente,
-          color: TailwindColors.blueGray[600],
+          color: ColoresBase.neutral700, // TailwindColors.blueGray[600],
           fontWeight: FontWeight.w400),
     );
   }
@@ -152,6 +147,7 @@ class _ExTextField extends StatefulWidget {
   final ValidadorTextField validator;
   final String hintText;
   final InputType inputType;
+  final bool aplicarResponsividad;
 
   const _ExTextField({
     Key? key,
@@ -166,6 +162,7 @@ class _ExTextField extends StatefulWidget {
     required this.hintText,
     this.validator,
     required this.inputType,
+    required this.aplicarResponsividad,
     this.onFieldSubmitted,
   }) : super(key: key);
 
@@ -196,7 +193,7 @@ class _ExTextFieldState extends State<_ExTextField> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
+      padding: const EdgeInsets.only(bottom: Sizes.p2),
       child: Focus(
         onFocusChange: (hasFocus) async {
           if (!hasFocus) {
@@ -257,60 +254,63 @@ class _ExTextFieldState extends State<_ExTextField> {
           autovalidateMode: AutovalidateMode.disabled,
           style: TextStyle(
               fontSize: widget.tamanoFuente,
-              fontFamily: _fontFamily,
-              color: TailwindColors.trueGray[700],
+              color: ColoresBase.neutral700, // TailwindColors.trueGray[700],
               fontWeight: FontWeight.normal),
           validator: (value) {
             return _errValidacion;
           },
           decoration: InputDecoration(
+            //border: const SelectedInputBorderWithShadow(),
+            contentPadding: const EdgeInsets.all(Sizes.p4),
             prefixText: widget.prefixText,
             suffixText: widget.suffixText,
             helperText: widget.helperText,
-            helperStyle: const TextStyle(fontSize: 12),
+            helperStyle:
+                const TextStyle(fontSize: DesignSystem.campoTamanoTexto),
             filled: true,
             isDense: true,
-            fillColor: TailwindColors.blueGray[200],
+            fillColor: ColoresBase.white,
             prefixIcon: (widget.icon != null)
                 ? Icon(
                     widget.icon,
-                    color: TailwindColors.blueGray[400],
+                    color: ColoresBase.neutral400,
                   )
                 : null,
-            hintText:
-                (_enDesktop.resolve(context) == true) ? widget.hintText : null,
-            errorStyle: TextStyle(color: TailwindColors.red[700]!),
+            hintText: (_enDesktop.resolve(context) == true) ||
+                    (!widget.aplicarResponsividad)
+                ? widget.hintText
+                : null,
+            errorStyle: const TextStyle(color: ColoresBase.red300),
             errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(5),
-              borderSide: BorderSide(
-                color: TailwindColors.red[700]!,
-                width: 1.0,
+              borderRadius: BorderRadius.circular(Sizes.p1_5),
+              borderSide: const BorderSide(
+                color: ColoresBase.red300,
+                width: Sizes.px,
               ),
             ),
             focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(5),
-              borderSide: BorderSide(
-                color: TailwindColors.lightBlue[600]!,
-                width: 1.5,
+              borderRadius: BorderRadius.circular(Sizes.p1_5),
+              borderSide: const BorderSide(
+                color: Colores.campoBordeEnfocado,
+                width: Sizes.p2_0,
               ),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(5),
-              borderSide: BorderSide(
-                color: TailwindColors.blueGray[200]!,
-                width: 1.0,
+              borderRadius: BorderRadius.circular(Sizes.p1_5),
+              borderSide: const BorderSide(
+                color: ColoresBase.neutral300,
+                width: Sizes.px,
               ),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(5),
-              borderSide: BorderSide(
-                color: TailwindColors.lightBlue[600]!,
-                width: 1.5,
+              borderRadius: BorderRadius.circular(Sizes.p1_5),
+              borderSide: const BorderSide(
+                color: Colores.campoBordeEnfocado,
+                width: Sizes.p2_0,
               ),
             ),
             hintStyle: TextStyle(
-                fontSize: widget.tamanoFuente,
-                color: TailwindColors.blueGray[400]),
+                fontSize: widget.tamanoFuente, color: Colores.campoIcono),
           ),
           onFieldSubmitted: (value) {
             if (widget.onFieldSubmitted != null) {

@@ -1,6 +1,5 @@
+import 'package:eleventa/modulos/common/ui/tema/theme.dart';
 import 'package:flutter/material.dart';
-
-import 'package:eleventa/modulos/common/ui/design_system.dart';
 
 /// AppBar personalizado que nos permite modificar el icono
 /// de regresar por default por uno propio para mayor personalizacion
@@ -23,7 +22,6 @@ class ExAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    /// This part is copied from AppBar class
     final ScaffoldState? scaffold = Scaffold.maybeOf(context);
     final bool hasDrawer = scaffold?.hasDrawer ?? false;
     final ModalRoute<dynamic>? parentRoute = ModalRoute.of(context);
@@ -34,7 +32,7 @@ class ExAppBar extends StatelessWidget implements PreferredSizeWidget {
     if (leadingIcon == null && automaticallyImplyLeading) {
       if (hasDrawer) {
         leadingIcon = IconButton(
-          icon: const Icon(Icons.menu, color: Colors.white),
+          icon: const Icon(Icons.menu, color: ColoresBase.white),
           onPressed: () => Scaffold.of(context).openDrawer(),
         );
       } else {
@@ -44,7 +42,7 @@ class ExAppBar extends StatelessWidget implements PreferredSizeWidget {
             onPressed: () => Navigator.of(context).pop(),
             icon: const Icon(
               Icons.chevron_left_outlined,
-              color: Colors.white,
+              color: ColoresBase.white,
             ),
           );
         }
@@ -55,11 +53,11 @@ class ExAppBar extends StatelessWidget implements PreferredSizeWidget {
         leading: leadingIcon,
         title: title,
         centerTitle: centerTitle,
-        backgroundColor: DesignSystem.titleColor,
+        backgroundColor: Colores.navegacionBackground,
         surfaceTintColor: null,
-        elevation: 0,
+        elevation: 2,
         actions: actions,
-        toolbarHeight: 55);
+        toolbarHeight: Sizes.p12);
   }
 
   @override

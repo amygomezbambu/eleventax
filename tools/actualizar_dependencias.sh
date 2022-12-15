@@ -1,13 +1,10 @@
 #!/bin/zsh
-source ~/.zshrc
 ruby --version
 
 echo "✔ Actualizando dependencias de macOS..."
 cd macos
-pod repo update
-pod update
+pod update Sentry/HybridSDK 
 
-echo "✔ Actualizando dependencias de macOS..."
+echo "✔ Actualizando dependencias de iOS..."
 cd ../ios
-pod repo update
-pod update
+pod update Sentry/HybridSDK

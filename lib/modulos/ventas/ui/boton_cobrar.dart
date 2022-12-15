@@ -25,7 +25,7 @@ class BotonCobrarVenta extends StatelessWidget {
           label: 'Cobrar \$${totalDeVenta.toStringAsFixed(2)}',
           tamanoFuente: dense ? 20 : 25,
           icon: Iconos.register,
-          onTap: () => {onTap()},
+          onTap: () => {debugPrint('hello')},
           key: const ValueKey('payButton')),
     );
   }
