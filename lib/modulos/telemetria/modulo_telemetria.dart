@@ -4,7 +4,9 @@ import 'package:eleventa/modulos/telemetria/usecase/enviar_metricas_iniciales/en
 class ModuloTelemetria {
   static EnviarMetricasInicialesUseCase enviarMetricasIniciales() {
     return EnviarMetricasInicialesUseCase(
-        adaptadorDeDispositivo: Dependencias.infra.dispositivo(),
-        adaptadorDeTelemetria: Dependencias.infra.telemetria());
+      adaptadorDeDispositivo: Dependencias.infra.dispositivo(),
+      adaptadorDeTelemetria: Dependencias.telemetria.adaptador(),
+      repo: Dependencias.telemetria.repositorio(),
+    );
   }
 }

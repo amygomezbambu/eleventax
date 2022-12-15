@@ -5,7 +5,9 @@ import 'package:eleventa/modulos/common/app/interface/dispositivo.dart';
 import 'package:eleventa/modulos/common/app/interface/logger.dart';
 import 'package:eleventa/modulos/common/app/interface/red.dart';
 import 'package:eleventa/modulos/common/app/interface/sync.dart';
-import 'package:eleventa/modulos/common/app/interface/telemetria.dart';
+import 'package:eleventa/modulos/telemetria/infra/repositorio_telemetria.dart';
+import 'package:eleventa/modulos/telemetria/interface/repositorio_telemetria.dart';
+import 'package:eleventa/modulos/telemetria/interface/telemetria.dart';
 import 'package:eleventa/modulos/common/infra/logger.dart';
 import 'package:eleventa/modulos/common/infra/adaptador_sqlite.dart';
 import 'package:eleventa/modulos/notificaciones/infra/repositorio_notificaciones.dart';
@@ -19,7 +21,7 @@ import 'package:eleventa/modulos/ventas/app/interface/repositorio_ventas.dart';
 import 'package:eleventa/modulos/ventas/infra/repositorio_ventas.dart';
 import 'package:eleventa/modulos/sync/sync.dart';
 import 'package:eleventa/modulos/sync/sync_config.dart';
-import 'package:eleventa/modulos/common/infra/adaptador_telemetria.dart';
+import 'package:eleventa/modulos/telemetria/infra/adaptador_telemetria.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -113,6 +115,14 @@ class TestsLoader {
       () => RepositorioNotificaciones(
         syncAdapter: Dependencias.infra.sync(),
         db: Dependencias.infra.database(),
+      ),
+    );
+
+    Dependencias.registrar(
+      (IRepositorioTelemetria).toString(),
+      () => RepositorioTelemetria(
+        Dependencias.infra.sync(),
+        Dependencias.infra.database(),
       ),
     );
   }

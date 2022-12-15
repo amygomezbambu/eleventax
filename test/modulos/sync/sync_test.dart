@@ -342,9 +342,10 @@ void main() async {
 
     //TODO: probar timeouts
 
-    //TODO: crear algoritmo de resolucion/deteccion automatica de productos repetidos
     test(
         'Debe aplicar el metodo de resolución automatico en caso de uniques repetidos',
-        () async {});
+        () async {
+      //TODO: crear algoritmo de resolucion/deteccion automatica de productos repetidos
+    });
   });
 }

@@ -74,6 +74,7 @@ class SyncConfig {
     _validateDeviceId(deviceId);
     _validateGruopId(groupId);
     _validatePullInterval(pullInterval);
+    _validateQueueInterval(queueInterval);
 
     _addChangesEndpoint = addChangesEndpoint;
     _getChangesEndpoint = getChangesEndpoint;
@@ -81,9 +82,6 @@ class SyncConfig {
 
     _syncMethod = syncMethod;
     _sendChangesInmediatly = sendChangesInmediatly;
-
-    //TODO: agregar setter al igual que el pullInterval
-    _queueInterval = queueInterval;
   }
 
   void registerUniqueRule({
@@ -97,13 +95,23 @@ class SyncConfig {
   }
 
   _validatePullInterval(int value) {
-    if (value < 1000) {
+    if (value < 3000) {
       throw SyncEx(
           'El intervalo es demasiado pequeño, el valor minimo es de 3 segundos',
           '');
     }
 
     _pullInterval = value;
+  }
+
+  _validateQueueInterval(int value) {
+    if (value < 10000) {
+      throw SyncEx(
+          'El intervalo es demasiado pequeño, el valor minimo es de 10 segundos',
+          '');
+    }
+
+    _queueInterval = value;
   }
 
   _validateDeviceId(String value) {

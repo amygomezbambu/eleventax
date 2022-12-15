@@ -3,7 +3,8 @@ import 'package:eleventa/modulos/common/app/interface/dispositivo.dart';
 import 'package:eleventa/modulos/common/app/interface/red.dart';
 import 'package:eleventa/modulos/common/app/interface/sync.dart';
 import 'package:eleventa/modulos/common/app/interface/logger.dart';
-import 'package:eleventa/modulos/common/app/interface/telemetria.dart';
+import 'package:eleventa/modulos/telemetria/interface/repositorio_telemetria.dart';
+import 'package:eleventa/modulos/telemetria/interface/telemetria.dart';
 import 'package:eleventa/modulos/notificaciones/interfaces/repositorio_notificaciones.dart';
 import 'package:eleventa/modulos/productos/interfaces/repositorio_consulta_productos.dart';
 import 'package:eleventa/modulos/productos/interfaces/repositorio_productos.dart';
@@ -26,6 +27,18 @@ class _RegistroDeDependencias {
   }
 }
 
+class DependenciasDeTelemetria extends _RegistroDeDependencias {
+  DependenciasDeTelemetria(Map<String, Object Function()> deps) : super(deps);
+
+  IAdaptadorDeTelemetria adaptador() {
+    return obtenerDependencia<IAdaptadorDeTelemetria>();
+  }
+
+  IRepositorioTelemetria repositorio() {
+    return obtenerDependencia<IRepositorioTelemetria>();
+  }
+}
+
 class DependenciasDeInfraestructura extends _RegistroDeDependencias {
   DependenciasDeInfraestructura(Map<String, Object Function()> deps)
       : super(deps);
@@ -40,10 +53,6 @@ class DependenciasDeInfraestructura extends _RegistroDeDependencias {
 
   ISync sync() {
     return obtenerDependencia<ISync>();
-  }
-
-  IAdaptadorDeTelemetria telemetria() {
-    return obtenerDependencia<IAdaptadorDeTelemetria>();
   }
 
   IAdaptadorDeDispositivo dispositivo() {
@@ -95,6 +104,9 @@ class Dependencias {
 
   static final DependenciasDeNotificaciones notificaciones =
       DependenciasDeNotificaciones(_deps);
+
+  static final DependenciasDeTelemetria telemetria =
+      DependenciasDeTelemetria(_deps);
 
   static registrar(String interface, Object Function() builder) {
     _deps.putIfAbsent(interface, () => builder);

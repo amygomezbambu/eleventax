@@ -19,7 +19,6 @@ class ProductoMapper {
   //   return dto;
   // }
 
-  //TODO: Reflection o instrospeccion
   //TODO: Solo aceptar tipos primitivos y Moneda
   static Map<String, Object?> domainAMap(Producto producto) {
     return <String, Object?>{

@@ -14,7 +14,6 @@ class RepositorioNotificaciones extends Repositorio
   }) : super(syncAdapter, db);
 
   Future<void> actualizar(Entidad entity) {
-    // TODO: implement actualizar
     throw UnimplementedError();
   }
 
@@ -33,19 +32,16 @@ class RepositorioNotificaciones extends Repositorio
   }
 
   Future<Notificacion?> obtener(UID uid) {
-    // TODO: implement obtener
     throw UnimplementedError();
   }
 
   @override
   Future<void> eliminar(UID id) {
-    // TODO: implement eliminar
     throw UnimplementedError();
   }
 
   @override
   Future<void> modificar(Notificacion entity) {
-    // TODO: implement modificar
     throw UnimplementedError();
   }
 }

@@ -124,8 +124,6 @@ class SyncServer implements IServidorSync {
         body: payload,
       );
 
-      //TODO: sync no debe depender de los errores de eleventa o decidir si vamos a
-      //acoplar
       if (response.statusCode != 200) {
         throw InfraEx(
           message: 'Error en el envio de cambios a nube',

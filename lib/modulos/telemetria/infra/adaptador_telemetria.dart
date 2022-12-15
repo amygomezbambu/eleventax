@@ -1,5 +1,6 @@
 import 'package:eleventa/modulos/common/app/interface/logger.dart';
-import 'package:eleventa/modulos/common/app/interface/telemetria.dart';
+import 'package:eleventa/modulos/telemetria/entidad/evento_telemetria.dart';
+import 'package:eleventa/modulos/telemetria/interface/telemetria.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:mixpanel_analytics/mixpanel_analytics.dart';
 import 'package:eleventa/dependencias.dart';
@@ -21,31 +22,29 @@ class AdaptadorDeTelemetria implements IAdaptadorDeTelemetria {
   /* #endregion */
 
   @override
-  Future<void> nuevoEvento({
-    required EventoDeTelemetria evento,
-    required Map<String, dynamic> propiedades,
-    String? ip,
-  }) async {
+  Future<void> nuevoEvento(EventoTelemetria evento) async {
     var success = await _mixpanel!.track(
-      event: evento.name,
-      properties: propiedades,
-      ip: ip,
+      event: evento.tipo!.name,
+      properties: evento.propiedades,
+      ip: evento.ip,
     );
 
     if (!success) {
       throw EleventaEx(
-        message: 'No se registro el evento ${evento.name}',
+        message: 'No se registro el evento ${evento.tipo!.name}',
       );
     }
   }
 
   @override
-  Future<void> actualizarPerfil(
-      {required Map<String, dynamic> propiedades, String? ip}) async {
+  Future<void> actualizarPerfil(EventoTelemetria evento) async {
     /// Establece la propiedad del perfil del usuario
     /// Ref: https://developer.mixpanel.com/reference/profile-set
     var success = await _mixpanel!.engage(
-        operation: MixpanelUpdateOperations.$set, value: propiedades, ip: ip);
+      operation: MixpanelUpdateOperations.$set,
+      value: evento.propiedades,
+      ip: evento.ip,
+    );
     if (!success) {
       throw EleventaEx(message: 'No se creó o actualizó el perfil');
     }
