@@ -1,11 +1,10 @@
 import 'dart:convert';
 
-import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/sync/entity/change.dart';
 import 'package:eleventa/modulos/sync/config.dart';
 import 'package:eleventa/modulos/sync/error.dart';
 import 'package:eleventa/modulos/sync/interfaces/sync_server.dart';
-import 'package:http/http.dart' show Client;
+import 'package:http/http.dart' show Client, Response;
 
 class SyncServer implements IServidorSync {
   final Client _client;
@@ -24,26 +23,34 @@ class SyncServer implements IServidorSync {
         '{ "groupId": "$groupId", "merkle": "$merkle", "hash": "$hash"}';
 
     try {
-      var response = await _client.post(
+      var response = await _client
+          .post(
         Uri.parse(syncConfig!.getChangesEndpoint),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: json,
+      )
+          .timeout(
+        syncConfig!.timeout,
+        onTimeout: () async {
+          return Response(
+            'Timeout al intentar obtener cambios del server de sincronización.',
+            408,
+          );
+        },
       );
 
       if (response.statusCode != 200) {
-        throw InfraEx(
-          message: 'Error en el envio de cambios a nube',
-          innerException: Exception(response.body),
-          stackTrace: StackTrace.current,
-          input: json,
+        throw SyncEx(
+          'Error en el envio de cambios a nube\n ${response.body} \n $json',
+          StackTrace.current.toString(),
         );
       } else {
         changes = jsonPayloadToChanges(response.body);
       }
     } catch (e, stack) {
-      if (e is InfraEx) {
+      if (e is SyncEx) {
         rethrow;
       } else {
         throw SyncEx(e.toString(), stack.toString());
@@ -58,26 +65,32 @@ class SyncServer implements IServidorSync {
   @override
   Future<void> enviarCambios(List<Change> changes) async {
     try {
-      var response = await _client.post(
+      var response = await _client
+          .post(
         Uri.parse(syncConfig!.addChangesEndpoint),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: changesToJsonPayload(changes),
+      )
+          .timeout(
+        syncConfig!.timeout,
+        onTimeout: () async {
+          return Response(
+            'Timeout al intentar enviar los cambios al server de sincronización.',
+            408,
+          );
+        },
       );
 
-      //TODO: sync no debe depender de los errores de eleventa o decidir si vamos a
-      //acoplar
       if (response.statusCode != 200) {
-        throw InfraEx(
-          message: 'Error en el envio de cambios a nube',
-          innerException: Exception(response.body),
-          stackTrace: StackTrace.current,
-          input: changesToJsonPayload(changes),
+        throw SyncEx(
+          'Error en el envio de cambios a nube\n ${response.body} \n ${changesToJsonPayload(changes)}',
+          StackTrace.current.toString(),
         );
       }
     } catch (e, stack) {
-      if (e is InfraEx) {
+      if (e is SyncEx) {
         rethrow;
       } else {
         throw SyncEx(e.toString(), stack.toString());
@@ -125,15 +138,13 @@ class SyncServer implements IServidorSync {
       );
 
       if (response.statusCode != 200) {
-        throw InfraEx(
-          message: 'Error en el envio de cambios a nube',
-          innerException: Exception(response.body),
-          stackTrace: StackTrace.current,
-          input: payload,
+        throw SyncEx(
+          'Error en el envio de cambios a nube\n ${response.body} \n $json',
+          StackTrace.current.toString(),
         );
       }
     } catch (e, stack) {
-      if (e is InfraEx) {
+      if (e is SyncEx) {
         rethrow;
       } else {
         throw SyncEx(e.toString(), stack.toString());

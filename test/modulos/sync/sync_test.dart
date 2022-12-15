@@ -5,6 +5,7 @@ import 'package:eleventa/globals.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/sync/adapter/sync_repository.dart';
 import 'package:eleventa/modulos/sync/adapter/sync_server.dart';
+import 'package:eleventa/modulos/sync/error.dart';
 import 'package:eleventa/modulos/sync/sync_container.dart';
 import 'package:eleventa/modulos/sync/usecase/obtain_remote_changes.dart';
 import 'package:eleventa/modulos/sync/usecase/resolve_conflict.dart';
@@ -30,10 +31,13 @@ void main() async {
       groupId: 'CH003',
       deviceId: 'caja1',
       pullInterval: 5000,
+      queueInterval: 10000,
       addChangesEndpoint: 'addEndpointExample.com',
       getChangesEndpoint: 'getEndpointExample.com',
       deleteChangesEndpoint: 'deleteEndpointExample.com',
       sendChangesInmediatly: true,
+      timeout: const Duration(seconds: 3),
+      onError: (e, s) => throw e,
     );
 
     config.registerUniqueRule(
@@ -114,7 +118,6 @@ void main() async {
 
     test('Debe obtener los cambios mas recientes del servidor remoto',
         () async {
-      //var response = Response('', 204);
       var productoUID = UID();
       var codigo = '25454454';
 
@@ -173,9 +176,10 @@ void main() async {
     /// Si no se reciben correctamente (no hay respuesta 200) entonces deben mantenerse
     /// en un Queue local para reintentar posteriormente
     ///
-    /// Si se reciben correctamente (respuesta 200) se remueven del Queue
+    /// Al reintentar, si los cambios se reciben correctamente (respuesta 200)
+    /// se remueven del Queue
     test(
-        'Debe almacenar los mensajes que no se pudieron sincronizar en un queue local',
+        'Debe manejar un queue local con los cambios que no se pudieron sincronzar',
         () async {
       var productoUID = UID();
       var codigo = 'abc12342';
@@ -191,12 +195,16 @@ void main() async {
         servidorSync: servidor,
       );
 
-      await syncEngine.synchronize(
-        dataset: 'productos',
-        rowID: productoUID.toString(),
-        fields: {'codigo': codigo, 'nombre': nombre},
-        awaitServerResponse: true,
-      );
+      try {
+        await syncEngine.synchronize(
+          dataset: 'productos',
+          rowID: productoUID.toString(),
+          fields: {'codigo': codigo, 'nombre': nombre},
+          awaitServerResponse: true,
+        );
+      } catch (e) {
+        //Nos comemos el error para que no pare las pruebas
+      }
 
       var queueEntries = await syncRepo.obtenerQueue();
       var cambios = <Change>[];
@@ -205,8 +213,10 @@ void main() async {
         cambios = servidor.jsonPayloadToChanges(entry.payload);
       }
 
+      //Los cambios deben estar en el queue
       expect(cambios.length, 2);
 
+      //Deben ser los mismos cambios que se intentaron enviar
       expect(
         cambios.any((cambio) =>
             cambio.column == 'codigo' && (cambio.value as String) == codigo),
@@ -218,9 +228,31 @@ void main() async {
             cambio.column == 'nombre' && (cambio.value as String) == nombre),
         true,
       );
-    });
 
-    //TODO: probar que el queue se vacie al enviar los mensajes
+      //ahora probamos que el queue se limpie
+      client = MockClient(
+        (request) async {
+          switch (request.method.toUpperCase()) {
+            case 'POST':
+              return Response('', 200);
+            default:
+              return Response('', 500);
+          }
+        },
+      );
+
+      syncEngine = Sync(
+        config: config,
+        servidorSync: SyncServer(client: client),
+      );
+
+      await syncEngine.initQueueProcessing();
+
+      queueEntries = await syncRepo.obtenerQueue();
+
+      //debe estar vacio
+      expect(queueEntries.length, 0);
+    });
 
     test('Debe resolver un conflicto manualmente segun selección del usuario',
         () async {
@@ -340,12 +372,44 @@ void main() async {
       expect(remoto['borrado'] as int, 1);
     });
 
-    //TODO: probar timeouts
-
-    test(
-        'Debe aplicar el metodo de resolución automatico en caso de uniques repetidos',
+    test('Debe lanzar un error de timeout si se supera el tiempo configurado',
         () async {
-      //TODO: crear algoritmo de resolucion/deteccion automatica de productos repetidos
+      var client = MockClient(
+        (request) async {
+          switch (request.method.toUpperCase()) {
+            case 'POST':
+              //esta linea probocara que el cliente no responda durante timeout + 1 segundos
+              //es decir forzará el timout
+              await Future.delayed(config.timeout + const Duration(seconds: 1));
+              return Response('', 200);
+            default:
+              return Response('', 500);
+          }
+        },
+      );
+
+      syncEngine = Sync(
+        config: config,
+        servidorSync: SyncServer(client: client),
+      );
+
+      SyncEx? ex;
+
+      try {
+        await syncEngine.synchronize(
+          dataset: 'productos',
+          rowID: UID().toString(),
+          fields: {'codigo': '123', 'nombre': 'coca cola'},
+          awaitServerResponse: true,
+        );
+      } catch (e) {
+        if (e is SyncEx) {
+          ex = e;
+        }
+      }
+
+      expect(ex, isNotNull);
+      expect(ex!.message.toLowerCase().contains('timeout'), true);
     });
   });
 }

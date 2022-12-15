@@ -4,7 +4,8 @@ import 'package:eleventa/modulos/sync/interfaces/sync_repository.dart';
 import 'package:eleventa/modulos/sync/interfaces/sync_server.dart';
 
 class ProcessQueueRequest {
-  Duration retryInterval = const Duration(seconds: 10);
+  ///El queue se leerá y procesará periodicamente dependiendo de este valor
+  Duration intervalo = const Duration(seconds: 10);
 }
 
 class ProcessQueue {
@@ -21,15 +22,16 @@ class ProcessQueue {
   final req = ProcessQueueRequest();
 
   Future<void> exec() async {
-    await _iniciarProcesoDeReintento();
+    await _reintentarEnvio();
+    await _iniciarReintentoPeriodico();
   }
 
   void detener() {
     _timer?.cancel();
   }
 
-  Future<void> _iniciarProcesoDeReintento() async {
-    _timer = Timer.periodic(req.retryInterval, (timer) async {
+  Future<void> _iniciarReintentoPeriodico() async {
+    _timer = Timer.periodic(req.intervalo, (timer) async {
       await _reintentarEnvio();
     });
   }

@@ -12,10 +12,14 @@ class SyncConfig {
   var _dbVersionField = '';
   var _groupId = '';
   var _deviceId = '';
-  var _pullInterval = 30000;
-  var _queueInterval = 30000;
+
   var _syncMethod = SyncMethod.pull;
   var _sendChangesInmediatly = true;
+
+  late int _pullInterval;
+  late int _queueInterval;
+  late Duration _timeout;
+
   final List<SyncUniqueRule> _uniqueRules = [];
 
   void Function(Object, StackTrace)? _onError;
@@ -26,6 +30,7 @@ class SyncConfig {
   String get deviceId => _deviceId;
   int get pullInterval => _pullInterval;
   int get queueInterval => _queueInterval;
+  Duration get timeout => _timeout;
   SyncMethod get syncMethod => _syncMethod;
   String get addChangesEndpoint => _addChangesEndpoint;
   String get getChangesEndpoint => _getChangesEndpoint;
@@ -53,6 +58,12 @@ class SyncConfig {
   ///
   /// [pullInterval] es el tiempo en milisegundos entre cada consulta al servidor
   /// por default 30000 (30 segundos)
+  ///
+  /// [queueInterval] es el tiempo en milisegundos entre cada procesamiento del queue,
+  /// es decir cada vez que se lee el queue y se procesan sus entradas.
+  ///
+  /// [timeout] es el tiempo que debe esperar el servidor antes de lanzar un error por
+  /// timeout
   SyncConfig({
     required String dbVersionTable,
     required String dbVersionField,
@@ -64,6 +75,7 @@ class SyncConfig {
     void Function(Object, StackTrace)? onError,
     int pullInterval = 30000,
     int queueInterval = 30000,
+    Duration timeout = const Duration(seconds: 10),
     SyncMethod syncMethod = SyncMethod.pull,
     bool sendChangesInmediatly = true,
   }) {
@@ -75,6 +87,7 @@ class SyncConfig {
     _validateGruopId(groupId);
     _validatePullInterval(pullInterval);
     _validateQueueInterval(queueInterval);
+    _validateTimeout(timeout);
 
     _addChangesEndpoint = addChangesEndpoint;
     _getChangesEndpoint = getChangesEndpoint;
@@ -107,11 +120,23 @@ class SyncConfig {
   _validateQueueInterval(int value) {
     if (value < 10000) {
       throw SyncEx(
-          'El intervalo es demasiado pequeño, el valor minimo es de 10 segundos',
-          '');
+        'El intervalo es demasiado pequeño, el valor minimo es de 10 segundos',
+        '',
+      );
     }
 
     _queueInterval = value;
+  }
+
+  _validateTimeout(Duration value) {
+    if (value > const Duration(seconds: 30)) {
+      throw SyncEx(
+        'El timeout es demasiado grande, el valor maximo es de 30 segundos',
+        '',
+      );
+    }
+
+    _timeout = value;
   }
 
   _validateDeviceId(String value) {

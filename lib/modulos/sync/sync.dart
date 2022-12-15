@@ -71,9 +71,14 @@ class Sync implements ISync {
 
   /// Sincroniza los cambios.
   ///
-  /// Para cada columna en [columns] y su respectivo valor en [values]
+  /// Para cada campo en [fields]
   /// aplica los cambios a la base de datos local en la tabla [dataset] y
   /// el row [rowID] y posteriormente los envia al servidor remoto de sincronización
+  ///
+  /// Si se desea que el proceso espere hasta que reciba respuesta del servidor se
+  /// debe establecer [awaitServerResponse] a true, el comportamiento default es no esperar
+  /// por lo que este proceso retornará inmediatamente despues de aplicar los cambios en
+  /// la base de datos y el envio se quedara en background.
   @override
   Future<void> synchronize({
     required String dataset,
@@ -81,7 +86,6 @@ class Sync implements ISync {
     required Map<String, Object?> fields,
     bool awaitServerResponse = false,
   }) async {
-    //TODO: Guardas
     if (fields.isEmpty) {
       return;
     }
@@ -129,8 +133,6 @@ class Sync implements ISync {
     _obtainRemoteChanges.stop();
   }
 
-  //TODO: Como o que debemos hacer si hay un error de sync , aparte de poner los cambios
-  //en el queue de sync
   Future<void> _sendChangesToRemoteServer(List<Change> changes) async {
     if (syncConfig!.sendChangesInmediatly) {
       try {
@@ -180,7 +182,7 @@ class Sync implements ISync {
 
   @override
   Future<void> initQueueProcessing() async {
-    _processQueue.req.retryInterval =
+    _processQueue.req.intervalo =
         Duration(milliseconds: syncConfig!.queueInterval);
 
     await _processQueue.exec();
