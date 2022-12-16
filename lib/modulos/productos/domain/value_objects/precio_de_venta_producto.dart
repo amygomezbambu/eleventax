@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
 
@@ -16,4 +17,7 @@ class PrecioDeVentaProducto {
       throw ValidationEx(mensaje: 'El precio de venta debe ser mayor a cero');
     }
   }
+
+  @override
+  String toString() => 'PrecioDeVentaProducto(precio: ${_precio.toString()})';
 }

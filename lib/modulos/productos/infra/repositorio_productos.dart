@@ -213,8 +213,7 @@ class RepositorioProductos extends Repositorio
       throw EleventaEx(
         message:
             'No existe la categoria en la base de datos, codigo: ${categoriaModificada.uid.toString()}',
-        input: categoriaModificada
-            .toString(), //TODO: definir toString para todas las entidades
+        input: categoriaModificada.toString(),
       );
     }
   }

@@ -1,24 +1,22 @@
-import 'package:eleventa/modulos/common/exception/excepciones.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:meta/meta.dart';
+
+import 'package:eleventa/modulos/common/exception/excepciones.dart';
 
 ///Campo nombre de una entidad.
 ///
 class NombreValueObject {
   @protected
-  late String valor;
+  late String value_;
+
   late int _longitudMaxima;
 
-  String get value => valor;
+  String get value => value_;
 
   NombreValueObject({required String nombre, int longitudMaxima = 100}) {
-    valor = _sanitizar(nombre);
+    value_ = _sanitizar(nombre);
     _longitudMaxima = longitudMaxima;
-    _validar(valor);
-  }
-
-  @protected
-  void lanzarExcepcion({required String mensaje}) {
-    throw DomainEx(mensaje);
+    _validar(value_);
   }
 
   @override
@@ -30,7 +28,6 @@ class NombreValueObject {
   int get hashCode => value.hashCode ^ value.hashCode;
 
   String _sanitizar(String nombre) {
-    //nombre = Utils.string.removerExcesoDeEspacios(nombre);
     return nombre.trim();
   }
 
@@ -44,4 +41,8 @@ class NombreValueObject {
           'El valor no puede tener más de $_longitudMaxima caracteres');
     }
   }
+
+  @override
+  String toString() =>
+      'NombreValueObject(value: $value_, longitudMaxima: $_longitudMaxima)';
 }

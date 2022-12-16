@@ -46,5 +46,5 @@ class Categoria extends Entidad {
   }
 
   @override
-  String toString() => 'Categoria(_nombre: $_nombre)';
+  String toString() => 'Categoria(nombre: ${_nombre.value})';
 }

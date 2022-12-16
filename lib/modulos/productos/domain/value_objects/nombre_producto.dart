@@ -3,7 +3,7 @@ import 'package:eleventa/modulos/common/utils/utils.dart';
 
 class NombreProducto extends NombreValueObject {
   NombreProducto(String nombre) : super(nombre: nombre, longitudMaxima: 130) {
-    valor = _sanitizar(nombre);
+    value_ = _sanitizar(nombre);
   }
 
   String _sanitizar(String nombre) {

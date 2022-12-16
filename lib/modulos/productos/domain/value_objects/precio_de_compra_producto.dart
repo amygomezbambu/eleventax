@@ -1,9 +1,9 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/productos/modulo_productos.dart';
 
 class PrecioDeCompraProducto {
-  final _cero = 0;
   late Moneda _precio;
 
   Moneda get value => _precio;
@@ -14,15 +14,18 @@ class PrecioDeCompraProducto {
   }
 
   void _validar(Moneda value) {
-    if (value.montoInterno < _cero) {
+    if (value.montoInterno < 0) {
       throw ValidationEx(
           mensaje: 'El precio de compra del producto no puede ser negativo');
     }
 
     if (!ModuloProductos.config.compartida.permitirPrecioCompraCero &&
-        value.montoInterno == _cero) {
+        value.montoInterno == 0) {
       throw ValidationEx(
           mensaje: 'El precio de compra del producto no puede ser cero');
     }
   }
+
+  @override
+  String toString() => 'PrecioDeCompraProducto(precio: ${_precio.toString()})';
 }

@@ -1,6 +1,6 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:eleventa/modulos/common/domain/entidad.dart';
 import 'package:eleventa/modulos/common/domain/moneda.dart';
-import 'package:eleventa/modulos/common/domain/respuesta_de_validacion.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/productos/domain/categoria.dart';
 import 'package:eleventa/modulos/productos/domain/impuesto.dart';
@@ -88,19 +88,6 @@ class Producto extends Entidad {
     _preguntarPrecio = preguntarPrecio;
   }
 
-  static RespuestaValidacion validarCategoria(String value) {
-    var respuesta = RespuestaValidacion(esValido: true);
-
-    if (value.isEmpty) {
-      return RespuestaValidacion(
-        esValido: false,
-        mensaje: 'La categoria no puede estar vacia',
-      );
-    }
-
-    return respuesta;
-  }
-
   Producto copyWith({
     UID? uid,
     NombreProducto? nombre,
@@ -134,5 +121,16 @@ class Producto extends Entidad {
     result.eliminado_ = eliminado ?? eliminado_;
 
     return result;
+  }
+
+  @override
+  String toString() {
+    return 'Producto(nombre: ${_nombre.value}, '
+        'precioDeVenta: ${_precioDeVenta.toString()}, '
+        'precioDeCompra: ${_precioDeCompra.toString()}, '
+        'categoria: ${_categoria?.nombre}, '
+        'unidadDeMedida: ${_unidadDeMedida.nombre}, '
+        'seVendePor: ${_seVendePor.name}, '
+        'codigo: ${_codigo.value})';
   }
 }

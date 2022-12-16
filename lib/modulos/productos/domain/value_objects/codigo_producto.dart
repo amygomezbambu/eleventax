@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/utils/utils.dart';
 
@@ -39,4 +40,7 @@ class CodigoProducto {
           mensaje: 'El codigo $_codigoReservado no es un código valido');
     }
   }
+
+  @override
+  String toString() => 'CodigoProducto(codigo: $_codigo)';
 }

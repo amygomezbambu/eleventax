@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:eleventa/modulos/common/domain/entidad.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
 
@@ -22,4 +23,7 @@ class Impuesto extends Entidad {
   })  : _nombre = nombre,
         _porcentaje = porcentaje,
         super.crear();
+
+  @override
+  String toString() => 'Impuesto(nombre: $_nombre, porcentaje: $_porcentaje)';
 }
