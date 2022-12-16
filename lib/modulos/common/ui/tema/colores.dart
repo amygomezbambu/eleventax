@@ -12,12 +12,11 @@ class Colores {
   static const campoIcono = ColoresBase.neutral400;
   static const campoTextoHint = Colors.black;
   static const campoTextoValor = Colors.black;
-  static const campoBordeEnfocado = ColoresBase.primario500;
+  static const campoBordeEnfocado = ColoresBase.primario600;
 }
 
 /// Paleta de colores estandard usado en la aplicación
 /// de acuerdo al Design System de eleventa
-/// Ref:
 class ColoresBase {
   static const Color primario50 = Color(0xfff2f6fc);
   static const Color primario100 = Color(0xffe1ebf8);

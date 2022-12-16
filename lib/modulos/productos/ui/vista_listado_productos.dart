@@ -26,7 +26,9 @@ class VistaListadoProductos extends StatefulWidget {
 }
 
 class VistaListadoProductosState extends State<VistaListadoProductos> {
+  final esDesktop = LayoutValue(xs: false, md: true);
   var editando = false;
+
   Producto? producto;
 
   void _mandarModificarProducto(Producto value) {
@@ -66,13 +68,24 @@ class VistaListadoProductosState extends State<VistaListadoProductos> {
               flex: 4,
               child: editando
                   ? ModificarProducto(productoId: producto!.uid.toString())
-                  : const NuevoProducto(),
+                  : NuevoProducto(),
             ),
           ],
         ),
       ),
       xs: (BuildContext context) => VistaPrincipalScaffold(
           titulo: 'Productos',
+          actions: [
+            IconButton(
+              key: VistaListadoProductos.keyBotonCobrar,
+              icon: const Icon(Iconos.add, color: Colors.white, size: Sizes.p6),
+              tooltip: 'Crear Producto',
+              onPressed: () async {
+                context.go('/productos/nuevo');
+                GoRouter.of(context).refresh();
+              },
+            )
+          ],
           child: _ListadoProductos(
               onTap: _mandarModificarProducto,
               onNuevoProducto: _mostrarNuevoProducto)),
@@ -100,21 +113,26 @@ class _ListadoProductos extends ConsumerWidget {
     return Column(
       children: [
         SizedBox(
-          height: Sizes.p32,
+          height: esDesktop.resolve(context) ? Sizes.p28 : Sizes.p16,
           child: DismissKeyboard(
             child: Card(
-              color: ColoresBase.neutral100,
+              color: ColoresBase.neutral50,
               elevation: 1,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(Sizes.p2_0),
+                borderRadius: BorderRadius.circular(Sizes.p0),
               ),
               child: Padding(
-                padding: const EdgeInsets.all(Sizes.p3),
+                padding: const EdgeInsets.only(
+                    top: Sizes.p2_0,
+                    bottom: 0,
+                    left: Sizes.p2,
+                    right: Sizes.p2),
                 child: Column(
                   children: [
                     ExTextField(
                       controller: controllerBusqueda,
                       icon: Iconos.search,
+                      autofocus: false,
                       hintText: 'Buscar productos',
                       aplicarResponsividad: false,
                       onFieldSubmitted: (value) async {
@@ -154,23 +172,25 @@ class _ListadoProductos extends ConsumerWidget {
                         controllerBusqueda.clear();
                       },
                     ),
-                    ExBotonPrimario(
-                      key: VistaListadoProductos.keyBotonCobrar,
-                      icon: Icons.create_outlined,
-                      label: 'Crear producto',
-                      height: Sizes.p10,
-                      onTap: () async {
-                        debugPrint(
-                            'Ir a crear producto, desktop: ${esDesktop.resolve(context)}');
+                    (context.breakpoint >= LayoutBreakpoint.md)
+                        ? ExBotonPrimario(
+                            key: VistaListadoProductos.keyBotonCobrar,
+                            icon: Icons.create_outlined,
+                            label: 'Crear producto',
+                            height: Sizes.p10,
+                            onTap: () async {
+                              debugPrint(
+                                  'Ir a crear producto, desktop: ${esDesktop.resolve(context)}');
 
-                        if (!esDesktop.resolve(context)) {
-                          context.go('/productos/nuevo');
-                          GoRouter.of(context).refresh();
-                        } else {
-                          onNuevoProducto();
-                        }
-                      },
-                    )
+                              if (!esDesktop.resolve(context)) {
+                                context.go('/productos/nuevo');
+                                GoRouter.of(context).refresh();
+                              } else {
+                                onNuevoProducto();
+                              }
+                            },
+                          )
+                        : const SizedBox()
                   ],
                 ),
               ),

@@ -49,7 +49,7 @@ class BarraNavegacionLateral extends StatelessWidget {
       labelType: NavigationRailLabelType.none,
       minWidth: Sizes.p16,
       backgroundColor: ColoresBase.primario900,
-      indicatorColor: ColoresBase.primario800,
+      indicatorColor: ColoresBase.neutral600,
       useIndicator: true,
       leading: Padding(
         padding: const EdgeInsets.only(top: Sizes.p8),
@@ -72,7 +72,7 @@ class BarraNavegacionLateral extends StatelessWidget {
       unselectedIconTheme:
           const IconThemeData(color: ColoresBase.neutral500, size: Sizes.p5),
       selectedIconTheme:
-          const IconThemeData(color: ColoresBase.primario50, size: Sizes.p5),
+          const IconThemeData(color: ColoresBase.white, size: Sizes.p5),
       destinations: [
         ...construirNavegacion(context),
       ],

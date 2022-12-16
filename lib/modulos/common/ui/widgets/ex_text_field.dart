@@ -18,6 +18,7 @@ class ExTextField extends StatelessWidget {
   final GlobalKey? fieldKey;
   final InputType inputType;
   final bool aplicarResponsividad;
+  final bool autofocus;
 
   /// Evento lanzado cuando el widget pierde el foco,
   /// usualmente usado para validaciones
@@ -42,6 +43,7 @@ class ExTextField extends StatelessWidget {
     this.inputType = InputType.texto,
     this.onFieldSubmitted,
     this.aplicarResponsividad = true,
+    this.autofocus = false,
   }) : super(key: key);
 
   Widget _textField() {
@@ -59,6 +61,7 @@ class ExTextField extends StatelessWidget {
       fieldKey: fieldKey,
       inputType: inputType,
       aplicarResponsividad: aplicarResponsividad,
+      autofocus: autofocus,
     );
   }
 
@@ -148,6 +151,7 @@ class _ExTextField extends StatefulWidget {
   final String hintText;
   final InputType inputType;
   final bool aplicarResponsividad;
+  final bool autofocus;
 
   const _ExTextField({
     Key? key,
@@ -164,6 +168,7 @@ class _ExTextField extends StatefulWidget {
     required this.inputType,
     required this.aplicarResponsividad,
     this.onFieldSubmitted,
+    required this.autofocus,
   }) : super(key: key);
 
   @override
@@ -250,7 +255,7 @@ class _ExTextFieldState extends State<_ExTextField> {
                   ),
                 ],
           textInputAction: TextInputAction.next,
-          autofocus: true,
+          autofocus: widget.autofocus,
           autovalidateMode: AutovalidateMode.disabled,
           style: TextStyle(
               fontSize: widget.tamanoFuente,

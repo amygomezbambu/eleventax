@@ -41,12 +41,11 @@ class FormaProducto extends StatefulWidget {
   static const anchoCamposDefault = Sizes.p72;
 
   final String? productoEnModificacionId;
+  final String titulo;
 
-  const FormaProducto(
-    BuildContext context, {
-    Key? key,
-    this.productoEnModificacionId,
-  }) : super(key: key);
+  const FormaProducto(BuildContext context,
+      {Key? key, this.productoEnModificacionId, required this.titulo})
+      : super(key: key);
 
   @override
   State<FormaProducto> createState() => _FormaProductoState();
@@ -327,13 +326,16 @@ class _FormaProductoState extends State<FormaProducto> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  esDesktop.resolve(context)
+                                      ? TituloForma(widget: widget)
+                                      : const SizedBox(),
                                   ExTextField(
                                       key: FormaProducto.txtCodigo,
                                       fieldKey: keyCodigo,
                                       hintText: 'Código',
                                       controller: _controllerCodigo,
                                       icon: Iconos.barcode_scan,
-
+                                      autofocus: true,
                                       // icon: state.existeCodigo
                                       //     ? Icons.error
                                       //     : Icons.document_scanner,
@@ -649,9 +651,7 @@ class _FormaProductoState extends State<FormaProducto> {
                                       ? Sizes.p40
                                       : 0,
                                 ),
-                                SizedBox(
-                                  width: Sizes.p40,
-                                  height: Sizes.p12,
+                                Expanded(
                                   child: Consumer(
                                     builder: (context, ref, child) {
                                       return ExBotonPrimario(
@@ -659,6 +659,7 @@ class _FormaProductoState extends State<FormaProducto> {
                                           label: 'Guardar',
                                           icon: Iconos.edit,
                                           tamanoFuente: TextSizes.textSm,
+                                          height: Sizes.p12,
                                           onTap: () async {
                                             if (await _guardarProducto()) {
                                               if (!mounted) return;
@@ -684,20 +685,22 @@ class _FormaProductoState extends State<FormaProducto> {
                                     },
                                   ),
                                 ),
-                                const SizedBox(
-                                  width: 5,
-                                ),
                                 SizedBox(
-                                  width: Sizes.p40,
-                                  height: Sizes.p12,
-                                  child: ExBotonSecundario(
-                                      label: 'Cancelar',
-                                      tamanoFuente: TextSizes.textSm,
-                                      icon: Iconos.delete,
-                                      onTap: () {
-                                        limpiarCampos();
-                                      }),
+                                  width: esDesktop.resolve(context) ? 5 : 0,
                                 ),
+                                esDesktop.resolve(context)
+                                    ? SizedBox(
+                                        width: Sizes.p40,
+                                        height: Sizes.p12,
+                                        child: ExBotonSecundario(
+                                            label: 'Limpiar',
+                                            tamanoFuente: TextSizes.textSm,
+                                            icon: Iconos.delete,
+                                            onTap: () {
+                                              limpiarCampos();
+                                            }),
+                                      )
+                                    : const SizedBox(),
                               ],
                             ),
                           ],
@@ -712,5 +715,29 @@ class _FormaProductoState extends State<FormaProducto> {
         },
       ),
     );
+  }
+}
+
+class TituloForma extends StatelessWidget {
+  const TituloForma({
+    Key? key,
+    required this.widget,
+  }) : super(key: key);
+
+  final FormaProducto widget;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+        padding: const EdgeInsets.only(
+            top: Sizes.p2, left: Sizes.p40, bottom: Sizes.p4),
+        child: Text(
+          widget.titulo,
+          style: const TextStyle(
+              fontSize: TextSizes.text2xl,
+              color: ColoresBase.neutral700,
+              fontWeight: FontWeight.w600),
+          textAlign: TextAlign.left,
+        ));
   }
 }

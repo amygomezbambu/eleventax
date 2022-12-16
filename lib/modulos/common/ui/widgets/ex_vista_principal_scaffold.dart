@@ -8,11 +8,12 @@ import 'package:eleventa/modulos/common/ui/widgets/ex_appbar.dart';
 /// cuando estamos en vistas responsivas mobile, en caso contrario
 /// muestra un simple titulo en texto
 class VistaPrincipalScaffold extends StatelessWidget {
+  final esDesktop = LayoutValue(xs: false, md: true);
   final String titulo;
   final Widget child;
   final List<Widget>? actions;
 
-  const VistaPrincipalScaffold({
+  VistaPrincipalScaffold({
     Key? key,
     required this.titulo,
     required this.child,
@@ -24,9 +25,12 @@ class VistaPrincipalScaffold extends StatelessWidget {
     return Scaffold(
         appBar: (context.layout.breakpoint <= LayoutBreakpoint.sm)
             ? ExAppBar(
-                title: Text(titulo,
-                    style: const TextStyle(
-                        color: Colors.white, fontSize: TextSizes.textLg)),
+                title: Padding(
+                  padding: const EdgeInsets.only(top: Sizes.p3),
+                  child: Text(titulo,
+                      style: const TextStyle(
+                          color: Colors.white, fontSize: TextSizes.textLg)),
+                ),
                 actions: actions)
             : null,
         body: child);

@@ -10,6 +10,7 @@ import 'package:eleventa/modulos/productos/ui/listado_productos_provider.dart';
 import 'package:eleventa/modulos/productos/ui/forma_producto.dart';
 
 class ModificarProducto extends StatelessWidget {
+  static const titulo = 'Modificar Producto';
   final String productoId;
 
   const ModificarProducto({
@@ -31,7 +32,7 @@ class ModificarProducto extends StatelessWidget {
   @override
   Widget build(BuildContext context, [bool mounted = true]) {
     return VistaPrincipalScaffold(
-        titulo: 'Modificar Producto',
+        titulo: ModificarProducto.titulo,
         actions: [
           Consumer(
             builder: (context, ref, child) => IconButton(
@@ -55,6 +56,8 @@ class ModificarProducto extends StatelessWidget {
             ),
           )
         ],
-        child: FormaProducto(context, productoEnModificacionId: productoId));
+        child: FormaProducto(context,
+            productoEnModificacionId: productoId,
+            titulo: ModificarProducto.titulo));
   }
 }

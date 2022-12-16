@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 /// Tamaños constantes para espaciados en la app (paddings, gaps, rounded corners etc.)
 /// basado en TailWind https://tailwindcss.com/docs/customizing-spacing
 class Sizes {
+  static const infinito = double.infinity;
   static const p0 = 0.0;
   static const p0_5 = 0.5;
   static const px = 1.0;
@@ -24,8 +25,6 @@ class Sizes {
   static const p12 = 48.0;
   static const p14 = 56.0;
   static const p16 = 64.0;
-
-  /// 64.0
   static const p20 = 80.0;
   static const p24 = 96.0;
   static const p28 = 112.0;

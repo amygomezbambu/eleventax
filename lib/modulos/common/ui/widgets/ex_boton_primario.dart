@@ -8,6 +8,7 @@ class ExBotonPrimario extends StatefulWidget {
   final VoidCallback onTap;
   final double tamanoFuente;
   final double height;
+  final double width;
 
   const ExBotonPrimario({
     required this.label,
@@ -15,6 +16,7 @@ class ExBotonPrimario extends StatefulWidget {
     required this.onTap,
     this.tamanoFuente = TextSizes.textSm,
     this.height = Sizes.p10,
+    this.width = Sizes.infinito,
     Key? key,
   }) : super(key: key);
 
@@ -44,17 +46,17 @@ class _ExBotonPrimarioState extends State<ExBotonPrimario> {
   Widget build(BuildContext context) {
     return SizedBox(
       height: widget.height,
+      width: widget.width,
       child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(Sizes.p2),
-              ),
-              backgroundColor: Colores.accionPrimaria,
-              foregroundColor: ColoresBase.primario700,
-              disabledBackgroundColor: ColoresBase.primario300,
-              elevation: 1
-              //minimumSize: Size(350, 70)
-              ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(Sizes.p2),
+            ),
+            backgroundColor: Colores.accionPrimaria,
+            foregroundColor: ColoresBase.primario700,
+            disabledBackgroundColor: ColoresBase.primario300,
+            elevation: 1,
+          ),
           // Si ya se hizo clic, des-asignamos el evento onPressed
           // para evitar doble clics y por tanto repetir una acción
           onPressed: loading ? null : _onTap,

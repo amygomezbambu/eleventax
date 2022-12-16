@@ -35,8 +35,7 @@ class Rutas {
       rutaURL: "/ventas",
       nombre: "Ventas",
       icon: Iconos.bag4,
-      pageBuilder: (context, state) =>
-          const NoTransitionPage(
+      pageBuilder: (context, state) => const NoTransitionPage(
         child: VistaVentas(
           title: 'Ventas',
         ),
@@ -56,7 +55,7 @@ class Rutas {
           rutaURL: "nuevo",
           nombre: "Nuevo",
           icon: Iconos.box,
-          builder: (context, state) => const NuevoProducto(),
+          builder: (context, state) => NuevoProducto(),
         ),
         Ruta(
           rutaURL: "modificar",
