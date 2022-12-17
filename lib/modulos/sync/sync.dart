@@ -80,7 +80,7 @@ class Sync implements ISync {
   /// por lo que este proceso retornará inmediatamente despues de aplicar los cambios en
   /// la base de datos y el envio se quedara en background.
   @override
-  Future<void> synchronize({
+  Future<void> sincronizar({
     required String dataset,
     required String rowID,
     required Map<String, Object?> fields,

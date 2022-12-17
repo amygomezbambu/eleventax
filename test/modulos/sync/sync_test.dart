@@ -92,7 +92,7 @@ void main() async {
         servidorSync: SyncServer(client: client),
       );
 
-      await syncEngine.synchronize(
+      await syncEngine.sincronizar(
         dataset: 'productos',
         rowID: productoUID.toString(),
         fields: {'codigo': codigo, 'nombre': nombre},
@@ -196,7 +196,7 @@ void main() async {
       );
 
       try {
-        await syncEngine.synchronize(
+        await syncEngine.sincronizar(
           dataset: 'productos',
           rowID: productoUID.toString(),
           fields: {'codigo': codigo, 'nombre': nombre},
@@ -277,7 +277,7 @@ void main() async {
         servidorSync: SyncServer(client: client),
       );
 
-      await syncEngine.synchronize(
+      await syncEngine.sincronizar(
         dataset: 'productos',
         rowID: productoUID.toString(),
         fields: {'codigo': codigo, 'nombre': nombre},
@@ -396,7 +396,7 @@ void main() async {
       SyncEx? ex;
 
       try {
-        await syncEngine.synchronize(
+        await syncEngine.sincronizar(
           dataset: 'productos',
           rowID: UID().toString(),
           fields: {'codigo': '123', 'nombre': 'coca cola'},

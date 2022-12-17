@@ -71,7 +71,7 @@ class ResolveConflict {
 
     await _repo.ejecutarComandoRaw(sql, [duplicado.happenLastUID]);
 
-    await _sync.synchronize(
+    await _sync.sincronizar(
       dataset: duplicado.dataset,
       rowID: duplicado.happenLastUID,
       fields: {
@@ -88,7 +88,7 @@ class ResolveConflict {
 
     await _repo.ejecutarComandoRaw(sql, [duplicado.happenFirstUID]);
 
-    await _sync.synchronize(
+    await _sync.sincronizar(
       dataset: duplicado.dataset,
       rowID: duplicado.happenFirstUID,
       fields: {
@@ -101,7 +101,7 @@ class ResolveConflict {
 
     await _repo.ejecutarComandoRaw(sql, [duplicado.happenLastUID]);
 
-    await _sync.synchronize(
+    await _sync.sincronizar(
       dataset: duplicado.dataset,
       rowID: duplicado.happenLastUID,
       fields: {
@@ -124,7 +124,7 @@ class ResolveConflict {
       duplicado.happenLastUID,
     ]);
 
-    await _sync.synchronize(
+    await _sync.sincronizar(
       dataset: duplicado.dataset,
       rowID: duplicado.happenLastUID,
       fields: {

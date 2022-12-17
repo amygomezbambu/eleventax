@@ -133,7 +133,7 @@ class RepositorioVentas extends Repositorio implements IRepositorioDeVentas {
 
   @override
   Future<void> guardarConfigCompartida(ConfigCompartidaDeVentas config) async {
-    await adaptadorSync.synchronize(
+    await adaptadorSync.sincronizar(
       dataset: 'config_ventas',
       rowID: config.uid.toString(),
       fields: {

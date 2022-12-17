@@ -14,6 +14,8 @@ import 'package:eleventa/modulos/productos/mapper/producto_mapper.dart';
 
 class RepositorioProductos extends Repositorio
     implements IRepositorioProductos {
+  final _tablaProductos = 'productos';
+  final _tablaCategorias = 'categorias';
   final _consultas = Dependencias.productos.repositorioConsultasProductos();
 
   RepositorioProductos({
@@ -41,7 +43,7 @@ class RepositorioProductos extends Repositorio
 
   @override
   Future<void> agregar(Producto producto) async {
-    await adaptadorSync.synchronize(
+    await adaptadorSync.sincronizar(
       dataset: 'productos',
       rowID: producto.uid.toString(),
       fields: {
@@ -61,7 +63,7 @@ class RepositorioProductos extends Repositorio
     );
 
     for (var impuesto in producto.impuestos) {
-      await adaptadorSync.synchronize(
+      await adaptadorSync.sincronizar(
         dataset: 'productos_impuestos',
         rowID: producto.uid.toString(),
         fields: {
@@ -75,7 +77,7 @@ class RepositorioProductos extends Repositorio
 
   @override
   Future<void> agregarCategoria(Categoria categoria) async {
-    await adaptadorSync.synchronize(
+    await adaptadorSync.sincronizar(
       dataset: 'categorias',
       rowID: categoria.uid.toString(),
       fields: {
@@ -86,7 +88,7 @@ class RepositorioProductos extends Repositorio
 
   @override
   Future<void> eliminar(UID id) async {
-    await adaptadorSync.synchronize(
+    await adaptadorSync.sincronizar(
       dataset: 'productos',
       rowID: id.toString(),
       fields: {
@@ -106,8 +108,8 @@ class RepositorioProductos extends Repositorio
         ProductoMapper.domainAMap(productoOriginal),
       );
 
-      await adaptadorSync.synchronize(
-        dataset: 'productos',
+      await adaptadorSync.sincronizar(
+        dataset: _tablaProductos,
         rowID: productoModificado.uid.toString(),
         fields: diferencias,
       );
@@ -118,7 +120,7 @@ class RepositorioProductos extends Repositorio
       );
 
       for (var impuesto in difImpuestos.agregados) {
-        await adaptadorSync.synchronize(
+        await adaptadorSync.sincronizar(
           dataset: 'productos_impuestos',
           rowID: UID().toString(),
           fields: {
@@ -134,7 +136,7 @@ class RepositorioProductos extends Repositorio
           impuesto.uid,
         );
 
-        await adaptadorSync.synchronize(
+        await adaptadorSync.sincronizar(
           dataset: 'productos_impuestos',
           rowID: relacionUID.toString(),
           fields: {
@@ -154,7 +156,7 @@ class RepositorioProductos extends Repositorio
   @override
   Future<void> guardarConfigCompartida(
       ConfigCompartidaDeProductos config) async {
-    await adaptadorSync.synchronize(
+    await adaptadorSync.sincronizar(
       dataset: 'config_productos',
       rowID: config.uid.toString(),
       fields: {'permitirPrecioCompraCero': config.permitirPrecioCompraCero},
@@ -184,8 +186,8 @@ class RepositorioProductos extends Repositorio
 
   @override
   Future<void> eliminarCategoria(UID uid) async {
-    await adaptadorSync.synchronize(
-      dataset: 'categorias',
+    await adaptadorSync.sincronizar(
+      dataset: _tablaCategorias,
       rowID: uid.toString(),
       fields: {
         'borrado': true,
@@ -204,8 +206,8 @@ class RepositorioProductos extends Repositorio
         categoriaOriginal.toMap(),
       );
 
-      await adaptadorSync.synchronize(
-        dataset: 'categorias',
+      await adaptadorSync.sincronizar(
+        dataset: _tablaCategorias,
         rowID: categoriaModificada.uid.toString(),
         fields: diferencias,
       );

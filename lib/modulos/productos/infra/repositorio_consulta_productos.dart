@@ -124,7 +124,6 @@ class RepositorioConsultaProductos extends RepositorioConsulta
     return existe >= 1;
   }
 
-  //TODO: decidir como vamos a probar que funcionen los filtros, e2e o
   @override
   Future<List<Producto>> obtenerProductos(
       [ObtenerProductos filtro = ObtenerProductos.activos]) async {
@@ -167,7 +166,6 @@ class RepositorioConsultaProductos extends RepositorioConsulta
     }
   }
 
-  //TODO: crear objetos CRITERIA
   Future<List<Producto>> _obtenerProductos(
       String condicionWhere, List<Object?> params) async {
     var sql = '''

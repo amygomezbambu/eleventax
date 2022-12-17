@@ -35,8 +35,6 @@ class Repositorio {
     List<T> listaMemoria,
     List<T> listaDatabase,
   ) {
-    //TODO: hacer algoritmo mas eficiente para evitar las 2 pasadas
-    //TODO: ver posibilidad de pasar esto al sync engine pasandole el dataset de relaciones
     var diferencias = DiferenciaListas<T>();
 
     for (var item in listaMemoria) {

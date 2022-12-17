@@ -1,3 +1,4 @@
+import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/common/domain/moneda.dart';
@@ -9,19 +10,8 @@ import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_compra
 import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_venta_producto.dart';
 
 class ProductoMapper {
-  // static ProductoDTO domainAData(Producto producto) {
-  //   var dto = ProductoDTO();
-  //   // dto.descripcion = producto.descripcion;
-  //   // dto.precio = producto.precio;
-  //   // dto.sku = producto.sku;
-  //   // dto.uid = producto.uid.toString();
-
-  //   return dto;
-  // }
-
-  //TODO: Solo aceptar tipos primitivos y Moneda
   static Map<String, Object?> domainAMap(Producto producto) {
-    return <String, Object?>{
+    var map = <String, Object?>{
       'uid': producto.uid.toString(),
       'codigo': producto.codigo,
       'nombre': producto.nombre,
@@ -34,6 +24,21 @@ class ProductoMapper {
       //'impuestos': producto.impuestos,
       'preguntar_precio': producto.preguntarPrecio,
     };
+
+    for (var key in map.keys) {
+      if ((map[key] is! num) &&
+          (map[key] is! String) &&
+          (map[key] is! bool) &&
+          (map[key] is! Moneda) &&
+          (map[key] != null)) {
+        throw ValidationEx(
+          mensaje:
+              'ProductoMapper.domainAMap: el mapa contien valores invalidos',
+        );
+      }
+    }
+
+    return map;
   }
 
   /// Convierte un row de sqlite a una entidad de dominio

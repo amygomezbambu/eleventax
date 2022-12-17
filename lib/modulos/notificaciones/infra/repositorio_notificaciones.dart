@@ -19,7 +19,7 @@ class RepositorioNotificaciones extends Repositorio
 
   @override
   Future<void> agregar(Notificacion notificacion) async {
-    await adaptadorSync.synchronize(
+    await adaptadorSync.sincronizar(
       dataset: 'notificaciones',
       rowID: notificacion.uid.toString(),
       fields: {
