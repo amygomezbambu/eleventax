@@ -17,6 +17,28 @@ De momento el desarrollo de la aplicación se realiza principalmente en pair/mob
 Posteriormente configura la extensión de Live Sharing accediendo a tu cuenta de GitHub:
 https://docs.microsoft.com/en-us/visualstudio/liveshare/use/install-live-share-visual-studio-code#sign-in-to-live-share
 
+## Pruebas
+
+Para probar la aplicación debes ejecutar:
+
+Pruebas de Unidad:
+
+```shell
+flutter test
+```
+
+Pruebas de Integracióm:
+
+```shell
+flutter test integration_test
+```
+
+Pruebas de Integración en Google FireBase TestLab:
+
+```shell
+zsh tools\\probar_en_testlab.sh
+```
+
 ## Manejo de versionamiento
 
 Para agregar una nueva mejora al (CHANGELOG.md)[/CHANGELOG.md] ejecutar en la terminal el comando `cider log` con las siguientes categorías:

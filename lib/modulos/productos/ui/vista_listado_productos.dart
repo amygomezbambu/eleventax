@@ -113,7 +113,7 @@ class _ListadoProductos extends ConsumerWidget {
     return Column(
       children: [
         SizedBox(
-          height: esDesktop.resolve(context) ? Sizes.p28 : Sizes.p16,
+          height: esDesktop.resolve(context) ? Sizes.p28 : Sizes.p20,
           child: DismissKeyboard(
             child: Card(
               color: ColoresBase.neutral50,
