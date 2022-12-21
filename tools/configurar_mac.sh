@@ -99,6 +99,16 @@ else
     echo "✅ Flutter instalado."
 fi
 
+if ! command -v gcloud &> /dev/null
+then
+    print "🔵 Instalando GCloud"
+    printStep "GCloud" "curl https://sdk.cloud.google.com | bash"
+    exec -l $SHELL
+    printDivider
+else
+    echo "✅ GCloud instalado."
+fi
+
 # Instalar tweaks de sistema
 echo "✔ Tweak: Deshabilitar los smart quotes que interfieren al teclear código"
 defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
@@ -118,4 +128,5 @@ fi
 
 printDivider "🔵 Evaluando si funciona 1Password Client. Se te pedirá autenticarte..."
 echo "Resultado:"
-op read "op://Desarrollo/eleventax prueba/credencial" 
+op read "op://eleventax/eleventax - TestLab Service Account" 
+

@@ -1,6 +1,16 @@
 #!/bin/zsh
 
+rm ./testlab_serviceaccount.json
+rm ./android/key.properties
+rm ./eleventa-upload-keystore.jks
 echo "Verificando que tengas credenciales..."
+
+if [ ! -f "./testlab_serviceaccount.json" ]; then
+  echo "🔵 Descargando credenciales de Android Deployment..."
+  op read -o ./android/app/eleventa-upload-keystore.jks "op://eleventax/eleventax - Google Play Upload KeyStore/eleventa-upload-keystore.jks" 
+  echo "storeFile=`pwd`/android/eleventa-upload-keystore.jks" >> android/key.properties
+fi
+
 if [ ! -f "./testlab_serviceaccount.json" ]; then
     echo "🔵 Descargando credenciales de TestLab..."
     op read -o ./testlab_serviceaccount.json "op://eleventax/eleventax - TestLab Service Account/testlab_serviceaccount.json" 
@@ -8,13 +18,11 @@ if [ ! -f "./testlab_serviceaccount.json" ]; then
     then 
       echo "✅ Credenciales de TesLab obtenidas correctamente."
       pushd android
-      flutter build apk
+      flutter build apk 
       ./gradlew app:assembleAndroidTest
       ./gradlew app:assembleDebug -Ptarget=integration_test/productos_test.dart
-      popd
-      echo "✅ Binario de Android generado..."
+      popd       
 
-      # //TODO: Documentar como instalar GCloud
       gcloud auth activate-service-account --key-file="./testlab_serviceaccount.json"
       gcloud --quiet config set project "eleventa"
       echo "✅ Ejecutando pruebas en TestLab, esto tardará varios minutos..."
@@ -31,6 +39,8 @@ if [ ! -f "./testlab_serviceaccount.json" ]; then
          
     echo "🔵 Borrando credenciales de TestLab por seguridad..."
     rm ./testlab_serviceaccount.json
+    rm ./android/key.properties
+    rm ./eleventa-upload-keystore.jks
 else
   echo "🔴 No tienes credenciales de TestLab, favor de verificar acceso a 1Password"
   exit 1
