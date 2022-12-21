@@ -1,4 +1,4 @@
-name: Pruebas
+name: Pruebas (No Produccion)
 
 on:
   workflow_dispatch:
