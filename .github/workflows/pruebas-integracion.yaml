@@ -59,6 +59,13 @@ jobs:
           echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/key.properties
           echo "storeFile=${{ steps.android_keystore.outputs.filePath }}" >> android/key.properties
 
+      - name: Compilar binario para pruebas en Testlab
+        run: |
+          flutter build apk 
+          ./gradlew app:assembleAndroidTest
+          ./gradlew app:assembleDebug -Ptarget=integration_test/productos_test.dart
+        working-directory: android
+
       - name: "Nos conectamos con la cuenta de GCloud"
         id: "auth"
         uses: "google-github-actions/auth@v1"
@@ -68,35 +75,10 @@ jobs:
       - name: "Configurar Cloud SDK"
         uses: "google-github-actions/setup-gcloud@v1"
 
-      - name: "Use gcloud CLI"
-        run: 'gcloud --quiet config set project "eleventa"'
-  # build-and-release-ios:
-  #   runs-on: macos-latest
-
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: Obtenemos la version de Flutter de pubspec.yaml
-  #       id: get-flutter-version
-  #       uses: zgosalvez/github-actions-get-flutter-version-env@v2
-  #     - uses: subosito/flutter-action@v2
-  #       with:
-  #         channel: "stable"
-  #         architecture: x64
-  #         flutter-version: ${{ steps.get-flutter-version.outputs.version }}
-  #     - name: Instalar dependencias
-  #       run: flutter pub get
-  #     - name: Compilar binario de iOS
-  #       run: flutter build ios --release --no-codesign
-  #     - name: Archivar los binarios
-  #       uses: thedoctor0/zip-release@master
-  #       with:
-  #         type: "zip"
-  #         filename: eleventa-${{github.ref_name}}-ios.zip
-  #         directory: build/ios/iphoneos/
-  #     - name: Publicar binarios iOS
-  #       uses: softprops/action-gh-release@v1
-  #       if: startsWith(github.ref, 'refs/tags/')
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #       with:
-  #         files: build/ios/iphoneos/eleventa-${{github.ref_name}}-ios.zip
+      - name: "Ejecutando pruebas en TestLab, esto tardará varios minutos..."
+        run: |
+          gcloud firebase test android run --type instrumentation \
+          --app build/app/outputs/apk/debug/app-debug.apk \
+          --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk\
+          --timeout 5m \
+          --device model=b2q,version=30,locale=es,orientation=portrait
