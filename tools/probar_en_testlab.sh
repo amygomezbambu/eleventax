@@ -2,13 +2,14 @@
 
 rm ./testlab_serviceaccount.json
 rm ./android/key.properties
-rm ./eleventa-upload-keystore.jks
+rm ./android/eleventa-upload-keystore.jks
 echo "Verificando que tengas credenciales..."
 
 if [ ! -f "./testlab_serviceaccount.json" ]; then
   echo "🔵 Descargando credenciales de Android Deployment..."
-  op read -o ./android/app/eleventa-upload-keystore.jks "op://eleventax/eleventax - Google Play Upload KeyStore/eleventa-upload-keystore.jks" 
-  echo "storeFile=`pwd`/android/eleventa-upload-keystore.jks" >> android/key.properties
+  op read -o ./android/eleventa-upload-keystore.jks "op://eleventax/eleventax - Google Play Upload KeyStore/eleventa-upload-keystore.jks" 
+  op read -o ./android/key.properties "op://eleventax/eleventax - Google Play Upload KeyStore/key.properties" 
+  echo "\nstoreFile=`pwd`/android/eleventa-upload-keystore.jks" >> android/key.properties
 fi
 
 if [ ! -f "./testlab_serviceaccount.json" ]; then
@@ -40,7 +41,7 @@ if [ ! -f "./testlab_serviceaccount.json" ]; then
     echo "🔵 Borrando credenciales de TestLab por seguridad..."
     rm ./testlab_serviceaccount.json
     rm ./android/key.properties
-    rm ./eleventa-upload-keystore.jks
+    rm ./android/eleventa-upload-keystore.jks
 else
   echo "🔴 No tienes credenciales de TestLab, favor de verificar acceso a 1Password"
   exit 1
