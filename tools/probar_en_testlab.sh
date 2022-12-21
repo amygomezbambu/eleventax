@@ -29,11 +29,11 @@ if [ ! -f "./testlab_serviceaccount.json" ]; then
       echo "✅ Ejecutando pruebas en TestLab, esto tardará varios minutos..."
       gcloud firebase test android run --type instrumentation \
         --app build/app/outputs/apk/debug/app-debug.apk \
-        --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk\
+        --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
         --timeout 5m \
         --device model=b2q,version=30,locale=es,orientation=portrait  \
         --device model=bluejay,version=32,locale=en,orientation=portrait  \
-        --device model=AndroidTablet270dpi,version=30,locale=es,orientation=landscape  
+        --device model=AndroidTablet270dpi,version=30,locale=es,orientation=landscape   
     else 
       echo "🔴 Ocurrió un error al obtener las credenciales" >&2 
     fi
