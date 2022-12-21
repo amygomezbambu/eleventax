@@ -65,7 +65,7 @@ jobs:
           flutter build apk 
           ./gradlew app:assembleAndroidTest
           ./gradlew app:assembleDebug -Ptarget=integration_test/productos_test.dart
-          pop
+          popd
         
       - name: "Nos conectamos con la cuenta de GCloud"
         id: "auth"
