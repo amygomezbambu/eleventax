@@ -1,12 +1,98 @@
-name: Pruebas Integración
+name: Pruebas
 
 on:
-  pull_request:
-    branches: [mob-21-12-22]
   workflow_dispatch:
+  pull_request:
+    branches: [pruebas-integracion-pipeline]
 
 jobs:
-  pruebas-android:
+  tests:
+    name: Unitarias
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Obtenemos la version de Flutter de pubspec.yaml
+        id: get-flutter-version
+        uses: zgosalvez/github-actions-get-flutter-version-env@v2
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          flutter-version: ${{ steps.get-flutter-version.outputs.version }}
+          cache: true
+          cache-key: "flutter-:os:-:channel:-:version:-:arch:"
+          #cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:"
+          #cache-path: "${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:"
+          architecture: x64
+
+      - name: Obtener dependencias de flutter
+        run: flutter pub get
+
+      - name: Generar clases de Dart necesarias con secretos embebidos (y ofuscados)
+        run: flutter pub run build_runner build --delete-conflicting-outputs
+        # Las variables de entorno tienen que estar disponibles en esta etapa
+        # que es cuando se genera el env.g.dart con los secrets "hard codeados"
+        # y que se usarán despues en las pruebas
+        env:
+          MIXPANEL_PROJECT_ID: ${{ secrets.MIXPANEL_PROJECT_ID }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          DB_PASSWORD: 12345
+
+      - name: Pruebas unitarias
+        run: flutter test --test-randomize-ordering-seed=random -rexpanded
+
+  integracion-windows:
+    name: Integración (Windows)
+    needs: [tests]
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Obtenemos la version de Flutter de pubspec.yaml
+        id: get-flutter-version
+        uses: zgosalvez/github-actions-get-flutter-version-env@v2
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          flutter-version: ${{ steps.get-flutter-version.outputs.version }}
+          cache: true
+          cache-key: "flutter-:os:-:channel:-:version:-:arch:"
+          #cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:"
+          #cache-path: "${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:"
+          architecture: x64
+
+      - name: Obtener dependencias de flutter
+        run: flutter pub get
+
+        # Copiamos los DLLs a la carpeta donde se ejecutan las pruebas de unidad
+      - name: Copiamos DLLs de SQLite para que funcionen las pruebas (solo Windows)
+        if: runner.os == 'Windows'
+        run: Copy-Item -Path "assets\windows\*" -Destination "${{ env.FLUTTER_ROOT }}\bin\cache\artifacts\engine\windows-x64"
+
+      - name: Copiamos DLLs de SQLite para que funcionen las pruebas de integración (solo Windows)
+        if: runner.os == 'Windows'
+        #run: Copy-Item -Path "assets\windows\*" -Destination ".\build\windows\runner\Debug"
+        run: Copy-Item -Path "assets\windows\*" -Destination (New-Item -Type Directory -Force (".\build\windows\runner\Debug")) -Force -EA 0
+
+      - name: Generar clases de Dart necesarias con secretos embebidos (y ofuscados)
+        run: flutter pub run build_runner build --delete-conflicting-outputs
+        # Las variables de entorno tienen que estar disponibles en esta etapa
+        # que es cuando se genera el env.g.dart con los secrets "hard codeados"
+        # y que se usarán despues en las pruebas
+        env:
+          MIXPANEL_PROJECT_ID: ${{ secrets.MIXPANEL_PROJECT_ID }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          DB_PASSWORD: 12345
+
+      - name: Pruebas de Integración (Windows)
+        run: flutter test integration_test/productos_test.dart --no-pub --no-track-widget-creation -v --suppress-analytics
+
+  integracion-android:
+    name: Integración (Android)
+    needs: [tests]
     permissions:
       contents: "read"
       id-token: "write"
@@ -59,6 +145,14 @@ jobs:
           echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/key.properties
           echo "storeFile=${{ steps.android_keystore.outputs.filePath }}" >> android/key.properties
 
+      - name: Compilar binario para pruebas en Testlab
+        run: |
+          pushd android
+          flutter build apk 
+          ./gradlew app:assembleAndroidTest
+          ./gradlew app:assembleDebug -Ptarget=integration_test/productos_test.dart
+          popd
+
       - name: "Nos conectamos con la cuenta de GCloud"
         id: "auth"
         uses: "google-github-actions/auth@v1"
@@ -68,5 +162,10 @@ jobs:
       - name: "Configurar Cloud SDK"
         uses: "google-github-actions/setup-gcloud@v1"
 
-      - name: "Use gcloud CLI"
-        run: 'gcloud --quiet config set project "eleventa"'
+      - name: "Ejecutando pruebas en TestLab, esto tardará varios minutos..."
+        run: |
+          gcloud firebase test android run --type instrumentation \
+          --app build/app/outputs/apk/debug/app-debug.apk \
+          --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+          --timeout 5m \
+          --device model=b2q,version=30,locale=es,orientation=portrait
