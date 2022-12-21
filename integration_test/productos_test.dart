@@ -43,19 +43,10 @@ void main() {
 
       binding.testTextInput.register();
 
-      // TODO: Falla temporal para probar testlab
-      Finder boton;
-      if (Platform.isAndroid) {
-        boton = find.descendant(
-          of: find.byType(BottomNavigationBar),
-          matching: find.text('Productos - falla temporal'),
-        );
-      } else {
-        boton = find.descendant(
-          of: find.byType(BottomNavigationBar),
-          matching: find.text('Productos'),
-        );
-      }
+      var boton = find.descendant(
+        of: find.byType(BottomNavigationBar),
+        matching: find.text('Productos'),
+      );
 
       await tester.tap(boton);
       await tester.pumpAndSettle();
