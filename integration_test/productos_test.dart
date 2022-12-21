@@ -45,7 +45,7 @@ void main() {
 
       // TODO: Falla temporal para probar testlab
       Finder boton;
-      if (Platform.isMacOS) {
+      if (Platform.isAndroid) {
         boton = find.descendant(
           of: find.byType(BottomNavigationBar),
           matching: find.text('Productos - falla temporal'),
