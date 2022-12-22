@@ -1,6 +1,7 @@
 import 'package:eleventa/modulos/common/ui/ex_icons.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_boton_primario.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class BotonCobrarVenta extends StatelessWidget {
   final double totalDeVenta;
@@ -16,13 +17,15 @@ class BotonCobrarVenta extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var m = AppLocalizations.of(context)!;
+
     return Container(
       margin: dense
           ? const EdgeInsets.fromLTRB(12, 10, 12, 10)
           : const EdgeInsets.fromLTRB(3, 10, 3, 10),
       height: dense ? 60 : 70,
       child: ExBotonPrimario(
-          label: 'Cobrar \$${totalDeVenta.toStringAsFixed(2)}',
+          label: 'Cobrar ${m.moneda(totalDeVenta)}',
           tamanoFuente: dense ? 20 : 25,
           icon: Iconos.register,
           onTap: () => {debugPrint('hello')},

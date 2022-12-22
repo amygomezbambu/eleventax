@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:layout/layout.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<void> main() async {
   var loader = Loader();
@@ -93,6 +94,8 @@ class _EleventaAppState extends State<EleventaApp> {
   Widget build(BuildContext context) {
     return Layout(
       child: MaterialApp.router(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         routerConfig: _router,
         debugShowCheckedModeBanner: false,
         restorationScopeId: 'eleventa',

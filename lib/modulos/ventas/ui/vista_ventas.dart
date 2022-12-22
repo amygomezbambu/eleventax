@@ -12,6 +12,7 @@ import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/ventas/app/usecase/crear_venta.dart';
 import 'package:eleventa/modulos/ventas/app/usecase/agregar_articulo.dart';
 import 'package:layout/layout.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class VistaVentas extends StatefulWidget {
   const VistaVentas({Key? key, required String title}) : super(key: key);
@@ -22,9 +23,11 @@ class VistaVentas extends StatefulWidget {
 
 class _VistaVentasState extends State<VistaVentas> {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext ctx) {
+    var m = AppLocalizations.of(context)!;
+
     return VistaPrincipalScaffold(
-      titulo: 'Ventas',
+      titulo: m.ventas_titulo,
       child: AdaptiveBuilder(
         xs: (context) => Column(
           children: const [VentaActual()],
@@ -58,6 +61,8 @@ class VentaActualState extends State<VentaActual> {
   String currentSaleId = '';
   FocusNode myFocusNode = FocusNode();
   TextEditingController myController = TextEditingController();
+
+  late AppLocalizations m;
 
   Future<void> agregarProducto(String value) async {
     // Obtenemos los Use cases...
@@ -144,7 +149,7 @@ class VentaActualState extends State<VentaActual> {
     if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: const Text('Gracias por su compra, ¡Vuelva pronto!'),
+      content: Text(m.ventas_ventaExitosa),
       width: 300,
       //margin: EdgeInsets.only(bottom: -100),
       padding: const EdgeInsets.symmetric(
@@ -158,6 +163,7 @@ class VentaActualState extends State<VentaActual> {
 
   @override
   Widget build(BuildContext context) {
+    m = AppLocalizations.of(context)!;
     final isTabletOrDestkop = (context.breakpoint >= LayoutBreakpoint.md);
 
     return isTabletOrDestkop

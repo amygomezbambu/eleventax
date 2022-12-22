@@ -55,12 +55,11 @@ class AppConfig extends ConfigLocal {
   Future<void> cargar() async {
     var uid = await readValue<String>('deviceId');
 
-    deviceId = uid != null ? UID.fromString(uid) : _generarDatosIniciales();
-
-    await guardar();
-  }
-
-  UID _generarDatosIniciales() {
-    return UID();
+    if (uid == null) {
+      deviceId = UID();
+      await guardar();
+    } else {
+      deviceId = UID.fromString(uid);
+    }
   }
 }
