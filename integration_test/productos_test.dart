@@ -21,7 +21,7 @@ void main() {
       WidgetController.hitTestWarningShouldBeFatal = true;
 
       if (Platform.isWindows || Platform.isMacOS) {
-        await binding.setSurfaceSize(const Size(400, 600));
+        await binding.setSurfaceSize(const Size(401, 600));
         binding.window.physicalSizeTestValue = const Size(400, 600);
         binding.window.devicePixelRatioTestValue = 1.0;
       }
