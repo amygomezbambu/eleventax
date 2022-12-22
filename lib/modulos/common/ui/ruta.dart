@@ -1,4 +1,4 @@
-import 'package:eleventa/modulos/productos/ui/modificar_producto.dart';
+import 'package:eleventa/modulos/productos/ui/vista_modificar_producto.dart';
 import 'package:eleventa/modulos/productos/ui/nuevo_producto.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -61,7 +61,7 @@ class Rutas {
           rutaURL: "modificar",
           nombre: "Modificar",
           icon: Iconos.edit,
-          builder: (context, state) => ModificarProducto(
+          builder: (context, state) => VistaModificarProducto(
             productoId: (state.extra! as String),
           ),
         ),

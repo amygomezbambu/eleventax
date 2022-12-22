@@ -13,7 +13,7 @@ import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
 import 'package:eleventa/modulos/productos/modulo_productos.dart';
 import 'package:eleventa/modulos/productos/ui/listado_productos_provider.dart';
-import 'package:eleventa/modulos/productos/ui/modificar_producto.dart';
+import 'package:eleventa/modulos/productos/ui/vista_modificar_producto.dart';
 import 'package:eleventa/modulos/productos/ui/nuevo_producto.dart';
 
 class VistaListadoProductos extends StatefulWidget {
@@ -67,7 +67,7 @@ class VistaListadoProductosState extends State<VistaListadoProductos> {
             Flexible(
               flex: 4,
               child: editando
-                  ? ModificarProducto(productoId: producto!.uid.toString())
+                  ? VistaModificarProducto(productoId: producto!.uid.toString())
                   : NuevoProducto(),
             ),
           ],

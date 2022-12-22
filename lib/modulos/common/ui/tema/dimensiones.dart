@@ -10,10 +10,20 @@ class Sizes {
   static const p2_0 = 2.0;
   static const p1 = 4.0;
   static const p1_5 = 6.0;
+
+  /// 8px
   static const p2 = 8.0;
+
+  /// 10px
   static const p2_5 = 10.0;
+
+  /// 12px
   static const p3 = 12.0;
+
+  /// 14px
   static const p3_5 = 14.0;
+
+  /// 16px
   static const p4 = 16.0;
   static const p5 = 20.0;
   static const p6 = 24.0;
@@ -24,6 +34,8 @@ class Sizes {
   static const p11 = 44.0;
   static const p12 = 48.0;
   static const p14 = 56.0;
+
+  /// 64px
   static const p16 = 64.0;
   static const p20 = 80.0;
   static const p24 = 96.0;

@@ -4,6 +4,7 @@ import 'package:eleventa/modulos/common/ui/ex_icons.dart';
 import 'package:eleventa/modulos/common/ui/tema/theme.dart';
 import 'package:eleventa/modulos/common/ui/widgets/dismiss_keyboard.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_boton_secundario.dart';
+import 'package:eleventa/modulos/common/ui/widgets/ex_dialogos.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/nombre_categoria.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
@@ -225,16 +226,18 @@ class _FormaProductoState extends State<FormaProducto> {
   }
 
   Future<bool> _guardarProducto() async {
+    bool operacionExitosa;
     if (productoEnModificacion == null) {
-      await _crearProducto();
+      operacionExitosa = await _crearProducto();
     } else {
-      await _modificarProducto();
+      operacionExitosa = await _modificarProducto();
     }
 
-    return true;
+    debugPrint(operacionExitosa.toString());
+    return operacionExitosa;
   }
 
-  Future<void> _modificarProducto() async {
+  Future<bool> _modificarProducto() async {
     var modificarProducto = ModuloProductos.modificarProducto();
 
     var productoModificado = _llenarProducto();
@@ -244,13 +247,15 @@ class _FormaProductoState extends State<FormaProducto> {
 
     try {
       await modificarProducto.exec();
+      return true;
     } catch (e) {
-      //TODO: mostrar alerta visual con el error
-      debugPrint(e.toString());
+      await ExDialogos.mostrarAdvertencia(context,
+          titulo: 'No fue posible modificar producto', mensaje: e.toString());
+      return false;
     }
   }
 
-  Future<void> _crearProducto() async {
+  Future<bool> _crearProducto() async {
     var crearProducto = ModuloProductos.crearProducto();
 
     try {
@@ -264,9 +269,14 @@ class _FormaProductoState extends State<FormaProducto> {
         limpiarCampos();
       });
 
-      //
+      return true;
     } catch (e) {
       debugPrint('No fue posible crear producto: $e');
+
+      await ExDialogos.mostrarAdvertencia(context,
+          titulo: 'No fue posible crear producto', mensaje: e.toString());
+
+      return false;
     }
   }
 
@@ -694,7 +704,6 @@ class _FormaProductoState extends State<FormaProducto> {
                                         height: Sizes.p12,
                                         child: ExBotonSecundario(
                                             label: 'Limpiar',
-                                            tamanoFuente: TextSizes.textSm,
                                             icon: Iconos.delete,
                                             onTap: () {
                                               limpiarCampos();

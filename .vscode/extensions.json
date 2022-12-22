@@ -5,6 +5,7 @@
     "ms-vsliveshare.vsliveshare",
     "pluralsight.live-share-mob-timer",
     "maptz.regionfolder",
-    "dotup.dart-data-class-generator"
+    "dotup.dart-data-class-generator",
+    "github.vscode-pull-request-github"
   ]
 }

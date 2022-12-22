@@ -43,6 +43,8 @@ class ColoresBase {
   static const Color neutral900 = Color(0xff0f172a);
 
   static const Color red300 = Color(0xffAB091E);
+  static const Color yellow900 = Color(0xffBA2525);
+  static const Color yellow100 = Color(0xfffacdcd);
 
   static const Color white = Colors.white;
 }
