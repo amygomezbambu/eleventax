@@ -1,7 +1,10 @@
 name: Pruebas
 
 on:
+  workflow_dispatch:
   pull_request:
+    branches:
+      - main
     paths:
       # Solo se ejecutarán las pruebas cuando se cambió algún archivo dart
       - "**.dart"
@@ -83,6 +86,7 @@ jobs:
           channel: "stable"
           flutter-version: ${{ steps.get-flutter-version.outputs.version }}
           cache: true
+          cache-key: "flutter-:os:-:channel:-:version:-:arch:"
           architecture: x64
 
       - name: Instalar dependencias
