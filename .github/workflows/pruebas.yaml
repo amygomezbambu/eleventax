@@ -6,7 +6,7 @@ on:
     branches:
       - main
     paths:
-      # Solo se ejecutarán las pruebas cuando se cambió algún archivo dart
+      # Solo se ejecutarán las pruebas cuando se cambió algún archivo dart o yaml
       - "**.dart"
       - "**.yaml"
 
@@ -27,8 +27,6 @@ jobs:
           flutter-version: ${{ steps.get-flutter-version.outputs.version }}
           cache: true
           cache-key: "flutter-:os:-:channel:-:version:-:arch:"
-          #cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:"
-          #cache-path: "${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:"
           architecture: x64
 
       - name: Obtener dependencias de flutter
@@ -41,7 +39,6 @@ jobs:
 
       - name: Copiamos DLLs de SQLite para que funcionen las pruebas de integración (solo Windows)
         if: runner.os == 'Windows'
-        #run: Copy-Item -Path "assets\windows\*" -Destination ".\build\windows\runner\Debug"
         run: Copy-Item -Path "assets\windows\*" -Destination (New-Item -Type Directory -Force (".\build\windows\runner\Debug")) -Force -EA 0
 
       - name: Generar clases de Dart necesarias con secretos embebidos (y ofuscados)
@@ -56,6 +53,50 @@ jobs:
 
       - name: Pruebas unitarias
         run: flutter test --test-randomize-ordering-seed=random -rexpanded
+
+      #- name: Pruebas de Integración (Windows)
+      #  run: flutter test integration_test/productos_test.dart --no-pub --no-track-widget-creation -v --suppress-analytics
+
+  integracion-windows:
+    name: Integración (Windows)
+    needs: [tests]
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Obtenemos la version de Flutter de pubspec.yaml
+        id: get-flutter-version
+        uses: zgosalvez/github-actions-get-flutter-version-env@v2
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          flutter-version: ${{ steps.get-flutter-version.outputs.version }}
+          cache: true
+          cache-key: "flutter-:os:-:channel:-:version:-:arch:"
+          architecture: x64
+
+      - name: Obtener dependencias de flutter
+        run: flutter pub get
+
+      # Copiamos los DLLs a la carpeta donde se ejecutan las pruebas de unidad
+      - name: Copiamos DLLs de SQLite para que funcionen las pruebas (solo Windows)
+        if: runner.os == 'Windows'
+        run: Copy-Item -Path "assets\windows\*" -Destination "${{ env.FLUTTER_ROOT }}\bin\cache\artifacts\engine\windows-x64"
+
+      - name: Copiamos DLLs de SQLite para que funcionen las pruebas de integración (solo Windows)
+        if: runner.os == 'Windows'
+        run: Copy-Item -Path "assets\windows\*" -Destination (New-Item -Type Directory -Force (".\build\windows\runner\Debug")) -Force -EA 0
+
+      - name: Generar clases de Dart necesarias con secretos embebidos (y ofuscados)
+        run: flutter pub run build_runner build --delete-conflicting-outputs
+        # Las variables de entorno tienen que estar disponibles en esta etapa
+        # que es cuando se genera el env.g.dart con los secrets "hard codeados"
+        # y que se usarán despues en las pruebas
+        env:
+          MIXPANEL_PROJECT_ID: ${{ secrets.MIXPANEL_PROJECT_ID }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          DB_PASSWORD: 12345
 
       - name: Pruebas de Integración (Windows)
         run: flutter test integration_test/productos_test.dart --no-pub --no-track-widget-creation -v --suppress-analytics
