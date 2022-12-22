@@ -1,0 +1,8 @@
+{
+  "@@locale": "es",
+
+  "ventas_titulo": "Ventas Español latinoamerica",
+  "ventas_ventaExitosa": "Gracias por su compra, ¡Vuelva pronto!",
+
+  "moneda": "{value}"
+}
