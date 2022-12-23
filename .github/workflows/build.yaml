@@ -19,6 +19,11 @@ jobs:
       - name: Instalar dependencias
         run: flutter pub get
         
+      # Copiamos los DLLs a la carpeta donde se ejecutan las pruebas de unidad
+      - name: Copiamos DLLs de SQLite para que funcionen las pruebas (solo Windows)
+        if: runner.os == 'Windows'
+        run: Copy-Item -Path "assets\windows\*" -Destination "build\windows\runner\Release\"
+        
       - name: Generar clases de Dart necesarias con secretos embebidos (y ofuscados)
         run: flutter pub run build_runner build --delete-conflicting-outputs
         # Las variables de entorno tienen que estar disponibles en esta etapa
@@ -31,6 +36,7 @@ jobs:
         
       - name: Compilar binario de Windows
         run: flutter build windows --release
+      
       - name: Archivar los binarios
         uses: thedoctor0/zip-release@master
         with:
