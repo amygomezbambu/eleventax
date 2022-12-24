@@ -3,6 +3,7 @@ name: Pruebas
 on:
   workflow_dispatch:
   pull_request:
+    types: [synchronize, opened]
     branches:
       - main
     paths:
@@ -10,10 +11,19 @@ on:
       - "**.dart"
       - "**.yaml"
 
+# Las variables de entorno tienen que estar disponibles en esta etapa
+# que es cuando se genera el env.g.dart con los secrets "hard codeados"
+# y que se usarán despues en las pruebas
+env:
+  MIXPANEL_PROJECT_ID: ${{ secrets.MIXPANEL_PROJECT_ID }}
+  SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+  DB_PASSWORD: 12345
+
 jobs:
-  tests:
+  pruebas-unitarias:
+    if: contains(github.event.pull_request.labels.*.name, 'sin pruebas de unidad') == false
     name: Unitarias
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
@@ -32,34 +42,16 @@ jobs:
       - name: Obtener dependencias de flutter
         run: flutter pub get
 
-      # Copiamos los DLLs a la carpeta donde se ejecutan las pruebas de unidad
-      - name: Copiamos DLLs de SQLite para que funcionen las pruebas (solo Windows)
-        if: runner.os == 'Windows'
-        run: Copy-Item -Path "assets\windows\*" -Destination "${{ env.FLUTTER_ROOT }}\bin\cache\artifacts\engine\windows-x64"
-
-      - name: Copiamos DLLs de SQLite para que funcionen las pruebas de integración (solo Windows)
-        if: runner.os == 'Windows'
-        run: Copy-Item -Path "assets\windows\*" -Destination (New-Item -Type Directory -Force (".\build\windows\runner\Debug")) -Force -EA 0
-
       - name: Generar clases de Dart necesarias con secretos embebidos (y ofuscados)
         run: flutter pub run build_runner build --delete-conflicting-outputs
-        # Las variables de entorno tienen que estar disponibles en esta etapa
-        # que es cuando se genera el env.g.dart con los secrets "hard codeados"
-        # y que se usarán despues en las pruebas
-        env:
-          MIXPANEL_PROJECT_ID: ${{ secrets.MIXPANEL_PROJECT_ID }}
-          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-          DB_PASSWORD: 12345
 
-      - name: Pruebas unitarias
+      - name: Ejecutando Pruebas de Unidad
         run: flutter test --test-randomize-ordering-seed=random -rexpanded
 
-      #- name: Pruebas de Integración (Windows)
-      #  run: flutter test integration_test/productos_test.dart --no-pub --no-track-widget-creation -v --suppress-analytics
-
   integracion-windows:
+    if: contains(github.event.pull_request.labels.*.name, 'sin pruebas de integracion') == false
     name: Integración (Windows)
-    needs: [tests]
+    needs: [pruebas-unitarias]
     runs-on: windows-latest
 
     steps:
@@ -90,20 +82,14 @@ jobs:
 
       - name: Generar clases de Dart necesarias con secretos embebidos (y ofuscados)
         run: flutter pub run build_runner build --delete-conflicting-outputs
-        # Las variables de entorno tienen que estar disponibles en esta etapa
-        # que es cuando se genera el env.g.dart con los secrets "hard codeados"
-        # y que se usarán despues en las pruebas
-        env:
-          MIXPANEL_PROJECT_ID: ${{ secrets.MIXPANEL_PROJECT_ID }}
-          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-          DB_PASSWORD: 12345
 
       - name: Pruebas de Integración (Windows)
         run: flutter test integration_test/productos_test.dart --no-pub --no-track-widget-creation -v --suppress-analytics
 
   integracion-android:
+    if: contains(github.event.pull_request.labels.*.name, 'sin pruebas de integracion') == false
     name: Integración (Android)
-    needs: [tests]
+    needs: [pruebas-unitarias]
     permissions:
       contents: "read"
       id-token: "write"
@@ -135,17 +121,10 @@ jobs:
 
       - name: Generar clases de Dart necesarias con secretos embebidos (y ofuscados)
         run: flutter pub run build_runner build --delete-conflicting-outputs
-        # Las variables de entorno tienen que estar disponibles en esta etapa
-        # que es cuando se genera el env.g.dart con los secrets "hard codeados"
-        # y que se usarán despues en las pruebas
-        env:
-          MIXPANEL_PROJECT_ID: ${{ secrets.MIXPANEL_PROJECT_ID }}
-          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-          DB_PASSWORD: 12345
 
       - name: Descargar certificado JKS de Android
         id: android_keystore
-        uses: timheuer/base64-to-file@v1.0.4
+        uses: timheuer/base64-to-file@v1.2
         with:
           fileName: key.jks
           encodedString: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}

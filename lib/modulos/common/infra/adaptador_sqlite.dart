@@ -84,6 +84,8 @@ class AdaptadorSQLite implements IAdaptadorDeBaseDeDatos {
         open.overrideFor(OperatingSystem.android, openCipherOnAndroid);
       } else if (Platform.isWindows) {
         open.overrideFor(OperatingSystem.windows, _openSQLCipherOnWindows);
+      } else if (Platform.isLinux) {
+        open.openSqlite();
       } else {
         open.overrideForAll(_sqlcipherOpen);
       }
@@ -99,7 +101,7 @@ class AdaptadorSQLite implements IAdaptadorDeBaseDeDatos {
   }
 
   static DynamicLibrary _sqlcipherOpen() {
-    if (Platform.isIOS || Platform.isMacOS || Platform.isLinux) {
+    if (Platform.isIOS || Platform.isMacOS) {
       return DynamicLibrary.process();
     }
 
