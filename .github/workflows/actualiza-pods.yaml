@@ -7,7 +7,8 @@ on:
       - main
     paths:
       # Solo se ejecutará las actualizaciones cuando cambie el pubspec
-      - "pubspec.yaml"
+      - "**.lock"
+      - "**.yaml"
 
 jobs:
   actualizar-pods:
