@@ -18,6 +18,21 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Obtenemos la version de Flutter de pubspec.yaml
+        id: get-flutter-version
+        uses: zgosalvez/github-actions-get-flutter-version-env@v2
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          flutter-version: ${{ steps.get-flutter-version.outputs.version }}
+          cache: true
+          cache-key: "flutter-:os:-:channel:-:version:-:arch:"
+          architecture: x64
+
+      - name: Obtener dependencias de flutter
+        run: flutter pub get
+
       - name: Realizando actualizacion de pods
         run: |
           cd iOS
