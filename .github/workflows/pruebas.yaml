@@ -3,7 +3,7 @@ name: Pruebas
 on:
   workflow_dispatch:
   pull_request:
-    types: [synchronize, opened]
+    types: [synchronize, opened, reopened]
     branches:
       - main
     paths:
@@ -49,9 +49,9 @@ jobs:
         run: flutter test --test-randomize-ordering-seed=random -rexpanded
 
   integracion-windows:
-    if:
-      ( contains(github.event.pull_request.labels.*.name, 'sin pruebas de integracion') == false) ||
-      (github.actor != 'dependabot[bot]')
+    if: |
+      (github.actor != 'dependabot[bot]') &&
+      ( !contains(github.event.pull_request.labels.*.name, 'sin pruebas de integracion') )
 
     name: Integración (Windows)
     needs: [pruebas-unitarias]
@@ -59,6 +59,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+
       - name: Obtenemos la version de Flutter de pubspec.yaml
         id: get-flutter-version
         uses: zgosalvez/github-actions-get-flutter-version-env@v2
@@ -90,7 +91,9 @@ jobs:
         run: flutter test integration_test/productos_test.dart --no-pub --no-track-widget-creation -v --suppress-analytics
 
   integracion-android:
-    if: (contains(github.event.pull_request.labels.*.name, 'sin pruebas de integracion') == false) || (github.actor != 'dependabot[bot]')
+    if: |
+      (github.actor != 'dependabot[bot]') &&
+      ( !contains(github.event.pull_request.labels.*.name, 'sin pruebas de integracion') )
     name: Integración (Android)
     needs: [pruebas-unitarias]
     permissions:

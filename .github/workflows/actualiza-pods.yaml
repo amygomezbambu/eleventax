@@ -7,11 +7,12 @@ on:
       - main
     paths:
       # Solo se ejecutará las actualizaciones cuando cambie el pubspec
-      - "pubspec.yaml"
+      - "**.lock"
+      - "**.yaml"
 
 jobs:
   actualizar-pods:
-    if: (github.actor == 'dependabot[bot]') && (github.event.pull_request.merged == true)
+    if: contains(fromJson('["push", "workflow_dispatch"]'), github.event_name)
     name: Actualizar Pods (iOS/Mac)
     runs-on: macos-latest
     steps:
