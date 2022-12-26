@@ -28,9 +28,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Quien Ejecuta
-        run: echo "${{ github.actor }}"
-
       - name: Obtenemos la version de Flutter de pubspec.yaml
         id: get-flutter-version
         uses: zgosalvez/github-actions-get-flutter-version-env@v2
