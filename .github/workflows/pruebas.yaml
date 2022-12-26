@@ -49,9 +49,9 @@ jobs:
         run: flutter test --test-randomize-ordering-seed=random -rexpanded
 
   integracion-windows:
-    if:
-      ( contains(github.event.pull_request.labels.*.name, 'sin pruebas de integracion') == false) ||
-      (github.actor != 'dependabot[bot]')
+    if: |
+      (github.actor != 'dependabot[bot]') &&
+      ( !contains(github.event.pull_request.labels.*.name, 'sin pruebas de integracion') )
 
     name: Integración (Windows)
     needs: [pruebas-unitarias]
@@ -91,7 +91,9 @@ jobs:
         run: flutter test integration_test/productos_test.dart --no-pub --no-track-widget-creation -v --suppress-analytics
 
   integracion-android:
-    if: (contains(github.event.pull_request.labels.*.name, 'sin pruebas de integracion') == false) || (github.actor != 'dependabot[bot]')
+    if: |
+      (github.actor != 'dependabot[bot]') &&
+      ( !contains(github.event.pull_request.labels.*.name, 'sin pruebas de integracion') )
     name: Integración (Android)
     needs: [pruebas-unitarias]
     permissions:

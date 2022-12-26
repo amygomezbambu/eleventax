@@ -19,7 +19,7 @@ updates:
     labels:
       - "pub"
       - "dependencies"
-      - "sin pruebas de integracion"
+    #  - "sin pruebas de integracion"
   # Probamos también las ultimas versiones de los GitHub Actions que usamos
   - package-ecosystem: github-actions
     directory: "/"
@@ -33,4 +33,4 @@ updates:
     labels:
       - "github_actions"
       - "dependencies"
-      - "sin pruebas de integracion"
+    #  - "sin pruebas de integracion"
