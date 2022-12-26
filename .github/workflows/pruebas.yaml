@@ -1,5 +1,4 @@
 name: Pruebas
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 
 on:
   workflow_dispatch:
