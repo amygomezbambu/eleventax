@@ -17,14 +17,14 @@ PODS:
     - Sentry/HybridSDK (= 7.31.3)
   - shared_preferences_macos (0.0.1):
     - FlutterMacOS
-  - SQLCipher (4.5.2):
-    - SQLCipher/standard (= 4.5.2)
-  - SQLCipher/common (4.5.2)
-  - SQLCipher/standard (4.5.2):
+  - SQLCipher (4.5.3):
+    - SQLCipher/standard (= 4.5.3)
+  - SQLCipher/common (4.5.3)
+  - SQLCipher/standard (4.5.3):
     - SQLCipher/common
   - sqlcipher_flutter_libs (0.0.1):
     - FlutterMacOS
-    - SQLCipher (~> 4.5.0)
+    - SQLCipher (~> 4.5.2)
 
 DEPENDENCIES:
   - connectivity_plus (from `Flutter/ephemeral/.symlinks/plugins/connectivity_plus/macos`)
@@ -70,8 +70,8 @@ SPEC CHECKSUMS:
   Sentry: 08884c523575ec0f6690d94ed3ccb0246a1600bf
   sentry_flutter: 91ebe7757a166b34ff432a0d550d22cd010d44d2
   shared_preferences_macos: a64dc611287ed6cbe28fd1297898db1336975727
-  SQLCipher: f5b4857434158b571a3ed3b10b3b43cd18ef5f67
-  sqlcipher_flutter_libs: 38ad87bfba1bc2f3813513b7d3996fb6bd49fed6
+  SQLCipher: 57fa9f863fa4a3ed9dd3c90ace52315db8c0fdca
+  sqlcipher_flutter_libs: f6d600a386ad90a33149ac0d95dd32a5b3219fd6
 
 PODFILE CHECKSUM: 6eac6b3292e5142cfc23bdeb71848a40ec51c14c
 
