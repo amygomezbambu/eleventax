@@ -30,7 +30,7 @@ jobs:
         if: steps.verify-changed-files.outputs.files_changed == 'false'
         run: |
           echo "✖️ No hubo cambios en el pubspec"
-          exit 1
+          exit 0
 
       - name: Obtenemos la version de Flutter de pubspec.yaml
         id: get-flutter-version
