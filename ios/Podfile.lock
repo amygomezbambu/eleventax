@@ -26,7 +26,7 @@ PODS:
     - SQLCipher/common
   - sqlcipher_flutter_libs (0.0.1):
     - Flutter
-    - SQLCipher (~> 4.5.2)
+    - SQLCipher (~> 4.5.0)
 
 DEPENDENCIES:
   - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
@@ -77,7 +77,7 @@ SPEC CHECKSUMS:
   sentry_flutter: 91ebe7757a166b34ff432a0d550d22cd010d44d2
   shared_preferences_ios: 548a61f8053b9b8a49ac19c1ffbc8b92c50d68ad
   SQLCipher: 57fa9f863fa4a3ed9dd3c90ace52315db8c0fdca
-  sqlcipher_flutter_libs: 77bbd7841d0366cc5cc7333f96ec8859ee094480
+  sqlcipher_flutter_libs: 87686ab669dda991b2f384e4bcbb04b93e19c8fe
 
 PODFILE CHECKSUM: 4e8f8b2be68aeea4c0d5beb6ff1e79fface1d048
 
