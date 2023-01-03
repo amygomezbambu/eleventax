@@ -27,10 +27,12 @@ jobs:
             pubspec.yaml
 
       - name: Obtenemos la version de Flutter de pubspec.yaml
+        if: steps.verify-changed-files.outputs.files_changed == 'true'
         id: get-flutter-version
         uses: zgosalvez/github-actions-get-flutter-version-env@v2
 
       - uses: subosito/flutter-action@v2
+        if: steps.verify-changed-files.outputs.files_changed == 'true'
         with:
           channel: "stable"
           flutter-version: ${{ steps.get-flutter-version.outputs.version }}
@@ -39,9 +41,11 @@ jobs:
           architecture: x64
 
       - name: Obtener dependencias de flutter
+        if: steps.verify-changed-files.outputs.files_changed == 'true'
         run: flutter pub get
 
       - name: Realizando actualizacion de pods
+        if: steps.verify-changed-files.outputs.files_changed == 'true'
         run: |
           cd iOS
           pod update
