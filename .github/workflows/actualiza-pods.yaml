@@ -48,8 +48,8 @@ jobs:
         id: verify-changed-files
         with:
           files: |
-            **Pods**
-            **.xcconfig
+            ios/Podfile.lock
+            macos/Podfile.lock
 
       - name: Guardando los archivos actualizados.
         if: steps.verify-changed-files.outputs.files_changed == 'true'
