@@ -26,12 +26,6 @@ jobs:
             pubspec.lock
             pubspec.yaml
 
-      - id: realizar-validacion
-        if: steps.verify-changed-files.outputs.files_changed == 'false'
-        run: |
-          echo "✖️ No hubo cambios en el pubspec"
-          exit 0
-
       - name: Obtenemos la version de Flutter de pubspec.yaml
         id: get-flutter-version
         uses: zgosalvez/github-actions-get-flutter-version-env@v2
@@ -58,6 +52,7 @@ jobs:
           pod update Sentry/HybridSDK
 
       - name: Guardando los archivos actualizados.
+        if: steps.verify-changed-files.outputs.files_changed == 'true'
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com

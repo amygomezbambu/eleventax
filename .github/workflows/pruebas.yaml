@@ -50,7 +50,6 @@ jobs:
 
   integracion-windows:
     if: |
-      (github.actor != 'dependabot[bot]') &&
       ( !contains(github.event.pull_request.labels.*.name, 'sin pruebas de integracion') )
 
     name: Integración (Windows)
@@ -92,7 +91,6 @@ jobs:
 
   integracion-android:
     if: |
-      (github.actor != 'dependabot[bot]') &&
       ( !contains(github.event.pull_request.labels.*.name, 'sin pruebas de integracion') )
     name: Integración (Android)
     needs: [pruebas-unitarias]
