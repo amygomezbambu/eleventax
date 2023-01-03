@@ -7,8 +7,8 @@ on:
       - main
     paths:
       # Solo se ejecutará las actualizaciones cuando cambie el pubspec
-      - "**.lock"
-      - "**.yaml"
+      - "pubspec.lock"
+      - "pubspec.yaml"
 
 jobs:
   actualizar-pods:
@@ -43,7 +43,16 @@ jobs:
           pod update
           pod update Sentry/HybridSDK
 
+      - name: Verificamos cambios en el pubspec.
+        uses: tj-actions/verify-changed-files@v13
+        id: verify-changed-files
+        with:
+          files: |
+            ios/Podfile.lock
+            macos/Podfile.lock
+
       - name: Guardando los archivos actualizados.
+        if: steps.verify-changed-files.outputs.files_changed == 'true'
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
