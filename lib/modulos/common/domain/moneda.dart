@@ -108,7 +108,7 @@ class Moneda {
 
   @override
   String toString() {
-    return '\$ ${toDouble().toStringAsFixed(appConfig.decimalesAMostrar)}';
+    return '\$${toDouble().toStringAsFixed(appConfig.decimalesAMostrar)}';
   }
 
   @override

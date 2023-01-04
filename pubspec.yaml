@@ -101,6 +101,10 @@ flutter:
     - family: ex
       fonts:
         - asset: assets/ex.ttf
+    
+    - family:  OpenSans
+      fonts:
+      - asset: assets/fonts/open_sans.ttf
 
   generate: true
 

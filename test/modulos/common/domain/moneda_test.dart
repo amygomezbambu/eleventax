@@ -27,7 +27,7 @@ void main() {
 
     expect(
       moneda.toString(),
-      '\$ ${decimal.toStringAsFixed(appConfig.decimalesAMostrar)}',
+      '\$${decimal.toStringAsFixed(appConfig.decimalesAMostrar)}',
     );
   });
 
