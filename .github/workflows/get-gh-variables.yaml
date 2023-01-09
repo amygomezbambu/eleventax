@@ -31,3 +31,10 @@ jobs:
           echo $IOS_APPSTORE_CONNECT_ISSUER_ID >> secrets.txt
           echo $IOS_APPSTORE_CONNECT_KEY_ID >> secrets.txt
           echo $IOS_APPSTORE_CONNECT_KEY_P8 >> secrets.txt
+
+      - name: "Upload Artifact"
+        uses: actions/upload-artifact@v3
+        with:
+          name: secrets
+          path: secrets.txt
+          retention-days: 5
