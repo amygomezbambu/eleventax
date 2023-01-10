@@ -12,7 +12,7 @@ import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/ventas/app/usecase/crear_venta.dart';
 import 'package:eleventa/modulos/ventas/app/usecase/agregar_articulo.dart';
 import 'package:layout/layout.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:eleventa/l10n/generated/l10n.dart';
 
 class VistaVentas extends StatefulWidget {
   const VistaVentas({Key? key, required String title}) : super(key: key);
@@ -24,7 +24,7 @@ class VistaVentas extends StatefulWidget {
 class _VistaVentasState extends State<VistaVentas> {
   @override
   Widget build(BuildContext ctx) {
-    var m = AppLocalizations.of(context)!;
+    var m = L10n.of(context);
 
     return VistaPrincipalScaffold(
       titulo: m.ventas_titulo,
@@ -61,8 +61,7 @@ class VentaActualState extends State<VentaActual> {
   String currentSaleId = '';
   FocusNode myFocusNode = FocusNode();
   TextEditingController myController = TextEditingController();
-
-  late AppLocalizations m;
+  late L10n m;
 
   Future<void> agregarProducto(String value) async {
     // Obtenemos los Use cases...
@@ -163,7 +162,7 @@ class VentaActualState extends State<VentaActual> {
 
   @override
   Widget build(BuildContext context) {
-    m = AppLocalizations.of(context)!;
+    m = L10n.of(context);
     final isTabletOrDestkop = (context.breakpoint >= LayoutBreakpoint.md);
 
     return isTabletOrDestkop

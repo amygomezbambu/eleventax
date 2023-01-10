@@ -1,26 +1,11 @@
 {
   "@@locale": "en",
-
-  "ventas_titulo": "Sales",  
   "@ventas_titulo": {
     "description": "Titulo de la pantalla de ventas"
   },
-
-  "ventas_ventaExitosa": "Gracias por su compra, ¡Vuelva pronto! ENG",
-
   "moneda": "{value}",
-  "@moneda": {
-    "description" : "Representación del valor de una moneda",
-    "placeholders": {
-      "value": {
-        "type": "double",
-        "format": "simpleCurrency",
-        "optionalParameters": {
-          "decimalDigits": 2
-        }
-      }
-    }
-  }
-
-
+  "ventas_boton_cobrar": "Pay {valorMoneda}",
+  "ventas_titulo": "Sales",
+  "ventas_ventaExitosa": "Gracias por su compra, ¡Vuelva pronto! ENG",
+  "productos_nuevoProducto_titulo": "New Item"
 }

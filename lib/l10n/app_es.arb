@@ -1,8 +1,35 @@
 {
   "@@locale": "es",
-
-  "ventas_titulo": "Ventas Español latinoamerica",
+  "@moneda": {
+    "description": "Representación del valor de una moneda",
+    "placeholders": {
+      "value": {
+        "format": "simpleCurrency",
+        "type": "double"
+      }
+    }
+  },
+  "@ventas_boton_cobrar": {
+    "placeholders": {
+      "valorMoneda": {
+        "format": "simpleCurrency",
+        "type": "double"
+      }
+    }
+  },
+  "moneda": "{value}",
+  "ventas_boton_cobrar": "Cobrar {valorMoneda}",
+  "ventas_titulo": "Ventas",
   "ventas_ventaExitosa": "Gracias por su compra, ¡Vuelva pronto!",
+  "productos_nuevoProducto_titulo": "Nuevo Producto",
+  "productos_modificarProducto_titulo": "Modificar Producto",
 
-  "moneda": "{value}"
+
+  "eliminar": "Borrar",
+  "@eliminar": { 
+    "description": "Acción para borrar alguna entidad"
+  },
+  
+  "productos_eliminarConfirmacion": "¿Eliminar producto?",
+  "productos_eliminado": "Producto eliminado"
 }

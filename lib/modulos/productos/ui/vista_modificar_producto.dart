@@ -9,9 +9,9 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eleventa/modulos/productos/ui/listado_productos_provider.dart';
 import 'package:eleventa/modulos/productos/ui/forma_producto.dart';
+import 'package:eleventa/l10n/generated/l10n.dart';
 
 class VistaModificarProducto extends StatelessWidget {
-  static const titulo = 'Modificar Producto';
   final String productoId;
 
   const VistaModificarProducto({
@@ -32,17 +32,19 @@ class VistaModificarProducto extends StatelessWidget {
 
   @override
   Widget build(BuildContext context, [bool mounted = true]) {
+    final m = L10n.of(context);
+
     return VistaPrincipalScaffold(
-        titulo: VistaModificarProducto.titulo,
+        titulo: m.productos_modificarProducto_titulo,
         actions: [
           Consumer(
             builder: (context, ref, child) => IconButton(
               icon: const Icon(Iconos.trash, color: Colors.white),
-              tooltip: 'Eliminar producto',
+              tooltip: m.eliminar,
               onPressed: () async {
                 var eliminarProducto =
                     await ExDialogos.mostrarConfirmacionEliminar(context,
-                        titulo: '¿Eliminar producto?');
+                        titulo: m.productos_eliminarConfirmacion);
 
                 if ((eliminarProducto != null) && (eliminarProducto == true)) {
                   await _eliminarProducto();
@@ -58,7 +60,7 @@ class VistaModificarProducto extends StatelessWidget {
                       .obtenerProductos();
 
                   ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Producto eliminado')));
+                      SnackBar(content: Text(m.productos_eliminado)));
                 }
               },
             ),
@@ -66,6 +68,6 @@ class VistaModificarProducto extends StatelessWidget {
         ],
         child: FormaProducto(context,
             productoEnModificacionId: productoId,
-            titulo: VistaModificarProducto.titulo));
+            titulo: m.productos_modificarProducto_titulo));
   }
 }

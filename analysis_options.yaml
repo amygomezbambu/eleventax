@@ -10,8 +10,8 @@
 include: package:flutter_lints/flutter.yaml
 
 analyzer:
-  exclude: [build/**]
-  language:   
+  exclude: [build/**, lib/l10n/generated/**]
+  language:
     strict-raw-types: true
 
 linter:
