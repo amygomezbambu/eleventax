@@ -173,7 +173,7 @@ void main() {
       await tester.tap(nuevoItemNombre);
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byTooltip('Eliminar producto'));
+      await tester.tap(find.byTooltip('Borrar'));
       await tester.pumpAndSettle();
       expect(
         find.widgetWithText(ListTile, nombreNuevo),

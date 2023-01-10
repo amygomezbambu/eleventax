@@ -39,9 +39,6 @@ jobs:
           cache-key: "flutter-:os:-:channel:-:version:-:arch:"
           architecture: x64
 
-      - name: Obtener dependencias de Dart
-        run: dart pub get
-
       - name: Obtener dependencias de flutter
         run: flutter pub get
 
@@ -73,9 +70,6 @@ jobs:
           cache: true
           cache-key: "flutter-:os:-:channel:-:version:-:arch:"
           architecture: x64
-
-      - name: Obtener dependencias de Dart
-        run: dart pub get
 
       - name: Obtener dependencias de flutter
         run: flutter pub get
@@ -128,9 +122,6 @@ jobs:
           cache: true
           cache-key: "flutter-:os:-:channel:-:version:-:arch:"
           architecture: x64
-
-      - name: Obtener dependencias de Dart
-        run: dart pub get
 
       - name: Instalar dependencias
         run: flutter pub get
