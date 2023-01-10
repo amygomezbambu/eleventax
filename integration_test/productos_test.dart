@@ -39,6 +39,7 @@ void main() {
         originalOnError(details);
       };
 
+      await tester.binding.setLocale('es', '');
       await tester.pumpAndSettle();
 
       binding.testTextInput.register();
