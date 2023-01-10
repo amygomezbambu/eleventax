@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:layout/layout.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:eleventa/l10n/generated/l10n.dart';
 
 Future<void> main() async {
   var loader = Loader();
@@ -94,8 +94,9 @@ class _EleventaAppState extends State<EleventaApp> {
   Widget build(BuildContext context) {
     return Layout(
       child: MaterialApp.router(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: L10n.localizationsDelegates,
+        supportedLocales: L10n.supportedLocales,
+        // TODO: Verificar que sucede cuando el SO tiene un idioma no soportado
         routerConfig: _router,
         debugShowCheckedModeBanner: false,
         restorationScopeId: 'eleventa',

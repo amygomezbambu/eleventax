@@ -83,6 +83,9 @@ jobs:
         if: runner.os == 'Windows'
         run: Copy-Item -Path "assets\windows\*" -Destination (New-Item -Type Directory -Force (".\build\windows\runner\Debug")) -Force -EA 0
 
+      - name: Generar archivos de internacionalizacion
+        run: flutter gen-l10n
+
       - name: Generar clases de Dart necesarias con secretos embebidos (y ofuscados)
         run: flutter pub run build_runner build --delete-conflicting-outputs
 
@@ -122,6 +125,9 @@ jobs:
 
       - name: Instalar dependencias
         run: flutter pub get
+
+      - name: Generar archivos de internacionalizacion
+        run: flutter gen-l10n
 
       - name: Generar clases de Dart necesarias con secretos embebidos (y ofuscados)
         run: flutter pub run build_runner build --delete-conflicting-outputs

@@ -101,12 +101,10 @@ flutter:
     - family: ex
       fonts:
         - asset: assets/ex.ttf
-    
-    - family:  OpenSans
-      fonts:
-      - asset: assets/fonts/open_sans.ttf
 
-  generate: true
+    - family: OpenSans
+      fonts:
+        - asset: assets/fonts/open_sans.ttf
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
