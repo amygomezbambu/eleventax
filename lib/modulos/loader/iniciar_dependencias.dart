@@ -19,8 +19,10 @@ import 'package:eleventa/modulos/productos/infra/repositorio_productos.dart';
 import 'package:eleventa/modulos/productos/interfaces/repositorio_consulta_productos.dart';
 import 'package:eleventa/modulos/productos/interfaces/repositorio_productos.dart';
 import 'package:eleventa/modulos/sync/sync.dart';
-import 'package:eleventa/modulos/ventas/app/interface/repositorio_ventas.dart';
+import 'package:eleventa/modulos/ventas/infra/repositorio_consultas_ventas.dart';
 import 'package:eleventa/modulos/ventas/infra/repositorio_ventas.dart';
+import 'package:eleventa/modulos/ventas/interfaces/repositorio_cosultas_ventas.dart';
+import 'package:eleventa/modulos/ventas/interfaces/repositorio_ventas.dart';
 
 class DependenciasLoader {
   static void init() {
@@ -48,13 +50,24 @@ class DependenciasLoader {
       (IRed).toString(),
       () => AdaptadorRed.instance,
     );
+
     Dependencias.registrar(
-      (IRepositorioDeVentas).toString(),
+      (IRepositorioConsultaVentas).toString(),
+      () => RepositorioConsultaVentas(
+        db: Dependencias.infra.database(),
+        logger: Dependencias.infra.logger(),
+      ),
+    );
+
+    Dependencias.registrar(
+      (IRepositorioVentas).toString(),
       () => RepositorioVentas(
         syncAdapter: Dependencias.infra.sync(),
         db: Dependencias.infra.database(),
+        consultas: Dependencias.ventas.repositorioConsultasVentas(),
       ),
     );
+
     Dependencias.registrar(
       (IRepositorioProductos).toString(),
       () => RepositorioProductos(

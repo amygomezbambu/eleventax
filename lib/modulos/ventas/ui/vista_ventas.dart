@@ -1,16 +1,12 @@
 import 'package:eleventa/modulos/common/ui/tema/colores.dart';
 import 'package:eleventa/modulos/common/ui/widgets/dismiss_keyboard.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_vista_principal_scaffold.dart';
-import 'package:eleventa/modulos/ventas/modulo_ventas.dart';
 import 'package:eleventa/modulos/ventas/ui/boton_cobrar.dart';
 import 'package:flutter/material.dart';
-import 'package:eleventa/modulos/ventas/domain/entity/venta.dart';
 import 'package:eleventa/modulos/ventas/ui/acciones_de_venta.dart';
 import 'package:eleventa/modulos/ventas/ui/ui_sale_item.dart';
 import 'package:eleventa/modulos/ventas/ui/listado_articulos.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
-import 'package:eleventa/modulos/ventas/app/usecase/crear_venta.dart';
-import 'package:eleventa/modulos/ventas/app/usecase/agregar_articulo.dart';
 import 'package:layout/layout.dart';
 import 'package:eleventa/l10n/generated/l10n.dart';
 
@@ -66,16 +62,16 @@ class VentaActualState extends State<VentaActual> {
   Future<void> agregarProducto(String value) async {
     // Obtenemos los Use cases...
     // ObtenerProducto obtenerProducto = ModuloProductos.obtenerProducto();
-    CrearVenta crearVenta = ModuloVentas.crearVenta();
-    AgregarArticulo agregarArticulo = ModuloVentas.agregarArticulo();
+    // CrearVenta crearVenta = ModuloVentas.crearVenta();
+    // AgregarArticulo agregarArticulo = ModuloVentas.agregarArticulo();
 
     //late Producto producto;
 
     // Checamos tener una venta
-    if (UiCart.saleUid == '') {
-      UiCart.saleUid = crearVenta.exec();
-      debugPrint('Nueva venta creada $UiCart.saleUid');
-    }
+    // if (UiCart.saleUid == '') {
+    //   UiCart.saleUid = crearVenta.exec();
+    //   debugPrint('Nueva venta creada $UiCart.saleUid');
+    // }
 
     // obtenerProducto.req.sku = value;
 
@@ -85,24 +81,24 @@ class VentaActualState extends State<VentaActual> {
       // Agregamos el articulo a la venta
       // agregarArticulo.req.articulo.descripcion = producto.descripcion;
       // agregarArticulo.req.articulo.precio = producto.precio;
-      agregarArticulo.req.articulo.cantidad = 1;
-      agregarArticulo.req.ventaUID = UiCart.saleUid;
+      // agregarArticulo.req.articulo.cantidad = 1;
+      // agregarArticulo.req.ventaUID = UiCart.saleUid;
 
-      // debugPrint('Agregando ${producto.descripcion} a venta ${UiCart.saleUid}');
-      var sale = await agregarArticulo.exec();
+      // // debugPrint('Agregando ${producto.descripcion} a venta ${UiCart.saleUid}');
+      // var sale = await agregarArticulo.exec();
 
-      setState(() {
-        // Si tuvimos exito, lo agregamos a la UI
-        // UiCart.items.add(UiSaleItem(
-        //     code: producto.sku,
-        //     description: producto.descripcion,
-        //     price: producto.precio.toString()));
+      // setState(() {
+      //   // Si tuvimos exito, lo agregamos a la UI
+      //   // UiCart.items.add(UiSaleItem(
+      //   //     code: producto.sku,
+      //   //     description: producto.descripcion,
+      //   //     price: producto.precio.toString()));
 
-        UiCart.selectedItem = UiCart.items.last;
-        UiCart.total = sale.total;
+      //   UiCart.selectedItem = UiCart.items.last;
+      //   UiCart.total = sale.total;
 
-        saleTotal = sale.total;
-      });
+      //   saleTotal = sale.total;
+      // });
     } on Exception catch (e) {
       if (e is AppEx) {
         debugPrint(e.message);
@@ -124,28 +120,28 @@ class VentaActualState extends State<VentaActual> {
   void chargeButtonClick() async {
     debugPrint('Cobrando!');
 
-    var cobrarVenta = ModuloVentas.cobrarVenta();
+    // var cobrarVenta = ModuloVentas.cobrarVenta();
 
-    // To-DO: Creo que la UI no debe tener acceso a las clases del Entity no?
-    // aqui necesite agregar el import para tener acceso el enum
-    cobrarVenta.req.metodoDePago = MetodoDePago.efectivo;
-    cobrarVenta.req.ventaUID = UiCart.saleUid;
+    // // To-DO: Creo que la UI no debe tener acceso a las clases del Entity no?
+    // // aqui necesite agregar el import para tener acceso el enum
+    // cobrarVenta.req.metodoDePago = MetodoDePago.efectivo;
+    // cobrarVenta.req.ventaUID = UiCart.saleUid;
 
-    await cobrarVenta.exec();
+    // await cobrarVenta.exec();
 
-    setState(() {
-      saleTotal = 0.0;
-    });
+    // setState(() {
+    //   saleTotal = 0.0;
+    // });
 
-    UiCart.items.clear();
-    UiCart.saleUid = '';
+    // UiCart.items.clear();
+    // UiCart.saleUid = '';
 
-    myController.clear();
-    myFocusNode.requestFocus();
+    // myController.clear();
+    // myFocusNode.requestFocus();
 
-    // Para evitar fallas al cerrar la app checamos que la app siga "viva"
-    // ref: https://dart-lang.github.io/linter/lints/use_build_context_synchronously.html
-    if (!mounted) return;
+    // // Para evitar fallas al cerrar la app checamos que la app siga "viva"
+    // // ref: https://dart-lang.github.io/linter/lints/use_build_context_synchronously.html
+    // if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(m.ventas_ventaExitosa),

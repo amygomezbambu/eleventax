@@ -8,7 +8,8 @@ import 'package:eleventa/modulos/telemetria/interface/telemetria.dart';
 import 'package:eleventa/modulos/notificaciones/interfaces/repositorio_notificaciones.dart';
 import 'package:eleventa/modulos/productos/interfaces/repositorio_consulta_productos.dart';
 import 'package:eleventa/modulos/productos/interfaces/repositorio_productos.dart';
-import 'package:eleventa/modulos/ventas/app/interface/repositorio_ventas.dart';
+import 'package:eleventa/modulos/ventas/interfaces/repositorio_cosultas_ventas.dart';
+import 'package:eleventa/modulos/ventas/interfaces/repositorio_ventas.dart';
 
 class _RegistroDeDependencias {
   final Map<String, Object Function()> _deps;
@@ -67,8 +68,12 @@ class DependenciasDeInfraestructura extends _RegistroDeDependencias {
 class DependenciasDeVentas extends _RegistroDeDependencias {
   DependenciasDeVentas(Map<String, Object Function()> deps) : super(deps);
 
-  IRepositorioDeVentas repositorioVentas() {
-    return obtenerDependencia<IRepositorioDeVentas>();
+  IRepositorioVentas repositorioVentas() {
+    return obtenerDependencia<IRepositorioVentas>();
+  }
+
+  IRepositorioConsultaVentas repositorioConsultasVentas() {
+    return obtenerDependencia<IRepositorioConsultaVentas>();
   }
 }
 
