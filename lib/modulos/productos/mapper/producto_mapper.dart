@@ -52,9 +52,9 @@ class ProductoMapper {
       uid: UID.fromString(dbRow['uid'] as String),
       nombre: NombreProducto(dbRow['nombre'] as String),
       precioDeVenta: PrecioDeVentaProducto(
-          Moneda.fromMonedaInt(dbRow['precio_venta'] as int)),
+          Moneda.deserialize(dbRow['precio_venta'] as int)),
       precioDeCompra: PrecioDeCompraProducto(
-          Moneda.fromMonedaInt(dbRow['precio_compra'] as int)),
+          Moneda.deserialize(dbRow['precio_compra'] as int)),
       codigo: CodigoProducto(dbRow['codigo'] as String),
       unidadDeMedida: UnidadDeMedida.cargar(
           uid: UID.fromString(dbRow['unidad_medida_uid'] as String),

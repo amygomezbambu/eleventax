@@ -9,10 +9,26 @@ class Migracion7 extends Migracion {
 
   @override
   Future<void> operacion() async {
-    const command = '''
+    var command = '''
         CREATE TABLE ventas_en_progreso(
           uid TEXT PRIMARY KEY,
-          creado_en INTEGER NOT NULL
+          creado_en INTEGER NOT NULL,
+          subtotal INTEGER NOT NULL DEFAULT 0000000,
+          total_impuestos INTEGER NOT NULL DEFAULT 0000000,
+          total INTEGER NOT NULL DEFAULT 0000000          
+        ); 
+      ''';
+
+    await db.command(sql: command);
+
+    command = '''
+        CREATE TABLE ventas_en_progreso_articulos(
+          uid TEXT PRIMARY KEY,
+          producto_uid TEXT,
+          cantidad REAL,
+          precio_venta INTEGER,
+          descripcion TEXT,
+          agregado_en INTEGER NOT NULL
         ); 
       ''';
 
@@ -21,9 +37,13 @@ class Migracion7 extends Migracion {
 
   @override
   Future<bool> validar() async {
-    const query = 'select name from sqlite_master where type = ? and name = ?;';
-    var queryResult =
-        await db.query(sql: query, params: ['table', 'ventas_en_progreso']);
+    const query =
+        'select name from sqlite_master where type = ? and name in (?,?);';
+    var queryResult = await db.query(sql: query, params: [
+      'table',
+      'ventas_en_progreso',
+      'ventas_en_progreso_articulos'
+    ]);
 
     if (queryResult.isNotEmpty) {
       return true;

@@ -27,7 +27,7 @@ void main() {
 
     expect(
       moneda.toString(),
-      '\$${decimal.toStringAsFixed(appConfig.decimalesAMostrar)}',
+      decimal.toStringAsFixed(appConfig.decimalesAMostrar),
     );
   });
 
@@ -38,7 +38,7 @@ void main() {
     var moneda = Moneda(decimal.toString());
     var moneda2 = Moneda(decimal);
 
-    expect(moneda.toMonedaInt(), moneda2.toMonedaInt());
+    expect(moneda.serialize(), moneda2.serialize());
   });
 
   test('Debe comparar dos valores de Moneda correctamente', () {

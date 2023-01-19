@@ -42,11 +42,11 @@ class Moneda {
   /// var moneda = Moneda(100500000); //moneda.digitosDecimales = 6;
   /// print(moneda.toString()); // 100.500000
   /// ```
-  Moneda.fromMonedaInt(MonedaInt monto) {
+  Moneda.deserialize(MonedaInt monto) {
     _montoInterno = monto;
   }
 
-  MonedaInt toMonedaInt() {
+  MonedaInt serialize() {
     return _montoInterno;
   }
 
@@ -108,7 +108,7 @@ class Moneda {
 
   @override
   String toString() {
-    return '\$${toDouble().toStringAsFixed(appConfig.decimalesAMostrar)}';
+    return toDouble().toStringAsFixed(appConfig.decimalesAMostrar);
   }
 
   @override
@@ -119,9 +119,11 @@ class Moneda {
   }
 
   Moneda operator +(Moneda v) =>
-      Moneda.fromMonedaInt(montoInterno + v._montoInterno);
+      Moneda.deserialize(montoInterno + v._montoInterno);
   Moneda operator -(Moneda v) =>
-      Moneda.fromMonedaInt(montoInterno - v._montoInterno);
+      Moneda.deserialize(montoInterno - v._montoInterno);
+  Moneda operator *(Moneda v) =>
+      Moneda.deserialize(montoInterno * v._montoInterno);
 
   bool operator <=(Moneda other) => _montoInterno <= other.montoInterno;
   bool operator <(Moneda other) => _montoInterno < other.montoInterno;

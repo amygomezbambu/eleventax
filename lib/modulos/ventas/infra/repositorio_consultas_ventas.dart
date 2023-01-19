@@ -1,5 +1,6 @@
 import 'package:eleventa/modulos/common/app/interface/database.dart';
 import 'package:eleventa/modulos/common/app/interface/logger.dart';
+import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/infra/repositorio_consulta.dart';
 import 'package:eleventa/modulos/ventas/domain/venta.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
@@ -29,10 +30,13 @@ class RepositorioConsultaVentas extends RepositorioConsulta
     if (result.isNotEmpty) {
       final row = result.first;
       venta = Venta.cargar(
-        uid: UID.fromString(row['uid'] as String),
-        estado: EstadoDeVenta.enProgreso,
-        creadoEn: DateTime.fromMillisecondsSinceEpoch(row['creado_en'] as int),
-      );
+          uid: UID.fromString(row['uid'] as String),
+          estado: EstadoDeVenta.enProgreso,
+          creadoEn:
+              DateTime.fromMillisecondsSinceEpoch(row['creado_en'] as int),
+          subtotal: Moneda.deserialize(row['subtotal'] as int),
+          total: Moneda.deserialize(row['total'] as int),
+          totalImpuestos: Moneda.deserialize(row['total_impuestos'] as int));
     }
 
     return venta;

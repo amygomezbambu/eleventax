@@ -11,20 +11,17 @@ void main() {
 
   test('Debe guardar la venta en progreso en la base de datos si no esta vacia',
       () async {
-    //Necesito la venta
-
     final guardar = ModuloVentas.guardarVenta();
     final consultas = ModuloVentas.repositorioConsultaVentas();
 
-    guardar.req.venta = Venta.crear(); //Llenar los datos //estado = enProgreso;
+    guardar.req.venta = Venta.crear();
     final uid = guardar.req.venta.uid;
 
     await guardar.exec();
 
-    //leerlo de la db
     final venta = consultas.obtenerVenta(uid);
 
     expect(venta, isNotNull);
-    //expect() validar que tenga todos los datos que guardamos
+    //TODO: validar que tenga TODOS los datos que guardamos
   });
 }

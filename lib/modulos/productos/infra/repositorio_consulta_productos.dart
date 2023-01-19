@@ -192,9 +192,9 @@ class RepositorioConsultaProductos extends RepositorioConsulta
           uid: UID.fromString(row['uid'] as String),
           nombre: NombreProducto(row['nombre'] as String),
           precioDeVenta: PrecioDeVentaProducto(
-              Moneda.fromMonedaInt(row['precio_venta'] as int)),
+              Moneda.deserialize(row['precio_venta'] as int)),
           precioDeCompra: PrecioDeCompraProducto(
-            Moneda.fromMonedaInt(row['precio_compra'] as int),
+            Moneda.deserialize(row['precio_compra'] as int),
           ),
           codigo: CodigoProducto(row['codigo'] as String),
           unidadDeMedida: UnidadDeMedida.cargar(

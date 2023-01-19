@@ -9,6 +9,7 @@ import 'package:eleventa/modulos/ventas/interfaces/repositorio_ventas.dart';
 class RepositorioVentas extends Repositorio implements IRepositorioVentas {
   //final IRepositorioConsultaVentas _consultas;
   final tablaVentasEnProgreso = 'ventas_en_progreso';
+  final tablaArticulosVentaEnProgreso = 'ventas_en_progreso_articulos';
 
   RepositorioVentas({
     required ISync syncAdapter,
@@ -20,12 +21,32 @@ class RepositorioVentas extends Repositorio implements IRepositorioVentas {
   Future<void> agregar(Venta venta) async {
     if (venta.estado == EstadoDeVenta.enProgreso) {
       final command =
-          'INSERT INTO $tablaVentasEnProgreso (uid, creado_en) values(?,?);';
+          'INSERT INTO $tablaVentasEnProgreso (uid, creado_en, subtotal, total_impuestos, total) '
+          'VALUES(?,?, ?, ? , ?);';
 
       await db.command(sql: command, params: [
         venta.uid.toString(),
         venta.creadoEn.millisecondsSinceEpoch,
+        venta.subtotal.serialize(),
+        venta.totalImpuestos.serialize(),
+        venta.total.serialize(),
       ]);
+
+      for (var articulo in venta.articulos) {
+        final command = '''
+          INSERT INTO $tablaArticulosVentaEnProgreso (uid, agregado_en, producto_uid, precio_venta,
+            descripcion, cantidad) values(?,?,?,?,?,?);
+          ''';
+
+        await db.command(sql: command, params: [
+          articulo.uid.toString(),
+          articulo.agregadoEn.millisecondsSinceEpoch,
+          articulo.producto?.uid.toString(),
+          articulo.precioDeVenta.serialize(),
+          articulo.descripcion,
+          articulo.cantidad
+        ]);
+      }
     } else {}
   }
 

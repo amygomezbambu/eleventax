@@ -94,7 +94,7 @@ class Repositorio {
     for (var diferencia in diferencias.keys) {
       if (diferencias[diferencia] is Moneda) {
         diferencias[diferencia] =
-            (diferencias[diferencia] as Moneda).toMonedaInt();
+            (diferencias[diferencia] as Moneda).serialize();
       }
     }
 

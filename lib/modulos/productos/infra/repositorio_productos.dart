@@ -53,9 +53,9 @@ class RepositorioProductos extends Repositorio
           if (UID.isValid(producto.categoria!.uid.toString()))
             'categoria_uid': producto.categoria!.uid.toString(),
         'unidad_medida_uid': producto.unidadMedida.uid.toString(),
-        'precio_compra': producto.precioDeCompra.toMonedaInt(),
+        'precio_compra': producto.precioDeCompra.serialize(),
         if (producto.precioDeVenta != null)
-          'precio_venta': producto.precioDeVenta!.toMonedaInt(),
+          'precio_venta': producto.precioDeVenta!.serialize(),
         'se_vende_por': producto.seVendePor.index,
         'url_imagen': producto.imagenURL,
         'preguntar_precio': producto.preguntarPrecio,
