@@ -19,6 +19,8 @@ class ExTextField extends StatelessWidget {
   final InputType inputType;
   final bool aplicarResponsividad;
   final bool autofocus;
+  final Widget? suffixIcon;
+  final FocusNode? focusNode;
 
   /// Evento lanzado cuando el widget pierde el foco,
   /// usualmente usado para validaciones
@@ -44,6 +46,8 @@ class ExTextField extends StatelessWidget {
     this.onFieldSubmitted,
     this.aplicarResponsividad = true,
     this.autofocus = false,
+    this.suffixIcon,
+    this.focusNode,
   }) : super(key: key);
 
   Widget _textField() {
@@ -62,6 +66,8 @@ class ExTextField extends StatelessWidget {
       inputType: inputType,
       aplicarResponsividad: aplicarResponsividad,
       autofocus: autofocus,
+      suffixIcon: suffixIcon,
+      focusNode: focusNode,
     );
   }
 
@@ -152,6 +158,8 @@ class _ExTextField extends StatefulWidget {
   final InputType inputType;
   final bool aplicarResponsividad;
   final bool autofocus;
+  final Widget? suffixIcon;
+  final FocusNode? focusNode;
 
   const _ExTextField({
     Key? key,
@@ -169,6 +177,8 @@ class _ExTextField extends StatefulWidget {
     required this.aplicarResponsividad,
     this.onFieldSubmitted,
     required this.autofocus,
+    this.suffixIcon,
+    this.focusNode,
   }) : super(key: key);
 
   @override
@@ -233,6 +243,7 @@ class _ExTextFieldState extends State<_ExTextField> {
           key: widget.fieldKey,
           controller: widget.controller,
           cursorColor: Colors.black,
+          focusNode: widget.focusNode,
           keyboardType: (widget.inputType == InputType.texto)
               ? TextInputType.text
               : const TextInputType.numberWithOptions(decimal: true),
@@ -275,6 +286,7 @@ class _ExTextFieldState extends State<_ExTextField> {
             filled: true,
             isDense: true,
             fillColor: ColoresBase.white,
+            suffixIcon: widget.suffixIcon,
             prefixIcon: (widget.icon != null)
                 ? Icon(
                     widget.icon,

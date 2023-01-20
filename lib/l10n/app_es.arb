@@ -31,5 +31,7 @@
   },
   
   "productos_eliminarConfirmacion": "¿Eliminar producto?",
-  "productos_eliminado": "Producto eliminado"
+  "productos_eliminado": "Producto eliminado",
+
+  "escaner_titulo": "Escanea un código de barras"
 }

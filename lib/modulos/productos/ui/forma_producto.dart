@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/ui/ex_icons.dart';
+import 'package:eleventa/modulos/common/ui/ex_mobile_scanner.dart';
 import 'package:eleventa/modulos/common/ui/tema/theme.dart';
 import 'package:eleventa/modulos/common/ui/widgets/dismiss_keyboard.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_boton_secundario.dart';
@@ -60,6 +63,7 @@ class _FormaProductoState extends State<FormaProducto> {
   Producto? productoEnModificacion;
 
   final FocusNode _focusNode = FocusNode();
+  late FocusNode _codigoFocusNode;
   final scrollController = ScrollController(initialScrollOffset: 0.0);
 
   final keyCodigo = GlobalKey<FormFieldState<dynamic>>();
@@ -109,22 +113,7 @@ class _FormaProductoState extends State<FormaProducto> {
     unidadDeMedidaSeleccionada = null;
     seVendePor = ProductoSeVendePor.unidad;
 
-    // TODO: Establecer foco otra vez en codigo
-    //FocusScope.of(context).requestFocus(FocusNode());
-  }
-
-  @override
-  void dispose() {
-    _controllerCodigo.dispose();
-    _controllerNombre.dispose();
-    _controllerPrecioDeCompra.dispose();
-    _controllerPrecioDeVenta.dispose();
-    _controllerImagen.dispose();
-    _controllerUtilidad.dispose();
-    _focusNode.dispose();
-    scrollController.dispose();
-
-    super.dispose();
+    _codigoFocusNode.requestFocus();
   }
 
   /// Cambia el control enfocado de acuerdo a las teclas de flecha arriba,
@@ -200,6 +189,23 @@ class _FormaProductoState extends State<FormaProducto> {
   @override
   void initState() {
     super.initState();
+
+    _codigoFocusNode = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    _controllerCodigo.dispose();
+    _controllerNombre.dispose();
+    _controllerPrecioDeCompra.dispose();
+    _controllerPrecioDeVenta.dispose();
+    _controllerImagen.dispose();
+    _controllerUtilidad.dispose();
+    _focusNode.dispose();
+    scrollController.dispose();
+
+    _codigoFocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -305,6 +311,35 @@ class _FormaProductoState extends State<FormaProducto> {
     return producto;
   }
 
+  Future<String?> _validarCodigoIngresado(String? value) async {
+    if (value == null) {
+      return 'No se aceptan valores Nulos';
+    }
+
+    try {
+      var codigoSanitizado = CodigoProducto(value);
+
+      setState(() {
+        _controllerCodigo.text = codigoSanitizado.value;
+      });
+
+      var existeCodigo =
+          await _verificarExistenciaDeCodigo(codigoSanitizado.value);
+
+      if (existeCodigo) {
+        return 'El código ya existe, verificar';
+      }
+
+      return null;
+    } catch (e) {
+      if (e is DomainEx) {
+        return e.message;
+      } else {
+        return e.toString();
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return DismissKeyboard(
@@ -344,42 +379,43 @@ class _FormaProductoState extends State<FormaProducto> {
                                       fieldKey: keyCodigo,
                                       hintText: 'Código',
                                       controller: _controllerCodigo,
+                                      focusNode: _codigoFocusNode,
                                       icon: Iconos.barcode_scan,
                                       autofocus: true,
                                       // icon: state.existeCodigo
                                       //     ? Icons.error
                                       //     : Icons.document_scanner,
                                       width: FormaProducto.anchoCamposDefault,
+                                      // Mostramos el icono para escanear solo en plataformas móviles
+                                      suffixIcon: Platform.isIOS ||
+                                              Platform.isAndroid
+                                          ? IconButton(
+                                              onPressed: () async {
+                                                var valor =
+                                                    await Navigator.of(context)
+                                                        .push(
+                                                  MaterialPageRoute(
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return const ExMobileScanner();
+                                                    },
+                                                  ),
+                                                );
+
+                                                if (valor != null) {
+                                                  _controllerCodigo.text =
+                                                      valor;
+                                                  _codigoFocusNode
+                                                      .requestFocus();
+                                                  // TODO: Forzar validacion del campo
+                                                }
+                                              },
+                                              icon: const Icon(Icons
+                                                  .qr_code_scanner_rounded),
+                                            )
+                                          : null,
                                       validator: (value) async {
-                                        if (value == null) {
-                                          return 'No se aceptan valores Nulos';
-                                        }
-
-                                        try {
-                                          var codigoSanitizado =
-                                              CodigoProducto(value);
-
-                                          setState(() {
-                                            _controllerCodigo.text =
-                                                codigoSanitizado.value;
-                                          });
-
-                                          var existeCodigo =
-                                              await _verificarExistenciaDeCodigo(
-                                                  codigoSanitizado.value);
-
-                                          if (existeCodigo) {
-                                            return 'El código ya existe, verificar';
-                                          }
-
-                                          return null;
-                                        } catch (e) {
-                                          if (e is DomainEx) {
-                                            return e.message;
-                                          } else {
-                                            return e.toString();
-                                          }
-                                        }
+                                        return _validarCodigoIngresado(value);
                                       }),
                                   ExTextField(
                                       key: FormaProducto.txtNombre,

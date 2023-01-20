@@ -1,7 +1,0 @@
-{
-  "@@locale": "es_MX",
-  "moneda": "{value}",
-  "ventas_boton_cobrar": "Cobrar {valorMoneda}",
-  "ventas_titulo": "Ventas MX",
-  "ventas_ventaExitosa": "Gracias por su compra, ¡Vuelva pronto!"
-}

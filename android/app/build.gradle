@@ -49,7 +49,7 @@ android {
 
     defaultConfig {
         applicationId "com.bambucode.eleventa"
-        minSdkVersion flutter.minSdkVersion
+        minSdkVersion 21 // Especificamente para poder usar google_mlkit_barcode_scanning
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

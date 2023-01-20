@@ -65,6 +65,8 @@ dependencies:
   go_router: ^6.0.1
   xid: ^1.0.12 # [ADR-0003]
   faker: ^2.1.0
+  camerawesome: ^1.0.0-rc3 # [ADR/global-0005]
+  google_mlkit_barcode_scanning: ^0.5.0 # [ADR/global-0005]
 
 dev_dependencies:
   integration_test:
