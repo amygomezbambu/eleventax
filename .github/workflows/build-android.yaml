@@ -44,7 +44,7 @@ jobs:
           echo "storeFile=${{ steps.android_keystore.outputs.filePath }}" >> android/key.properties
           
       - name: Instalar Ruby y fastlane
-        uses: ruby/setup-ruby@319066216501fbd5e2d568f14b7d68c19fb67a5d
+        uses: ruby/setup-ruby@ee26e27437bde475b19a6bf8cb73c9fa658876a2
         with:
           ruby-version: "2.6"
           bundler-cache: true
