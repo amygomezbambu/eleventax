@@ -13,6 +13,7 @@ class Articulo extends Entidad {
   final DateTime _agregadoEn;
   late NombreProducto _descripcion;
   var _precioDeVenta = Moneda(0);
+  final Map<UID, Moneda> _totalesDeImpuestos = {};
 
   Producto? get producto => _producto;
   double get cantidad => _cantidad;
@@ -22,6 +23,10 @@ class Articulo extends Entidad {
   Moneda get precioDeVenta => _precioDeVenta;
   DateTime get agregadoEn => _agregadoEn;
   String get descripcion => _descripcion.value;
+
+  /// Listado de Impuesto UID y su monto
+  Map<UID, Moneda> get totalesDeImpuestos =>
+      Map.unmodifiable(_totalesDeImpuestos);
 
   Articulo.cargar({
     required UID uid,
@@ -74,7 +79,20 @@ class Articulo extends Entidad {
 
   void _calcularTotales() {
     _subtotal = Moneda(_precioDeVenta.toDouble() * _cantidad);
-    //_totalImpuestos = _producto!.impuestos * _cantidad;
+    //TODO: contemplar base de impuesto
+    if (_producto != null) {
+      for (var impuesto in _producto!.impuestos) {
+        // TODO: Ver cómo multiplicar facilmente Moneda x double
+        final montoDeImpuesto =
+            _subtotal.toDouble() * (impuesto.porcentaje / 100);
+
+        _totalesDeImpuestos[impuesto.uid] = Moneda(montoDeImpuesto);
+        _totalImpuestos += Moneda(montoDeImpuesto);
+      }
+    } else {
+      // TODO: Implementar cálculo de impuestos con genericos
+    }
+
     _total = _subtotal + _totalImpuestos;
   }
 }

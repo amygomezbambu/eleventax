@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:eleventa/globals.dart';
+import 'package:decimal/decimal.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
 
 typedef MonedaInt = int;
@@ -9,8 +10,14 @@ class Moneda {
   MonedaInt _montoInterno = 0;
 
   static const _digitosDecimales = 6;
+  static const _digitosCobrables = 2;
 
   MonedaInt get montoInterno => _montoInterno;
+
+  /// Regresa el monto como un importe cobrable a 2 decimales
+  /// con redondeo aritmetico
+  Moneda get importeCobrable => Moneda(
+      Decimal.parse(toDouble().toString()).toStringAsFixed(_digitosCobrables));
 
   /// Crear un objeto Moneda desde un monto
   ///
@@ -108,7 +115,8 @@ class Moneda {
 
   @override
   String toString() {
-    return toDouble().toStringAsFixed(appConfig.decimalesAMostrar);
+    var valor = Decimal.parse(toDouble().toString());
+    return valor.toStringAsFixed(appConfig.decimalesAMostrar);
   }
 
   @override

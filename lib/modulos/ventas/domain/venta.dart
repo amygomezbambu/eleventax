@@ -54,6 +54,7 @@ class Venta extends Entidad {
     }
 
     // Redondeamos a 2 decimales el subtotal
+    // que es el que cobraremos a los usuarios
     _subtotal = Moneda(_subtotal.toString());
     _totalImpuestos = Moneda(_totalImpuestos.toString());
     _total = _subtotal + _totalImpuestos;

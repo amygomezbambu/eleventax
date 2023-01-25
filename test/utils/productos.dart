@@ -1,5 +1,6 @@
 import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
+import 'package:eleventa/modulos/productos/domain/impuesto.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
@@ -11,13 +12,13 @@ import 'package:faker/faker.dart';
 enum TipoUnidadDeMedida { pieza, granel }
 
 class ProductosUtils {
-  Producto crearProducto({
-    String? codigo,
-    String? nombre,
-    Moneda? precioCompra,
-    Moneda? precioVenta,
-    TipoUnidadDeMedida tipoUnidadDeMedida = TipoUnidadDeMedida.pieza,
-  }) {
+  static Producto crearProducto(
+      {String? codigo,
+      String? nombre,
+      Moneda? precioCompra,
+      Moneda? precioVenta,
+      TipoUnidadDeMedida tipoUnidadDeMedida = TipoUnidadDeMedida.pieza,
+      List<Impuesto>? impuestos}) {
     var faker = Faker();
 
     final codigo_ = codigo != null
@@ -45,13 +46,17 @@ class ProductosUtils {
             nombre: 'granel',
             abreviacion: 'gr',
           );
+    final impuestos_ = impuestos ??
+        <Impuesto>[
+          Impuesto.crear(nombre: 'IVA', porcentaje: 16.0),
+        ];
 
     return Producto.crear(
-      codigo: codigo_,
-      nombre: nombre_,
-      unidadDeMedida: unidadDeMedida_,
-      precioDeCompra: precioCompra_,
-      precioDeVenta: precioVenta_,
-    );
+        codigo: codigo_,
+        nombre: nombre_,
+        unidadDeMedida: unidadDeMedida_,
+        precioDeCompra: precioCompra_,
+        precioDeVenta: precioVenta_,
+        impuestos: impuestos_);
   }
 }

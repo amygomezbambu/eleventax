@@ -68,4 +68,18 @@ void main() {
   test('Debe de regresar excepcion si se le pasa un monto inválido', () {
     expect(() => Moneda([]), throwsA(isA<EleventaEx>()));
   });
+
+  test('Debe convertir a importeCobrable de forma correcta', () {
+    expect(Moneda(1.025).montoInterno, 1025000,
+        reason: 'No esta convirtiendo correctamente fromDouble');
+    expect(Moneda(1.025).importeCobrable.montoInterno, 1030000);
+
+    expect(Moneda(1.025).importeCobrable.toString(), '1.03');
+    expect(Moneda(6.425).importeCobrable.toString(), '6.43');
+    expect(Moneda(79.614).importeCobrable.toString(), '79.61');
+    expect(Moneda(79.615).importeCobrable.toString(), '79.62');
+    expect(Moneda(79.616).importeCobrable.toString(), '79.62');
+    expect(Moneda(1.235).importeCobrable.toString(), '1.24');
+    expect(Moneda(9.645).importeCobrable.toString(), '9.65');
+  });
 }

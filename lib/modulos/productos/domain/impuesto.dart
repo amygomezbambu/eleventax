@@ -7,6 +7,8 @@ class Impuesto extends Entidad {
   final double _porcentaje;
 
   String get nombre => _nombre;
+
+  /// Porcentaje en decimal, ejem: 16.00, 1.3333, etc.
   double get porcentaje => _porcentaje;
 
   Impuesto.cargar({
@@ -17,6 +19,12 @@ class Impuesto extends Entidad {
         _porcentaje = porcentaje,
         super.cargar(uid);
 
+  /// Crea un Impuesto
+  ///
+  /// Ejemplo:
+  /// ```dart
+  /// Impuesto.crear(nombre: 'IVA', porcentaje: 16.00);
+  /// ```
   Impuesto.crear({
     required String nombre,
     required double porcentaje,

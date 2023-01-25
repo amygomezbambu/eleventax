@@ -10,7 +10,7 @@ import device_info_plus
 import package_info_plus
 import path_provider_macos
 import sentry_flutter
-import shared_preferences_macos
+import shared_preferences_foundation
 import sqlcipher_flutter_libs
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {

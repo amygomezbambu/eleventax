@@ -67,6 +67,7 @@ dependencies:
   faker: ^2.1.0
   camerawesome: ^1.0.0-rc3 # [ADR/global-0005]
   google_mlkit_barcode_scanning: ^0.5.0 # [ADR/global-0005]
+  decimal: ^2.3.2
 
 dev_dependencies:
   integration_test:
