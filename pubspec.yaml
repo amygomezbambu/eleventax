@@ -15,11 +15,11 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
-  flutter: "3.3.8"
-  sdk: "^2.18.0"
+  flutter: "3.7.0"
+  sdk: ">=2.19.0 <3.0.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -33,7 +33,7 @@ dependencies:
 
   flutter_localizations:
     sdk: flutter
-  intl: ^0.17.0
+  intl: any
 
   # sqflite:
   sqlite3: 1.9.1 # [ARD-0007]
@@ -44,7 +44,7 @@ dependencies:
 
   meta: ^1.7.0
   http: ^0.13.5
-  path:
+  path: ^1.8.2
   google_fonts: ^3.0.1
   any_base: ^2.0.0
   murmurhash: ^1.0.1
@@ -52,8 +52,8 @@ dependencies:
   logging: ^1.1.0 # [ADR-0004]
   sentry_flutter: ^6.18.2 # [ADR-0004]
   sentry_logging: ^6.18.1 # [ADR-0004]
-  path_provider_macos: ^2.0.7
-  path_provider: ^2.0.11
+  path_provider_foundation:
+  path_provider: ^2.0.12
   layout: ^1.0.3 # [ADR-0009]
   flutter_svg: ^1.1.6
   mixpanel_analytics: ^2.1.1
@@ -65,9 +65,9 @@ dependencies:
   go_router: ^6.0.1
   xid: ^1.0.12 # [ADR-0003]
   faker: ^2.1.0
-  camerawesome: ^1.0.0-rc3 # [ADR/global-0005]
+  camerawesome: ^1.2.0 # [ADR/global-0005]
   google_mlkit_barcode_scanning: ^0.5.0 # [ADR/global-0005]
-  decimal: ^2.3.2
+  decimal: ^2.3.2  
 
 dev_dependencies:
   integration_test:

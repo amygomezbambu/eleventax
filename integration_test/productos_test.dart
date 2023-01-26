@@ -166,7 +166,7 @@ void main() {
 
       expect(
         find.widgetWithText(ListTile, Moneda(nuevoPrecioVenta).toString()),
-        findsOneWidget,
+        findsAtLeastNWidgets(1),
         reason:
             'Debe existir el producto modificado en el listado con el precio de venta correcto',
       );

@@ -2,6 +2,13 @@
 
 El mejor punto de venta multi plataforma.
 
+### Requisitos Mínimos
+
+* macOS 10.4 (Mojave)
+* Windows 7 (64 bits)
+* iOS 12
+* Android Lollipop (API 21)
+
 ## Configurar ambiente de desarrollo
 
 De momento el desarrollo de la aplicación se realiza principalmente en pair/mob programming sessions bajo MacOS. Para configurar tu computadora debes hacer lo siguiente:
@@ -15,7 +22,7 @@ De momento el desarrollo de la aplicación se realiza principalmente en pair/mob
 3. Algunas instalaciones requerirán tu contraseña
 
 Posteriormente configura la extensión de Live Sharing accediendo a tu cuenta de GitHub:
-https://docs.microsoft.com/en-us/visualstudio/liveshare/use/install-live-share-visual-studio-code#sign-in-to-live-share
+<https://docs.microsoft.com/en-us/visualstudio/liveshare/use/install-live-share-visual-studio-code#sign-in-to-live-share>
 
 ## Pruebas
 
@@ -41,14 +48,14 @@ zsh tools\\probar_en_testlab.sh
 
 ## Manejo de versionamiento
 
-Para agregar una nueva mejora al (CHANGELOG.md)[/CHANGELOG.md] ejecutar en la terminal el comando `cider log` con las siguientes categorías:
+Para agregar una nueva mejora al [CHANGELOG.md](/CHANGELOG.md) ejecutar en la terminal el comando `cider log` con las siguientes categorías:
 
-- `added` - Funcionalidad nueva
-- `changed`- Funcionalidad que cambió o se actualizó
-- `deprecated` - Funcionalidad que pronto dejará de operar y se recomienda dejar de usar.
-- `removed` - Funcionalidad que fue removida.
-- `fixed` - Corrección de bug.
-- `security`- Aspecto de seguridad corregido y de alta importancia.
+* `added` - Funcionalidad nueva
+* `changed`- Funcionalidad que cambió o se actualizó
+* `deprecated` - Funcionalidad que pronto dejará de operar y se recomienda dejar de usar.
+* `removed` - Funcionalidad que fue removida.
+* `fixed` - Corrección de bug.
+* `security`- Aspecto de seguridad corregido y de alta importancia.
 
 Ejemplo:
 
