@@ -45,7 +45,7 @@ dependencies:
   meta: ^1.7.0
   http: ^0.13.5
   path: ^1.8.2
-  google_fonts: ^3.0.1
+  google_fonts: ^4.0.1
   any_base: ^2.0.0
   murmurhash: ^1.0.1
   hlc: ^1.0.3
