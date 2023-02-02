@@ -8,7 +8,7 @@ enum EstadoDeVenta { enProgreso, cobrada, cancelada }
 class Venta extends Entidad {
   final EstadoDeVenta _estado;
   final DateTime _creadoEn;
-  final List<Articulo> _articulos = [];
+  final List<Articulo> _articulos;
   var _subtotal = Moneda(0);
   var _total = Moneda(0);
   var _totalImpuestos = Moneda(0);
@@ -27,20 +27,58 @@ class Venta extends Entidad {
     required Moneda subtotal,
     required Moneda totalImpuestos,
     required Moneda total,
+    required List<Articulo> articulos,
   })  : _estado = estado,
         _creadoEn = creadoEn,
         _subtotal = subtotal,
         _totalImpuestos = totalImpuestos,
         _total = total,
+        _articulos = articulos,
         super.cargar(uid);
 
   Venta.crear()
       : _estado = EstadoDeVenta.enProgreso,
         _creadoEn = DateTime.now(),
+        _articulos = [],
         super.crear();
 
+  Venta copyWith({
+    UID? uid,
+    EstadoDeVenta? estado,
+    DateTime? creadoEn,
+    Moneda? subtotal,
+    Moneda? totalImpuestos,
+    Moneda? total,
+    List<Articulo>? articulos,
+  }) {
+    return Venta.cargar(
+        uid: uid ?? uid_,
+        estado: estado ?? _estado,
+        creadoEn: creadoEn ?? _creadoEn,
+        subtotal: subtotal ?? _subtotal,
+        totalImpuestos: totalImpuestos ?? _totalImpuestos,
+        total: total ?? _total,
+        articulos: articulos ?? _articulos);
+  }
+
   void agregarArticulo(Articulo articulo) {
-    _articulos.add(articulo);
+    var encontrado = false;
+
+    if (articulo.producto != null) {
+      for (var element in _articulos) {
+        if (element.producto != null) {
+          if (element.producto!.uid == articulo.producto!.uid) {
+            element.actualizarCantidad(element.cantidad + articulo.cantidad);
+            encontrado = true;
+          }
+        }
+      }
+    }
+
+    if (!encontrado) {
+      _articulos.add(articulo);
+    }
+
     _actualizarTotales();
   }
 
@@ -48,6 +86,7 @@ class Venta extends Entidad {
     _subtotal = Moneda(0);
     _totalImpuestos = Moneda(0);
     _total = Moneda(0);
+
     for (var articulo in _articulos) {
       _subtotal += articulo.subtotal;
       _totalImpuestos += articulo.totalImpuestos;
@@ -55,8 +94,14 @@ class Venta extends Entidad {
 
     // Redondeamos a 2 decimales el subtotal
     // que es el que cobraremos a los usuarios
-    _subtotal = Moneda(_subtotal.toString());
-    _totalImpuestos = Moneda(_totalImpuestos.toString());
+    _subtotal = _subtotal.importeCobrable;
+    _totalImpuestos = _totalImpuestos.importeCobrable;
     _total = _subtotal + _totalImpuestos;
+  }
+
+  // TODO: Implementar
+  @override
+  String toString() {
+    return '';
   }
 }

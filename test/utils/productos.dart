@@ -48,7 +48,7 @@ class ProductosUtils {
           );
     final impuestos_ = impuestos ??
         <Impuesto>[
-          Impuesto.crear(nombre: 'IVA', porcentaje: 16.0),
+          Impuesto.crear(nombre: 'IVA', porcentaje: 16.0, ordenDeAplicacion: 2),
         ];
 
     return Producto.crear(

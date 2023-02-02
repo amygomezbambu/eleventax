@@ -27,6 +27,7 @@ class RepositorioConsultaVentas extends RepositorioConsulta
     var result = await query(sql: sql, params: [uid]);
 
     // TODO: Crear un tipo de FechaBD que lea/guarde en UNIX epoc estilo Moneda
+    //TODO: debemos cargar el listado de articulos
     if (result.isNotEmpty) {
       final row = result.first;
       venta = Venta.cargar(
@@ -36,7 +37,8 @@ class RepositorioConsultaVentas extends RepositorioConsulta
               DateTime.fromMillisecondsSinceEpoch(row['creado_en'] as int),
           subtotal: Moneda.deserialize(row['subtotal'] as int),
           total: Moneda.deserialize(row['total'] as int),
-          totalImpuestos: Moneda.deserialize(row['total_impuestos'] as int));
+          totalImpuestos: Moneda.deserialize(row['total_impuestos'] as int),
+          articulos: []);
     }
 
     return venta;

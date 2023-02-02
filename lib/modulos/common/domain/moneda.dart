@@ -16,8 +16,7 @@ class Moneda {
 
   /// Regresa el monto como un importe cobrable a 2 decimales
   /// con redondeo aritmetico
-  Moneda get importeCobrable => Moneda(
-      Decimal.parse(toDouble().toString()).toStringAsFixed(_digitosCobrables));
+  Moneda get importeCobrable => redondearADecimales(_digitosCobrables);
 
   /// Crear un objeto Moneda desde un monto
   ///
@@ -55,6 +54,12 @@ class Moneda {
 
   MonedaInt serialize() {
     return _montoInterno;
+  }
+
+  Moneda redondearADecimales(int decimales) {
+    return Moneda(
+      Decimal.parse(toDouble().toString()).toStringAsFixed(decimales),
+    );
   }
 
   void _fromDouble(double monto) {

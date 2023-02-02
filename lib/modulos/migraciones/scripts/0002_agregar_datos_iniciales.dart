@@ -10,18 +10,23 @@ class Migracion2 extends Migracion {
   @override
   Future<void> operacion() async {
     /*Creacion de impuestos iniciales*/
-    var command = 'insert into impuestos(uid,nombre,porcentaje) '
-        'values(?, "IVA 8%", 8000000)';
+    var command = 'insert into impuestos(uid,nombre,porcentaje,orden) '
+        'values(?, "IVA 8%", 8000000,2)';
 
     await db.command(sql: command, params: [UID().toString()]);
 
-    command = 'insert into impuestos(uid,nombre,porcentaje) '
-        'values(?, "IVA 16%", 16000000)';
+    command = 'insert into impuestos(uid,nombre,porcentaje,orden) '
+        'values(?, "IVA 16%", 16000000,2)';
 
     await db.command(sql: command, params: [UID().toString()]);
 
-    command = 'insert into impuestos(uid,nombre,porcentaje) '
-        'values(?, "IVA 0%", 0)';
+    command = 'insert into impuestos(uid,nombre,porcentaje,orden) '
+        'values(?, "IVA 0%", 0,2)';
+
+    await db.command(sql: command, params: [UID().toString()]);
+
+    command = 'insert into impuestos(uid,nombre,porcentaje,orden) '
+        'values(?, "IEPS 3%", 3000000, 1)';
 
     await db.command(sql: command, params: [UID().toString()]);
 

@@ -92,6 +92,7 @@ class _EleventaAppState extends State<EleventaApp> {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = ThemeData();
     return Layout(
       child: MaterialApp.router(
         localizationsDelegates: L10n.localizationsDelegates,
@@ -100,10 +101,10 @@ class _EleventaAppState extends State<EleventaApp> {
         routerConfig: _router,
         debugShowCheckedModeBanner: false,
         restorationScopeId: 'eleventa',
-        theme: ThemeData(
+        theme: theme.copyWith(
+          colorScheme:
+              theme.colorScheme.copyWith(secondary: ColoresBase.primario600),
           brightness: Brightness.light,
-          primaryColor: ColoresBase.primario600,
-          fontFamily: 'Open Sans',
           navigationBarTheme: const NavigationBarThemeData(
             height: 20,
           ),

@@ -1,12 +1,14 @@
+import 'package:eleventa/modulos/common/ui/ex_icons.dart';
 import 'package:eleventa/modulos/common/ui/tema/colores.dart';
-import 'package:eleventa/modulos/common/ui/widgets/dismiss_keyboard.dart';
+import 'package:eleventa/modulos/common/ui/widgets/ex_text_field.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_vista_principal_scaffold.dart';
 import 'package:eleventa/modulos/ventas/ui/boton_cobrar.dart';
+import 'package:eleventa/modulos/ventas/ui/venta_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:eleventa/modulos/ventas/ui/acciones_de_venta.dart';
-import 'package:eleventa/modulos/ventas/ui/ui_sale_item.dart';
 import 'package:eleventa/modulos/ventas/ui/listado_articulos.dart';
-import 'package:eleventa/modulos/common/exception/excepciones.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:layout/layout.dart';
 import 'package:eleventa/l10n/generated/l10n.dart';
 
@@ -26,13 +28,13 @@ class _VistaVentasState extends State<VistaVentas> {
       titulo: m.ventas_titulo,
       child: AdaptiveBuilder(
         xs: (context) => Column(
-          children: const [VentaActual()],
+          children: [VentaActual()],
         ),
         md: (context) => Row(
           children: [
             Expanded(
               child: Row(
-                children: const [VentaActual()],
+                children: [VentaActual()],
               ),
             ),
           ],
@@ -42,77 +44,17 @@ class _VistaVentasState extends State<VistaVentas> {
   }
 }
 
-class VentaActual extends StatefulWidget {
-  const VentaActual({
-    Key? key,
-  }) : super(key: key);
+//@visibleForTesting
+class VentaActual extends ConsumerWidget {
+  final FocusNode myFocusNode = FocusNode();
+  final TextEditingController myController = TextEditingController();
 
-  @override
-  State<VentaActual> createState() => VentaActualState();
-}
-
-@visibleForTesting
-class VentaActualState extends State<VentaActual> {
-  double saleTotal = 0.0;
-  String currentSaleId = '';
-  FocusNode myFocusNode = FocusNode();
-  TextEditingController myController = TextEditingController();
-  late L10n m;
-
-  Future<void> agregarProducto(String value) async {
-    // Obtenemos los Use cases...
-    // ObtenerProducto obtenerProducto = ModuloProductos.obtenerProducto();
-    // CrearVenta crearVenta = ModuloVentas.crearVenta();
-    // AgregarArticulo agregarArticulo = ModuloVentas.agregarArticulo();
-
-    //late Producto producto;
-
-    // Checamos tener una venta
-    // if (UiCart.saleUid == '') {
-    //   UiCart.saleUid = crearVenta.exec();
-    //   debugPrint('Nueva venta creada $UiCart.saleUid');
-    // }
-
-    // obtenerProducto.req.sku = value;
-
-    try {
-      // producto = await obtenerProducto.exec();
-
-      // Agregamos el articulo a la venta
-      // agregarArticulo.req.articulo.descripcion = producto.descripcion;
-      // agregarArticulo.req.articulo.precio = producto.precio;
-      // agregarArticulo.req.articulo.cantidad = 1;
-      // agregarArticulo.req.ventaUID = UiCart.saleUid;
-
-      // // debugPrint('Agregando ${producto.descripcion} a venta ${UiCart.saleUid}');
-      // var sale = await agregarArticulo.exec();
-
-      // setState(() {
-      //   // Si tuvimos exito, lo agregamos a la UI
-      //   // UiCart.items.add(UiSaleItem(
-      //   //     code: producto.sku,
-      //   //     description: producto.descripcion,
-      //   //     price: producto.precio.toString()));
-
-      //   UiCart.selectedItem = UiCart.items.last;
-      //   UiCart.total = sale.total;
-
-      //   saleTotal = sale.total;
-      // });
-    } on Exception catch (e) {
-      if (e is AppEx) {
-        debugPrint(e.message);
-      }
-    }
-
-    myController.clear();
-    myFocusNode.requestFocus();
-  }
+  VentaActual({super.key});
 
   void seleccionarArticulo(int itemIndex) {
-    setState(() {
-      UiCart.selectedItem = UiCart.items[itemIndex];
-    });
+    // setState(() {
+    //   UiCart.selectedItem = UiCart.items[itemIndex];
+    // });
 
     myFocusNode.requestFocus();
   }
@@ -143,23 +85,26 @@ class VentaActualState extends State<VentaActual> {
     // // ref: https://dart-lang.github.io/linter/lints/use_build_context_synchronously.html
     // if (!mounted) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(m.ventas_ventaExitosa),
-      width: 300,
-      //margin: EdgeInsets.only(bottom: -100),
-      padding: const EdgeInsets.symmetric(
-        vertical: 20,
-        horizontal: 30.0, // Inner padding for SnackBar content.
-      ),
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-    ));
+    // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    //   content: Text(m.ventas_ventaExitosa),
+    //   width: 300,
+    //   //margin: EdgeInsets.only(bottom: -100),
+    //   padding: const EdgeInsets.symmetric(
+    //     vertical: 20,
+    //     horizontal: 30.0, // Inner padding for SnackBar content.
+    //   ),
+    //   behavior: SnackBarBehavior.floating,
+    //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    // ));
   }
 
   @override
-  Widget build(BuildContext context) {
-    m = L10n.of(context);
+  Widget build(BuildContext context, WidgetRef ref) {
+    //final m = L10n.of(context);
     final isTabletOrDestkop = (context.breakpoint >= LayoutBreakpoint.md);
+
+    final venta = ref.watch(providerVenta);
+    final notifier = ref.read(providerVenta.notifier);
 
     return isTabletOrDestkop
         ? Expanded(
@@ -168,7 +113,7 @@ class VentaActualState extends State<VentaActual> {
                 ControlesVentaActual(
                     focusNode: myFocusNode,
                     editingController: myController,
-                    onBuscarCodigo: agregarProducto,
+                    onBuscarCodigo: notifier.agregarProducto,
                     seleccionarArticulo: seleccionarArticulo),
                 Container(
                   width: 350,
@@ -185,7 +130,7 @@ class VentaActualState extends State<VentaActual> {
                         ),
                       ),
                       BotonCobrarVenta(
-                        totalDeVenta: saleTotal,
+                        totalDeVenta: venta.total.toDouble(),
                         onTap: chargeButtonClick,
                       )
                     ],
@@ -200,12 +145,12 @@ class VentaActualState extends State<VentaActual> {
                 ControlesVentaActual(
                   focusNode: myFocusNode,
                   editingController: myController,
-                  onBuscarCodigo: agregarProducto,
+                  onBuscarCodigo: notifier.agregarProducto,
                   seleccionarArticulo: seleccionarArticulo,
                 ),
                 BotonCobrarVenta(
                   dense: true,
-                  totalDeVenta: saleTotal,
+                  totalDeVenta: venta.total.toDouble(),
                   onTap: chargeButtonClick,
                 )
               ],
@@ -219,22 +164,65 @@ class ControlesVentaActual extends StatelessWidget {
   final TextEditingController editingController;
   final Function onBuscarCodigo;
   final Function seleccionarArticulo;
+  final FocusNode _focusNode = FocusNode();
 
-  const ControlesVentaActual(
+  ControlesVentaActual(
       {super.key,
       required this.focusNode,
       required this.editingController,
       required this.onBuscarCodigo,
       required this.seleccionarArticulo});
 
+  /// Cambia el control enfocado de acuerdo a las teclas de flecha arriba,
+  /// flecha abajo y ENTER como en eleventa 5.
+  KeyEventResult _cambiarControlEnFoco(FocusNode node, KeyEvent key) {
+    if (key.logicalKey == LogicalKeyboardKey.arrowDown) {
+      debugPrint('TODO: Cambiar control al de abajo');
+      return KeyEventResult.handled;
+    }
+
+    if (key.logicalKey == LogicalKeyboardKey.arrowUp) {
+      debugPrint('TODO: Cambiar control al de arriba si hay uno');
+      return KeyEventResult.handled;
+    }
+
+    if (key.logicalKey == LogicalKeyboardKey.enter) {
+      onBuscarCodigo(editingController.text);
+      editingController.text = '';
+      return KeyEventResult.handled;
+    }
+
+    if (key.logicalKey == LogicalKeyboardKey.delete) {
+      debugPrint('TODO: Tecla DELETE presionada borrar articulo');
+      return KeyEventResult.handled;
+    }
+
+    if (key.logicalKey == LogicalKeyboardKey.numpadAdd) {
+      debugPrint('TODO: Tecla NUMPAD+ presionada aumentar cantidad');
+      return KeyEventResult.handled;
+    }
+
+    if (key.logicalKey == LogicalKeyboardKey.numpadSubtract) {
+      debugPrint('TODO: Tecla NUMPAD- presionado disminuir cantidad');
+      return KeyEventResult.handled;
+    }
+
+    return KeyEventResult.ignored;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Column(
         children: [
-          DismissKeyboard(
+          Focus(
+            focusNode: _focusNode,
+            onKeyEvent: _cambiarControlEnFoco,
             child: Card(
                 margin: const EdgeInsets.all(0),
+                borderOnForeground: false,
+                elevation: 1.0,
+                shape: const RoundedRectangleBorder(),
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Container(
@@ -242,32 +230,36 @@ class ControlesVentaActual extends StatelessWidget {
                       color: ColoresBase.neutral200,
                       borderRadius: BorderRadius.circular(5),
                     ),
-                    child: TextField(
+                    child: ExTextField(
+                      //key: FormaProducto.txtCodigo,
+                      //fieldKey: keyCodigo,
                       key: const ValueKey('skuField'),
-                      obscureText: false,
+                      //focusNode: focusNode,
                       autofocus: true,
-                      focusNode: focusNode,
+                      hintText: 'Escanea o ingresa un código de producto...',
+                      aplicarResponsividad: false,
+                      //controller: _controllerCodigo,
+                      icon: Iconos.barcode_scan,
                       controller: editingController,
-                      onSubmitted: (String val) => {onBuscarCodigo(val)},
-                      autocorrect: false,
-                      decoration: const InputDecoration(
-                          prefixIcon: Icon(
-                            Icons.document_scanner,
-                            color: ColoresBase.neutral300,
-                          ),
-                          border: InputBorder.none,
-                          hintText:
-                              "Escanea o ingresa un código de producto...",
-                          hintStyle: TextStyle(
-                              fontSize: 15, color: ColoresBase.neutral400)),
+                      onFieldSubmitted: (String textoIngresado) async {
+                        onBuscarCodigo(textoIngresado);
+                      },
                     ),
                   ),
                 )),
           ),
           Expanded(
               child: ListadoArticulos(
-                  articulos: UiCart.items,
                   onSelectItem: (index) => {seleccionarArticulo(index)})),
+          Container(
+            height: 90,
+            color: ColoresBase.neutral200,
+            child: Row(
+              children: const [
+                // TODO: Implementar controles de la venta
+              ],
+            ),
+          )
         ],
       ),
     );

@@ -5,8 +5,12 @@ import 'package:eleventa/modulos/common/utils/uid.dart';
 class Impuesto extends Entidad {
   final String _nombre;
   final double _porcentaje;
+  final int _ordenDeAplicacion;
+  final bool _activo;
 
   String get nombre => _nombre;
+  int get ordenDeAplicacion => _ordenDeAplicacion;
+  bool get activo => _activo;
 
   /// Porcentaje en decimal, ejem: 16.00, 1.3333, etc.
   double get porcentaje => _porcentaje;
@@ -15,8 +19,12 @@ class Impuesto extends Entidad {
     required UID uid,
     required String nombre,
     required double porcentaje,
+    required int ordenDeAplicacion,
+    required bool activo,
   })  : _nombre = nombre,
         _porcentaje = porcentaje,
+        _ordenDeAplicacion = ordenDeAplicacion,
+        _activo = activo,
         super.cargar(uid);
 
   /// Crea un Impuesto
@@ -28,10 +36,16 @@ class Impuesto extends Entidad {
   Impuesto.crear({
     required String nombre,
     required double porcentaje,
+    required int ordenDeAplicacion,
   })  : _nombre = nombre,
         _porcentaje = porcentaje,
+        _ordenDeAplicacion = ordenDeAplicacion,
+        _activo = true,
         super.crear();
 
   @override
-  String toString() => 'Impuesto(nombre: $_nombre, porcentaje: $_porcentaje)';
+  String toString() => '''
+      Impuesto(nombre: $_nombre, porcentaje: $_porcentaje, 
+      ordenDeAplicacion: $_ordenDeAplicacion, activo: $_activo)
+      ''';
 }

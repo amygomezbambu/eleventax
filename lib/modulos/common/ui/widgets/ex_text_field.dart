@@ -208,7 +208,8 @@ class _ExTextFieldState extends State<_ExTextField> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: Sizes.p2),
+      padding:
+          EdgeInsets.only(bottom: widget.aplicarResponsividad ? Sizes.p2 : 0),
       child: Focus(
         onFocusChange: (hasFocus) async {
           if (!hasFocus) {

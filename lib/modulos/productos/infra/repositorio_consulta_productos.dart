@@ -30,7 +30,7 @@ class RepositorioConsultaProductos extends RepositorioConsulta
     List<Impuesto> impuestos = [];
 
     const sql = ''' 
-      SELECT pi.impuesto_uid, i.nombre, i.porcentaje FROM productos_impuestos pi
+      SELECT pi.impuesto_uid, i.nombre, i.porcentaje, i.orden, i.activo FROM productos_impuestos pi
       JOIN impuestos i on i.uid = pi.impuesto_uid 
       WHERE pi.producto_uid = ? and pi.borrado = false 
     ''';
@@ -40,9 +40,12 @@ class RepositorioConsultaProductos extends RepositorioConsulta
     if (dbResult.isNotEmpty) {
       for (var row in dbResult) {
         impuestos.add(Impuesto.cargar(
-            uid: UID.fromString(row['impuesto_uid'] as String),
-            nombre: row['nombre'] as String,
-            porcentaje: (row['porcentaje'] as int).toDouble()));
+          uid: UID.fromString(row['impuesto_uid'] as String),
+          nombre: row['nombre'] as String,
+          porcentaje: (row['porcentaje'] as int).toDouble(),
+          ordenDeAplicacion: (row['orden'] as int),
+          activo: Utils.db.intToBool(row['activo'] as int),
+        ));
       }
     }
 
@@ -50,18 +53,22 @@ class RepositorioConsultaProductos extends RepositorioConsulta
   }
 
   @override
-  Future<List<Impuesto>> obtenerImpuestos() async {
+  Future<List<Impuesto>> obtenerImpuestos({bool soloActivos = true}) async {
     List<Impuesto> res = [];
     var dbResult = await query(
-        sql:
-            'SELECT uid, nombre, porcentaje FROM impuestos WHERE borrado=false;');
+        sql: 'SELECT i.uid, i.nombre, i.porcentaje,  i.orden, i.activo '
+            'FROM impuestos i '
+            'WHERE i.borrado=false and i.Activo= ? ;',
+        params: [soloActivos]);
 
     if (dbResult.isNotEmpty) {
       for (var row in dbResult) {
         res.add(Impuesto.cargar(
             uid: UID.fromString(row['uid'] as String),
             nombre: row['nombre'] as String,
-            porcentaje: (row['porcentaje'] as int).toDouble()));
+            porcentaje: (row['porcentaje'] as int).toDouble(),
+            ordenDeAplicacion: (row['orden'] as int),
+            activo: Utils.db.intToBool(row['activo'] as int)));
       }
     }
 

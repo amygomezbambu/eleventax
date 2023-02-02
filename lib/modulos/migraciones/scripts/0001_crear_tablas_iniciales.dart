@@ -31,7 +31,9 @@ class Migracion1 extends Migracion {
         uid TEXT PRIMARY KEY,
         nombre TEXT NULL,
         porcentaje INTEGER NULL,
-        borrado INTEGER NOT NULL CHECK (borrado IN (0, 1)) DEFAULT 0
+        orden INTEGER NULL,
+        borrado INTEGER NOT NULL CHECK (borrado IN (0, 1)) DEFAULT 0,
+        activo INTEGER NOT NULL CHECK (activo IN (0, 1)) DEFAULT 1
         ); ''';
 
     await db.command(sql: command);

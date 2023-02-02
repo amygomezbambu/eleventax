@@ -35,6 +35,27 @@ class Producto extends Entidad {
   List<Impuesto> get impuestos => List.unmodifiable(_impuestos);
   bool get preguntarPrecio => _preguntarPrecio;
 
+  Moneda get precioDeVentaSinImpuestos {
+    //paso1 , aplicar impuestos a precioSinImpuestos y reondear los valores a 2 decimales, si da todo esta bien
+    var precioSinImpuestos = _precioDeVenta!.value.toDouble();
+
+    _impuestos.sort((a, b) => b.ordenDeAplicacion.compareTo(
+          a.ordenDeAplicacion,
+        ));
+
+    for (var impuesto in _impuestos) {
+      var montoImpuesto = precioSinImpuestos -
+          (precioSinImpuestos / (1 + (impuesto.porcentaje / 100)));
+
+      precioSinImpuestos -= montoImpuesto;
+
+      // precioSinImpuestos =
+      //     precioSinImpuestos / (1 + (impuesto.porcentaje / 100));
+    }
+
+    return Moneda(precioSinImpuestos);
+  }
+
   set categoria(Categoria? val) => _categoria;
 
   Producto.crear({
