@@ -271,13 +271,12 @@ class _ExTextFieldState extends State<_ExTextField> {
           autovalidateMode: AutovalidateMode.disabled,
           style: TextStyle(
               fontSize: widget.tamanoFuente,
-              color: ColoresBase.neutral700, // TailwindColors.trueGray[700],
+              color: ColoresBase.neutral700,
               fontWeight: FontWeight.normal),
           validator: (value) {
             return _errValidacion;
           },
           decoration: InputDecoration(
-            //border: const SelectedInputBorderWithShadow(),
             contentPadding: const EdgeInsets.all(Sizes.p4),
             prefixText: widget.prefixText,
             suffixText: widget.suffixText,
@@ -291,7 +290,7 @@ class _ExTextFieldState extends State<_ExTextField> {
             prefixIcon: (widget.icon != null)
                 ? Icon(
                     widget.icon,
-                    color: ColoresBase.neutral400,
+                    color: ColoresBase.neutral300,
                   )
                 : null,
             hintText: (_enDesktop.resolve(context) == true) ||

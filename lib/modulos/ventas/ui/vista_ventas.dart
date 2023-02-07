@@ -1,6 +1,5 @@
-import 'package:eleventa/modulos/common/ui/ex_icons.dart';
 import 'package:eleventa/modulos/common/ui/tema/colores.dart';
-import 'package:eleventa/modulos/common/ui/widgets/ex_text_field.dart';
+import 'package:eleventa/modulos/common/ui/widgets/ex_campo_codigo_producto.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_vista_principal_scaffold.dart';
 import 'package:eleventa/modulos/ventas/ui/boton_cobrar.dart';
 import 'package:eleventa/modulos/ventas/ui/venta_provider.dart';
@@ -173,6 +172,12 @@ class ControlesVentaActual extends StatelessWidget {
       required this.onBuscarCodigo,
       required this.seleccionarArticulo});
 
+  void _agregarProductoAListado(String codigo) {
+    onBuscarCodigo(codigo);
+    editingController.clear();
+    focusNode.requestFocus();
+  }
+
   /// Cambia el control enfocado de acuerdo a las teclas de flecha arriba,
   /// flecha abajo y ENTER como en eleventa 5.
   KeyEventResult _cambiarControlEnFoco(FocusNode node, KeyEvent key) {
@@ -187,8 +192,7 @@ class ControlesVentaActual extends StatelessWidget {
     }
 
     if (key.logicalKey == LogicalKeyboardKey.enter) {
-      onBuscarCodigo(editingController.text);
-      editingController.text = '';
+      _agregarProductoAListado(editingController.text);
       return KeyEventResult.handled;
     }
 
@@ -230,27 +234,22 @@ class ControlesVentaActual extends StatelessWidget {
                       color: ColoresBase.neutral200,
                       borderRadius: BorderRadius.circular(5),
                     ),
-                    child: ExTextField(
-                      //key: FormaProducto.txtCodigo,
-                      //fieldKey: keyCodigo,
+                    child: ExCampoCodigoProducto(
                       key: const ValueKey('skuField'),
-                      //focusNode: focusNode,
-                      autofocus: true,
-                      hintText: 'Escanea o ingresa un código de producto...',
+                      hintText: 'Ingresa un código de producto...',
                       aplicarResponsividad: false,
-                      //controller: _controllerCodigo,
-                      icon: Iconos.barcode_scan,
                       controller: editingController,
-                      onFieldSubmitted: (String textoIngresado) async {
-                        onBuscarCodigo(textoIngresado);
-                      },
+                      // Solo aplica para dispositivos móviles:
+                      onCodigoEscanado: _agregarProductoAListado,
+                      onFieldSubmitted: _agregarProductoAListado,
                     ),
                   ),
                 )),
           ),
           Expanded(
-              child: ListadoArticulos(
-                  onSelectItem: (index) => {seleccionarArticulo(index)})),
+            child: ListadoArticulos(
+                onSelectItem: (index) => {seleccionarArticulo(index)}),
+          ),
           Container(
             height: 90,
             color: ColoresBase.neutral200,

@@ -1,5 +1,5 @@
 import 'package:eleventa/modulos/loader/loader.dart';
-import 'package:eleventa/modulos/common/ui/widgets/ex_boton_primario.dart';
+import 'package:eleventa/modulos/common/ui/widgets/ex_boton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -40,8 +40,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verificamos que el botón de cobrar tenga el total actualizado
-      expect(find.widgetWithText(ExBotonPrimario, 'Cobrar \$10.33'),
-          findsOneWidget,
+      expect(find.widgetWithText(ExBoton, 'Cobrar \$10.33'), findsOneWidget,
           reason: 'No se actualizo el total de la venta');
 
       await tester.tap(find.byKey(payButtonKey));

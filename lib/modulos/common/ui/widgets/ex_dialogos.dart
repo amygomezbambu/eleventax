@@ -1,7 +1,6 @@
 import 'package:eleventa/modulos/common/ui/ex_icons.dart';
 import 'package:eleventa/modulos/common/ui/tema/theme.dart';
-import 'package:eleventa/modulos/common/ui/widgets/ex_boton_primario.dart';
-import 'package:eleventa/modulos/common/ui/widgets/ex_boton_secundario.dart';
+import 'package:eleventa/modulos/common/ui/widgets/ex_boton.dart';
 import 'package:flutter/material.dart';
 import 'package:layout/layout.dart';
 
@@ -36,7 +35,7 @@ class ExDialogos {
                       color: ColoresBase.neutral700)),
             )
           : const Center(),
-      ExBotonSecundario(
+      ExBoton.secundario(
         icon: Icons.arrow_back,
         label: 'Regresar!',
         onTap: () {
@@ -93,7 +92,7 @@ class ExDialogos {
       const SizedBox(
         height: Sizes.p2,
       ),
-      ExBotonPrimario(
+      ExBoton.primario(
         icon: Iconos.trash,
         colorBoton: ColoresBase.yellow900,
         colorIcono: ColoresBase.yellow100,
@@ -107,7 +106,7 @@ class ExDialogos {
       const SizedBox(
         height: Sizes.p2,
       ),
-      ExBotonSecundario(
+      ExBoton.secundario(
         icon: Icons.arrow_back,
         label: 'Regresar',
         onTap: () {

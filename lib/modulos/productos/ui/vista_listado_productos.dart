@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:layout/layout.dart';
 
-import 'package:eleventa/modulos/common/ui/widgets/ex_boton_primario.dart';
+import 'package:eleventa/modulos/common/ui/widgets/ex_boton.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_text_field.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
@@ -173,7 +173,7 @@ class _ListadoProductos extends ConsumerWidget {
                       },
                     ),
                     (context.breakpoint >= LayoutBreakpoint.md)
-                        ? ExBotonPrimario(
+                        ? ExBoton.primario(
                             key: VistaListadoProductos.keyBotonCobrar,
                             icon: Icons.create_outlined,
                             label: 'Crear producto',

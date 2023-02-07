@@ -2,7 +2,7 @@ import 'package:eleventa/modulos/common/ui/tema/colores.dart';
 import 'package:eleventa/modulos/common/ui/tema/dimensiones.dart';
 import 'package:flutter/material.dart';
 
-class ExBotonPrimario extends StatefulWidget {
+class ExBoton extends StatefulWidget {
   final String label;
   final IconData icon;
   final VoidCallback onTap;
@@ -13,7 +13,7 @@ class ExBotonPrimario extends StatefulWidget {
   final Color colorIcono;
   final Color colorTexto;
 
-  const ExBotonPrimario({
+  const ExBoton.primario({
     required this.label,
     required this.icon,
     required this.onTap,
@@ -26,11 +26,24 @@ class ExBotonPrimario extends StatefulWidget {
     Key? key,
   }) : super(key: key);
 
+  const ExBoton.secundario({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+    this.tamanoFuente = TextSizes.textSm,
+    this.height = Sizes.p12,
+    this.width = Sizes.infinito,
+    this.colorBoton = ColoresBase.neutral200,
+    this.colorIcono = ColoresBase.neutral500,
+    this.colorTexto = ColoresBase.neutral500,
+    Key? key,
+  }) : super(key: key);
+
   @override
-  State<ExBotonPrimario> createState() => _ExBotonPrimarioState();
+  State<ExBoton> createState() => _ExBotonState();
 }
 
-class _ExBotonPrimarioState extends State<ExBotonPrimario> {
+class _ExBotonState extends State<ExBoton> {
   bool loading = false;
 
   void _onTap() {

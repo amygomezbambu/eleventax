@@ -28,36 +28,12 @@ class NotificadorVenta extends StateNotifier<Venta> {
 
         state = state.copyWith();
       }
-
-      // Agregamos el articulo a la venta
-      // agregarArticulo.req.articulo.descripcion = producto.descripcion;
-      // agregarArticulo.req.articulo.precio = producto.precio;
-      // agregarArticulo.req.articulo.cantidad = 1;
-      // agregarArticulo.req.ventaUID = UiCart.saleUid;
-
-      // // debugPrint('Agregando ${producto.descripcion} a venta ${UiCart.saleUid}');
-      // var sale = await agregarArticulo.exec();
-
-      // setState(() {
-      //   // Si tuvimos exito, lo agregamos a la UI
-      //   // UiCart.items.add(UiSaleItem(
-      //   //     code: producto.sku,
-      //   //     description: producto.descripcion,
-      //   //     price: producto.precio.toString()));
-
-      //   UiCart.selectedItem = UiCart.items.last;
-      //   UiCart.total = sale.total;
-
-      //   saleTotal = sale.total;
-      // });
     } on Exception catch (e) {
       if (e is AppEx) {
+        // TODO: mostrar mensaje de error o decidir que hacer
         debugPrint(e.message);
       }
     }
-
-    // myController.clear();
-    // myFocusNode.requestFocus();
   }
 }
 

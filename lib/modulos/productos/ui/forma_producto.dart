@@ -1,12 +1,9 @@
-import 'dart:io';
-
 import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/ui/ex_icons.dart';
-import 'package:eleventa/modulos/common/ui/ex_mobile_scanner.dart';
 import 'package:eleventa/modulos/common/ui/tema/theme.dart';
 import 'package:eleventa/modulos/common/ui/widgets/dismiss_keyboard.dart';
-import 'package:eleventa/modulos/common/ui/widgets/ex_boton_secundario.dart';
+import 'package:eleventa/modulos/common/ui/widgets/ex_campo_codigo_producto.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_dialogos.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/nombre_categoria.dart';
@@ -20,7 +17,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:layout/layout.dart';
 
-import 'package:eleventa/modulos/common/ui/widgets/ex_boton_primario.dart';
+import 'package:eleventa/modulos/common/ui/widgets/ex_boton.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_drop_down.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_radio_button.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_text_field.dart';
@@ -374,46 +371,12 @@ class _FormaProductoState extends State<FormaProducto> {
                                   esDesktop.resolve(context)
                                       ? TituloForma(widget: widget)
                                       : const SizedBox(),
-                                  ExTextField(
+                                  ExCampoCodigoProducto(
                                       key: FormaProducto.txtCodigo,
                                       fieldKey: keyCodigo,
-                                      hintText: 'Código',
-                                      controller: _controllerCodigo,
                                       focusNode: _codigoFocusNode,
-                                      icon: Iconos.barcode_scan,
-                                      autofocus: true,
-                                      // icon: state.existeCodigo
-                                      //     ? Icons.error
-                                      //     : Icons.document_scanner,
-                                      width: FormaProducto.anchoCamposDefault,
-                                      // Mostramos el icono para escanear solo en plataformas móviles
-                                      suffixIcon: Platform.isIOS ||
-                                              Platform.isAndroid
-                                          ? IconButton(
-                                              onPressed: () async {
-                                                var valor =
-                                                    await Navigator.of(context)
-                                                        .push(
-                                                  MaterialPageRoute(
-                                                    builder:
-                                                        (BuildContext context) {
-                                                      return const ExMobileScanner();
-                                                    },
-                                                  ),
-                                                );
-
-                                                if (valor != null) {
-                                                  _controllerCodigo.text =
-                                                      valor;
-                                                  _codigoFocusNode
-                                                      .requestFocus();
-                                                  // TODO: Forzar validacion del campo
-                                                }
-                                              },
-                                              icon: const Icon(Icons
-                                                  .qr_code_scanner_rounded),
-                                            )
-                                          : null,
+                                      controller: _controllerCodigo,
+                                      hintText: 'Código',
                                       validator: (value) async {
                                         return _validarCodigoIngresado(value);
                                       }),
@@ -700,7 +663,7 @@ class _FormaProductoState extends State<FormaProducto> {
                                 Expanded(
                                   child: Consumer(
                                     builder: (context, ref, child) {
-                                      return ExBotonPrimario(
+                                      return ExBoton.primario(
                                           key: FormaProducto.btnGuardar,
                                           label: 'Guardar',
                                           icon: Iconos.edit,
@@ -738,7 +701,7 @@ class _FormaProductoState extends State<FormaProducto> {
                                     ? SizedBox(
                                         width: Sizes.p40,
                                         height: Sizes.p12,
-                                        child: ExBotonSecundario(
+                                        child: ExBoton.secundario(
                                             label: 'Limpiar',
                                             icon: Iconos.delete,
                                             onTap: () {
