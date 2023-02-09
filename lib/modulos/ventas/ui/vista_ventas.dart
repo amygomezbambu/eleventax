@@ -1,6 +1,7 @@
 import 'package:eleventa/modulos/common/ui/tema/colores.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_campo_codigo_producto.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_vista_principal_scaffold.dart';
+import 'package:eleventa/modulos/ventas/domain/articulo.dart';
 import 'package:eleventa/modulos/ventas/ui/boton_cobrar.dart';
 import 'package:eleventa/modulos/ventas/ui/venta_provider.dart';
 import 'package:flutter/material.dart';
@@ -45,18 +46,9 @@ class _VistaVentasState extends State<VistaVentas> {
 
 //@visibleForTesting
 class VentaActual extends ConsumerWidget {
-  final FocusNode myFocusNode = FocusNode();
   final TextEditingController myController = TextEditingController();
 
   VentaActual({super.key});
-
-  void seleccionarArticulo(int itemIndex) {
-    // setState(() {
-    //   UiCart.selectedItem = UiCart.items[itemIndex];
-    // });
-
-    myFocusNode.requestFocus();
-  }
 
   void chargeButtonClick() async {
     debugPrint('Cobrando!');
@@ -102,7 +94,7 @@ class VentaActual extends ConsumerWidget {
     //final m = L10n.of(context);
     final isTabletOrDestkop = (context.breakpoint >= LayoutBreakpoint.md);
 
-    final venta = ref.watch(providerVenta);
+    final ventaEnProgreso = ref.watch(providerVenta);
     final notifier = ref.read(providerVenta.notifier);
 
     return isTabletOrDestkop
@@ -110,10 +102,8 @@ class VentaActual extends ConsumerWidget {
             child: Row(
               children: [
                 ControlesVentaActual(
-                    focusNode: myFocusNode,
                     editingController: myController,
-                    onBuscarCodigo: notifier.agregarProducto,
-                    seleccionarArticulo: seleccionarArticulo),
+                    onBuscarCodigo: notifier.agregarArticulo),
                 Container(
                   width: 350,
                   padding: const EdgeInsets.fromLTRB(1, 5, 7, 5),
@@ -129,7 +119,7 @@ class VentaActual extends ConsumerWidget {
                         ),
                       ),
                       BotonCobrarVenta(
-                        totalDeVenta: venta.total.toDouble(),
+                        totalDeVenta: ventaEnProgreso.venta.total.toDouble(),
                         onTap: chargeButtonClick,
                       )
                     ],
@@ -142,14 +132,12 @@ class VentaActual extends ConsumerWidget {
             child: Column(
               children: [
                 ControlesVentaActual(
-                  focusNode: myFocusNode,
                   editingController: myController,
-                  onBuscarCodigo: notifier.agregarProducto,
-                  seleccionarArticulo: seleccionarArticulo,
+                  onBuscarCodigo: notifier.agregarArticulo,
                 ),
                 BotonCobrarVenta(
                   dense: true,
-                  totalDeVenta: venta.total.toDouble(),
+                  totalDeVenta: ventaEnProgreso.venta.total.toDouble(),
                   onTap: chargeButtonClick,
                 )
               ],
@@ -158,82 +146,97 @@ class VentaActual extends ConsumerWidget {
   }
 }
 
-class ControlesVentaActual extends StatelessWidget {
-  final FocusNode focusNode;
+class ControlesVentaActual extends ConsumerWidget {
   final TextEditingController editingController;
   final Function onBuscarCodigo;
-  final Function seleccionarArticulo;
   final FocusNode _focusNode = FocusNode();
 
   ControlesVentaActual(
       {super.key,
-      required this.focusNode,
       required this.editingController,
-      required this.onBuscarCodigo,
-      required this.seleccionarArticulo});
+      required this.onBuscarCodigo});
 
   void _agregarProductoAListado(String codigo) {
     onBuscarCodigo(codigo);
     editingController.clear();
-    focusNode.requestFocus();
+  }
+
+  void _seleccionarArticulo(WidgetRef ref, Articulo articuloSeleccionado) {
+    final notifier = ref.read(providerVenta.notifier);
+
+    notifier.seleccionarArticulo(articuloSeleccionado);
+
+    // Enfocamos de nuevo al campo código que es hijo del Focus widget
+    if (_focusNode.children.first.canRequestFocus) {
+      _focusNode.children.first.requestFocus();
+    }
   }
 
   /// Cambia el control enfocado de acuerdo a las teclas de flecha arriba,
   /// flecha abajo y ENTER como en eleventa 5.
-  KeyEventResult _cambiarControlEnFoco(FocusNode node, KeyEvent key) {
-    if (key.logicalKey == LogicalKeyboardKey.arrowDown) {
-      debugPrint('TODO: Cambiar control al de abajo');
-      return KeyEventResult.handled;
-    }
+  KeyEventResult _cambiarControlEnFoco(
+      WidgetRef ref, FocusNode node, RawKeyEvent keyEvent) {
+    final notifier = ref.read(providerVenta.notifier);
 
-    if (key.logicalKey == LogicalKeyboardKey.arrowUp) {
-      debugPrint('TODO: Cambiar control al de arriba si hay uno');
-      return KeyEventResult.handled;
-    }
+    if (keyEvent is RawKeyDownEvent) {
+      if (keyEvent.logicalKey == LogicalKeyboardKey.arrowDown) {
+        notifier.seleccionarArticuloSiguiente();
+        return KeyEventResult.handled;
+      }
 
-    if (key.logicalKey == LogicalKeyboardKey.enter) {
-      _agregarProductoAListado(editingController.text);
-      return KeyEventResult.handled;
-    }
+      if (keyEvent.logicalKey == LogicalKeyboardKey.arrowUp) {
+        notifier.seleccionarArticuloAnterior();
+        return KeyEventResult.handled;
+      }
 
-    if (key.logicalKey == LogicalKeyboardKey.delete) {
-      debugPrint('TODO: Tecla DELETE presionada borrar articulo');
-      return KeyEventResult.handled;
-    }
+      if (keyEvent.logicalKey == LogicalKeyboardKey.enter) {
+        _agregarProductoAListado(editingController.text);
+        return KeyEventResult.handled;
+      }
 
-    if (key.logicalKey == LogicalKeyboardKey.numpadAdd) {
-      debugPrint('TODO: Tecla NUMPAD+ presionada aumentar cantidad');
-      return KeyEventResult.handled;
-    }
+      if (keyEvent.logicalKey == LogicalKeyboardKey.delete) {
+        debugPrint('TODO: Tecla DELETE presionada borrar articulo');
+        return KeyEventResult.handled;
+      }
 
-    if (key.logicalKey == LogicalKeyboardKey.numpadSubtract) {
-      debugPrint('TODO: Tecla NUMPAD- presionado disminuir cantidad');
-      return KeyEventResult.handled;
+      if (keyEvent.logicalKey == LogicalKeyboardKey.numpadAdd) {
+        // TODO: Ver cómo avisarle a la Venta y por tanto otros widgets que el total
+        // de la misma cambió, no solo del articulo
+        notifier.aumentarCantidad();
+        return KeyEventResult.handled;
+      }
+
+      if (keyEvent.logicalKey == LogicalKeyboardKey.numpadSubtract) {
+        notifier.disminuirCantidad();
+        return KeyEventResult.handled;
+      }
     }
 
     return KeyEventResult.ignored;
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Expanded(
       child: Column(
         children: [
-          Focus(
-            focusNode: _focusNode,
-            onKeyEvent: _cambiarControlEnFoco,
-            child: Card(
-                margin: const EdgeInsets.all(0),
-                borderOnForeground: false,
-                elevation: 1.0,
-                shape: const RoundedRectangleBorder(),
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: ColoresBase.neutral200,
-                      borderRadius: BorderRadius.circular(5),
-                    ),
+          Card(
+            margin: const EdgeInsets.all(0),
+            borderOnForeground: false,
+            elevation: 1.0,
+            shape: const RoundedRectangleBorder(),
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: ColoresBase.neutral200,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Focus(
+                    focusNode: _focusNode,
+                    debugLabel: 'focoCampoCodigo',
+                    onKey: (FocusNode node, RawKeyEvent key) =>
+                        _cambiarControlEnFoco(ref, node, key),
                     child: ExCampoCodigoProducto(
                       key: const ValueKey('skuField'),
                       hintText: 'Ingresa un código de producto...',
@@ -242,13 +245,14 @@ class ControlesVentaActual extends StatelessWidget {
                       // Solo aplica para dispositivos móviles:
                       onCodigoEscanado: _agregarProductoAListado,
                       onFieldSubmitted: _agregarProductoAListado,
-                    ),
-                  ),
-                )),
+                    )),
+              ),
+            ),
           ),
           Expanded(
             child: ListadoArticulos(
-                onSelectItem: (index) => {seleccionarArticulo(index)}),
+                onSeleccionarArticulo: (articulo) =>
+                    _seleccionarArticulo(ref, articulo)),
           ),
           Container(
             height: 90,

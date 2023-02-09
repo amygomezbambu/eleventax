@@ -13,7 +13,8 @@ class EleventaLogo extends StatelessWidget {
       'assets/eleventa.svg',
       width: Sizes.p8,
       height: Sizes.p8,
-      color: ColoresBase.primario500, //const Color(0xFF459BF1),
+      colorFilter:
+          const ColorFilter.mode(ColoresBase.primario500, BlendMode.srcIn),
     );
   }
 }

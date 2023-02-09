@@ -7,11 +7,21 @@ import 'package:eleventa/modulos/ventas/domain/venta.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-//crear notificador
-class NotificadorVenta extends StateNotifier<Venta> {
+class VentaEnProgreso {
   var consultas = Dependencias.productos.repositorioConsultasProductos();
+  late Articulo articuloSeleccionado;
+  late Venta _venta;
+  Venta get venta => _venta;
 
-  NotificadorVenta() : super(Venta.crear());
+  VentaEnProgreso() {
+    _venta = Venta.crear();
+  }
+
+  VentaEnProgreso.cargar({
+    required Venta venta,
+    required Articulo articulo,
+  })  : _venta = venta,
+        articuloSeleccionado = articulo;
 
   Future<void> agregarProducto(String value) async {
     var consultas = ModuloProductos.repositorioConsultaProductos();
@@ -21,12 +31,14 @@ class NotificadorVenta extends StateNotifier<Venta> {
           await consultas.obtenerProductoPorCodigo(CodigoProducto(value));
 
       if (producto == null) {
+        // TODO: Mostrar mensaje de error en la UI
       } else {
-        state.agregarArticulo(
-          Articulo.crear(producto: producto, cantidad: 1.00),
-        );
+        // El articulo seleccionado siempre será el ultimo
+        venta.agregarArticulo(
+            Articulo.crear(producto: producto, cantidad: 1.00));
 
-        state = state.copyWith();
+        articuloSeleccionado = venta.articulos
+            .firstWhere((element) => element.producto?.codigo == value);
       }
     } on Exception catch (e) {
       if (e is AppEx) {
@@ -35,9 +47,62 @@ class NotificadorVenta extends StateNotifier<Venta> {
       }
     }
   }
+
+  VentaEnProgreso copyWith({
+    Venta? venta,
+    Articulo? articulo,
+  }) {
+    return VentaEnProgreso.cargar(
+        venta: venta ?? _venta, articulo: articulo ?? articuloSeleccionado);
+  }
 }
 
-//crear provider
+//crear notificador
+class NotificadorVenta extends StateNotifier<VentaEnProgreso> {
+  NotificadorVenta() : super(VentaEnProgreso());
 
-final providerVenta =
-    StateNotifierProvider<NotificadorVenta, Venta>((ref) => NotificadorVenta());
+  Future<void> agregarArticulo(String value) async {
+    await state.agregarProducto(value);
+    state = state.copyWith();
+  }
+
+  void seleccionarArticulo(Articulo articulo) {
+    state.articuloSeleccionado = articulo;
+    state = state.copyWith();
+  }
+
+  void seleccionarArticuloSiguiente() {
+    // Si es el ultimo articulo, no intentamos avanzar
+    if (state.articuloSeleccionado == state.venta.articulos.last) return;
+
+    var indiceArticuloActual =
+        state.venta.articulos.indexOf(state.articuloSeleccionado);
+
+    seleccionarArticulo(state.venta.articulos[indiceArticuloActual + 1]);
+  }
+
+  void seleccionarArticuloAnterior() {
+    // Si es el primer articulo, no intentamos retroceder
+    if (state.articuloSeleccionado == state.venta.articulos.first) return;
+
+    var indiceArticuloActual =
+        state.venta.articulos.indexOf(state.articuloSeleccionado);
+    seleccionarArticulo(state.venta.articulos[indiceArticuloActual - 1]);
+  }
+
+  Future<void> aumentarCantidad() async {
+    // TODO: La venta ahorita "no se entera" del cambio de cantidad, ver cómo hacerle
+    state.articuloSeleccionado
+        .actualizarCantidad(state.articuloSeleccionado.cantidad + 1.00);
+    state = state.copyWith();
+  }
+
+  Future<void> disminuirCantidad() async {
+    state.articuloSeleccionado
+        .actualizarCantidad(state.articuloSeleccionado.cantidad - 1.00);
+    state = state.copyWith();
+  }
+}
+
+final providerVenta = StateNotifierProvider<NotificadorVenta, VentaEnProgreso>(
+    (ref) => NotificadorVenta());

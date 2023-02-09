@@ -19,6 +19,7 @@ class ExTextField extends StatelessWidget {
   final InputType inputType;
   final bool aplicarResponsividad;
   final bool autofocus;
+  final bool validarAlPerderFoco;
   final Widget? suffixIcon;
   final FocusNode? focusNode;
 
@@ -45,6 +46,7 @@ class ExTextField extends StatelessWidget {
     this.inputType = InputType.texto,
     this.onFieldSubmitted,
     this.aplicarResponsividad = true,
+    this.validarAlPerderFoco = true,
     this.autofocus = false,
     this.suffixIcon,
     this.focusNode,
@@ -65,6 +67,7 @@ class ExTextField extends StatelessWidget {
       fieldKey: fieldKey,
       inputType: inputType,
       aplicarResponsividad: aplicarResponsividad,
+      validarAlPerderFoco: validarAlPerderFoco,
       autofocus: autofocus,
       suffixIcon: suffixIcon,
       focusNode: focusNode,
@@ -160,6 +163,7 @@ class _ExTextField extends StatefulWidget {
   final bool autofocus;
   final Widget? suffixIcon;
   final FocusNode? focusNode;
+  final bool validarAlPerderFoco;
 
   const _ExTextField({
     Key? key,
@@ -175,6 +179,7 @@ class _ExTextField extends StatefulWidget {
     this.validator,
     required this.inputType,
     required this.aplicarResponsividad,
+    required this.validarAlPerderFoco,
     this.onFieldSubmitted,
     required this.autofocus,
     this.suffixIcon,
@@ -208,135 +213,141 @@ class _ExTextFieldState extends State<_ExTextField> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding:
-          EdgeInsets.only(bottom: widget.aplicarResponsividad ? Sizes.p2 : 0),
-      child: Focus(
-        onFocusChange: (hasFocus) async {
-          if (!hasFocus) {
-            if (widget.inputType == InputType.numerico) {
-              widget.controller.text =
-                  _sanitizarNumerico(widget.controller.text);
-            }
+        padding:
+            EdgeInsets.only(bottom: widget.aplicarResponsividad ? Sizes.p2 : 0),
+        // Encerramos al textFormField en un Focus widget SOLAMENTE
+        // si se configura la propiedad validarAlPerderFoco ya que
+        // peude entrar en conflicto con otros Focus que encierren al widget
+        child: ConditionalParentWidget(
+            condition: widget.validarAlPerderFoco,
+            child: TextFormField(
+              key: widget.fieldKey,
+              controller: widget.controller,
+              cursorColor: Colors.black,
+              focusNode: widget.focusNode,
+              keyboardType: (widget.inputType == InputType.texto)
+                  ? TextInputType.text
+                  : const TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: (widget.inputType == InputType.texto)
+                  ? null
+                  : [
+                      TextInputFormatter.withFunction(
+                        (oldValue, newValue) {
+                          var reg = RegExp(r'^[0-9]\d{0,11}(\.\d{0,6})?$');
 
-            // Solo al perder el foco, mandamos llamar al validador si existe...
-            if (widget.validator != null) {
-              _errValidacion = await widget.validator!(widget.controller.text);
+                          if (newValue.text.isEmpty) {
+                            return newValue;
+                          }
+                          if (!reg.hasMatch(newValue.text)) {
+                            return oldValue;
+                          }
 
-              // Como perdimos el foco mandamos validar el campo de la forma para que se muestre
-              // el error de validación del TextFormField
-              if (widget.fieldKey is GlobalKey<FormFieldState>) {
-                (widget.fieldKey as GlobalKey<FormFieldState>)
-                    .currentState
-                    ?.validate();
-              } else {
-                debugPrint(
-                    '🚧 El campo no tiene asignado un fieldKey, se necesita para realizar la validación.');
-              }
-            }
-          }
-
-          if (widget.onExit == null) return;
-          if (!hasFocus) {
-            widget.onExit!();
-          }
-        },
-        child: TextFormField(
-          key: widget.fieldKey,
-          controller: widget.controller,
-          cursorColor: Colors.black,
-          focusNode: widget.focusNode,
-          keyboardType: (widget.inputType == InputType.texto)
-              ? TextInputType.text
-              : const TextInputType.numberWithOptions(decimal: true),
-          inputFormatters: (widget.inputType == InputType.texto)
-              ? null
-              : [
-                  TextInputFormatter.withFunction(
-                    (oldValue, newValue) {
-                      var reg = RegExp(r'^[0-9]\d{0,11}(\.\d{0,6})?$');
-
-                      if (newValue.text.isEmpty) {
-                        return newValue;
-                      }
-                      if (!reg.hasMatch(newValue.text)) {
-                        return oldValue;
-                      }
-
-                      return newValue;
-                    },
+                          return newValue;
+                        },
+                      ),
+                    ],
+              textInputAction: TextInputAction.next,
+              autofocus: widget.autofocus,
+              autovalidateMode: AutovalidateMode.disabled,
+              style: TextStyle(
+                  fontSize: widget.tamanoFuente,
+                  color: ColoresBase.neutral700,
+                  fontWeight: FontWeight.normal),
+              validator: (value) {
+                return _errValidacion;
+              },
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.all(Sizes.p4),
+                prefixText: widget.prefixText,
+                suffixText: widget.suffixText,
+                helperText: widget.helperText,
+                helperStyle:
+                    const TextStyle(fontSize: DesignSystem.campoTamanoTexto),
+                filled: true,
+                isDense: true,
+                fillColor: ColoresBase.white,
+                suffixIcon: widget.suffixIcon,
+                prefixIcon: (widget.icon != null)
+                    ? Icon(
+                        widget.icon,
+                        color: ColoresBase.neutral300,
+                      )
+                    : null,
+                hintText: (_enDesktop.resolve(context) == true) ||
+                        (!widget.aplicarResponsividad)
+                    ? widget.hintText
+                    : null,
+                errorStyle: const TextStyle(color: ColoresBase.red300),
+                errorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(Sizes.p1_5),
+                  borderSide: const BorderSide(
+                    color: ColoresBase.red300,
+                    width: Sizes.px,
                   ),
-                ],
-          textInputAction: TextInputAction.next,
-          autofocus: widget.autofocus,
-          autovalidateMode: AutovalidateMode.disabled,
-          style: TextStyle(
-              fontSize: widget.tamanoFuente,
-              color: ColoresBase.neutral700,
-              fontWeight: FontWeight.normal),
-          validator: (value) {
-            return _errValidacion;
-          },
-          decoration: InputDecoration(
-            contentPadding: const EdgeInsets.all(Sizes.p4),
-            prefixText: widget.prefixText,
-            suffixText: widget.suffixText,
-            helperText: widget.helperText,
-            helperStyle:
-                const TextStyle(fontSize: DesignSystem.campoTamanoTexto),
-            filled: true,
-            isDense: true,
-            fillColor: ColoresBase.white,
-            suffixIcon: widget.suffixIcon,
-            prefixIcon: (widget.icon != null)
-                ? Icon(
-                    widget.icon,
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(Sizes.p1_5),
+                  borderSide: const BorderSide(
+                    color: Colores.campoBordeEnfocado,
+                    width: Sizes.p2_0,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(Sizes.p1_5),
+                  borderSide: const BorderSide(
                     color: ColoresBase.neutral300,
-                  )
-                : null,
-            hintText: (_enDesktop.resolve(context) == true) ||
-                    (!widget.aplicarResponsividad)
-                ? widget.hintText
-                : null,
-            errorStyle: const TextStyle(color: ColoresBase.red300),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(Sizes.p1_5),
-              borderSide: const BorderSide(
-                color: ColoresBase.red300,
-                width: Sizes.px,
+                    width: Sizes.px,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(Sizes.p1_5),
+                  borderSide: const BorderSide(
+                    color: Colores.campoBordeEnfocado,
+                    width: Sizes.p2_0,
+                  ),
+                ),
+                hintStyle: TextStyle(
+                    fontSize: widget.tamanoFuente, color: Colores.campoIcono),
               ),
+              onFieldSubmitted: (value) {
+                if (widget.onFieldSubmitted != null) {
+                  widget.onFieldSubmitted!(value);
+                }
+              },
             ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(Sizes.p1_5),
-              borderSide: const BorderSide(
-                color: Colores.campoBordeEnfocado,
-                width: Sizes.p2_0,
-              ),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(Sizes.p1_5),
-              borderSide: const BorderSide(
-                color: ColoresBase.neutral300,
-                width: Sizes.px,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(Sizes.p1_5),
-              borderSide: const BorderSide(
-                color: Colores.campoBordeEnfocado,
-                width: Sizes.p2_0,
-              ),
-            ),
-            hintStyle: TextStyle(
-                fontSize: widget.tamanoFuente, color: Colores.campoIcono),
-          ),
-          onFieldSubmitted: (value) {
-            if (widget.onFieldSubmitted != null) {
-              widget.onFieldSubmitted!(value);
-            }
-          },
-        ),
-      ),
-    );
+            parentBuilder: (Widget child) => Focus(
+                  child: child,
+                  onFocusChange: (hasFocus) async {
+                    if (!hasFocus) {
+                      if (widget.inputType == InputType.numerico) {
+                        widget.controller.text =
+                            _sanitizarNumerico(widget.controller.text);
+                      }
+
+                      // Solo al perder el foco, mandamos llamar al validador si existe...
+                      if (widget.validator != null) {
+                        _errValidacion =
+                            await widget.validator!(widget.controller.text);
+
+                        // Como perdimos el foco mandamos validar el campo de la forma para que se muestre
+                        // el error de validación del TextFormField
+                        if (widget.fieldKey is GlobalKey<FormFieldState>) {
+                          (widget.fieldKey as GlobalKey<FormFieldState>)
+                              .currentState
+                              ?.validate();
+                        } else {
+                          debugPrint(
+                              '🚧 El campo no tiene asignado un fieldKey, se necesita para realizar la validación.');
+                        }
+                      }
+                    }
+
+                    if (widget.onExit == null) return;
+                    if (!hasFocus) {
+                      widget.onExit!();
+                    }
+                  },
+                )));
   }
 }
 

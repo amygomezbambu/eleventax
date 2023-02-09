@@ -47,6 +47,7 @@ class _ExCampoCodigoProductoState extends State<ExCampoCodigoProducto> {
         icon: Iconos.barcode,
         autofocus: true,
         aplicarResponsividad: widget.aplicarResponsividad,
+        validarAlPerderFoco: false,
         onFieldSubmitted: widget.onFieldSubmitted,
 
         // Mostramos el icono para escanear solo en plataformas móviles

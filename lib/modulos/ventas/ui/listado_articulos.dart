@@ -7,9 +7,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:layout/layout.dart';
 
 class ListadoArticulos extends ConsumerWidget {
-  final void Function(int) onSelectItem;
+  final void Function(Articulo) onSeleccionarArticulo;
 
-  const ListadoArticulos({required this.onSelectItem, Key? key})
+  const ListadoArticulos({required this.onSeleccionarArticulo, Key? key})
       : super(key: key);
 
   @override
@@ -18,8 +18,8 @@ class ListadoArticulos extends ConsumerWidget {
     final soportaTouch = (targetPlatform == TargetPlatform.android ||
         targetPlatform == TargetPlatform.iOS);
 
-    final venta = ref.watch(providerVenta);
-    final List<Articulo> articulos = venta.articulos;
+    final ventaEnProgreso = ref.watch(providerVenta);
+    final List<Articulo> articulos = ventaEnProgreso.venta.articulos;
 
     return articulos.isEmpty
         ? const Scaffold(
@@ -45,10 +45,10 @@ class ListadoArticulos extends ConsumerWidget {
                         fit: BoxFit.cover,
                       )),
                   subtitle: Text(articulos[index].producto!.codigo),
-                  // selected:
-                  //     !soportaTouch, //  && UiCart.isSelectedItem(articulos[index]),
-                  // selectedColor: Colors.white,
-                  // selectedTileColor: ColoresBase.neutral300,
+                  selected: !soportaTouch &&
+                      ventaEnProgreso.articuloSeleccionado == articulos[index],
+                  selectedColor: ColoresBase.neutral800,
+                  selectedTileColor: ColoresBase.neutral300,
                   title: Text(
                     articulos[index].descripcion,
                     style: GoogleFonts.openSans(fontWeight: FontWeight.w500),
@@ -61,14 +61,19 @@ class ListadoArticulos extends ConsumerWidget {
                           articulos[index].total.toString(),
                           style: TextStyle(
                               fontSize: 18,
-                              color:
-                                  !soportaTouch // && UiCart.isSelectedItem(articulos[index])
-                                      ? Colores.accionPrimaria
-                                      : Colores.accionPrimaria,
+                              color: !soportaTouch &&
+                                      ventaEnProgreso.articuloSeleccionado ==
+                                          articulos[index]
+                                  ? Colores.accionPrimaria
+                                  : Colores.accionPrimaria,
                               fontWeight: FontWeight.w600),
                         )
                       ]),
-                  onTap: () => {!soportaTouch ? onSelectItem(index) : true});
+                  onTap: () => {
+                        !soportaTouch
+                            ? onSeleccionarArticulo(articulos[index])
+                            : true
+                      });
             },
             separatorBuilder: (context, index) => const Padding(
               padding: EdgeInsets.only(left: 80, right: 15),
