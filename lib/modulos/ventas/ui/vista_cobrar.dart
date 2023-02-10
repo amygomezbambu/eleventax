@@ -5,6 +5,12 @@ class VistaCobrar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return SizedBox(
+      width: 500,
+      height: 500,
+      child: Container(
+        child: const Text('Cobrar'),
+      ),
+    );
   }
 }

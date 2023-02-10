@@ -250,7 +250,8 @@ class AdaptadorSQLite implements IAdaptadorDeBaseDeDatos {
       }
     } catch (e, stack) {
       throw InfraEx(
-        message: 'Ocurrió un error al consultar la base de datos',
+        message:
+            'Ocurrió un error al consultar la base de datos ${e.toString()}',
         innerException: e,
         stackTrace: stack,
         input: '[SQL] $sql [PARAMS] $params',

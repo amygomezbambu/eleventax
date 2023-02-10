@@ -3,61 +3,62 @@ import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
+import 'package:eleventa/modulos/ventas/domain/total_de_impuesto.dart';
 
 class Articulo extends Entidad {
-  final Producto? _producto;
+  Producto? _producto;
   var _cantidad = 0.00;
   var _subtotal = Moneda(0);
   final DateTime _agregadoEn;
   late NombreProducto _descripcion;
   var _precioDeVenta = Moneda(0);
-  final Map<String, Moneda> _totalesDeImpuestos = {};
+  final List<TotalDeImpuesto> _totalesDeImpuestos;
 
-  Producto? get producto => _producto;
   double get cantidad => _cantidad;
   Moneda get subtotal => _subtotal;
   Moneda get total => _subtotal + totalImpuestos;
   Moneda get precioDeVenta => _precioDeVenta;
   DateTime get agregadoEn => _agregadoEn;
   String get descripcion => _descripcion.value;
+  Producto? get producto => _producto;
+
+  List<TotalDeImpuesto> get totalesDeImpuestos =>
+      List.unmodifiable(_totalesDeImpuestos);
 
   Moneda get totalImpuestos {
     var resultado = Moneda(0.00);
-    for (var key in _totalesDeImpuestos.keys) {
-      resultado += _totalesDeImpuestos[key]!.importeCobrable;
+    for (var totalDeImpuesto in _totalesDeImpuestos) {
+      resultado += totalDeImpuesto.monto;
     }
 
     return resultado;
   }
 
-  /// Listado de Impuesto UID y su monto
-  Map<String, Moneda> get totalesDeImpuestos =>
-      Map.unmodifiable(_totalesDeImpuestos);
-
   Articulo.cargar({
     required UID uid,
-    required Producto producto,
     required double cantidad,
-    required Moneda subtotal,
-    required Moneda total,
     required DateTime agregadoEn,
-    required Moneda precioDeVenta,
     required NombreProducto descripcion,
-    required Map<String, Moneda> totalesDeImpuestos,
-  })  : _producto = producto,
-        _cantidad = cantidad,
-        _subtotal = subtotal,
+    required Producto producto,
+  })  : _cantidad = cantidad,
         _agregadoEn = agregadoEn,
-        _precioDeVenta = precioDeVenta,
         _descripcion = descripcion,
-        super.cargar(uid);
+        _producto = producto,
+        _totalesDeImpuestos = [],
+        super.cargar(uid) {
+    //TODO: validar que el precio de venta no sea cero, en este punto no debe
+    //ser cero nunca
+    _precioDeVenta = producto.precioDeVenta!;
+    _calcularTotales();
+  }
 
   Articulo.crear({
     required Producto producto,
     required double cantidad,
-  })  : _producto = producto,
-        _cantidad = cantidad,
+  })  : _cantidad = cantidad,
         _agregadoEn = DateTime.now(),
+        _producto = producto,
+        _totalesDeImpuestos = [],
         super.crear() {
     _descripcion = NombreProducto(producto.nombre);
     _precioDeVenta = producto.precioDeVenta!;
@@ -69,10 +70,10 @@ class Articulo extends Entidad {
     required double cantidad,
     required Moneda precioDeVenta,
   })  : _descripcion = descripcion,
-        _producto = null,
         _precioDeVenta = precioDeVenta,
         _cantidad = cantidad,
         _agregadoEn = DateTime.now(),
+        _totalesDeImpuestos = [],
         super.crear() {
     _calcularTotales();
   }
@@ -164,12 +165,19 @@ class Articulo extends Entidad {
       impuestosDescendentes
           .sort((a, b) => a.ordenDeAplicacion.compareTo(b.ordenDeAplicacion));
 
+      _totalesDeImpuestos.clear();
+
       for (var impuesto in impuestosDescendentes) {
         // TODO: Ver cómo multiplicar facilmente Moneda x double
         final montoDeImpuesto =
             baseDelImpuesto.toDouble() * (impuesto.porcentaje / 100);
 
-        _totalesDeImpuestos[impuesto.nombre] = Moneda(montoDeImpuesto);
+        TotalDeImpuesto totalDeImpuesto = TotalDeImpuesto(
+            base: baseDelImpuesto,
+            monto: Moneda(montoDeImpuesto),
+            impuesto: impuesto);
+
+        _totalesDeImpuestos.add(totalDeImpuesto);
 
         baseDelImpuesto += Moneda(montoDeImpuesto);
       }

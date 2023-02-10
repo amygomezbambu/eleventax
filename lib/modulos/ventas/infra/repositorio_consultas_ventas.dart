@@ -1,19 +1,65 @@
 import 'package:eleventa/modulos/common/app/interface/database.dart';
 import 'package:eleventa/modulos/common/app/interface/logger.dart';
 import 'package:eleventa/modulos/common/domain/moneda.dart';
+import 'package:eleventa/modulos/common/domain/nombre_value_object.dart';
+import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/infra/repositorio_consulta.dart';
+import 'package:eleventa/modulos/common/utils/utils.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
+import 'package:eleventa/modulos/productos/interfaces/repositorio_consulta_productos.dart';
+import 'package:eleventa/modulos/ventas/domain/articulo.dart';
+import 'package:eleventa/modulos/ventas/domain/forma_de_pago.dart';
 import 'package:eleventa/modulos/ventas/domain/venta.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/ventas/interfaces/repositorio_cosultas_ventas.dart';
+import 'package:eleventa/modulos/ventas/read_models/articulo.dart';
+import 'package:eleventa/modulos/ventas/read_models/total_impuesto.dart';
+import 'package:eleventa/modulos/ventas/read_models/venta.dart';
 
 class RepositorioConsultaVentas extends RepositorioConsulta
     implements IRepositorioConsultaVentas {
-  RepositorioConsultaVentas(
-      {required IAdaptadorDeBaseDeDatos db, required ILogger logger})
-      : super(db, logger);
-  @override
-  Future<Venta?> obtenerVenta(UID uid) async {
-    return null;
+  final IRepositorioConsultaProductos _productos;
+
+  final _tablaVentasEnProgreso = "ventas_en_progreso";
+  final _tablaVentasEnProgresoArticulos = "ventas_en_progreso_articulos";
+  final _tablaVentas = "ventas";
+  final _tablaFormasDePago = "formas_de_pago";
+  final _tablaVentasArticulos = "ventas_articulos";
+  final _tablaVentasArticulosImpuestos = "ventas_articulos_impuestos";
+
+  RepositorioConsultaVentas({
+    required IAdaptadorDeBaseDeDatos db,
+    required ILogger logger,
+    required IRepositorioConsultaProductos productos,
+  })  : _productos = productos,
+        super(db, logger);
+
+  Future<List<TotalImpuestoDto>> _obtenerTotalesDeImpuestosDeArticulo(
+      UID uid) async {
+    var totales = <TotalImpuestoDto>[];
+
+    var sql = '''
+        SELECT va.uid,
+          vai.nombre_impuesto, vai.porcentaje_impuesto, vai.base_impuesto, vai.monto
+        FROM $_tablaVentasArticulos va 
+        LEFT JOIN $_tablaVentasArticulosImpuestos vai on vai.articulo_uid = va.uid
+        WHERE va.uid = ?;
+    ''';
+
+    final dbResult = await query(sql: sql, params: [uid.toString()]);
+
+    for (var row in dbResult) {
+      var totalImpuesto = TotalImpuestoDto();
+      totalImpuesto.base = Moneda.deserialize(row['base_impuesto'] as int);
+      totalImpuesto.impuesto = row['nombre_impuesto'] as String;
+      totalImpuesto.monto = Moneda.deserialize(row['monto'] as int);
+      totalImpuesto.porcentaje =
+          double.parse(row['porcentaje_impuesto'] as String);
+
+      totales.add(totalImpuesto);
+    }
+
+    return totales;
   }
 
   @override
@@ -21,24 +67,153 @@ class RepositorioConsultaVentas extends RepositorioConsulta
     Venta? venta;
 
     var sql = '''
-        SELECT uid, estado, creado_en from ventas_en_progreso where uid = ?;
+        SELECT vp.uid, vp.creado_en,vpa.producto_uid,vpa.cantidad,vpa.descripcion,
+          vpa.agregado_en, vpa.uid as articulo_uid 
+        FROM $_tablaVentasEnProgreso vp 
+        LEFT JOIN $_tablaVentasEnProgresoArticulos vpa on vpa.venta_uid = vp.uid 
+        WHERE vp.uid = ?;
         ''';
 
-    var result = await query(sql: sql, params: [uid]);
+    List<Articulo> articulos = [];
 
-    // TODO: Crear un tipo de FechaBD que lea/guarde en UNIX epoc estilo Moneda
-    //TODO: debemos cargar el listado de articulos
+    var result = await query(sql: sql, params: [uid.toString()]);
+
     if (result.isNotEmpty) {
+      for (var row in result) {
+        var producto = await _productos
+            .obtenerProducto(UID.fromString(row['producto_uid'] as String));
+
+        if (producto == null) {
+          throw EleventaEx(message: 'No existe el producto');
+        }
+
+        var articulo = Articulo.cargar(
+          uid: UID.fromString(row['articulo_uid'] as String),
+          cantidad: row['cantidad'] as double,
+          agregadoEn:
+              DateTime.fromMillisecondsSinceEpoch(row['agregado_en'] as int),
+          descripcion: NombreProducto(row['descripcion'] as String),
+          producto: producto,
+        );
+
+        articulos.add(articulo);
+      }
+
       final row = result.first;
+
       venta = Venta.cargar(
-          uid: UID.fromString(row['uid'] as String),
+          uid: uid,
           estado: EstadoDeVenta.enProgreso,
           creadoEn:
               DateTime.fromMillisecondsSinceEpoch(row['creado_en'] as int),
           subtotal: Moneda.deserialize(row['subtotal'] as int),
-          total: Moneda.deserialize(row['total'] as int),
           totalImpuestos: Moneda.deserialize(row['total_impuestos'] as int),
-          articulos: []);
+          total: Moneda.deserialize(row['total'] as int),
+          articulos: articulos);
+    }
+
+    return venta;
+  }
+
+  @override
+  Future<FormaDePago?> obtenerFormaDePago(UID uid) async {
+    FormaDePago? formaDePago;
+
+    final sql = '''
+      SELECT nombre, orden, tipo, borrado, activo 
+      FROM $_tablaFormasDePago  
+      WHERE uid = ?''';
+
+    final dbResult = await query(sql: sql, params: [uid.toString()]);
+
+    if (dbResult.isNotEmpty) {
+      formaDePago = FormaDePago.cargar(
+        uid: UID.fromString(dbResult.first['uid'] as String),
+        nombre: NombreValueObject(nombre: dbResult.first['nombre'] as String),
+        orden: dbResult.first['orden'] as int,
+        borrado: Utils.db.intToBool(dbResult.first['borrado'] as int),
+        activo: Utils.db.intToBool(dbResult.first['activo'] as int),
+        tipo: TipoFormaDePago.porAbreviacion(dbResult.first['tipo'] as String),
+      );
+    }
+
+    return formaDePago;
+  }
+
+  @override
+  Future<List<FormaDePago>> obtenerFormasDePago() async {
+    List<FormaDePago> result = [];
+
+    final sql = '''
+      SELECT uid, nombre, orden, tipo 
+      FROM $_tablaFormasDePago  
+      WHERE borrado = false AND activo = true''';
+
+    final dbResult = await query(sql: sql);
+
+    for (var row in dbResult) {
+      result.add(FormaDePago.cargar(
+        uid: UID.fromString(row['uid'] as String),
+        nombre: NombreValueObject(nombre: row['nombre'] as String),
+        orden: row['orden'] as int,
+        borrado: false,
+        activo: true,
+        tipo: TipoFormaDePago.porAbreviacion(row['tipo'] as String),
+      ));
+    }
+
+    return result;
+  }
+
+  @override
+  Future<VentaDto?> obtenerVenta(UID uid) async {
+    VentaDto? venta;
+    List<ArticuloDto> articulos = [];
+
+    var sql = '''
+        SELECT v.uid, v.estado, v.creado_en, v.total, v.subtotal, v.total_impuestos, 
+        v.cobrado_en, 
+        va.uid as articulo_uid, va.cantidad, va.precio_venta, va.descripcion, 
+        va.agregado_en, va.producto_uid, va.subtotal as subtotal_articulo
+        FROM $_tablaVentas v JOIN $_tablaVentasArticulos va on va.venta_uid = v.uid 
+        WHERE v.uid = ?;
+        ''';
+
+    var result = await query(sql: sql, params: [uid.toString()]);
+
+    if (result.isNotEmpty) {
+      for (var row in result) {
+        var articulo = ArticuloDto();
+        articulo.uid = row['articulo_uid'] as String;
+        articulo.cantidad = row['cantidad'] as double;
+        articulo.agregadoEn =
+            DateTime.fromMillisecondsSinceEpoch(row['agregado_en'] as int);
+        articulo.precioDeVenta = Moneda.deserialize(row['precio_venta'] as int);
+        articulo.descripcion = row['descripcion'] as String;
+        articulo.subtotal = Moneda.deserialize(row['subtotal_articulo'] as int);
+        articulo.totalesDeImpuestos =
+            await _obtenerTotalesDeImpuestosDeArticulo(
+                UID.fromString(articulo.uid));
+
+        articulos.add(articulo);
+      }
+
+      final row = result.first;
+
+      venta = VentaDto();
+      venta.uid = row['uid'] as String;
+      venta.estado = EstadoDeVenta.values[row['estado'] as int];
+      venta.creadoEn =
+          DateTime.fromMillisecondsSinceEpoch(row['creado_en'] as int);
+      venta.subtotal = Moneda.deserialize(row['subtotal'] as int);
+      venta.totalImpuestos = Moneda.deserialize(row['total_impuestos'] as int);
+      venta.total = Moneda.deserialize(row['total'] as int);
+      venta.articulos = articulos;
+
+      if (row['cobrado_en'] != null) {
+        venta.cobradaEn =
+            DateTime.fromMillisecondsSinceEpoch(row['creado_en'] as int);
+      }
     }
 
     return venta;

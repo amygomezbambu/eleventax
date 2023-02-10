@@ -128,7 +128,7 @@ class _EleventaAppState extends State<EleventaApp> {
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
         builder: (context, state, child) {
-          return ScaffoldWithBottomNavBar(child: child);
+          return SafeArea(child: ScaffoldWithBottomNavBar(child: child));
         },
         routes: Rutas.generarRutas(),
       )

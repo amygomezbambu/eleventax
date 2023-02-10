@@ -28,7 +28,7 @@ class BotonCobrarVenta extends StatelessWidget {
           label: m.ventas_boton_cobrar(totalDeVenta),
           tamanoFuente: dense ? 20 : 25,
           icon: Iconos.register,
-          onTap: () => {debugPrint('hello')},
+          onTap: onTap,
           key: const ValueKey('payButton')),
     );
   }

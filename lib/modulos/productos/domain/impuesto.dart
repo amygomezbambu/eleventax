@@ -4,6 +4,7 @@ import 'package:eleventa/modulos/common/utils/uid.dart';
 
 class Impuesto extends Entidad {
   final String _nombre;
+  // TODO: Ver como evitar casos como 1.000000000001, usar Decimal() ?
   final double _porcentaje;
   final int _ordenDeAplicacion;
   final bool _activo;
@@ -48,4 +49,20 @@ class Impuesto extends Entidad {
       Impuesto(nombre: $_nombre, porcentaje: $_porcentaje, 
       ordenDeAplicacion: $_ordenDeAplicacion, activo: $_activo)
       ''';
+
+  Impuesto copyWith({
+    UID? uid,
+    String? nombre,
+    double? porcentaje,
+    int? ordenDeAplicacion,
+    bool? activo,
+  }) {
+    return Impuesto.cargar(
+      uid: uid ?? uid_,
+      nombre: nombre ?? _nombre,
+      porcentaje: porcentaje ?? _porcentaje,
+      ordenDeAplicacion: ordenDeAplicacion ?? _ordenDeAplicacion,
+      activo: activo ?? _activo,
+    );
+  }
 }

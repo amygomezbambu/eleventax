@@ -189,21 +189,17 @@ void main() {
     var venta = Venta.crear();
     venta.agregarArticulo(articulo);
 
-    final total_ = Moneda(24411.00);
-    // final subtotal_ = Moneda(19485.15);
-    // final totalImpuestos_ = Moneda(4925.85);
+    final totalEsperado = Moneda(24411.00);
+    final totalImpuestosEsperados = Moneda(4925.84);
 
-    // expect(venta.subtotal, subtotal_,
-    //     reason:
-    //         'el subtotal de la venta debe concordar con la suma de los precios de venta de los productos sin impuestos');
+    // expect(venta.totalDeImpuestos.length, impuestoMultiples.length,
+    //     reason: 'Debe existir los totales de los impuestos cobrados');
 
-    // expect(venta.totalImpuestos, totalImpuestos_,
-    //     reason: 'el calculo de los impuestos es incorrecto');
-
-    expect(venta.total, total_,
+    expect(venta.total, totalEsperado,
         reason:
-            'el total de la venta debe concordar con la suma de los precios de venta de los productos más impuestos',
-        skip: true);
+            'el total de la venta debe concordar con la suma de los precios de venta de los productos más impuestos');
+
+    expect(venta.totalImpuestos, totalImpuestosEsperados, skip: true);
   });
 
   // [TestCase('debe calcular totales correctos con IVA 8%, Escenario B','8,1*478.4141|3*258.9581|1*434.5229,')]
@@ -215,7 +211,7 @@ void main() {
   // [TestCase('debe calcular totales correctos con IVA 16%, Escenario I','16,1*431.0345|1*108.4052|1*460.5604,1160.00')]
   test('Debe tener una fecha especificada al momento de crear la venta', () {
     //var fechaEsperada = DateTime.now();
-  }, skip: true);
+  });
 
   //TODO: probar la comparacion de fechas entre la creacion del ticket y la establecida por la prueba
   // test(

@@ -95,13 +95,14 @@ class TestsLoader {
       () => RepositorioConsultaVentas(
         db: Dependencias.infra.database(),
         logger: Dependencias.infra.logger(),
+        productos: Dependencias.productos.repositorioConsultasProductos(),
       ),
     );
 
     Dependencias.registrar(
       (IRepositorioVentas).toString(),
       () => RepositorioVentas(
-        syncAdapter: Dependencias.infra.sync(),
+        adaptadorSync: Dependencias.infra.sync(),
         db: Dependencias.infra.database(),
         consultas: Dependencias.ventas.repositorioConsultasVentas(),
       ),

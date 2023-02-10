@@ -3,7 +3,6 @@ import 'package:eleventa/modulos/productos/domain/impuesto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_venta_producto.dart';
 import 'package:eleventa/modulos/ventas/domain/articulo.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../loader_for_tests.dart';
@@ -40,6 +39,7 @@ void main() {
 
     final subtotalEsperado =
         Moneda(producto.precioDeVentaSinImpuestos.toDouble() * cantidad);
+
     expect(articulo.subtotal, subtotalEsperado,
         reason: 'El subtotal no fue el correcto');
 
@@ -91,6 +91,7 @@ void main() {
     );
 
     //TODO: probar optimistic locking cuando se actualice un producto
+    print(producto.impuestos.length);
 
     final articulo = Articulo.crear(producto: producto, cantidad: cantidad);
     articulo.actualizarCantidad(cantidad + cantidadAgregada);
@@ -100,7 +101,8 @@ void main() {
 
     expect(articulo.cantidad, cantidad + cantidadAgregada);
     expect(
-        articulo.total.importeCobrable, Moneda(totalEsperado).importeCobrable);
+        articulo.total.importeCobrable, Moneda(totalEsperado).importeCobrable,
+        reason: 'El total del articulo no es el esperado');
   });
 
   test('debe lanzar un error si el precio de venta es nulo o cero', () {
@@ -130,9 +132,8 @@ void main() {
 
     var totalImpuestos = 0.00;
 
-    for (var key in articulo.totalesDeImpuestos.keys) {
-      totalImpuestos +=
-          articulo.totalesDeImpuestos[key]!.importeCobrable.toDouble();
+    for (var totalDeImpuesto in articulo.totalesDeImpuestos) {
+      totalImpuestos += totalDeImpuesto.monto.toDouble();
     }
 
     final totalEsperado =
@@ -142,10 +143,10 @@ void main() {
         totalEsperado.importeCobrable,
         reason: 'El total del articulo no fue correcto');
 
-    debugPrint('SUBTOTAL: ${articulo.subtotal} - '
-        'IEPS: ${articulo.totalesDeImpuestos["IEPS"]} - '
-        'IVA:${articulo.totalesDeImpuestos["IVA"]} - '
-        'TOTAL: ${articulo.total}');
+    // debugPrint('SUBTOTAL: ${articulo.subtotal} - '
+    //     'IEPS: ${articulo.totalesDeImpuestos["IEPS"]} - '
+    //     'IVA:${articulo.totalesDeImpuestos["IVA"]} - '
+    //     'TOTAL: ${articulo.total}');
   }, skip: true);
 
   test(
@@ -169,9 +170,8 @@ void main() {
 
     var totalImpuestos = 0.00;
 
-    for (var key in articulo.totalesDeImpuestos.keys) {
-      totalImpuestos +=
-          articulo.totalesDeImpuestos[key]!.importeCobrable.toDouble();
+    for (var totalDeImpuesto in articulo.totalesDeImpuestos) {
+      totalImpuestos += totalDeImpuesto.monto.toDouble();
     }
 
     final totalEsperado =
