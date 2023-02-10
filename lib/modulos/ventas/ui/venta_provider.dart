@@ -53,7 +53,9 @@ class VentaEnProgreso {
     Articulo? articulo,
   }) {
     return VentaEnProgreso.cargar(
-        venta: venta ?? _venta, articulo: articulo ?? articuloSeleccionado);
+      venta: venta ?? _venta,
+      articulo: articulo ?? articuloSeleccionado,
+    );
   }
 }
 

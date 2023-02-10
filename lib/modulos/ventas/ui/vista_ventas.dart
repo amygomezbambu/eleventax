@@ -47,8 +47,13 @@ class _VistaVentasState extends State<VistaVentas> {
 //@visibleForTesting
 class VentaActual extends ConsumerWidget {
   final TextEditingController myController = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
 
   VentaActual({super.key});
+
+  void dispose() {
+    _focusNode.dispose();
+  }
 
   void chargeButtonClick() async {
     debugPrint('Cobrando!');
@@ -103,18 +108,21 @@ class VentaActual extends ConsumerWidget {
               children: [
                 ControlesVentaActual(
                     editingController: myController,
+                    focusNode: _focusNode,
                     onBuscarCodigo: notifier.agregarArticulo),
                 Container(
                   width: 350,
                   padding: const EdgeInsets.fromLTRB(1, 5, 7, 5),
                   child: Column(
                     children: [
-                      const Expanded(
+                      Expanded(
                         child: Card(
                           elevation: 1,
                           child: Padding(
-                            padding: EdgeInsets.all(5.0),
-                            child: AccionesDeVenta(),
+                            padding: const EdgeInsets.all(5.0),
+                            child: AccionesDeVenta(
+                              focusNode: _focusNode,
+                            ),
                           ),
                         ),
                       ),
@@ -133,6 +141,7 @@ class VentaActual extends ConsumerWidget {
               children: [
                 ControlesVentaActual(
                   editingController: myController,
+                  focusNode: _focusNode,
                   onBuscarCodigo: notifier.agregarArticulo,
                 ),
                 BotonCobrarVenta(
@@ -149,11 +158,12 @@ class VentaActual extends ConsumerWidget {
 class ControlesVentaActual extends ConsumerWidget {
   final TextEditingController editingController;
   final Function onBuscarCodigo;
-  final FocusNode _focusNode = FocusNode();
+  final FocusNode focusNode;
 
-  ControlesVentaActual(
+  const ControlesVentaActual(
       {super.key,
       required this.editingController,
+      required this.focusNode,
       required this.onBuscarCodigo});
 
   void _agregarProductoAListado(String codigo) {
@@ -167,8 +177,8 @@ class ControlesVentaActual extends ConsumerWidget {
     notifier.seleccionarArticulo(articuloSeleccionado);
 
     // Enfocamos de nuevo al campo código que es hijo del Focus widget
-    if (_focusNode.children.first.canRequestFocus) {
-      _focusNode.children.first.requestFocus();
+    if (focusNode.children.first.canRequestFocus) {
+      focusNode.children.first.requestFocus();
     }
   }
 
@@ -233,7 +243,7 @@ class ControlesVentaActual extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(5),
                 ),
                 child: Focus(
-                    focusNode: _focusNode,
+                    focusNode: focusNode,
                     debugLabel: 'focoCampoCodigo',
                     onKey: (FocusNode node, RawKeyEvent key) =>
                         _cambiarControlEnFoco(ref, node, key),
