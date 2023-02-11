@@ -1,5 +1,6 @@
 import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/productos/domain/impuesto.dart';
+import 'package:eleventa/modulos/productos/domain/producto_generico.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_venta_producto.dart';
 import 'package:eleventa/modulos/ventas/domain/articulo.dart';
@@ -64,20 +65,26 @@ void main() {
     var precioVenta = PrecioDeVentaProducto(Moneda(35.55444451111));
     var descripcion = NombreProducto('Soda de lata');
 
-    final articulo = Articulo.crearDesdeProductoGenerico(
-        descripcion: descripcion,
-        cantidad: cantidad,
-        precioDeVenta: precioVenta.value);
+    final productoGenerico = ProductoGenerico.crear(
+      nombre: descripcion,
+      precioDeVenta: precioVenta,
+      impuestos: [],
+    );
+
+    final articulo = Articulo.crear(
+      producto: productoGenerico,
+      cantidad: cantidad,
+    );
 
     expect(articulo.cantidad, cantidad);
-    expect(articulo.producto, null);
+    expect(articulo.producto, isA<ProductoGenerico>());
     expect(articulo.precioDeVenta, precioVenta.value);
     expect(articulo.descripcion, descripcion.value);
     expect(articulo.subtotal, Moneda(precioVenta.value.toDouble() * cantidad));
     expect(articulo.total, Moneda(precioVenta.value.toDouble() * cantidad));
 
     // TODO: Verificar totales calculados de un articulo generico
-  }, skip: true);
+  });
 
   test('debe recalcular los totales al modificar la cantidad', () {
     var cantidad = 1.00;
@@ -91,7 +98,6 @@ void main() {
     );
 
     //TODO: probar optimistic locking cuando se actualice un producto
-    print(producto.impuestos.length);
 
     final articulo = Articulo.crear(producto: producto, cantidad: cantidad);
     articulo.actualizarCantidad(cantidad + cantidadAgregada);
@@ -142,11 +148,6 @@ void main() {
     expect(Moneda(precioVenta * cantidad).importeCobrable,
         totalEsperado.importeCobrable,
         reason: 'El total del articulo no fue correcto');
-
-    // debugPrint('SUBTOTAL: ${articulo.subtotal} - '
-    //     'IEPS: ${articulo.totalesDeImpuestos["IEPS"]} - '
-    //     'IVA:${articulo.totalesDeImpuestos["IVA"]} - '
-    //     'TOTAL: ${articulo.total}');
   }, skip: true);
 
   test(

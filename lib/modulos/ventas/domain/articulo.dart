@@ -1,12 +1,13 @@
 import 'package:eleventa/modulos/common/domain/entidad.dart';
 import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
+import 'package:eleventa/modulos/productos/domain/interface/producto.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
 import 'package:eleventa/modulos/ventas/domain/total_de_impuesto.dart';
 
 class Articulo extends Entidad {
-  Producto? _producto;
+  final IProducto _producto;
   var _cantidad = 0.00;
   var _subtotal = Moneda(0);
   final DateTime _agregadoEn;
@@ -20,7 +21,7 @@ class Articulo extends Entidad {
   Moneda get precioDeVenta => _precioDeVenta;
   DateTime get agregadoEn => _agregadoEn;
   String get descripcion => _descripcion.value;
-  Producto? get producto => _producto;
+  IProducto get producto => _producto;
 
   List<TotalDeImpuesto> get totalesDeImpuestos =>
       List.unmodifiable(_totalesDeImpuestos);
@@ -48,12 +49,12 @@ class Articulo extends Entidad {
         super.cargar(uid) {
     //TODO: validar que el precio de venta no sea cero, en este punto no debe
     //ser cero nunca
-    _precioDeVenta = producto.precioDeVenta!;
+    _precioDeVenta = producto.precioDeVenta;
     _calcularTotales();
   }
 
   Articulo.crear({
-    required Producto producto,
+    required IProducto producto,
     required double cantidad,
   })  : _cantidad = cantidad,
         _agregadoEn = DateTime.now(),
@@ -62,19 +63,6 @@ class Articulo extends Entidad {
         super.crear() {
     _descripcion = NombreProducto(producto.nombre);
     _precioDeVenta = producto.precioDeVenta!;
-    _calcularTotales();
-  }
-
-  Articulo.crearDesdeProductoGenerico({
-    required NombreProducto descripcion,
-    required double cantidad,
-    required Moneda precioDeVenta,
-  })  : _descripcion = descripcion,
-        _precioDeVenta = precioDeVenta,
-        _cantidad = cantidad,
-        _agregadoEn = DateTime.now(),
-        _totalesDeImpuestos = [],
-        super.crear() {
     _calcularTotales();
   }
 
@@ -87,7 +75,7 @@ class Articulo extends Entidad {
   Moneda _obtenerPrecioSinImpuestos() {
     //Map<String, Moneda> totalesPorImpuesto = {};
 
-    return Moneda(_producto!.precioDeVentaSinImpuestos.toDouble() * _cantidad);
+    return Moneda(_producto.precioDeVentaSinImpuestos.toDouble() * _cantidad);
 
     // var precioSinImpuestos =
     //     Moneda(_producto!.precioDeVentaSinImpuestos.toDouble() * _cantidad)
@@ -156,33 +144,29 @@ class Articulo extends Entidad {
   }
 
   void _calcularTotales() {
-    if (_producto != null) {
-      _subtotal = _obtenerPrecioSinImpuestos();
+    _subtotal = _obtenerPrecioSinImpuestos();
 
-      var baseDelImpuesto = _subtotal;
+    var baseDelImpuesto = _subtotal;
 
-      var impuestosDescendentes = [..._producto!.impuestos];
-      impuestosDescendentes
-          .sort((a, b) => a.ordenDeAplicacion.compareTo(b.ordenDeAplicacion));
+    var impuestosDescendentes = [..._producto.impuestos];
+    impuestosDescendentes
+        .sort((a, b) => a.ordenDeAplicacion.compareTo(b.ordenDeAplicacion));
 
-      _totalesDeImpuestos.clear();
+    _totalesDeImpuestos.clear();
 
-      for (var impuesto in impuestosDescendentes) {
-        // TODO: Ver cómo multiplicar facilmente Moneda x double
-        final montoDeImpuesto =
-            baseDelImpuesto.toDouble() * (impuesto.porcentaje / 100);
+    for (var impuesto in impuestosDescendentes) {
+      // TODO: Ver cómo multiplicar facilmente Moneda x double
+      final montoDeImpuesto =
+          baseDelImpuesto.toDouble() * (impuesto.porcentaje / 100);
 
-        TotalDeImpuesto totalDeImpuesto = TotalDeImpuesto(
-            base: baseDelImpuesto,
-            monto: Moneda(montoDeImpuesto),
-            impuesto: impuesto);
+      TotalDeImpuesto totalDeImpuesto = TotalDeImpuesto(
+          base: baseDelImpuesto,
+          monto: Moneda(montoDeImpuesto),
+          impuesto: impuesto);
 
-        _totalesDeImpuestos.add(totalDeImpuesto);
+      _totalesDeImpuestos.add(totalDeImpuesto);
 
-        baseDelImpuesto += Moneda(montoDeImpuesto);
-      }
-    } else {
-      // TODO: Implementar cálculo de impuestos con genericos
+      baseDelImpuesto += Moneda(montoDeImpuesto);
     }
   }
 }

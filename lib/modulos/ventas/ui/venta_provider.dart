@@ -38,7 +38,7 @@ class VentaEnProgreso {
             Articulo.crear(producto: producto, cantidad: 1.00));
 
         articuloSeleccionado = venta.articulos
-            .firstWhere((element) => element.producto?.codigo == value);
+            .firstWhere((element) => element.producto.codigo == value);
       }
     } on Exception catch (e) {
       if (e is AppEx) {

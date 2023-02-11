@@ -2,6 +2,7 @@ import 'package:eleventa/modulos/common/domain/entidad.dart';
 import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
+import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/ventas/domain/articulo.dart';
 import 'package:eleventa/modulos/ventas/domain/pago.dart';
 import 'package:eleventa/modulos/ventas/domain/total_de_impuesto.dart';
@@ -109,14 +110,10 @@ class Venta extends Entidad {
   void agregarArticulo(Articulo articulo) {
     var encontrado = false;
 
-    if (articulo.producto != null) {
-      for (var element in _articulos) {
-        if (element.producto != null) {
-          if (element.producto!.uid == articulo.producto!.uid) {
-            element.actualizarCantidad(element.cantidad + articulo.cantidad);
-            encontrado = true;
-          }
-        }
+    for (var element in _articulos) {
+      if ((element.producto as Producto).uid == articulo.producto.uid) {
+        element.actualizarCantidad(element.cantidad + articulo.cantidad);
+        encontrado = true;
       }
     }
 

@@ -76,7 +76,6 @@ void main() {
   });
 
   test('debe obtener las categorias activas', () async {
-    //crear una categoria
     final crearCategoria = ModuloProductos.crearCategoria();
     final eliminarCategoria = ModuloProductos.eliminarCategoria();
     final consultas = ModuloProductos.repositorioConsultaProductos();
@@ -86,17 +85,16 @@ void main() {
     crearCategoria.req.categoria = categoria;
 
     await crearCategoria.exec();
-    //borarla
 
     eliminarCategoria.req.uidCategoria = categoria.uid;
     await eliminarCategoria.exec();
 
-    //hacer un query y validar que no traiga la categoria borrada
     final categorias = await consultas.obtenerCategorias();
 
     final countCategoriasEliminadas = categorias.where((cat) => cat.eliminado);
 
-    expect(countCategoriasEliminadas.length, 0);
+    expect(countCategoriasEliminadas.length, 0,
+        reason: 'No se deben obtener las categorias eliminadas');
   });
 
   test('debe de obtener un producto solo con sus impuestos activos', () async {

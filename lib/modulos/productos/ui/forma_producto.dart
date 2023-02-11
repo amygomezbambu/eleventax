@@ -156,10 +156,9 @@ class _FormaProductoState extends State<FormaProducto> {
       _controllerNombre.text = productoEnModificacion!.nombre;
       _controllerPrecioDeCompra.text =
           productoEnModificacion!.precioDeCompra.toDouble().toString();
-      if (productoEnModificacion!.precioDeVenta != null) {
-        _controllerPrecioDeVenta.text =
-            productoEnModificacion!.precioDeVenta!.toDouble().toString();
-      }
+      _controllerPrecioDeVenta.text =
+          productoEnModificacion!.precioDeVenta.toDouble().toString();
+
       _controllerImagen.text = productoEnModificacion!.imagenURL;
 
       categoriaSeleccionada = productoEnModificacion!.categoria;
@@ -285,11 +284,13 @@ class _FormaProductoState extends State<FormaProducto> {
 
   Producto _llenarProducto() {
     bool hayPrecioDeVenta = _controllerPrecioDeVenta.text.isNotEmpty;
-    PrecioDeVentaProducto? precioDeVenta;
+    PrecioDeVentaProducto precioDeVenta;
 
     if (hayPrecioDeVenta) {
       precioDeVenta =
           PrecioDeVentaProducto(Moneda(_controllerPrecioDeVenta.text));
+    } else {
+      precioDeVenta = PrecioDeVentaProducto.invalido();
     }
 
     var producto = Producto.crear(

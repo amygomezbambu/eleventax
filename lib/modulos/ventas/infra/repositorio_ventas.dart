@@ -7,7 +7,6 @@ import 'package:eleventa/modulos/ventas/interfaces/repositorio_cosultas_ventas.d
 import 'package:eleventa/modulos/ventas/interfaces/repositorio_ventas.dart';
 
 class RepositorioVentas extends Repositorio implements IRepositorioVentas {
-  //final IRepositorioConsultaVentas _consultas;
   final tablaVentasEnProgreso = 'ventas_en_progreso';
   final tablaArticulosVentaEnProgreso = 'ventas_en_progreso_articulos';
 
@@ -52,7 +51,7 @@ class RepositorioVentas extends Repositorio implements IRepositorioVentas {
         rowID: articulo.uid.toString(),
         fields: {
           'venta_uid': venta.uid.toString(),
-          'producto_uid': articulo.producto?.uid.toString(),
+          'producto_uid': articulo.producto.uid.toString(),
           'cantidad': articulo.cantidad,
           'precio_venta': articulo.precioDeVenta.serialize(),
           'descripcion': articulo.descripcion,
@@ -114,7 +113,7 @@ class RepositorioVentas extends Repositorio implements IRepositorioVentas {
         articulo.uid.toString(),
         venta.uid.toString(),
         articulo.agregadoEn.millisecondsSinceEpoch,
-        articulo.producto?.uid.toString(),
+        articulo.producto.uid.toString(),
         articulo.precioDeVenta.serialize(),
         articulo.descripcion,
         articulo.cantidad

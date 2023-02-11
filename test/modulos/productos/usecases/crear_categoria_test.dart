@@ -13,8 +13,6 @@ void main() {
   });
 
   test('debe crear la categoria si los datos son correctos', () async {
-    //Dependencias.infra.logger().activarLogeoParaPruebas(true);
-
     final consultas = ModuloProductos.repositorioConsultaProductos();
     final crearCategoria = ModuloProductos.crearCategoria();
     final nombreCategoria = NombreCategoria('Abarrotes');

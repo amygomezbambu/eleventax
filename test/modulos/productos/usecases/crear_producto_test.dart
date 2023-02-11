@@ -50,6 +50,7 @@ void main() {
         codigo: CodigoProducto('2343Q34'),
         nombre: NombreProducto(nombre),
         precioDeCompra: PrecioDeCompraProducto(precioDeCompra),
+        precioDeVenta: PrecioDeVentaProducto.invalido(),
         unidadDeMedida: UnidadDeMedida.crear(
           nombre: 'Pieza',
           abreviacion: 'pz',

@@ -44,7 +44,7 @@ class ListadoArticulos extends ConsumerWidget {
                         cacheWidth: 50,
                         fit: BoxFit.cover,
                       )),
-                  subtitle: Text(articulos[index].producto!.codigo),
+                  subtitle: Text(articulos[index].producto.codigo),
                   selected: !soportaTouch &&
                       ventaEnProgreso.articuloSeleccionado == articulos[index],
                   selectedColor: ColoresBase.neutral800,

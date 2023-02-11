@@ -4,6 +4,7 @@ import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/productos/domain/categoria.dart';
 import 'package:eleventa/modulos/productos/domain/impuesto.dart';
+import 'package:eleventa/modulos/productos/domain/interface/producto.dart';
 import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
@@ -12,9 +13,9 @@ import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_venta_
 
 enum ProductoSeVendePor { unidad, peso }
 
-class Producto extends Entidad {
+class Producto extends Entidad implements IProducto {
   final NombreProducto _nombre;
-  final PrecioDeVentaProducto? _precioDeVenta;
+  final PrecioDeVentaProducto _precioDeVenta;
   final PrecioDeCompraProducto _precioDeCompra;
   Categoria? _categoria;
   late UnidadDeMedida _unidadDeMedida;
@@ -24,20 +25,25 @@ class Producto extends Entidad {
   final CodigoProducto _codigo;
   bool _preguntarPrecio = false;
 
-  String get nombre => _nombre.value;
-  Moneda? get precioDeVenta => _precioDeVenta?.value;
   Moneda get precioDeCompra => _precioDeCompra.value;
   Categoria? get categoria => _categoria;
   ProductoSeVendePor get seVendePor => _seVendePor;
   String get imagenURL => _imagenURL;
-  String get codigo => _codigo.value;
+
   UnidadDeMedida get unidadMedida => _unidadDeMedida;
-  List<Impuesto> get impuestos => List.unmodifiable(_impuestos);
   bool get preguntarPrecio => _preguntarPrecio;
 
+  @override
+  String get nombre => _nombre.value;
+  @override
+  String get codigo => _codigo.value;
+  @override
+  Moneda get precioDeVenta => _precioDeVenta.value;
+  @override
+  List<Impuesto> get impuestos => List.unmodifiable(_impuestos);
+  @override
   Moneda get precioDeVentaSinImpuestos {
-    //paso1 , aplicar impuestos a precioSinImpuestos y reondear los valores a 2 decimales, si da todo esta bien
-    var precioSinImpuestos = _precioDeVenta!.value.toDouble();
+    var precioSinImpuestos = _precioDeVenta.value.toDouble();
 
     _impuestos.sort((a, b) => b.ordenDeAplicacion.compareTo(
           a.ordenDeAplicacion,
@@ -48,9 +54,6 @@ class Producto extends Entidad {
           (precioSinImpuestos / (1 + (impuesto.porcentaje / 100)));
 
       precioSinImpuestos -= montoImpuesto;
-
-      // precioSinImpuestos =
-      //     precioSinImpuestos / (1 + (impuesto.porcentaje / 100));
     }
 
     return Moneda(precioSinImpuestos);
@@ -63,7 +66,7 @@ class Producto extends Entidad {
     required NombreProducto nombre,
     required UnidadDeMedida unidadDeMedida,
     required PrecioDeCompraProducto precioDeCompra,
-    PrecioDeVentaProducto? precioDeVenta,
+    required PrecioDeVentaProducto precioDeVenta,
     Categoria? categoria,
     ProductoSeVendePor seVendePor = ProductoSeVendePor.unidad,
     String imagenURL = '',
@@ -87,7 +90,7 @@ class Producto extends Entidad {
     required UID uid,
     required NombreProducto nombre,
     required PrecioDeCompraProducto precioDeCompra,
-    PrecioDeVentaProducto? precioDeVenta,
+    required PrecioDeVentaProducto precioDeVenta,
     Categoria? categoria,
     ProductoSeVendePor seVendePor = ProductoSeVendePor.unidad,
     String imagenURL = '',

@@ -12,6 +12,10 @@ class PrecioDeVentaProducto {
     _validar(_precio);
   }
 
+  PrecioDeVentaProducto.invalido() {
+    _precio = Moneda(0);
+  }
+
   void _validar(Moneda value) {
     if (value <= Moneda(0)) {
       throw ValidationEx(mensaje: 'El precio de venta debe ser mayor a cero');
