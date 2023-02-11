@@ -2,6 +2,7 @@ import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/productos/domain/impuesto.dart';
 import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/productos/domain/interface/producto.dart';
+import 'package:eleventa/modulos/productos/domain/servicio/calcular_precio_sin_impuesto_de_producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_venta_producto.dart';
@@ -25,25 +26,8 @@ class ProductoGenerico implements IProducto {
   @override
   Moneda get precioDeVenta => _precioDeVenta.value;
   @override
-  Moneda get precioDeVentaSinImpuestos {
-    var precioSinImpuestos = _precioDeVenta.value.toDouble();
-
-    //_impuestos es final porlo que no se le puede hacer sort directamente
-    var impuestosCopy = [..._impuestos];
-
-    impuestosCopy.sort((a, b) => b.ordenDeAplicacion.compareTo(
-          a.ordenDeAplicacion,
-        ));
-
-    for (var impuesto in impuestosCopy) {
-      var montoImpuesto = precioSinImpuestos -
-          (precioSinImpuestos / (1 + (impuesto.porcentaje / 100)));
-
-      precioSinImpuestos -= montoImpuesto;
-    }
-
-    return Moneda(precioSinImpuestos);
-  }
+  Moneda get precioDeVentaSinImpuestos =>
+      calcularPrecioSinImpuestos(_precioDeVenta, _impuestos);
 
   ProductoGenerico.crear({
     required NombreProducto nombre,

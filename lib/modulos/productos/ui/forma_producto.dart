@@ -290,7 +290,7 @@ class _FormaProductoState extends State<FormaProducto> {
       precioDeVenta =
           PrecioDeVentaProducto(Moneda(_controllerPrecioDeVenta.text));
     } else {
-      precioDeVenta = PrecioDeVentaProducto.invalido();
+      precioDeVenta = PrecioDeVentaProducto.sinPrecio();
     }
 
     var producto = Producto.crear(

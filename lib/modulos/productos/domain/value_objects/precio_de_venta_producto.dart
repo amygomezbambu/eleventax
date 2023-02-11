@@ -12,7 +12,7 @@ class PrecioDeVentaProducto {
     _validar(_precio);
   }
 
-  PrecioDeVentaProducto.invalido() {
+  PrecioDeVentaProducto.sinPrecio() {
     _precio = Moneda(0);
   }
 
