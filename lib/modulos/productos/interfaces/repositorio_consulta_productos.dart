@@ -4,6 +4,7 @@ import 'package:eleventa/modulos/productos/domain/impuesto.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
+import 'package:eleventa/modulos/productos/dto/producto_dto.dart';
 
 abstract class IRepositorioConsultaProductos {
   Future<List<Impuesto>> obtenerImpuestos();
@@ -13,6 +14,7 @@ abstract class IRepositorioConsultaProductos {
   Future<bool> existeProducto(String codigo);
   Future<List<Producto>> obtenerProductos();
   Future<Producto?> obtenerProducto(UID uid);
+  Future<ProductoDto?> obtenerVersionDeProducto(UID versionUid);
   Future<Producto?> obtenerProductoPorCodigo(CodigoProducto codigo);
   Future<List<Impuesto>> obtenerImpuestosParaProducto(UID productoUID);
   Future<UID> obtenerRelacionProductoImpuesto(

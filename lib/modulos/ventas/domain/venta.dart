@@ -1,11 +1,11 @@
 import 'package:eleventa/modulos/common/domain/entidad.dart';
 import 'package:eleventa/modulos/common/domain/moneda.dart';
-import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/ventas/domain/articulo.dart';
 import 'package:eleventa/modulos/ventas/domain/pago.dart';
 import 'package:eleventa/modulos/ventas/domain/total_de_impuesto.dart';
+import 'package:eleventa/modulos/ventas/ventas_ex.dart';
 
 enum EstadoDeVenta { enProgreso, cobrada, cancelada }
 
@@ -20,8 +20,10 @@ class Venta extends Entidad {
   var _subtotal = Moneda(0);
   var _total = Moneda(0);
   var _totalImpuestos = Moneda(0);
+  var _totalPagos = Moneda(0);
 
   EstadoDeVenta get estado => _estado;
+  Moneda get totalPagos => _totalPagos;
   DateTime get creadoEn => _creadoEn;
   DateTime? get cobradaEn => _cobradaEn;
   Moneda get subtotal => _subtotal;
@@ -90,7 +92,7 @@ class Venta extends Entidad {
     );
   }
 
-  void cobrar() {
+  void marcarComoCobrada() {
     _cobradaEn = DateTime.now();
     _estado = EstadoDeVenta.cobrada;
   }
@@ -99,11 +101,15 @@ class Venta extends Entidad {
     var sumatoriaDePagos =
         _pagos.fold(Moneda(0), (sumatoria, pago) => sumatoria + pago.monto);
 
+    //0.001
     if (sumatoriaDePagos + pagoRecibido.monto > _total) {
-      throw ValidationEx(
-          mensaje: 'la sumatoria de los pagos excede el total de la venta');
+      throw VentasEx(
+          tipo: TiposVentasEx.errorDeValidacion,
+          message:
+              'la sumatoria de los pagos excede el total de la venta: ${sumatoriaDePagos + pagoRecibido.monto}');
     }
 
+    _totalPagos += pagoRecibido.monto;
     _pagos.add(pagoRecibido);
   }
 
@@ -164,9 +170,81 @@ class Venta extends Entidad {
 
     // Redondeamos a 2 decimales el subtotal
     // que es el que cobraremos a los usuarios
+    _total = _subtotal + _totalImpuestos;
     _subtotal = _subtotal.importeCobrable;
     _totalImpuestos = _totalImpuestos.importeCobrable;
-    _total = _subtotal + _totalImpuestos;
+    _total = _total.importeCobrable;
+  }
+
+  void ajustarTotales() {
+    //Map<String, Moneda> totalesPorImpuesto = {};
+
+    //return Moneda(_producto.precioDeVentaSinImpuestos.toDouble() * _cantidad);
+
+    // var precioSinImpuestos =
+    //     Moneda(_producto!.precioDeVentaSinImpuestos.toDouble() * _cantidad)
+    //         .redondearADecimales(3);
+
+    // if (_producto == null || _producto!.impuestos.isEmpty) {
+    //   return precioSinImpuestos;
+    // }
+
+    // final montoObjetivo =
+    //     Moneda(producto!.precioDeVenta!.toDouble() * _cantidad);
+
+    // var salir = false;
+
+    // // 1. Ordenamos los impuestos en base al orden de aplicación
+    // // para tomar como base para el IVA el precio mas IEPS por ejemplo
+    // final impuestosDescendentes = [..._producto!.impuestos];
+
+    // impuestosDescendentes
+    //     .sort((a, b) => a.ordenDeAplicacion.compareTo(b.ordenDeAplicacion));
+
+    // //Para forzar que sea una nueva referencia hacemos lo siguiente:
+    // var baseDelImpuesto = Moneda(precioSinImpuestos.toDouble());
+
+    // //redondear precio sin impuestos a 4 decimales redondeando
+    // //19485.153247  -> 19485.154000 -> 19485.155000 -> 19485.156000 -> hasta encontrar valor
+
+    // var contador = 1;
+
+    // while (salir != true) {
+    //   if (contador == 19) {
+    //     break;
+    //   }
+
+    //   for (var impuesto in impuestosDescendentes) {
+    //     final montoDeImpuesto =
+    //         baseDelImpuesto.toDouble() * (impuesto.porcentaje / 100);
+
+    //     totalesPorImpuesto[impuesto.nombre] = Moneda(montoDeImpuesto);
+
+    //     baseDelImpuesto += Moneda(montoDeImpuesto);
+    //   }
+
+    //   var totalADosDecimales = precioSinImpuestos.importeCobrable;
+
+    //   for (var importe in totalesPorImpuesto.values) {
+    //     totalADosDecimales += importe.importeCobrable;
+    //   }
+
+    //   if (totalADosDecimales.importeCobrable == montoObjetivo.importeCobrable) {
+    //     salir = true;
+    //     print("Valor encontrado: ${precioSinImpuestos.toDouble().toString()}");
+    //   } else {
+    //     precioSinImpuestos = totalADosDecimales < montoObjetivo
+    //         ? precioSinImpuestos + Moneda(0.001)
+    //         : precioSinImpuestos - Moneda(0.001);
+
+    //     baseDelImpuesto = Moneda(precioSinImpuestos.toDouble());
+    //     totalesPorImpuesto = {};
+    //   }
+
+    //   contador++;
+    // }
+
+    //return precioSinImpuestos;
   }
 
   @override

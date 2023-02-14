@@ -1,9 +1,11 @@
 import 'package:eleventa/modulos/common/domain/moneda.dart';
+import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/ventas/domain/articulo.dart';
 import 'package:eleventa/modulos/ventas/domain/pago.dart';
 import 'package:eleventa/modulos/ventas/domain/venta.dart';
 import 'package:eleventa/modulos/ventas/modulo_ventas.dart';
 import 'package:eleventa/modulos/ventas/read_models/venta.dart';
+import 'package:eleventa/modulos/ventas/ventas_ex.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../loader_for_tests.dart';
@@ -13,10 +15,6 @@ void main() {
   setUpAll(() async {
     TestsLoader loader = TestsLoader();
     await loader.iniciar();
-  });
-
-  test('debe lanzar una excepcion si la venta tiene un total en cero', () {
-    // TODO: Implement test
   });
 
   test('debe almacenar los datos de la venta al registrar el cobro', () async {
@@ -63,6 +61,9 @@ void main() {
     expect(ventaCobrada.total, ventaEnProgreso.total);
     expect(ventaCobrada.estado, EstadoDeVenta.cobrada);
 
+    expect(ventaCobrada.pagos.length, 1,
+        reason: 'Debe registrar la forma de pago');
+
     expect(
       ventaCobrada.articulos.length,
       ventaEnProgreso.articulos.length,
@@ -76,7 +77,74 @@ void main() {
   });
 
   test('debe lanzar error si las formas de pago exceden el total de la venta',
-      () {
-    // TODO: Implement test
+      () async {
+    var cobrarVenta = ModuloVentas.cobrarVenta();
+    var consultas = ModuloVentas.repositorioConsultaVentas();
+
+    Venta ventaEnProgreso = Venta.crear();
+
+    var cantidad = 1.00;
+    var precioVenta = 24411.00;
+    var precioCompra = 21.680000;
+
+    var producto = ProductosUtils.crearProducto(
+      precioCompra: Moneda(precioCompra),
+      precioVenta: Moneda(precioVenta),
+    );
+
+    var formasDisponibles = await consultas.obtenerFormasDePago();
+    var articulo = Articulo.crear(producto: producto, cantidad: cantidad);
+    var pago = Pago.crear(
+      forma: formasDisponibles.first,
+      monto: Moneda(24407.00),
+    );
+
+    ventaEnProgreso.agregarArticulo(articulo);
+    ventaEnProgreso.agregarPago(pago);
+
+    cobrarVenta.req.venta = ventaEnProgreso;
+
+    TiposVentasEx? tipoEx;
+
+    try {
+      await cobrarVenta.exec();
+    } catch (e) {
+      if (e is VentasEx) {
+        tipoEx = e.tipo;
+      }
+    }
+
+    expect(tipoEx, TiposVentasEx.pagosInsuficientes);
+  });
+
+  test('debe lanzar error si total a dos decimales es cero', () async {
+    var cobrarVenta = ModuloVentas.cobrarVenta();
+    //var consultas = ModuloVentas.repositorioConsultaVentas();
+
+    Venta ventaEnProgreso = Venta.crear();
+
+    var cantidad = 0.001;
+    var precioVenta = 1.00;
+
+    var producto = ProductosUtils.crearProducto(
+      precioCompra: Moneda(precioVenta),
+      precioVenta: Moneda(precioVenta),
+    );
+
+    var articulo = Articulo.crear(producto: producto, cantidad: cantidad);
+    ventaEnProgreso.agregarArticulo(articulo);
+    cobrarVenta.req.venta = ventaEnProgreso;
+
+    TipoValidationEx? tipoEx;
+
+    try {
+      await cobrarVenta.exec();
+    } catch (e) {
+      if (e is ValidationEx) {
+        tipoEx = e.tipo;
+      }
+    }
+
+    expect(tipoEx, TipoValidationEx.valorEnCero);
   });
 }

@@ -82,6 +82,6 @@ void main() {
 
     crearCategoria.req.categoria =
         Categoria.crear(nombre: NombreCategoria(nombreCategoriaARepetir));
-    await expectLater(crearCategoria.exec(), throwsA(isA<AppEx>()));
+    await expectLater(crearCategoria.exec(), throwsA(isA<ValidationEx>()));
   });
 }

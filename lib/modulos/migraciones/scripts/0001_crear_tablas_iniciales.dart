@@ -51,8 +51,27 @@ class Migracion1 extends Migracion {
           se_vende_por INTEGER NULL,       
           borrado BOOLEAN NOT NULL CHECK (borrado IN (0, 1)) DEFAULT 0,
           bloqueado BOOLEAN NOT NULL CHECK (borrado IN (0, 1)) DEFAULT 0,
-          preguntar_precio BOOLEAN NOT NULL CHECK (preguntar_precio IN (0,1)) DEFAULT 0
+          preguntar_precio BOOLEAN NOT NULL CHECK (preguntar_precio IN (0,1)) DEFAULT 0,
+          version_actual_uid TEXT
+        );
+        ''';
 
+    await db.command(sql: command);
+
+    command = '''
+        CREATE TABLE productos_versiones(
+          uid TEXT PRIMARY KEY, -- Este es el UID de la version, pero se llama UID ya que asi lo requiere el sync
+          producto_uid TEXT NULL, 
+          codigo TEXT NULL,
+          nombre TEXT NULL,
+          precio_compra INTEGER NULL,
+          precio_venta INTEGER NULL,
+          categoria_nombre TEXT NULL,
+          unidad_medida_nombre TEXT NULL,
+          unidad_medida_abreviacion TEXT NULL,
+          url_imagen TEXT NULL,
+          se_vende_por INTEGER NULL,
+          guardado_en INTEGER
         );
         ''';
 

@@ -35,8 +35,6 @@ class Moneda {
       _fromString(monto);
     } else if (monto is int) {
       _fromDouble(monto.toDouble());
-    } else {
-      throw EleventaEx(message: 'Moneda solo acepta un double, int o String.');
     }
   }
 
@@ -78,39 +76,54 @@ class Moneda {
     var montoConvertido = double.tryParse(monto);
 
     if (montoConvertido == null) {
-      throw EleventaEx(
-          message: 'La cadena no es un numero decimal valido: $monto');
+      throw ValidationEx(
+        mensaje: 'La cadena no es un numero decimal valido: $monto',
+        tipo: TipoValidationEx.errorDeValidacion,
+      );
     }
 
     _fromDouble(montoConvertido);
   }
 
+  //TODO: crear tipos especificos para cada error de moneda
   void _validar(dynamic monto) {
     if (monto is num && monto < 0) {
-      throw ValidationEx(mensaje: 'El monto debe ser positivo');
+      throw ValidationEx(
+        mensaje: 'El monto debe ser positivo',
+        tipo: TipoValidationEx.valorNegativo,
+      );
     }
 
     if (monto is String && monto.contains('-')) {
-      throw ValidationEx(mensaje: 'El monto debe ser positivo');
+      throw ValidationEx(
+          mensaje: 'El monto debe ser positivo',
+          tipo: TipoValidationEx.valorNegativo);
     }
 
     if (monto is double) {
       if (monto.truncate().toString().length > 12) {
-        throw ValidationEx(mensaje: 'El valor máximo es 999 999 999 999');
+        throw ValidationEx(
+            mensaje: 'El valor máximo es 999 999 999 999',
+            tipo: TipoValidationEx.errorDeValidacion);
       }
     } else if (monto is String) {
       _fromString(monto);
       if (_montoInterno.truncate() > 999999999999) {
-        throw ValidationEx(mensaje: 'El valor máximo es 999 999 999 999');
+        throw ValidationEx(
+            mensaje: 'El valor máximo es 999 999 999 999',
+            tipo: TipoValidationEx.errorDeValidacion);
       }
     } else if (monto is int) {
       if (monto > 999999999999) {
-        throw ValidationEx(mensaje: 'El valor máximo es 999 999 999 999');
+        throw ValidationEx(
+            mensaje: 'El valor máximo es 999 999 999 999',
+            tipo: TipoValidationEx.errorDeValidacion);
       }
       _fromDouble(monto.toDouble());
     } else {
       throw ValidationEx(
-          mensaje: 'Moneda solo acepta un double, int o String.');
+          mensaje: 'Moneda solo acepta un double, int o String.',
+          tipo: TipoValidationEx.argumentoInvalido);
     }
   }
 

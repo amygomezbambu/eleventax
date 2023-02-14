@@ -61,7 +61,7 @@ void main() {
 
     await expectLater(
       () => modificarCategoria.exec(),
-      throwsA(isA<AppEx>()),
+      throwsA(isA<ValidationEx>()),
       reason:
           'Se debio lanzar error al modificar nombre de una categoria que ya existe',
     );

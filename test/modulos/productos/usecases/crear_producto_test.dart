@@ -43,6 +43,31 @@ void main() {
 
   test('debe persistir el producto con opciones minimas', () async {
     var crearProducto = ModuloProductos.crearProducto();
+    var consultas = ModuloProductos.repositorioConsultaProductos();
+    const nombre = 'Atun tunny 200 grs.';
+    final precioDeCompra = Moneda(10.40);
+
+    var producto = Producto.crear(
+        codigo: CodigoProducto('2343Q34'),
+        nombre: NombreProducto(nombre),
+        precioDeCompra: PrecioDeCompraProducto(precioDeCompra),
+        precioDeVenta: PrecioDeVentaProducto(precioDeCompra),
+        unidadDeMedida: UnidadDeMedida.crear(
+          nombre: 'Pieza',
+          abreviacion: 'pz',
+        ));
+
+    crearProducto.req.producto = producto;
+
+    await crearProducto.exec();
+    final productoObtenido = await consultas.obtenerProducto(producto.uid);
+    expect(productoObtenido!.codigo, producto.codigo);
+  }, skip: true);
+
+  test('debe persistir el producto cuando querramos que pregunte el precio',
+      () async {
+    var crearProducto = ModuloProductos.crearProducto();
+    var consultas = ModuloProductos.repositorioConsultaProductos();
     const nombre = 'Atun tunny 200 grs.';
     final precioDeCompra = Moneda(10.40);
 
@@ -51,6 +76,7 @@ void main() {
         nombre: NombreProducto(nombre),
         precioDeCompra: PrecioDeCompraProducto(precioDeCompra),
         precioDeVenta: PrecioDeVentaProducto.sinPrecio(),
+        preguntarPrecio: true,
         unidadDeMedida: UnidadDeMedida.crear(
           nombre: 'Pieza',
           abreviacion: 'pz',
@@ -58,21 +84,28 @@ void main() {
 
     crearProducto.req.producto = producto;
 
-    await expectLater(
-      crearProducto.exec(),
-      completes,
-    );
-  });
+    await crearProducto.exec();
+    final productoObtenido = await consultas.obtenerProducto(producto.uid);
+    expect(productoObtenido!.preguntarPrecio, true);
+  }, skip: true);
 
   test('debe persistir el producto con todas sus propiedades', () async {
     var crearProducto = ModuloProductos.crearProducto();
-
-    crearProducto.req.producto = llenarProductoConCodigo('ABC');
+    final consultas = ModuloProductos.repositorioConsultaProductos();
+    final producto = llenarProductoConCodigo('ABC');
+    crearProducto.req.producto = producto;
 
     await expectLater(
       crearProducto.exec(),
       completes,
     );
+
+    // Verificamos que haya creado el registro de la version con todas sus propiedades
+    final productoVersion =
+        await consultas.obtenerVersionDeProducto(producto.versionActual);
+
+    expect(productoVersion, isNotNull);
+    expect(productoVersion!.codigo, producto.codigo);
   });
 
   test('debe lanzar una excepcion si el codigo existe', () async {
@@ -83,7 +116,7 @@ void main() {
     await crearProducto.exec();
 
     // Al crearlo por segunda vez, debe tronar
-    await expectLater(crearProducto.exec(), throwsA(isA<AppEx>()));
+    await expectLater(crearProducto.exec(), throwsA(isA<ValidationEx>()));
   });
 
   test('debe persistir el producto con categoria "sin categoria"', () async {

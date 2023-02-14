@@ -2,7 +2,6 @@ import 'package:eleventa/modulos/common/app/interface/database.dart';
 import 'package:eleventa/modulos/common/app/interface/logger.dart';
 import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/domain/nombre_value_object.dart';
-import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/infra/repositorio_consulta.dart';
 import 'package:eleventa/modulos/common/utils/utils.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
@@ -13,8 +12,10 @@ import 'package:eleventa/modulos/ventas/domain/venta.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/ventas/interfaces/repositorio_cosultas_ventas.dart';
 import 'package:eleventa/modulos/ventas/read_models/articulo.dart';
+import 'package:eleventa/modulos/ventas/read_models/pago.dart';
 import 'package:eleventa/modulos/ventas/read_models/total_impuesto.dart';
 import 'package:eleventa/modulos/ventas/read_models/venta.dart';
+import 'package:eleventa/modulos/ventas/ventas_ex.dart';
 
 class RepositorioConsultaVentas extends RepositorioConsulta
     implements IRepositorioConsultaVentas {
@@ -84,7 +85,10 @@ class RepositorioConsultaVentas extends RepositorioConsulta
             .obtenerProducto(UID.fromString(row['producto_uid'] as String));
 
         if (producto == null) {
-          throw EleventaEx(message: 'No existe el producto');
+          throw VentasEx(
+            tipo: TiposVentasEx.productoNoExiste,
+            message: 'El producto no existe',
+          );
         }
 
         var articulo = Articulo.cargar(
@@ -213,6 +217,30 @@ class RepositorioConsultaVentas extends RepositorioConsulta
       if (row['cobrado_en'] != null) {
         venta.cobradaEn =
             DateTime.fromMillisecondsSinceEpoch(row['creado_en'] as int);
+      }
+
+      sql = '''
+      SELECT monto, pago_con, referencia, fp.nombre 
+      FROM ventas_pagos vp 
+      JOIN formas_de_pago fp ON vp.forma_de_pago_uid = fp.uid
+      WHERE vp.venta_uid = ?
+      ''';
+
+      result = await query(sql: sql, params: [uid.toString()]);
+
+      if (result.isNotEmpty) {
+        for (var row in result) {
+          var pago = PagoDto();
+          pago.forma = row['nombre'] as String;
+          pago.monto = Moneda.deserialize(row['monto'] as int);
+          pago.pagoCon = row['pago_con'] != null
+              ? Moneda.deserialize(row['pago_con'] as int)
+              : null;
+          pago.referencia =
+              row['referencia'] != null ? row['referencia'] as String : null;
+
+          venta.pagos.add(pago);
+        }
       }
     }
 

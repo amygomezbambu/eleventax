@@ -14,6 +14,7 @@ import 'package:eleventa/modulos/productos/domain/value_objects/nombre_categoria
 import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_compra_producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_venta_producto.dart';
+import 'package:eleventa/modulos/productos/dto/producto_dto.dart';
 import 'package:eleventa/modulos/productos/interfaces/repositorio_consulta_productos.dart';
 
 enum ObtenerProductos { todos, borrados, activos }
@@ -161,6 +162,53 @@ class RepositorioConsultaProductos extends RepositorioConsulta
     }
   }
 
+  //  uid TEXT PRIMARY KEY,
+  //
+  //         nombre TEXT NULL,
+  //         precio_compra INTEGER NULL,
+  //         precio_venta INTEGER NULL DEFAULT 0,
+  //         categoria_uid TEXT NULL,
+  //         unidad_medida_nombre TEXT NULL,
+  //
+  //         se_vende_por INTEGER NULL
+
+  @override
+  Future<ProductoDto?> obtenerVersionDeProducto(UID versionUid) async {
+    ProductoDto? version;
+
+    var sql = ''' 
+      SELECT * FROM productos_versiones WHERE uid = ?;
+    ''';
+
+    final dbResult = await query(sql: sql, params: [versionUid.toString()]);
+
+    if (dbResult.isNotEmpty) {
+      var row = dbResult[0];
+
+      version = ProductoDto();
+      version.productoUid = row['producto_uid'] as String;
+      version.codigo = row['codigo'] as String;
+      version.codigo = row['codigo'] as String;
+      version.imagenURL = row['url_imagen'] as String;
+      version.nombre = row['nombre'] as String;
+      version.nombreCategoria = row['categoria_nombre'] != null
+          ? row['categoria_nombre'] as String
+          : '';
+      version.precioDeCompra = Moneda.deserialize(row['precio_compra'] as int);
+      version.precioDeVenta = Moneda.deserialize(row['precio_venta'] as int);
+      version.seVendePor =
+          ProductoSeVendePor.values[row['se_vende_por'] as int];
+      version.uid = version.uid;
+      version.unidadDeMedida.nombre = row['unidad_medida_nombre'] as String;
+      version.unidadDeMedida.abreviacion =
+          row['unidad_medida_abreviacion'] as String;
+      version.creadoEn =
+          DateTime.fromMillisecondsSinceEpoch(row['guardado_en'] as int);
+    }
+
+    return version;
+  }
+
   @override
   Future<Producto?> obtenerProductoPorCodigo(CodigoProducto codigo) async {
     var productos =
@@ -177,7 +225,7 @@ class RepositorioConsultaProductos extends RepositorioConsulta
       String condicionWhere, List<Object?> params) async {
     var sql = '''
         SELECT p.uid,p.codigo,p.nombre,p.categoria_uid,p.precio_compra,p.precio_venta,
-        p.se_vende_por,p.url_imagen, p.borrado AS eliminado,
+        p.se_vende_por,p.url_imagen, p.borrado AS eliminado, p.version_actual_uid,
         c.uid AS categoria_uid, c.nombre AS categoria_nombre, c.borrado as categoria_borrado,
         um.nombre as unidad_medida_nombre, um.abreviacion as unidad_medida_abreviacion, um.uid AS unidad_medida_uid,  
         p.preguntar_precio
@@ -222,6 +270,7 @@ class RepositorioConsultaProductos extends RepositorioConsulta
           preguntarPrecio: Utils.db.intToBool(row['preguntar_precio'] as int),
           impuestos: impuestos,
           eliminado: Utils.db.intToBool(row['eliminado'] as int),
+          versionActual: UID.fromString(row['version_actual_uid'] as String),
         ),
       );
     }
@@ -244,8 +293,9 @@ class RepositorioConsultaProductos extends RepositorioConsulta
     );
 
     if (dbResult.isEmpty) {
-      throw EleventaEx(
-          message: 'No existe la relacion entre el impuesto y el producto');
+      throw ValidationEx(
+          tipo: TipoValidationEx.argumentoInvalido,
+          mensaje: 'No existe la relacion entre el impuesto y el producto');
     }
 
     return UID.fromString(dbResult[0]['uid'] as String);

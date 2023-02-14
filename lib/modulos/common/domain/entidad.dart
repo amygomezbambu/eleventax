@@ -1,4 +1,3 @@
-import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:meta/meta.dart';
 
@@ -22,11 +21,6 @@ class Entidad {
   Entidad.cargar(UID uid, {bool eliminado = false})
       : uid_ = uid,
         eliminado_ = eliminado;
-
-  @protected
-  void lanzarExcepcion({required String mensaje}) {
-    throw DomainEx(mensaje);
-  }
 
   @override
   bool operator ==(Object other) {

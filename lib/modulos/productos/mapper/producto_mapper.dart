@@ -10,7 +10,8 @@ import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_compra
 import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_venta_producto.dart';
 
 class ProductoMapper {
-  static Map<String, Object?> domainAMap(Producto producto) {
+  static Map<String, Object?> domainAMap(Producto producto,
+      {bool regenerarVersionUid = false}) {
     var map = <String, Object?>{
       'uid': producto.uid.toString(),
       'codigo': producto.codigo,
@@ -21,7 +22,9 @@ class ProductoMapper {
       'se_vende_por': producto.seVendePor.index,
       'unidad_medida_uid': producto.unidadMedida.uid.toString(),
       'url_imagen': producto.imagenURL,
-      //'impuestos': producto.impuestos,
+      'version_actual_uid': regenerarVersionUid
+          ? UID().toString()
+          : producto.versionActual.toString(),
       'preguntar_precio': producto.preguntarPrecio,
     };
 
@@ -32,6 +35,7 @@ class ProductoMapper {
           (map[key] is! Moneda) &&
           (map[key] != null)) {
         throw ValidationEx(
+          tipo: TipoValidationEx.argumentoInvalido,
           mensaje:
               'ProductoMapper.domainAMap: el mapa contien valores invalidos',
         );
@@ -62,6 +66,7 @@ class ProductoMapper {
           abreviacion: dbRow['unidad_medida_abreviacion'] as String),
       preguntarPrecio: Utils.db.intToBool(dbRow['preguntar_precio'] as int),
       imagenURL: dbRow['url_imagen'] as String,
+      versionActual: UID.fromString(dbRow['version_actual_uid'] as String),
     );
   }
 }

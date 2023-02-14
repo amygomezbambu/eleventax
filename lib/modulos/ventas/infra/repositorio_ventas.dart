@@ -45,6 +45,20 @@ class RepositorioVentas extends Repositorio implements IRepositorioVentas {
       );
     }
 
+    for (var pago in venta.pagos) {
+      await adaptadorSync.sincronizar(
+        dataset: 'ventas_pagos',
+        rowID: UID().toString(),
+        fields: {
+          'venta_uid': venta.uid.toString(),
+          'forma_de_pago_uid': pago.forma.uid.toString(),
+          'monto': pago.monto.serialize(),
+          if (pago.pagoCon != null) 'pago_con': pago.pagoCon!.serialize(),
+          if (pago.referencia != null) 'referencia': pago.referencia,
+        },
+      );
+    }
+
     for (var articulo in venta.articulos) {
       await adaptadorSync.sincronizar(
         dataset: 'ventas_articulos',

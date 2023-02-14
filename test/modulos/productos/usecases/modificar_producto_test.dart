@@ -38,10 +38,12 @@ void main() {
     crearProducto.req.producto = producto;
 
     await crearProducto.exec();
+    final versionOriginalDeProducto = producto.versionActual;
 
     const codigoActualizado = '1A2B3C';
     final precioDeVentaActualizado = Moneda(15.50);
 
+    // Hacemos las modificaciones pertinentes
     producto = producto.copyWith(
       codigo: CodigoProducto(codigoActualizado),
       precioDeVenta: PrecioDeVentaProducto(precioDeVentaActualizado),
@@ -55,5 +57,18 @@ void main() {
 
     expect(productoDB!.codigo, codigoActualizado);
     expect(productoDB.precioDeVenta, precioDeVentaActualizado);
+    // TODO: Verificar el resto de las propiedades
+    expect(productoDB.versionActual, isNot(versionOriginalDeProducto),
+        reason:
+            'La version actual del producto debió haber cambiado tras modificar');
+
+    // Verificamos que se cree una nueva version del producto
+    final productoVersion =
+        await consultas.obtenerVersionDeProducto(productoDB.versionActual);
+
+    // Verificamos que la version más reciente tenga los cambios
+    expect(productoVersion!.codigo, codigoActualizado);
+    expect(productoVersion.precioDeVenta, precioDeVentaActualizado);
+    // TODO: Verificar el resto de las propiedades
   });
 }

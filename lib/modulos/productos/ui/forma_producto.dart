@@ -243,8 +243,10 @@ class _FormaProductoState extends State<FormaProducto> {
     var modificarProducto = ModuloProductos.modificarProducto();
 
     var productoModificado = _llenarProducto();
-    productoModificado =
-        productoModificado.copyWith(uid: productoEnModificacion!.uid);
+    productoModificado = productoModificado.copyWith(
+      uid: productoEnModificacion!.uid,
+    );
+
     modificarProducto.req.producto = productoModificado;
 
     try {
@@ -401,6 +403,18 @@ class _FormaProductoState extends State<FormaProducto> {
                                           });
                                           return null;
                                         } catch (e) {
+                                          if (e is ValidationEx) {
+                                            switch (e.tipo) {
+                                              case TipoValidationEx
+                                                  .longitudInvalida:
+                                                return 'El nombre no puede exceder 130 caracteres';
+                                              case TipoValidationEx.valorVacio:
+                                                return 'El nombre no puede exceder 130 caracteres';
+                                              default:
+                                                return e.message;
+                                            }
+                                          }
+
                                           if (e is DomainEx) {
                                             return e.message;
                                           } else {

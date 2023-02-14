@@ -42,7 +42,10 @@ class Pago extends Entidad {
 
   void _validarMonto(Moneda value) {
     if (value <= Moneda(0)) {
-      throw ValidationEx(mensaje: 'El monto del pago debe ser mayor a cero');
+      throw ValidationEx(
+          // TODO: Ver si lanzamos validacion de valor mayor a cero
+          tipo: TipoValidationEx.errorDeValidacion,
+          mensaje: 'El monto del pago debe ser mayor a cero');
     }
   }
 }

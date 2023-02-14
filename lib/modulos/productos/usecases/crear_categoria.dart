@@ -23,9 +23,10 @@ class CrearCategoria extends Usecase<void> {
 
   Future<void> _operation() async {
     if (await _consultas.existeCategoria(nombre: req.categoria.nombre)) {
-      throw AppEx(
-          message: 'El nombre de categoria ya existe: ${req.categoria.nombre}',
-          input: req.categoria.nombre);
+      throw ValidationEx(
+        tipo: TipoValidationEx.entidadYaExiste,
+        mensaje: 'El nombre de categoria ya existe: ${req.categoria.nombre}',
+      );
     }
 
     await _repoProductos.agregarCategoria(req.categoria);

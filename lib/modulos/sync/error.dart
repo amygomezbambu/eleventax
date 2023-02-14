@@ -1,11 +1,19 @@
-class SyncEx implements Exception {
-  String message;
-  String stackTrace;
+import 'package:eleventa/modulos/common/exception/excepciones.dart';
 
-  SyncEx(this.message, this.stackTrace);
+enum TiposSyncEx {
+  errorGenerico,
+  noInicializado,
+  configuracionIncorrecta,
+  parametrosIncorrectos,
+  errorAlSubirCambios,
+}
 
+class SyncEx extends AppEx {
   @override
-  String toString() {
-    return '${runtimeType.toString()}: $message \n stack: $stackTrace';
-  }
+  TiposSyncEx get tipo => tipo_ as TiposSyncEx;
+  SyncEx({
+    required TiposSyncEx tipo,
+    required super.message,
+    super.input,
+  }) : super(tipo: tipo);
 }

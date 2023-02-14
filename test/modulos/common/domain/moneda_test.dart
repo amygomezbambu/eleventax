@@ -17,6 +17,8 @@ void main() {
       27,
       38.85758,
       2373637,
+      24411.00,
+      '24411.00',
       '1234.384784'
     ]) {
       expect(() => Moneda(element), returnsNormally);

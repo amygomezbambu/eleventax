@@ -43,8 +43,9 @@ class SyncServer implements IServidorSync {
 
       if (response.statusCode != 200) {
         throw SyncEx(
-          'Error en el envio de cambios a nube\n ${response.body} \n $json',
-          StackTrace.current.toString(),
+          tipo: TiposSyncEx.errorAlSubirCambios,
+          message:
+              'Error en el envio de cambios a nube\n ${response.body} \n, Stack: $json${StackTrace.current}',
         );
       } else {
         changes = jsonPayloadToChanges(response.body);
@@ -53,7 +54,9 @@ class SyncServer implements IServidorSync {
       if (e is SyncEx) {
         rethrow;
       } else {
-        throw SyncEx(e.toString(), stack.toString());
+        throw SyncEx(
+            tipo: TiposSyncEx.errorAlSubirCambios,
+            message: '$e, Stack: $stack');
       }
     }
 
@@ -85,15 +88,19 @@ class SyncServer implements IServidorSync {
 
       if (response.statusCode != 200) {
         throw SyncEx(
-          'Error en el envio de cambios a nube\n ${response.body} \n ${changesToJsonPayload(changes)}',
-          StackTrace.current.toString(),
+          tipo: TiposSyncEx.errorAlSubirCambios,
+          message:
+              'Error en el envio de cambios a nube\n ${response.body} \n ${changesToJsonPayload(changes)}, Stack Trace: ${StackTrace.current}',
         );
       }
-    } catch (e, stack) {
+    } catch (e) {
       if (e is SyncEx) {
         rethrow;
       } else {
-        throw SyncEx(e.toString(), stack.toString());
+        throw SyncEx(
+          tipo: TiposSyncEx.errorAlSubirCambios,
+          message: e.toString(),
+        );
       }
     }
   }
@@ -139,15 +146,18 @@ class SyncServer implements IServidorSync {
 
       if (response.statusCode != 200) {
         throw SyncEx(
-          'Error en el envio de cambios a nube\n ${response.body} \n $json',
-          StackTrace.current.toString(),
-        );
+            tipo: TiposSyncEx.errorAlSubirCambios,
+            message:
+                'Error en el envio de cambios a nube\n ${response.body} \n $json');
       }
-    } catch (e, stack) {
+    } catch (e) {
       if (e is SyncEx) {
         rethrow;
       } else {
-        throw SyncEx(e.toString(), stack.toString());
+        throw SyncEx(
+          tipo: TiposSyncEx.errorAlSubirCambios,
+          message: e.toString(),
+        );
       }
     }
   }

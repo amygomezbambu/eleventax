@@ -36,6 +36,7 @@ class AdaptadorRed implements IRed {
         message: 'No se pudo obtener la IP publica',
         innerException: Exception(response.body),
         stackTrace: StackTrace.current,
+        tipo: TipoInfraEx.noSePudoObtenerIP,
       );
     } else {
       ipPublica = response.body;

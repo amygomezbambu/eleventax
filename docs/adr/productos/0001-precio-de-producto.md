@@ -1,12 +1,11 @@
 **Status:** Aceptado
 <br>
-**Modulo Afectado:** Items
+**Modulo Afectado:** Productos
 
 # Contexto
 
 Si el usuario introduce el precio sin impuestos el resultado puede ser un precio con muchos decimales que seran visibles,
 en las ventas y sus impresiones.
-
 
 # Decisión
 

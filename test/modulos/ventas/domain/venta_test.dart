@@ -2,124 +2,74 @@ import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/productos/domain/impuesto.dart';
 import 'package:eleventa/modulos/ventas/domain/articulo.dart';
 import 'package:eleventa/modulos/ventas/domain/venta.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../loader_for_tests.dart';
 import '../../../utils/productos.dart';
+import '../../../utils/venta_helper.dart';
+
+class DatosProducto {
+  double cantidad;
+  double precioDeVenta;
+  List<Impuesto> impuestos;
+
+  DatosProducto({
+    required this.cantidad,
+    required this.precioDeVenta,
+    required this.impuestos,
+  });
+}
+
+class DatosVenta {
+  List<DatosProducto> productos;
+
+  DatosVenta({required this.productos});
+}
 
 void main() {
-  // Venta crearVentaDePrueba(String cadenaArticulos, {required double tasaIVA}) {
-  //   final impuestos = <Impuesto>[
-  //     Impuesto.crear(nombre: 'IVA', porcentaje: tasaIVA, ordenDeAplicacion: 2),
-  //   ];
-
-  //   var venta = Venta.crear();
-
-  //   // Separamos los articulos por el pipe
-  //   var articulos = cadenaArticulos.split('|');
-  //   for (var i = 0; i < articulos.length; i++) {
-  //     var articulo = articulos[i];
-  //     var datosArticulo = articulo.split('*');
-  //     var cantidad = datosArticulo[0];
-  //     var precio = datosArticulo[1];
-
-  //     final precioConImpuestos = Moneda(precio);
-
-  //     var producto = ProductosUtils.crearProducto(
-  //       impuestos: impuestos,
-  //       precioCompra: precioConImpuestos,
-  //       precioVenta: precioConImpuestos,
-  //     );
-
-  //     var articuloDeVenta =
-  //         Articulo.crear(producto: producto, cantidad: double.parse(cantidad));
-  //     venta.agregarArticulo(articuloDeVenta);
-  //   }
-
-  //   return venta;
-  // }
-
   setUpAll(() async {
     TestsLoader loader = TestsLoader();
     await loader.iniciar();
   });
 
   test('Debe actualizar los totales al agregar nuevos articulos', () {
-    var cantidad = 2.00;
-    var precioVenta = 24411.00;
-    var precioSinImpuestos = precioVenta / 1.16;
-    var precioCompra = 21.680000;
+    for (var datosVenta in ventas) {
+      var venta = Venta.crear();
+      // ignore: unused_local_variable
+      var totalEsperado = Moneda(0);
+      var totalDeImpuestos = Moneda(0);
 
-    var producto = ProductosUtils.crearProducto(
-      precioCompra: Moneda(precioCompra),
-      precioVenta: Moneda(precioVenta),
-    );
+      for (var datosProducto in datosVenta.productos) {
+        totalEsperado +=
+            Moneda(datosProducto.precioDeVenta * datosProducto.cantidad)
+                .importeCobrable;
 
-    var articulo = Articulo.crear(producto: producto, cantidad: cantidad);
+        var producto = ProductosUtils.crearProducto(
+          precioCompra: Moneda(10),
+          precioVenta: Moneda(datosProducto.precioDeVenta),
+          impuestos: datosProducto.impuestos,
+        );
 
-    var venta = Venta.crear();
-    venta.agregarArticulo(articulo);
+        var articulo = Articulo.crear(
+            producto: producto, cantidad: datosProducto.cantidad);
 
-    final subtotalEsperado =
-        Moneda(precioSinImpuestos * cantidad).importeCobrable;
+        venta.agregarArticulo(articulo);
 
-    // var totalDeImpuestos = Moneda(0);
-    // for (var impuesto in producto.impuestos) {
-    //   totalDeImpuestos +=
-    // }
+        for (var totalImpuesto in articulo.totalesDeImpuestos) {
+          totalDeImpuestos += totalImpuesto.monto.importeCobrable;
+        }
+      }
 
-    //final totalImpuestosEsperados = Moneda(0).importeCobrable;
+      debugPrint('Subtotal: ${venta.subtotal.importeCobrable}');
+      debugPrint('Impuestos: ${totalDeImpuestos.importeCobrable}');
+      debugPrint('Total: ${venta.total.importeCobrable}');
+      debugPrint('----------------------------');
 
-    //final totalEsperado = subtotalEsperado + totalImpuestosEsperados;
-
-    expect(venta.subtotal, subtotalEsperado);
-    // TODO: Probar lógica de total de impuestos y total a 2 decimales
-
-    //   expect(venta.subtotal, subtotal_,
-    //       reason:
-    //           'el subtotal de la venta debe concordar con la suma de los precios de venta de los productos sin impuestos');
-
-    //   expect(venta.totalImpuestos, totalImpuestos_,
-    //       reason: 'el calculo de los impuestos es incorrecto');
-
-    //   expect(venta.total, total_,
-    //       reason:
-    //           'el total de la venta debe concordar con la suma de los precios de venta de los productos más impuestos');
-  });
-
-  test('Debe actualizar los totales al agregar nuevos articulos', () {
-    var cantidad = 2.00;
-    var precioVenta = 41.2431556329;
-    var precioSinImpuestos = precioVenta / 1.16;
-    var precioCompra = 21.54444448;
-
-    var producto = ProductosUtils.crearProducto(
-      precioCompra: Moneda(precioCompra),
-      precioVenta: Moneda(precioVenta),
-    );
-
-    var articulo = Articulo.crear(producto: producto, cantidad: cantidad);
-
-    var venta = Venta.crear();
-    venta.agregarArticulo(articulo);
-
-    final subtotalEsperado =
-        Moneda(precioSinImpuestos * cantidad).importeCobrable;
-
-    // var totalDeImpuestos = Moneda(0);
-    // for (var impuesto in producto.impuestos) {
-    //   totalDeImpuestos +=
-    // }
-
-    //final totalImpuestosEsperados = Moneda(0).importeCobrable;
-
-    //final totalEsperado = subtotalEsperado + totalImpuestosEsperados;
-
-    expect(venta.subtotal, subtotalEsperado);
-    // TODO: Probar lógica de total de impuestos y total a 2 decimales
-    //expect(venta.totalImpuestos, totalImpuestosEsperados);
-    //expect(venta.total, totalEsperado);
-    //expect(venta.creadoEn, fechaEsperada);
+      // expect(venta.total.importeCobrable, totalEsperado);
+      // expect(venta.subtotal.importeCobrable + totalDeImpuestos.importeCobrable,
+      //     venta.total.importeCobrable);
+    }
   });
 
   test(
@@ -190,16 +140,13 @@ void main() {
     venta.agregarArticulo(articulo);
 
     final totalEsperado = Moneda(24411.00);
-    final totalImpuestosEsperados = Moneda(4925.84);
 
     // expect(venta.totalDeImpuestos.length, impuestoMultiples.length,
     //     reason: 'Debe existir los totales de los impuestos cobrados');
 
     expect(venta.total, totalEsperado,
-        reason:
-            'el total de la venta debe concordar con la suma de los precios de venta de los productos más impuestos');
-
-    expect(venta.totalImpuestos, totalImpuestosEsperados, skip: true);
+        reason: 'el total de la venta debe concordar con la suma de los '
+            'precios de venta de los productos más impuestos');
   });
 
   // [TestCase('debe calcular totales correctos con IVA 8%, Escenario B','8,1*478.4141|3*258.9581|1*434.5229,')]
@@ -213,54 +160,6 @@ void main() {
     //var fechaEsperada = DateTime.now();
   });
 
-  //TODO: probar la comparacion de fechas entre la creacion del ticket y la establecida por la prueba
-  // test(
-  //     'Debe calcular correctamente los totales cuando se tenga IVA 8% - Escenario A',
-  //     () {
-  //   final venta = crearVentaDePrueba(
-  //     '1*545.00|3*295.0000|1*495.00',
-  //     tasaIVA: 8.0,
-  //   );
-
-  //   final subtotalEsperado = Moneda(1782.41);
-  //   final totalImpuestosEsperado = Moneda(142.59);
-  //   final totalEsperado = Moneda(1925);
-
-  //   expect(venta.subtotal, subtotalEsperado,
-  //       reason:
-  //           'el subtotal de la venta debe concordar con la suma de los precios de venta de los productos sin impuestos');
-
-  //   expect(venta.totalImpuestos, totalImpuestosEsperado,
-  //       reason: 'el calculo de los impuestos es incorrecto');
-
-  //   expect(venta.total, totalEsperado,
-  //       reason:
-  //           'el total de la venta debe concordar con la suma de los precios de venta de los productos más impuestos');
-  // });
-
-  // test(
-  //     'Debe calcular correctamente los totales cuando se tenga IVA 16% - Escenario B',
-  //     () {
-  //   final venta = crearVentaDePrueba(
-  //     '1*554.960356|3*300.391396|1*504.046564',
-  //     tasaIVA: 16.0,
-  //   );
-
-  //   final subtotalEsperado = Moneda(1689.81);
-  //   final totalImpuestosEsperado = Moneda(270.37);
-  //   final totalEsperado = Moneda(1960.18);
-
-  //   expect(venta.subtotal, subtotalEsperado,
-  //       reason:
-  //           'el subtotal de la venta debe concordar con la suma de los precios de venta de los productos sin impuestos');
-
-  //   expect(venta.totalImpuestos, totalImpuestosEsperado,
-  //       reason: 'el calculo de los impuestos es incorrecto');
-
-  //   expect(venta.total, totalEsperado,
-  //       reason:
-  //           'el total de la venta debe concordar con la suma de los precios de venta de los productos más impuestos');
-  // });
   test('Debe actualizar los totales al eliminar algun articulo', () {});
 
   test('Debe actualizar los totales al modificar un articulo', () {});

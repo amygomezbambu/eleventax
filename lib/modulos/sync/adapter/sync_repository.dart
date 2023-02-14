@@ -1,10 +1,10 @@
 import 'package:eleventa/dependencias.dart';
 import 'package:eleventa/modulos/common/app/interface/database.dart';
-import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/utils/utils.dart';
 import 'package:eleventa/modulos/sync/entity/change.dart';
 import 'package:eleventa/modulos/sync/config.dart';
 import 'package:eleventa/modulos/sync/entity/queue_entry.dart';
+import 'package:eleventa/modulos/sync/error.dart';
 import 'package:eleventa/modulos/sync/interfaces/sync_repository.dart';
 import 'package:eleventa/modulos/sync/entity/unique_duplicate.dart';
 
@@ -113,7 +113,8 @@ class SyncRepository implements IRepositorioSync {
           dataset: dbResult[0]['dataset'] as String,
           column: dbResult[0]['column'] as String);
     } else {
-      throw EleventaEx(
+      throw SyncEx(
+          tipo: TiposSyncEx.errorGenerico,
           message:
               'No existe un elemento para el uid proporcionado: $uidSucedioPrimero');
     }
@@ -139,7 +140,8 @@ class SyncRepository implements IRepositorioSync {
           dataset: dbResult[0]['dataset'] as String,
           column: dbResult[0]['column'] as String);
     } else {
-      throw EleventaEx(
+      throw SyncEx(
+          tipo: TiposSyncEx.errorGenerico,
           message: 'No existe un elemento para el uid proporcionado: $uid');
     }
 

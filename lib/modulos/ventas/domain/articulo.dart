@@ -71,80 +71,9 @@ class Articulo extends Entidad {
     _calcularTotales();
   }
 
-  //TODO: mover logica a venta
-  Moneda _obtenerPrecioSinImpuestos() {
-    //Map<String, Moneda> totalesPorImpuesto = {};
-
-    return Moneda(_producto.precioDeVentaSinImpuestos.toDouble() * _cantidad);
-
-    // var precioSinImpuestos =
-    //     Moneda(_producto!.precioDeVentaSinImpuestos.toDouble() * _cantidad)
-    //         .redondearADecimales(3);
-
-    // if (_producto == null || _producto!.impuestos.isEmpty) {
-    //   return precioSinImpuestos;
-    // }
-
-    // final montoObjetivo =
-    //     Moneda(producto!.precioDeVenta!.toDouble() * _cantidad);
-
-    // var salir = false;
-
-    // // 1. Ordenamos los impuestos en base al orden de aplicación
-    // // para tomar como base para el IVA el precio mas IEPS por ejemplo
-    // final impuestosDescendentes = [..._producto!.impuestos];
-
-    // impuestosDescendentes
-    //     .sort((a, b) => a.ordenDeAplicacion.compareTo(b.ordenDeAplicacion));
-
-    // //Para forzar que sea una nueva referencia hacemos lo siguiente:
-    // var baseDelImpuesto = Moneda(precioSinImpuestos.toDouble());
-
-    // //redondear precio sin impuestos a 4 decimales redondeando
-    // //19485.153247  -> 19485.154000 -> 19485.155000 -> 19485.156000 -> hasta encontrar valor
-
-    // var contador = 1;
-
-    // while (salir != true) {
-    //   if (contador == 19) {
-    //     break;
-    //   }
-
-    //   for (var impuesto in impuestosDescendentes) {
-    //     final montoDeImpuesto =
-    //         baseDelImpuesto.toDouble() * (impuesto.porcentaje / 100);
-
-    //     totalesPorImpuesto[impuesto.nombre] = Moneda(montoDeImpuesto);
-
-    //     baseDelImpuesto += Moneda(montoDeImpuesto);
-    //   }
-
-    //   var totalADosDecimales = precioSinImpuestos.importeCobrable;
-
-    //   for (var importe in totalesPorImpuesto.values) {
-    //     totalADosDecimales += importe.importeCobrable;
-    //   }
-
-    //   if (totalADosDecimales.importeCobrable == montoObjetivo.importeCobrable) {
-    //     salir = true;
-    //     print("Valor encontrado: ${precioSinImpuestos.toDouble().toString()}");
-    //   } else {
-    //     precioSinImpuestos = totalADosDecimales < montoObjetivo
-    //         ? precioSinImpuestos + Moneda(0.001)
-    //         : precioSinImpuestos - Moneda(0.001);
-
-    //     baseDelImpuesto = Moneda(precioSinImpuestos.toDouble());
-    //     totalesPorImpuesto = {};
-    //   }
-
-    //   contador++;
-    // }
-
-    //return precioSinImpuestos;
-  }
-
   void _calcularTotales() {
-    _subtotal = _obtenerPrecioSinImpuestos();
+    _subtotal =
+        Moneda(_producto.precioDeVentaSinImpuestos.toDouble() * _cantidad);
 
     var baseDelImpuesto = _subtotal;
 

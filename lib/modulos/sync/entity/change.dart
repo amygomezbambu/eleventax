@@ -29,7 +29,10 @@ class Change {
 
   set hlc(String value) {
     if (value.isEmpty) {
-      throw SyncEx('El HLC no puede estar vacio', '');
+      throw SyncEx(
+        tipo: TiposSyncEx.parametrosIncorrectos,
+        message: 'El HLC no puede estar vacio',
+      );
     }
 
     _timestamp = int.parse(value.split(':')[0]);
@@ -74,7 +77,10 @@ class Change {
 
   void _setDataset(String value) {
     if (value.isEmpty) {
-      throw SyncEx('El dataset no puede estar vacio', '');
+      throw SyncEx(
+        tipo: TiposSyncEx.parametrosIncorrectos,
+        message: 'El dataset no puede estar vacio',
+      );
     }
 
     _dataset = value;
@@ -82,7 +88,10 @@ class Change {
 
   void _setColumn(String value) {
     if (value.isEmpty) {
-      throw SyncEx('El nombre de la columna no puede estar vacio', '');
+      throw SyncEx(
+        tipo: TiposSyncEx.parametrosIncorrectos,
+        message: 'El nombre de la columna no puede estar vacio',
+      );
     }
 
     _column = value;
@@ -96,7 +105,10 @@ class Change {
 
   void _setRowId(String value) {
     if (value.isEmpty) {
-      throw SyncEx('El identificador de renglon no puede estar vacio', '');
+      throw SyncEx(
+        tipo: TiposSyncEx.parametrosIncorrectos,
+        message: 'El identificador de renglon no puede estar vacio',
+      );
     }
 
     _rowId = value;
@@ -104,7 +116,9 @@ class Change {
 
   void _setVersion(int value) {
     if (value <= 0) {
-      throw SyncEx('Se debe proporcionar una version de cambio valida', '');
+      throw SyncEx(
+          tipo: TiposSyncEx.configuracionIncorrecta,
+          message: 'Se debe proporcionar una version de cambio valida');
     }
 
     _version = value;

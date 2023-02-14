@@ -8,6 +8,21 @@ import 'dart:async';
 
 import 'package:eleventa/globals.dart';
 
+enum TiposTelemetriaEx {
+  errorAlReportarEvento,
+  errorAlActualizarPerfil,
+}
+
+class TelemetriaEx extends AppEx {
+  @override
+  TiposTelemetriaEx get tipo => tipo_ as TiposTelemetriaEx;
+  TelemetriaEx({
+    required TiposTelemetriaEx tipo,
+    required super.message,
+    super.input,
+  }) : super(tipo: tipo);
+}
+
 class AdaptadorDeTelemetria implements IAdaptadorDeTelemetria {
   MixpanelAnalytics? _mixpanel;
 
@@ -30,7 +45,8 @@ class AdaptadorDeTelemetria implements IAdaptadorDeTelemetria {
     );
 
     if (!success) {
-      throw EleventaEx(
+      throw TelemetriaEx(
+        tipo: TiposTelemetriaEx.errorAlReportarEvento,
         message: 'No se registro el evento ${evento.tipo!.name}',
       );
     }
@@ -46,7 +62,10 @@ class AdaptadorDeTelemetria implements IAdaptadorDeTelemetria {
       ip: evento.ip,
     );
     if (!success) {
-      throw EleventaEx(message: 'No se creó o actualizó el perfil');
+      throw TelemetriaEx(
+        tipo: TiposTelemetriaEx.errorAlActualizarPerfil,
+        message: 'No se creó o actualizó el perfil',
+      );
     }
   }
 

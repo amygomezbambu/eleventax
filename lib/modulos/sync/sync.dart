@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
+import 'package:eleventa/modulos/sync/error.dart';
 import 'package:eleventa/modulos/sync/usecase/add_local_changes.dart';
 import 'package:eleventa/modulos/sync/usecase/process_queue.dart';
 import 'package:eleventa/modulos/sync/config.dart';
@@ -61,7 +61,8 @@ class Sync implements ISync {
 
   static Sync getInstance() {
     if (syncConfig == null) {
-      throw EleventaEx(
+      throw SyncEx(
+          tipo: TiposSyncEx.noInicializado,
           message: 'El modulo de sincronización no ha sido inicializado\n'
               'Debes mandar llamas Sync(config) antes de poder obtener una instancia');
     }

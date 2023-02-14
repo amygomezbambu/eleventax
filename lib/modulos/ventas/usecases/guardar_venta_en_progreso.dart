@@ -1,8 +1,8 @@
 import 'package:eleventa/modulos/common/app/usecase/usecase.dart';
-import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/ventas/domain/venta.dart';
 import 'package:eleventa/modulos/ventas/interfaces/repositorio_cosultas_ventas.dart';
 import 'package:eleventa/modulos/ventas/interfaces/repositorio_ventas.dart';
+import 'package:eleventa/modulos/ventas/ventas_ex.dart';
 
 class GuardarVentaEnProgresoRequest {
   late Venta venta;
@@ -23,7 +23,8 @@ class GuardarVentaEnProgreso extends Usecase<void> {
 
   Future<void> _operation() async {
     if (req.venta.estado != EstadoDeVenta.enProgreso) {
-      throw AppEx(
+      throw VentasEx(
+        tipo: TiposVentasEx.pagosInsuficientes,
         message: 'Solo se puede almacenar una venta en progreso',
         input: req.venta.uid.toString(),
       );

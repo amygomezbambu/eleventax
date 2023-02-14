@@ -20,7 +20,9 @@ class NombreCategoria extends NombreValueObject {
         .replaceAll('í', 'i');
 
     if (dato == nombreReservado) {
-      throw (DomainEx('Nombre categoría no es válido'));
+      throw (ValidationEx(
+          tipo: TipoValidationEx.valorReservado,
+          mensaje: 'Nombre categoría no es válido'));
     }
   }
 }

@@ -93,10 +93,12 @@ class Migracion7 extends Migracion {
 
     command = '''
         CREATE TABLE ventas_pagos(
+          uid TEXT PRIMARY KEY, 
           venta_uid TEXT,
           forma_de_pago_uid TEXT,
           monto INTEGER,
-          pago_con INTEGER
+          pago_con INTEGER,
+          referencia TEXT
         ); 
       ''';
 

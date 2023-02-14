@@ -23,9 +23,10 @@ class CrearProducto extends Usecase<void> {
 
   Future<void> _operation() async {
     if (await _consultas.existeProducto(req.producto.codigo)) {
-      throw AppEx(
-          message: 'El código de producto ya existe: ${req.producto.codigo}',
-          input: req.producto.codigo);
+      throw ValidationEx(
+        tipo: TipoValidationEx.entidadYaExiste,
+        mensaje: 'El código de producto ya existe: ${req.producto.codigo}',
+      );
     }
 
     await _productos.agregar(req.producto);

@@ -58,6 +58,28 @@ class RepositorioProductos extends Repositorio
         'se_vende_por': producto.seVendePor.index,
         'url_imagen': producto.imagenURL,
         'preguntar_precio': producto.preguntarPrecio,
+        'version_actual_uid': producto.versionActual.toString(),
+      },
+    );
+
+    await adaptadorSync.sincronizar(
+      dataset: 'productos_versiones',
+      rowID: producto.versionActual.toString(),
+      fields: {
+        'producto_uid': producto.uid.toString(),
+        'codigo': producto.codigo,
+        'nombre': producto.nombre,
+        if (producto.categoria != null)
+          if (UID.isValid(producto.categoria!.uid.toString()))
+            'categoria_nombre': producto.categoria!.nombre.toString(),
+        'unidad_medida_nombre': producto.unidadMedida.nombre.toString(),
+        'unidad_medida_abreviacion':
+            producto.unidadMedida.abreviacion.toString(),
+        'precio_compra': producto.precioDeCompra.serialize(),
+        'precio_venta': producto.precioDeVenta.serialize(),
+        'se_vende_por': producto.seVendePor.index,
+        'url_imagen': producto.imagenURL,
+        'guardado_en': DateTime.now().millisecondsSinceEpoch,
       },
     );
 
@@ -102,8 +124,40 @@ class RepositorioProductos extends Repositorio
         await _consultas.obtenerProducto(productoModificado.uid);
 
     if (productoOriginal != null) {
+      // Creamos una nueva version del producto con los datos modificados
+      final versionActualUid = UID().toString();
+      await adaptadorSync.sincronizar(
+        dataset: 'productos_versiones',
+        rowID: versionActualUid,
+        fields: {
+          'producto_uid': productoModificado.uid.toString(),
+          'codigo': productoModificado.codigo,
+          'nombre': productoModificado.nombre,
+          if (productoModificado.categoria != null)
+            if (UID.isValid(productoModificado.categoria!.uid.toString()))
+              'categoria_nombre':
+                  productoModificado.categoria!.nombre.toString(),
+          'unidad_medida_nombre':
+              productoModificado.unidadMedida.nombre.toString(),
+          'unidad_medida_abreviacion':
+              productoModificado.unidadMedida.abreviacion.toString(),
+          'precio_compra': productoModificado.precioDeCompra.serialize(),
+          'precio_venta': productoModificado.precioDeVenta.serialize(),
+          'se_vende_por': productoModificado.seVendePor.index,
+          'url_imagen': productoModificado.imagenURL,
+          'guardado_en': DateTime.now().millisecondsSinceEpoch,
+        },
+      );
+
+      // Asignamos la nueva version UID
+      // TODO: Verificar si esta es la mejor manera, se nos hace algo sucia
+      final mapaProductoModificado =
+          ProductoMapper.domainAMap(productoModificado);
+      mapaProductoModificado['version_actual_uid'] = versionActualUid;
+
+      // Realizamos la modificacion con el sync engine
       var diferencias = await obtenerDiferencias(
-        ProductoMapper.domainAMap(productoModificado),
+        mapaProductoModificado,
         ProductoMapper.domainAMap(productoOriginal),
       );
 
@@ -144,10 +198,10 @@ class RepositorioProductos extends Repositorio
         );
       }
     } else {
-      throw EleventaEx(
-        message:
+      throw ValidationEx(
+        tipo: TipoValidationEx.entidadNoExiste,
+        mensaje:
             'No existe la entidad en la base de datos, codigo: ${productoModificado.uid.toString()}',
-        input: productoModificado.toString(),
       );
     }
   }
@@ -176,8 +230,9 @@ class RepositorioProductos extends Repositorio
             .intToBool(dbResult.first['permitirPrecioCompraCero'] as int),
       );
     } else {
-      throw EleventaEx(
-          message: 'No hay valores de configuración del módulo productos');
+      throw ValidationEx(
+          tipo: TipoValidationEx.argumentoInvalido,
+          mensaje: 'No hay valores de configuración del módulo productos');
     }
 
     return configCompartida;
@@ -211,10 +266,10 @@ class RepositorioProductos extends Repositorio
         fields: diferencias,
       );
     } else {
-      throw EleventaEx(
-        message:
+      throw ValidationEx(
+        tipo: TipoValidationEx.entidadYaExiste,
+        mensaje:
             'No existe la categoria en la base de datos, codigo: ${categoriaModificada.uid.toString()}',
-        input: categoriaModificada.toString(),
       );
     }
   }

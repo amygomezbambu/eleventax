@@ -91,8 +91,10 @@ class AdaptadorSQLite implements IAdaptadorDeBaseDeDatos {
       }
     } catch (ex) {
       throw InfraEx(
-          message: 'No se pudo cargar SQLite ${ex.toString()}',
-          innerException: ex);
+        tipo: TipoInfraEx.errorInicializacionDB,
+        message: 'No se pudo cargar SQLite ${ex.toString()}',
+        innerException: ex,
+      );
     }
   }
 
@@ -161,8 +163,10 @@ class AdaptadorSQLite implements IAdaptadorDeBaseDeDatos {
           if (result.isNotEmpty) {
             _logger.info('SQLCipher v${result.first.values.first}');
           } else {
-            _logger
-                .warn(EleventaEx(message: '-- Sin soporte para SQLCipher ---'));
+            _logger.warn(EleventaEx(
+              message: '-- Sin soporte para SQLCipher ---',
+              tipo_: TipoEleventaEx.errorGenerico,
+            ));
           }
         });
       }
@@ -201,6 +205,7 @@ class AdaptadorSQLite implements IAdaptadorDeBaseDeDatos {
       }
     } catch (e, stack) {
       throw InfraEx(
+        tipo: TipoInfraEx.errorConsultaDB,
         message: 'Ocurrió un error al enviar un comando a la base de datos',
         innerException: e,
         stackTrace: stack,
@@ -250,6 +255,7 @@ class AdaptadorSQLite implements IAdaptadorDeBaseDeDatos {
       }
     } catch (e, stack) {
       throw InfraEx(
+        tipo: TipoInfraEx.errorConsultaDB,
         message:
             'Ocurrió un error al consultar la base de datos ${e.toString()}',
         innerException: e,

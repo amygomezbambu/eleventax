@@ -110,8 +110,9 @@ class SyncConfig {
   _validatePullInterval(int value) {
     if (value < 3000) {
       throw SyncEx(
-          'El intervalo es demasiado pequeño, el valor minimo es de 3 segundos',
-          '');
+          tipo: TiposSyncEx.configuracionIncorrecta,
+          message:
+              'El intervalo es demasiado pequeño, el valor minimo es de 3 segundos');
     }
 
     _pullInterval = value;
@@ -120,8 +121,9 @@ class SyncConfig {
   _validateQueueInterval(int value) {
     if (value < 10000) {
       throw SyncEx(
-        'El intervalo es demasiado pequeño, el valor minimo es de 10 segundos',
-        '',
+        tipo: TiposSyncEx.configuracionIncorrecta,
+        message:
+            'El intervalo es demasiado pequeño, el valor minimo es de 10 segundos',
       );
     }
 
@@ -131,8 +133,9 @@ class SyncConfig {
   _validateTimeout(Duration value) {
     if (value > const Duration(seconds: 30)) {
       throw SyncEx(
-        'El timeout es demasiado grande, el valor maximo es de 30 segundos',
-        '',
+        tipo: TiposSyncEx.configuracionIncorrecta,
+        message:
+            'El timeout es demasiado grande, el valor maximo es de 30 segundos',
       );
     }
 
@@ -141,7 +144,9 @@ class SyncConfig {
 
   _validateDeviceId(String value) {
     if (value == '') {
-      throw SyncEx('El nombre del dispositivo no puede estar vacio', '');
+      throw SyncEx(
+          tipo: TiposSyncEx.configuracionIncorrecta,
+          message: 'El nombre del dispositivo no puede estar vacio');
     }
 
     _deviceId = value;
@@ -150,8 +155,9 @@ class SyncConfig {
   _validateDbVersionTable(String value) {
     if (value == '') {
       throw SyncEx(
-          'El nombre de la tabla que contiene la versión de la db no puede ser vacio',
-          '');
+          tipo: TiposSyncEx.configuracionIncorrecta,
+          message:
+              'El nombre de la tabla que contiene la versión de la db no puede ser vacio');
     }
 
     _dbVersionTable = value;
@@ -160,8 +166,10 @@ class SyncConfig {
   _validateDbVersionField(String value) {
     if (value == '') {
       throw SyncEx(
-          'El nombre del campo que contiene la versión de la db no puede ser vacio',
-          '');
+        tipo: TiposSyncEx.configuracionIncorrecta,
+        message:
+            'El nombre del campo que contiene la versión de la db no puede ser vacio',
+      );
     }
 
     _dbVersionField = value;
@@ -169,7 +177,9 @@ class SyncConfig {
 
   _validateGruopId(String value) {
     if (value == '') {
-      throw SyncEx('El identificador de grupo no puede ser vacio', '');
+      throw SyncEx(
+          tipo: TiposSyncEx.configuracionIncorrecta,
+          message: 'El identificador de grupo no puede ser vacio');
     }
 
     _groupId = value;

@@ -33,12 +33,16 @@ class NombreValueObject {
 
   void _validar(String value) {
     if (value.isEmpty) {
-      throw DomainEx('El valor no puede estar vacío');
+      throw ValidationEx(
+        mensaje: 'El valor no puede estar vacío',
+        tipo: TipoValidationEx.valorVacio,
+      );
     }
 
     if (value.length > _longitudMaxima) {
-      throw DomainEx(
-          'El valor no puede tener más de $_longitudMaxima caracteres');
+      throw ValidationEx(
+          mensaje: 'El valor no puede tener más de $_longitudMaxima caracteres',
+          tipo: TipoValidationEx.longitudInvalida);
     }
   }
 

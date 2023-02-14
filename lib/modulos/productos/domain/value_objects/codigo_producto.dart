@@ -27,16 +27,20 @@ class CodigoProducto {
 
   void _validar(String codigo) {
     if (codigo.isEmpty) {
-      throw ValidationEx(mensaje: 'El código no puede estar vacío');
+      throw ValidationEx(
+          tipo: TipoValidationEx.valorVacio,
+          mensaje: 'El código no puede estar vacío');
     }
 
     if (codigo.length > _longitudMaxima) {
       throw ValidationEx(
+          tipo: TipoValidationEx.longitudInvalida,
           mensaje: 'El código no puede tener mas de $_longitudMaxima letras');
     }
 
     if (codigo == _codigoReservado) {
       throw ValidationEx(
+          tipo: TipoValidationEx.valorReservado,
           mensaje: 'El codigo $_codigoReservado no es un código valido');
     }
   }

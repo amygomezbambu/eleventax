@@ -25,6 +25,7 @@ class Producto extends Entidad implements IProducto {
   var _imagenURL = '';
   final CodigoProducto _codigo;
   bool _preguntarPrecio = false;
+  final UID _versionActual;
 
   Moneda get precioDeCompra => _precioDeCompra.value;
   Categoria? get categoria => _categoria;
@@ -33,6 +34,7 @@ class Producto extends Entidad implements IProducto {
 
   UnidadDeMedida get unidadMedida => _unidadDeMedida;
   bool get preguntarPrecio => _preguntarPrecio;
+  UID get versionActual => _versionActual;
 
   @override
   String get nombre => _nombre.value;
@@ -64,6 +66,7 @@ class Producto extends Entidad implements IProducto {
         _nombre = nombre,
         _precioDeCompra = precioDeCompra,
         _precioDeVenta = precioDeVenta,
+        _versionActual = UID(),
         super.crear() {
     _categoria = categoria;
     _seVendePor = seVendePor;
@@ -85,11 +88,13 @@ class Producto extends Entidad implements IProducto {
     List<Impuesto> impuestos = const [],
     required UnidadDeMedida unidadDeMedida,
     required bool preguntarPrecio,
+    required UID versionActual,
     bool eliminado = false,
   })  : _codigo = codigo,
         _nombre = nombre,
         _precioDeCompra = precioDeCompra,
         _precioDeVenta = precioDeVenta,
+        _versionActual = versionActual,
         super.cargar(uid, eliminado: eliminado) {
     _categoria = categoria;
     _seVendePor = seVendePor;
@@ -112,10 +117,10 @@ class Producto extends Entidad implements IProducto {
     CodigoProducto? codigo,
     bool? preguntarPrecio,
     bool? eliminado,
+    UID? versionActual,
   }) {
-    var uidAnterior = uid_.toString();
-
-    var result = Producto.crear(
+    var result = Producto.cargar(
+      uid: uid ?? uid_,
       codigo: codigo ?? _codigo,
       nombre: nombre ?? _nombre,
       precioDeVenta: precioDeVenta ?? _precioDeVenta,
@@ -126,9 +131,10 @@ class Producto extends Entidad implements IProducto {
       imagenURL: imagenURL ?? _imagenURL,
       seVendePor: seVendePor ?? _seVendePor,
       impuestos: impuestos ?? _impuestos,
+      versionActual: versionActual ?? _versionActual,
     );
 
-    result.uid_ = uid ?? UID.fromString(uidAnterior);
+    //TODO: decidir eliminado o borrado ?, borrado se requiere por la sync
     result.eliminado_ = eliminado ?? eliminado_;
 
     return result;
@@ -136,12 +142,13 @@ class Producto extends Entidad implements IProducto {
 
   @override
   String toString() {
-    return 'Producto(nombre: ${_nombre.value}, '
+    return 'Producto(UID: ${super.uid.toString()}, nombre: ${_nombre.value}, '
         'precioDeVenta: ${_precioDeVenta.toString()}, '
         'precioDeCompra: ${_precioDeCompra.toString()}, '
         'categoria: ${_categoria?.nombre}, '
         'unidadDeMedida: ${_unidadDeMedida.nombre}, '
         'seVendePor: ${_seVendePor.name}, '
-        'codigo: ${_codigo.value})';
+        'codigo: ${_codigo.value})'
+        'versionActual: ${_versionActual.toString()})';
   }
 }
