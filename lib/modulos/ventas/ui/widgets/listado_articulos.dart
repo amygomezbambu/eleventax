@@ -58,6 +58,14 @@ class ListadoArticulos extends ConsumerWidget {
                           (context.breakpoint >= LayoutBreakpoint.sm) ? 80 : 31,
                       children: <Widget>[
                         Text(
+                          '${articulos[index].cantidad}',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                              fontSize: 18,
+                              color: ColoresBase.neutral500,
+                              fontWeight: FontWeight.w500),
+                        ),
+                        Text(
                           articulos[index].total.toString(),
                           style: TextStyle(
                               fontSize: 18,

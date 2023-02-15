@@ -1,5 +1,5 @@
 import 'package:eleventa/modulos/common/ui/tema/theme.dart';
-import 'package:eleventa/modulos/ventas/ui/texto_atajo.dart';
+import 'package:eleventa/modulos/ventas/ui/widgets/texto_atajo.dart';
 import 'package:flutter/material.dart';
 
 class BotonAccionDeVenta extends StatelessWidget {

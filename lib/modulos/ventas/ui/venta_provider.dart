@@ -1,5 +1,4 @@
 import 'package:eleventa/dependencias.dart';
-import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
 import 'package:eleventa/modulos/productos/modulo_productos.dart';
 import 'package:eleventa/modulos/ventas/domain/articulo.dart';
@@ -32,18 +31,22 @@ class VentaEnProgreso {
 
       if (producto == null) {
         // TODO: Mostrar mensaje de error en la UI
+        debugPrint('PRODUCTO NO ENCONTRADO!!');
       } else {
-        // El articulo seleccionado siempre será el ultimo
-        venta.agregarArticulo(
-            Articulo.crear(producto: producto, cantidad: 1.00));
+        venta.agregarArticulo(Articulo.crear(
+          producto: producto,
+          cantidad: 1.00,
+        ));
 
-        articuloSeleccionado = venta.articulos
-            .firstWhere((element) => element.producto.codigo == value);
+        // El articulo seleccionado será el último si es nuevo
+        // o el que ya exista si tiene el mismo código de producto
+        articuloSeleccionado = venta.articulos.firstWhere((element) =>
+            element.producto.codigo == CodigoProducto(value).value);
       }
     } on Exception catch (e) {
-      if (e is AppEx) {
+      if (e is Exception) {
         // TODO: mostrar mensaje de error o decidir que hacer
-        debugPrint(e.message);
+        debugPrint(e.toString());
       }
     }
   }
@@ -66,6 +69,11 @@ class NotificadorVenta extends StateNotifier<VentaEnProgreso> {
   Future<void> agregarArticulo(String value) async {
     await state.agregarProducto(value);
     state = state.copyWith();
+  }
+
+  void crearNuevaVenta() {
+    // Reiniciamos el estado porque es una nueva venta
+    super.state = VentaEnProgreso();
   }
 
   void seleccionarArticulo(Articulo articulo) {

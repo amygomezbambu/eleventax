@@ -162,16 +162,6 @@ class RepositorioConsultaProductos extends RepositorioConsulta
     }
   }
 
-  //  uid TEXT PRIMARY KEY,
-  //
-  //         nombre TEXT NULL,
-  //         precio_compra INTEGER NULL,
-  //         precio_venta INTEGER NULL DEFAULT 0,
-  //         categoria_uid TEXT NULL,
-  //         unidad_medida_nombre TEXT NULL,
-  //
-  //         se_vende_por INTEGER NULL
-
   @override
   Future<ProductoDto?> obtenerVersionDeProducto(UID versionUid) async {
     ProductoDto? version;

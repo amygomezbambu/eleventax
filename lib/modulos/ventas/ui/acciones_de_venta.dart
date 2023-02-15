@@ -2,7 +2,7 @@ import 'package:eleventa/modulos/common/ui/ex_icons.dart';
 import 'package:eleventa/modulos/common/ui/tema/theme.dart';
 import 'package:eleventa/modulos/ventas/ui/venta_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:eleventa/modulos/ventas/ui/boton_accion_de_venta.dart';
+import 'package:eleventa/modulos/ventas/ui/widgets/boton_accion_de_venta.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AccionesDeVenta extends ConsumerWidget {
