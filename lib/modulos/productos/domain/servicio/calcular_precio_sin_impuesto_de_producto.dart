@@ -3,10 +3,10 @@ import 'package:eleventa/modulos/productos/domain/impuesto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_venta_producto.dart';
 
 Moneda calcularPrecioSinImpuestos(
-  PrecioDeVentaProducto precio,
+  PrecioDeVentaProducto precioConImpuestos,
   List<Impuesto> impuestos,
 ) {
-  var precioSinImpuestos = precio.value.toDouble();
+  var precioSinImpuestos = precioConImpuestos.value.toDouble();
 
   //impuestos puede ser final por lo que no se le puede hacer sort directamente
   var impuestosCopy = [...impuestos];
@@ -16,8 +16,10 @@ Moneda calcularPrecioSinImpuestos(
       ));
 
   for (var impuesto in impuestosCopy) {
+    //TODO: definir donde extraer esta logica "calcularImpuestoAPartirDeMonto(monto, porcentaje)"
+    //ejemplo calcularImpuestoAPartirDeMonto(100.00, 16) -> 16.00;
     var montoImpuesto = precioSinImpuestos -
-        (precioSinImpuestos / (1 + (impuesto.porcentaje / 100)));
+        (precioSinImpuestos / (1 + impuesto.porcentaje.toPorcentajeDecimal()));
 
     precioSinImpuestos -= montoImpuesto;
   }

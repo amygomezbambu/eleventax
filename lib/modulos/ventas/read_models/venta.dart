@@ -7,6 +7,7 @@ import 'package:eleventa/modulos/ventas/read_models/total_impuesto.dart';
 class VentaDto {
   var uid = '';
   var estado = EstadoDeVenta.cobrada;
+  var folio = '';
   var creadoEn = DateTime.now();
   DateTime? cobradaEn;
   var articulos = <ArticuloDto>[];

@@ -17,22 +17,34 @@ class ConfigCompartidaDeVentas {
 
   ConfigCompartidaDeVentas();
 
-  ConfigCompartidaDeVentas.cargar(
-      {required UID uid,
-      required bool permitirProductoComun,
-      required bool permitirCostoZero})
-      : _uid = uid,
+  ConfigCompartidaDeVentas.cargar({
+    required UID uid,
+    required bool permitirProductoComun,
+    required bool permitirCostoZero,
+  })  : _uid = uid,
         _permitirProductoComun = permitirProductoComun,
         _permitirCostoZero = permitirCostoZero;
 }
 
 class ConfigLocalDeVentas extends ConfigLocal {
   var _permitirDescuentos = true;
+  var _prefijoFolioVentas = 'A';
+  var _folioInicial = 1000;
 
   bool get permitirDescuentos => _permitirDescuentos;
+  String get prefijoFolioVentas => _prefijoFolioVentas;
+  int get folioInicial => _folioInicial;
 
   set permitirDescuentos(bool value) {
     _permitirDescuentos = value;
+  }
+
+  set prefijoFolioVentas(String value) {
+    _prefijoFolioVentas = value;
+  }
+
+  set folioInicial(int value) {
+    _folioInicial = value;
   }
 
   ConfigLocalDeVentas();

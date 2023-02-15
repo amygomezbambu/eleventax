@@ -19,10 +19,23 @@ void main() {
     await loader.iniciar();
   });
 
+  Future<int> obtenerSiguienteFolio() async {
+    final consultas = ModuloVentas.repositorioConsultaVentas();
+    var folioActual = await consultas.obtenerFolioDeVentaMasReciente();
+    var consecutivoInicial = 1000;
+    if (folioActual != null) {
+      int consecutivo = int.parse(folioActual.split('-')[1]);
+      consecutivo++;
+      consecutivoInicial = consecutivo;
+    }
+
+    return consecutivoInicial;
+  }
+
   test('debe almacenar los datos de la venta al registrar el cobro', () async {
-    var cobrarVenta = ModuloVentas.cobrarVenta();
-    var consultas = ModuloVentas.repositorioConsultaVentas();
-    var consultasProductos = ModuloProductos.repositorioConsultaProductos();
+    final cobrarVenta = ModuloVentas.cobrarVenta();
+    final consultas = ModuloVentas.repositorioConsultaVentas();
+    final consultasProductos = ModuloProductos.repositorioConsultaProductos();
 
     Venta ventaEnProgreso = Venta.crear();
 
@@ -45,6 +58,8 @@ void main() {
     ventaEnProgreso.agregarArticulo(articulo);
     ventaEnProgreso.agregarPago(pago);
 
+    final siguienteFolioEsperado = await obtenerSiguienteFolio();
+
     cobrarVenta.req.venta = ventaEnProgreso;
     await cobrarVenta.exec();
 
@@ -64,6 +79,9 @@ void main() {
     expect(ventaCobrada.total, ventaEnProgreso.total);
     expect(ventaCobrada.estado, EstadoDeVenta.cobrada);
 
+    expect(ventaCobrada.folio, 'A-$siguienteFolioEsperado',
+        reason: 'Debe asignar un prefijo y folio por defecto');
+
     expect(ventaCobrada.pagos.length, 1,
         reason: 'Debe registrar la forma de pago');
 
@@ -80,10 +98,56 @@ void main() {
         consultasProductos.obtenerVersionDeProducto(UID.fromString(version));
 
     expect(versionDeProducto, isNotNull);
+
+    var ventaEnProgresoDb =
+        await consultas.obtenerVentaEnProgreso(ventaEnProgreso.uid);
+
+    expect(
+      ventaEnProgresoDb,
+      isNull,
+      reason: 'La venta en progreso no fue eliminada despues del cobro',
+    );
   });
 
-  test('debe vaciar el queue de ventas en progreso al guardar la venta', () {
-    // TODO: Implement test
+  test('debe incrementar el folio de venta tras cada cobro', () async {
+    final cobrarVenta = ModuloVentas.cobrarVenta();
+    final consultas = ModuloVentas.repositorioConsultaVentas();
+    final formasDisponibles = await consultas.obtenerFormasDePago();
+
+    const precio = 11.55;
+
+    var producto = ProductosUtils.crearProducto(
+      precioCompra: Moneda(precio),
+      precioVenta: Moneda(precio),
+    );
+
+    // Como la prueba puede ejecutarse en cualquier orden pueden o no existir ventas previas
+    // verificamos
+    final consecutivoInicial = await obtenerSiguienteFolio();
+
+    for (var i = 0; i < 10; i++) {
+      Venta ventaEnProgreso = Venta.crear();
+      var articulo = Articulo.crear(
+        producto: producto,
+        cantidad: 1.0,
+      );
+      var pago = Pago.crear(
+        forma: formasDisponibles.first,
+        monto: Moneda(precio),
+      );
+
+      ventaEnProgreso.agregarArticulo(articulo);
+      ventaEnProgreso.agregarPago(pago);
+
+      cobrarVenta.req.venta = ventaEnProgreso;
+      await cobrarVenta.exec();
+
+      // Verificamos que el folio se incremente
+      VentaDto? ventaCobrada =
+          await consultas.obtenerVenta(ventaEnProgreso.uid);
+      expect(ventaCobrada!.folio, 'A-${consecutivoInicial + i}',
+          reason: 'Debe incrementar el folio de la venta $i');
+    }
   });
 
   test('debe lanzar error si las formas de pago exceden el total de la venta',

@@ -68,10 +68,11 @@ class RepositorioConsultaVentas extends RepositorioConsulta
     Venta? venta;
 
     var sql = '''
-        SELECT vp.uid, vp.creado_en,vpa.producto_uid,vpa.cantidad,vpa.descripcion,
+        SELECT vp.uid, vp.creado_en,vp.subtotal,vp.total,vp.total_impuestos,
+          vpa.producto_uid,vpa.cantidad,vpa.descripcion,
           vpa.agregado_en, vpa.uid as articulo_uid 
         FROM $_tablaVentasEnProgreso vp 
-        LEFT JOIN $_tablaVentasEnProgresoArticulos vpa on vpa.venta_uid = vp.uid 
+        LEFT JOIN $_tablaVentasEnProgresoArticulos vpa ON vpa.venta_uid = vp.uid 
         WHERE vp.uid = ?;
         ''';
 
@@ -106,17 +107,32 @@ class RepositorioConsultaVentas extends RepositorioConsulta
       final row = result.first;
 
       venta = Venta.cargar(
-          uid: uid,
-          estado: EstadoDeVenta.enProgreso,
-          creadoEn:
-              DateTime.fromMillisecondsSinceEpoch(row['creado_en'] as int),
-          subtotal: Moneda.deserialize(row['subtotal'] as int),
-          totalImpuestos: Moneda.deserialize(row['total_impuestos'] as int),
-          total: Moneda.deserialize(row['total'] as int),
-          articulos: articulos);
+        uid: uid,
+        estado: EstadoDeVenta.enProgreso,
+        creadoEn: DateTime.fromMillisecondsSinceEpoch(row['creado_en'] as int),
+        subtotal: Moneda.deserialize(row['subtotal'] as int),
+        totalImpuestos: Moneda.deserialize(row['total_impuestos'] as int),
+        total: Moneda.deserialize(row['total'] as int),
+        articulos: articulos,
+      );
     }
 
     return venta;
+  }
+
+  @override
+  Future<String?> obtenerFolioDeVentaMasReciente() async {
+    // TODO: Filtrar las ventas por MI dispositivo en base al prefijo
+    final sql =
+        'SELECT folio FROM $_tablaVentas ORDER BY cobrado_en DESC LIMIT 1;';
+
+    final dbResult = await query(sql: sql);
+
+    if (dbResult.isEmpty) {
+      return null;
+    } else {
+      return dbResult.first['folio'] as String;
+    }
   }
 
   @override
@@ -176,7 +192,7 @@ class RepositorioConsultaVentas extends RepositorioConsulta
 
     var sql = '''
         SELECT v.uid, v.estado, v.creado_en, v.total, v.subtotal, v.total_impuestos, 
-        v.cobrado_en, 
+        v.cobrado_en, v.folio, 
         va.uid as articulo_uid, va.cantidad, va.precio_venta, va.descripcion, 
         va.agregado_en, va.version_producto_uid, va.subtotal as subtotal_articulo
         FROM $_tablaVentas v JOIN $_tablaVentasArticulos va on va.venta_uid = v.uid 
@@ -213,6 +229,7 @@ class RepositorioConsultaVentas extends RepositorioConsulta
       venta.subtotal = Moneda.deserialize(row['subtotal'] as int);
       venta.totalImpuestos = Moneda.deserialize(row['total_impuestos'] as int);
       venta.total = Moneda.deserialize(row['total'] as int);
+      venta.folio = row['folio'] as String;
       venta.articulos = articulos;
 
       if (row['cobrado_en'] != null) {

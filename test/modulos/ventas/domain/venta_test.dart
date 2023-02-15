@@ -1,5 +1,6 @@
 import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/productos/domain/impuesto.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/porcentaje_de_impuesto.dart';
 import 'package:eleventa/modulos/ventas/domain/articulo.dart';
 import 'package:eleventa/modulos/ventas/domain/venta.dart';
 import 'package:flutter/foundation.dart';
@@ -69,6 +70,9 @@ void main() {
       // expect(venta.total.importeCobrable, totalEsperado);
       // expect(venta.subtotal.importeCobrable + totalDeImpuestos.importeCobrable,
       //     venta.total.importeCobrable);
+
+      expect(venta.subtotal, isNot(Moneda(0)));
+      expect(venta.total, isNot(Moneda(0)));
     }
   });
 
@@ -120,11 +124,17 @@ void main() {
     final precioConImpuestos = Moneda(24411.00);
 
     final impuestos = <Impuesto>[
-      Impuesto.crear(nombre: 'IVA', porcentaje: 16.0, ordenDeAplicacion: 2),
+      Impuesto.crear(
+          nombre: 'IVA',
+          porcentaje: PorcentajeDeImpuesto(16.0),
+          ordenDeAplicacion: 2),
     ];
 
     final impuestoMultiples = <Impuesto>[
-      Impuesto.crear(nombre: 'IEPS', porcentaje: 8.0, ordenDeAplicacion: 1),
+      Impuesto.crear(
+          nombre: 'IEPS',
+          porcentaje: PorcentajeDeImpuesto(8.0),
+          ordenDeAplicacion: 1),
       ...impuestos,
     ];
 

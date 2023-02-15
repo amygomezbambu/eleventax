@@ -150,8 +150,10 @@ class Moneda {
       Moneda.deserialize(montoInterno - v._montoInterno);
   Moneda operator *(Moneda v) =>
       Moneda.deserialize(montoInterno * v._montoInterno);
+  Moneda operator /(Moneda v) => Moneda(montoInterno / v._montoInterno);
 
   bool operator <=(Moneda other) => _montoInterno <= other.montoInterno;
+
   bool operator <(Moneda other) => _montoInterno < other.montoInterno;
   bool operator >(Moneda other) => _montoInterno > other.montoInterno;
   bool operator >=(Moneda other) => _montoInterno >= other.montoInterno;

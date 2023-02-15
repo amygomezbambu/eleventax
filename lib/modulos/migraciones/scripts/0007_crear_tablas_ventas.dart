@@ -40,6 +40,7 @@ class Migracion7 extends Migracion {
           venta_uid TEXT,
           producto_uid TEXT,
           cantidad REAL,
+          precio_venta INTEGER,
           descripcion TEXT,
           agregado_en INTEGER NOT NULL
         ); 
@@ -50,6 +51,7 @@ class Migracion7 extends Migracion {
     command = '''
         CREATE TABLE ventas(
           uid TEXT PRIMARY KEY,
+          folio TEXT,
           creado_en INTEGER,
           cobrado_en INTEGER,
           subtotal INTEGER,
@@ -57,6 +59,18 @@ class Migracion7 extends Migracion {
           total_impuestos INTEGER,
           total INTEGER         
         ); 
+      ''';
+
+    await db.command(sql: command);
+
+    command = '''
+       CREATE UNIQUE INDEX idx_ventas_folio ON ventas(folio); 
+      ''';
+
+    await db.command(sql: command);
+
+    command = '''
+       CREATE INDEX idx_ventas_cobrado_en ON ventas(cobrado_en); 
       ''';
 
     await db.command(sql: command);

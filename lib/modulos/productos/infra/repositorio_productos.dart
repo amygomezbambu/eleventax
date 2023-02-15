@@ -125,41 +125,39 @@ class RepositorioProductos extends Repositorio
 
     if (productoOriginal != null) {
       // Creamos una nueva version del producto con los datos modificados
-      final versionActualUid = UID().toString();
-      await adaptadorSync.sincronizar(
-        dataset: 'productos_versiones',
-        rowID: versionActualUid,
-        fields: {
-          'producto_uid': productoModificado.uid.toString(),
-          'codigo': productoModificado.codigo,
-          'nombre': productoModificado.nombre,
-          if (productoModificado.categoria != null)
-            if (UID.isValid(productoModificado.categoria!.uid.toString()))
-              'categoria_nombre':
-                  productoModificado.categoria!.nombre.toString(),
-          'unidad_medida_nombre':
-              productoModificado.unidadMedida.nombre.toString(),
-          'unidad_medida_abreviacion':
-              productoModificado.unidadMedida.abreviacion.toString(),
-          'precio_compra': productoModificado.precioDeCompra.serialize(),
-          'precio_venta': productoModificado.precioDeVenta.serialize(),
-          'se_vende_por': productoModificado.seVendePor.index,
-          'url_imagen': productoModificado.imagenURL,
-          'guardado_en': DateTime.now().millisecondsSinceEpoch,
-        },
-      );
-
-      // Asignamos la nueva version UID
-      // TODO: Verificar si esta es la mejor manera, se nos hace algo sucia
-      final mapaProductoModificado =
-          ProductoMapper.domainAMap(productoModificado);
-      mapaProductoModificado['version_actual_uid'] = versionActualUid;
+      productoModificado = productoModificado.copyWith(versionActual: UID());
 
       // Realizamos la modificacion con el sync engine
       var diferencias = await obtenerDiferencias(
-        mapaProductoModificado,
+        ProductoMapper.domainAMap(productoModificado),
         ProductoMapper.domainAMap(productoOriginal),
       );
+
+      // Solo creamos una nueva version si hubo al menos un cambio
+      if (diferencias.isNotEmpty) {
+        await adaptadorSync.sincronizar(
+          dataset: 'productos_versiones',
+          rowID: productoModificado.versionActual.toString(),
+          fields: {
+            'producto_uid': productoModificado.uid.toString(),
+            'codigo': productoModificado.codigo,
+            'nombre': productoModificado.nombre,
+            if (productoModificado.categoria != null)
+              if (UID.isValid(productoModificado.categoria!.uid.toString()))
+                'categoria_nombre':
+                    productoModificado.categoria!.nombre.toString(),
+            'unidad_medida_nombre':
+                productoModificado.unidadMedida.nombre.toString(),
+            'unidad_medida_abreviacion':
+                productoModificado.unidadMedida.abreviacion.toString(),
+            'precio_compra': productoModificado.precioDeCompra.serialize(),
+            'precio_venta': productoModificado.precioDeVenta.serialize(),
+            'se_vende_por': productoModificado.seVendePor.index,
+            'url_imagen': productoModificado.imagenURL,
+            'guardado_en': DateTime.now().millisecondsSinceEpoch,
+          },
+        );
+      }
 
       await adaptadorSync.sincronizar(
         dataset: _tablaProductos,

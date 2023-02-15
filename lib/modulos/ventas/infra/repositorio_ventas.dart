@@ -26,6 +26,7 @@ class RepositorioVentas extends Repositorio implements IRepositorioVentas {
         'cobrado_en': venta.cobradaEn!.millisecondsSinceEpoch,
         'subtotal': venta.subtotal.serialize(),
         'total_impuestos': venta.totalImpuestos.serialize(),
+        'folio': venta.folio,
         'estado': venta.estado.index,
         'total': venta.total.serialize(),
       },

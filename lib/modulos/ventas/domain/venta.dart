@@ -17,11 +17,13 @@ class Venta extends Entidad {
 
   DateTime? _cobradaEn;
   EstadoDeVenta _estado;
+  String? _folio;
   var _subtotal = Moneda(0);
   var _total = Moneda(0);
   var _totalImpuestos = Moneda(0);
   var _totalPagos = Moneda(0);
 
+  String? get folio => _folio;
   EstadoDeVenta get estado => _estado;
   Moneda get totalPagos => _totalPagos;
   DateTime get creadoEn => _creadoEn;
@@ -34,25 +36,26 @@ class Venta extends Entidad {
   List<TotalDeImpuesto> get totalDeImpuestos =>
       List.unmodifiable(_totalesDeImpuestos);
 
-  Venta.cargar(
-      {required UID uid,
-      required EstadoDeVenta estado,
-      required DateTime creadoEn,
-      required Moneda subtotal,
-      required Moneda totalImpuestos,
-      required Moneda total,
-      required List<Articulo> articulos,
-      DateTime? cobradaEn,
-      List<TotalDeImpuesto> totalesDeImpuestos = const [],
-      List<Pago> pagos = const []})
-      : _estado = estado,
+  Venta.cargar({
+    required UID uid,
+    required EstadoDeVenta estado,
+    required DateTime creadoEn,
+    required Moneda subtotal,
+    required Moneda totalImpuestos,
+    required Moneda total,
+    required List<Articulo> articulos,
+    DateTime? cobradaEn,
+    String? folio,
+    List<Pago> pagos = const [],
+  })  : _estado = estado,
+        _folio = folio,
         _creadoEn = creadoEn,
         _cobradaEn = cobradaEn,
         _subtotal = subtotal,
         _totalImpuestos = totalImpuestos,
         _total = total,
         _articulos = articulos,
-        _totalesDeImpuestos = totalesDeImpuestos,
+        _totalesDeImpuestos = [],
         _pagos = pagos,
         super.cargar(uid) {
     _actualizarTotales();
@@ -62,39 +65,42 @@ class Venta extends Entidad {
       : _estado = EstadoDeVenta.enProgreso,
         _creadoEn = DateTime.now(),
         _cobradaEn = null,
+        _folio = null,
         _articulos = [],
         _totalesDeImpuestos = [],
         _pagos = [],
         super.crear();
 
-  Venta copyWith(
-      {UID? uid,
-      EstadoDeVenta? estado,
-      DateTime? creadoEn,
-      DateTime? cobradaEn,
-      Moneda? subtotal,
-      Moneda? totalImpuestos,
-      Moneda? total,
-      List<Articulo>? articulos,
-      List<Pago>? pagos,
-      List<TotalDeImpuesto>? totalesDeimpuestos}) {
+  Venta copyWith({
+    UID? uid,
+    EstadoDeVenta? estado,
+    DateTime? creadoEn,
+    DateTime? cobradaEn,
+    String? folio,
+    Moneda? subtotal,
+    Moneda? totalImpuestos,
+    Moneda? total,
+    List<Articulo>? articulos,
+    List<Pago>? pagos,
+  }) {
     return Venta.cargar(
       uid: uid ?? uid_,
       estado: estado ?? _estado,
+      folio: folio ?? _folio,
       creadoEn: creadoEn ?? _creadoEn,
       cobradaEn: cobradaEn ?? _cobradaEn,
       subtotal: subtotal ?? _subtotal,
       totalImpuestos: totalImpuestos ?? _totalImpuestos,
       total: total ?? _total,
-      articulos: articulos ?? _articulos,
+      articulos: articulos ?? [..._articulos],
       pagos: pagos ?? _pagos,
-      totalesDeImpuestos: totalesDeimpuestos ?? _totalesDeImpuestos,
     );
   }
 
-  void marcarComoCobrada() {
+  void marcarComoCobrada({required String folio}) {
     _cobradaEn = DateTime.now();
     _estado = EstadoDeVenta.cobrada;
+    _folio = folio;
   }
 
   void agregarPago(Pago pagoRecibido) {
@@ -170,6 +176,7 @@ class Venta extends Entidad {
 
     // Redondeamos a 2 decimales el subtotal
     // que es el que cobraremos a los usuarios
+
     _total = _subtotal + _totalImpuestos;
     _subtotal = _subtotal.importeCobrable;
     _totalImpuestos = _totalImpuestos.importeCobrable;

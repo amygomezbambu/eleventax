@@ -1,30 +1,50 @@
 import 'package:eleventa/dependencias.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
-import 'package:eleventa/modulos/productos/modulo_productos.dart';
 import 'package:eleventa/modulos/ventas/domain/articulo.dart';
 import 'package:eleventa/modulos/ventas/domain/venta.dart';
+import 'package:eleventa/modulos/ventas/modulo_ventas.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class VentaEnProgreso {
-  var consultas = Dependencias.productos.repositorioConsultasProductos();
+class VentaActualState {
   late Articulo articuloSeleccionado;
   late Venta _venta;
   Venta get venta => _venta;
 
-  VentaEnProgreso() {
+  VentaActualState() {
     _venta = Venta.crear();
   }
 
-  VentaEnProgreso.cargar({
+  VentaActualState.cargar({
     required Venta venta,
     required Articulo articulo,
   })  : _venta = venta,
         articuloSeleccionado = articulo;
 
-  Future<void> agregarProducto(String value) async {
-    var consultas = ModuloProductos.repositorioConsultaProductos();
+  VentaActualState copyWith({
+    Venta? venta,
+    Articulo? articulo,
+  }) {
+    return VentaActualState.cargar(
+      venta: venta ?? _venta,
+      articulo: articulo ?? articuloSeleccionado,
+    );
+  }
+}
 
+//crear notificador
+class NotificadorVenta extends StateNotifier<VentaActualState> {
+  final consultas = Dependencias.productos.repositorioConsultasProductos();
+  final guardarVentaEnProgreso = ModuloVentas.guardarVenta();
+
+  NotificadorVenta() : super(VentaActualState());
+
+  Future<void> _guardarVenta() async {
+    guardarVentaEnProgreso.req.venta = state.venta;
+    await guardarVentaEnProgreso.exec();
+  }
+
+  Future<void> agregarArticulo(String value) async {
     try {
       var producto =
           await consultas.obtenerProductoPorCodigo(CodigoProducto(value));
@@ -33,47 +53,30 @@ class VentaEnProgreso {
         // TODO: Mostrar mensaje de error en la UI
         debugPrint('PRODUCTO NO ENCONTRADO!!');
       } else {
-        venta.agregarArticulo(Articulo.crear(
+        state.venta.agregarArticulo(Articulo.crear(
           producto: producto,
           cantidad: 1.00,
         ));
 
+        await _guardarVenta();
+
         // El articulo seleccionado será el último si es nuevo
         // o el que ya exista si tiene el mismo código de producto
-        articuloSeleccionado = venta.articulos.firstWhere((element) =>
-            element.producto.codigo == CodigoProducto(value).value);
+        state.articuloSeleccionado = state.venta.articulos.firstWhere(
+            (element) =>
+                element.producto.codigo == CodigoProducto(value).value);
       }
     } on Exception catch (e) {
-      if (e is Exception) {
-        // TODO: mostrar mensaje de error o decidir que hacer
-        debugPrint(e.toString());
-      }
+      // TODO: mostrar mensaje de error o decidir que hacer
+      debugPrint(e.toString());
     }
-  }
 
-  VentaEnProgreso copyWith({
-    Venta? venta,
-    Articulo? articulo,
-  }) {
-    return VentaEnProgreso.cargar(
-      venta: venta ?? _venta,
-      articulo: articulo ?? articuloSeleccionado,
-    );
-  }
-}
-
-//crear notificador
-class NotificadorVenta extends StateNotifier<VentaEnProgreso> {
-  NotificadorVenta() : super(VentaEnProgreso());
-
-  Future<void> agregarArticulo(String value) async {
-    await state.agregarProducto(value);
     state = state.copyWith();
   }
 
   void crearNuevaVenta() {
     // Reiniciamos el estado porque es una nueva venta
-    super.state = VentaEnProgreso();
+    super.state = VentaActualState();
   }
 
   void seleccionarArticulo(Articulo articulo) {
@@ -101,18 +104,23 @@ class NotificadorVenta extends StateNotifier<VentaEnProgreso> {
   }
 
   Future<void> aumentarCantidad() async {
-    // TODO: La venta ahorita "no se entera" del cambio de cantidad, ver cómo hacerle
-    state.articuloSeleccionado
-        .actualizarCantidad(state.articuloSeleccionado.cantidad + 1.00);
-    state = state.copyWith();
+    await _modificarCantidad(1);
   }
 
   Future<void> disminuirCantidad() async {
+    await _modificarCantidad(-1);
+  }
+
+  Future<void> _modificarCantidad(double cantidad) async {
     state.articuloSeleccionado
-        .actualizarCantidad(state.articuloSeleccionado.cantidad - 1.00);
-    state = state.copyWith();
+        .actualizarCantidad(state.articuloSeleccionado.cantidad + cantidad);
+
+    var venta = state.venta.copyWith(articulos: state.venta.articulos);
+    state = state.copyWith(venta: venta);
+
+    await _guardarVenta();
   }
 }
 
-final providerVenta = StateNotifierProvider<NotificadorVenta, VentaEnProgreso>(
+final providerVenta = StateNotifierProvider<NotificadorVenta, VentaActualState>(
     (ref) => NotificadorVenta());

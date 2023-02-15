@@ -12,6 +12,7 @@ import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/nombre_categoria.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/porcentaje_de_impuesto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_compra_producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_venta_producto.dart';
 import 'package:eleventa/modulos/productos/dto/producto_dto.dart';
@@ -43,7 +44,8 @@ class RepositorioConsultaProductos extends RepositorioConsulta
         impuestos.add(Impuesto.cargar(
           uid: UID.fromString(row['impuesto_uid'] as String),
           nombre: row['nombre'] as String,
-          porcentaje: (row['porcentaje'] as int).toDouble(),
+          porcentaje:
+              PorcentajeDeImpuesto.deserialize((row['porcentaje'] as int)),
           ordenDeAplicacion: (row['orden'] as int),
           activo: Utils.db.intToBool(row['activo'] as int),
         ));
@@ -67,7 +69,8 @@ class RepositorioConsultaProductos extends RepositorioConsulta
         res.add(Impuesto.cargar(
             uid: UID.fromString(row['uid'] as String),
             nombre: row['nombre'] as String,
-            porcentaje: (row['porcentaje'] as int).toDouble(),
+            porcentaje:
+                PorcentajeDeImpuesto.deserialize(row['porcentaje'] as int),
             ordenDeAplicacion: (row['orden'] as int),
             activo: Utils.db.intToBool(row['activo'] as int)));
       }

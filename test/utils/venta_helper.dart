@@ -1,4 +1,5 @@
 import 'package:eleventa/modulos/productos/domain/impuesto.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/porcentaje_de_impuesto.dart';
 
 class DatosProducto {
   double cantidad;
@@ -18,14 +19,20 @@ class DatosVenta {
   DatosVenta({required this.productos});
 }
 
-final iva16 =
-    Impuesto.crear(nombre: 'IVA', porcentaje: 16.0, ordenDeAplicacion: 2);
+final iva16 = Impuesto.crear(
+    nombre: 'IVA',
+    porcentaje: PorcentajeDeImpuesto(16.0),
+    ordenDeAplicacion: 2);
 
-final iva8 =
-    Impuesto.crear(nombre: 'IVA8', porcentaje: 8.0, ordenDeAplicacion: 2);
+final iva8 = Impuesto.crear(
+    nombre: 'IVA8',
+    porcentaje: PorcentajeDeImpuesto(8.0),
+    ordenDeAplicacion: 2);
 
-final ieps8 =
-    Impuesto.crear(nombre: 'IEPS', porcentaje: 8.0, ordenDeAplicacion: 1);
+final ieps8 = Impuesto.crear(
+    nombre: 'IEPS',
+    porcentaje: PorcentajeDeImpuesto(8.0),
+    ordenDeAplicacion: 1);
 
 final ventas = [
   DatosVenta(

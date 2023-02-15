@@ -1,11 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:eleventa/modulos/common/domain/entidad.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/porcentaje_de_impuesto.dart';
 
 class Impuesto extends Entidad {
   final String _nombre;
-  // TODO: Ver como evitar casos como 1.000000000001, usar Decimal() ?
-  final double _porcentaje;
+  final PorcentajeDeImpuesto _porcentaje;
   final int _ordenDeAplicacion;
   final bool _activo;
 
@@ -14,12 +14,12 @@ class Impuesto extends Entidad {
   bool get activo => _activo;
 
   /// Porcentaje en decimal, ejem: 16.00, 1.3333, etc.
-  double get porcentaje => _porcentaje;
+  PorcentajeDeImpuesto get porcentaje => _porcentaje;
 
   Impuesto.cargar({
     required UID uid,
     required String nombre,
-    required double porcentaje,
+    required PorcentajeDeImpuesto porcentaje,
     required int ordenDeAplicacion,
     required bool activo,
   })  : _nombre = nombre,
@@ -36,7 +36,7 @@ class Impuesto extends Entidad {
   /// ```
   Impuesto.crear({
     required String nombre,
-    required double porcentaje,
+    required PorcentajeDeImpuesto porcentaje,
     required int ordenDeAplicacion,
   })  : _nombre = nombre,
         _porcentaje = porcentaje,
@@ -53,7 +53,7 @@ class Impuesto extends Entidad {
   Impuesto copyWith({
     UID? uid,
     String? nombre,
-    double? porcentaje,
+    PorcentajeDeImpuesto? porcentaje,
     int? ordenDeAplicacion,
     bool? activo,
   }) {

@@ -1,10 +1,12 @@
 import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
+import 'package:eleventa/modulos/productos/domain/categoria.dart';
 import 'package:eleventa/modulos/productos/domain/impuesto.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/porcentaje_de_impuesto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_compra_producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_venta_producto.dart';
 import 'package:faker/faker.dart';
@@ -12,13 +14,16 @@ import 'package:faker/faker.dart';
 enum TipoUnidadDeMedida { pieza, granel }
 
 class ProductosUtils {
-  static Producto crearProducto(
-      {String? codigo,
-      String? nombre,
-      Moneda? precioCompra,
-      Moneda? precioVenta,
-      TipoUnidadDeMedida tipoUnidadDeMedida = TipoUnidadDeMedida.pieza,
-      List<Impuesto>? impuestos}) {
+  static Producto crearProducto({
+    String? codigo,
+    String? nombre,
+    Moneda? precioCompra,
+    Moneda? precioVenta,
+    Categoria? categoria,
+    UnidadDeMedida? unidadDeMedida,
+    TipoUnidadDeMedida tipoUnidadDeMedida = TipoUnidadDeMedida.pieza,
+    List<Impuesto>? impuestos,
+  }) {
     var faker = Faker();
 
     final codigo_ = codigo != null
@@ -37,18 +42,17 @@ class ProductosUtils {
         ? PrecioDeVentaProducto(precioVenta)
         : PrecioDeVentaProducto(Moneda(faker.randomGenerator.decimal(min: 5)));
 
-    final unidadDeMedida_ = tipoUnidadDeMedida == TipoUnidadDeMedida.pieza
-        ? UnidadDeMedida.crear(
-            nombre: 'pieza',
-            abreviacion: 'pz',
-          )
-        : UnidadDeMedida.crear(
-            nombre: 'granel',
-            abreviacion: 'gr',
-          );
+    final unidadDeMedida_ = unidadDeMedida ??
+        UnidadDeMedida.crear(
+          nombre: 'pieza',
+          abreviacion: 'pza',
+        );
     final impuestos_ = impuestos ??
         <Impuesto>[
-          Impuesto.crear(nombre: 'IVA', porcentaje: 16.0, ordenDeAplicacion: 2),
+          Impuesto.crear(
+              nombre: 'IVA',
+              porcentaje: PorcentajeDeImpuesto(16.0),
+              ordenDeAplicacion: 2),
         ];
 
     return Producto.crear(

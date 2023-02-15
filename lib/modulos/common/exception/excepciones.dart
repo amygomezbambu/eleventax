@@ -48,6 +48,7 @@ enum TipoValidationEx {
   valorEnCero,
   longitudInvalida,
   valorNegativo,
+  valorFueraDeRango,
   entidadYaExiste,
   entidadNoExiste,
 }

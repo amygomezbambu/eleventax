@@ -2,6 +2,7 @@ import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/productos/domain/impuesto.dart';
 import 'package:eleventa/modulos/productos/domain/producto_generico.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/porcentaje_de_impuesto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_venta_producto.dart';
 import 'package:eleventa/modulos/ventas/domain/articulo.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -45,7 +46,7 @@ void main() {
         reason: 'El subtotal no fue el correcto');
 
     final impuestoDeArticulo = Moneda(subtotalEsperado.toDouble() *
-        (producto.impuestos.first.porcentaje / 100));
+        (producto.impuestos.first.porcentaje.toPorcentajeDecimal()));
     expect(articulo.totalImpuestos.importeCobrable,
         impuestoDeArticulo.importeCobrable,
         reason:
@@ -121,10 +122,14 @@ void main() {
     const cantidad = 1.0;
     const precioVenta = 24411.00;
 
-    final ieps =
-        Impuesto.crear(nombre: 'IEPS', porcentaje: 8.0, ordenDeAplicacion: 1);
-    final iva16 =
-        Impuesto.crear(nombre: 'IVA', porcentaje: 16.0, ordenDeAplicacion: 2);
+    final ieps = Impuesto.crear(
+        nombre: 'IEPS',
+        porcentaje: PorcentajeDeImpuesto(8.0),
+        ordenDeAplicacion: 1);
+    final iva16 = Impuesto.crear(
+        nombre: 'IVA',
+        porcentaje: PorcentajeDeImpuesto(16.0),
+        ordenDeAplicacion: 2);
 
     final impuestoMultiples = <Impuesto>[ieps, iva16];
 
@@ -156,8 +161,10 @@ void main() {
     const cantidad = 1.0;
     const precioVenta = 11.55;
 
-    final iva16 =
-        Impuesto.crear(nombre: 'IVA', porcentaje: 16.0, ordenDeAplicacion: 1);
+    final iva16 = Impuesto.crear(
+        nombre: 'IVA',
+        porcentaje: PorcentajeDeImpuesto(16.0),
+        ordenDeAplicacion: 1);
 
     final impuestoMultiples = <Impuesto>[iva16];
 
@@ -188,10 +195,14 @@ void main() {
     const cantidad = 5000.0;
     const precioVentaConImpuestos = 0.20;
 
-    final ieps =
-        Impuesto.crear(nombre: 'IEPS', porcentaje: 8.0, ordenDeAplicacion: 1);
-    final iva16 =
-        Impuesto.crear(nombre: 'IVA', porcentaje: 16.0, ordenDeAplicacion: 2);
+    final ieps = Impuesto.crear(
+        nombre: 'IEPS',
+        porcentaje: PorcentajeDeImpuesto(8.0),
+        ordenDeAplicacion: 1);
+    final iva16 = Impuesto.crear(
+        nombre: 'IVA',
+        porcentaje: PorcentajeDeImpuesto(16.0),
+        ordenDeAplicacion: 2);
 
     final impuestoMultiples = <Impuesto>[ieps, iva16];
 

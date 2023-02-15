@@ -8,4 +8,5 @@ abstract class IRepositorioConsultaVentas {
   Future<List<FormaDePago>> obtenerFormasDePago();
   Future<FormaDePago?> obtenerFormaDePago(UID uid);
   Future<Venta?> obtenerVentaEnProgreso(UID uid);
+  Future<String?> obtenerFolioDeVentaMasReciente();
 }

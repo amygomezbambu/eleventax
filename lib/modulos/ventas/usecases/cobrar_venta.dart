@@ -3,6 +3,7 @@ import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/ventas/domain/venta.dart';
 import 'package:eleventa/modulos/ventas/interfaces/repositorio_ventas.dart';
+import 'package:eleventa/modulos/ventas/servicios/generador_de_folios.dart';
 import 'package:eleventa/modulos/ventas/ventas_ex.dart';
 
 class CobrarVentaRequest {
@@ -44,10 +45,13 @@ class CobrarVenta extends Usecase<void> {
           input: req.venta.uid.toString());
     }
 
-    req.venta.marcarComoCobrada();
+    // Generamos y asignamos el folio unico de venta
+    var folio = await generarFolio();
+    req.venta.marcarComoCobrada(folio: folio);
 
+    //TODO: verificar que sea transaccional aunque se use el sync engine
     await _ventas.agregar(req.venta);
 
-    //TODO: eliminar los registros del Queue de ventas en progreso
+    await _ventas.eliminarVentaEnProgreso(req.venta.uid);
   }
 }

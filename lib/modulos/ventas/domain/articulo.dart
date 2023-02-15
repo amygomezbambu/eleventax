@@ -85,8 +85,8 @@ class Articulo extends Entidad {
 
     for (var impuesto in impuestosDescendentes) {
       // TODO: Ver cómo multiplicar facilmente Moneda x double
-      final montoDeImpuesto =
-          baseDelImpuesto.toDouble() * (impuesto.porcentaje / 100);
+      final montoDeImpuesto = baseDelImpuesto.toDouble() *
+          impuesto.porcentaje.toPorcentajeDecimal();
 
       TotalDeImpuesto totalDeImpuesto = TotalDeImpuesto(
           base: baseDelImpuesto,
