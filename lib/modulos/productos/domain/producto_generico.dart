@@ -28,6 +28,8 @@ class ProductoGenerico implements IProducto {
   @override
   Moneda get precioDeVentaSinImpuestos =>
       calcularPrecioSinImpuestos(_precioDeVenta, _impuestos);
+  @override
+  UID get versionActual => UID.invalid();
 
   ProductoGenerico.crear({
     required NombreProducto nombre,

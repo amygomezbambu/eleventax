@@ -65,7 +65,7 @@ class RepositorioVentas extends Repositorio implements IRepositorioVentas {
         rowID: articulo.uid.toString(),
         fields: {
           'venta_uid': venta.uid.toString(),
-          'producto_uid': articulo.producto.uid.toString(),
+          'version_producto_uid': articulo.producto.versionActual.toString(),
           'cantidad': articulo.cantidad,
           'precio_venta': articulo.precioDeVenta.serialize(),
           'descripcion': articulo.descripcion,

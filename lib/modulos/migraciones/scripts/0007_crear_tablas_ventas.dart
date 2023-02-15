@@ -66,7 +66,7 @@ class Migracion7 extends Migracion {
     command = '''
         CREATE TABLE ventas_articulos(
           uid TEXT PRIMARY KEY,
-          producto_uid TEXT,
+          version_producto_uid TEXT, 
           venta_uid TEXT,
           cantidad REAL,
           precio_venta INTEGER,

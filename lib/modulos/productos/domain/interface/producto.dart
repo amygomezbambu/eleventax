@@ -9,4 +9,5 @@ abstract class IProducto {
   Moneda? get precioDeVenta;
   List<Impuesto> get impuestos;
   Moneda get precioDeVentaSinImpuestos;
+  UID get versionActual;
 }

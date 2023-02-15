@@ -1,5 +1,7 @@
 import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
+import 'package:eleventa/modulos/common/utils/uid.dart';
+import 'package:eleventa/modulos/productos/modulo_productos.dart';
 import 'package:eleventa/modulos/ventas/domain/articulo.dart';
 import 'package:eleventa/modulos/ventas/domain/pago.dart';
 import 'package:eleventa/modulos/ventas/domain/venta.dart';
@@ -20,6 +22,7 @@ void main() {
   test('debe almacenar los datos de la venta al registrar el cobro', () async {
     var cobrarVenta = ModuloVentas.cobrarVenta();
     var consultas = ModuloVentas.repositorioConsultaVentas();
+    var consultasProductos = ModuloProductos.repositorioConsultaProductos();
 
     Venta ventaEnProgreso = Venta.crear();
 
@@ -70,6 +73,13 @@ void main() {
       reason:
           'Los articulos cobrados no fueron los mismos que la venta en progreso',
     );
+
+    var version = ventaCobrada.articulos.first.versionProductoUID;
+
+    var versionDeProducto =
+        consultasProductos.obtenerVersionDeProducto(UID.fromString(version));
+
+    expect(versionDeProducto, isNotNull);
   });
 
   test('debe vaciar el queue de ventas en progreso al guardar la venta', () {

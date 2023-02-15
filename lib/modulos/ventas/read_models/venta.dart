@@ -5,7 +5,7 @@ import 'package:eleventa/modulos/ventas/read_models/pago.dart';
 import 'package:eleventa/modulos/ventas/read_models/total_impuesto.dart';
 
 class VentaDto {
-  var uid = "";
+  var uid = '';
   var estado = EstadoDeVenta.cobrada;
   var creadoEn = DateTime.now();
   DateTime? cobradaEn;

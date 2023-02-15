@@ -178,7 +178,7 @@ class RepositorioConsultaVentas extends RepositorioConsulta
         SELECT v.uid, v.estado, v.creado_en, v.total, v.subtotal, v.total_impuestos, 
         v.cobrado_en, 
         va.uid as articulo_uid, va.cantidad, va.precio_venta, va.descripcion, 
-        va.agregado_en, va.producto_uid, va.subtotal as subtotal_articulo
+        va.agregado_en, va.version_producto_uid, va.subtotal as subtotal_articulo
         FROM $_tablaVentas v JOIN $_tablaVentasArticulos va on va.venta_uid = v.uid 
         WHERE v.uid = ?;
         ''';
@@ -189,6 +189,7 @@ class RepositorioConsultaVentas extends RepositorioConsulta
       for (var row in result) {
         var articulo = ArticuloDto();
         articulo.uid = row['articulo_uid'] as String;
+        articulo.versionProductoUID = row['version_producto_uid'] as String;
         articulo.cantidad = row['cantidad'] as double;
         articulo.agregadoEn =
             DateTime.fromMillisecondsSinceEpoch(row['agregado_en'] as int);

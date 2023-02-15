@@ -34,6 +34,8 @@ class Producto extends Entidad implements IProducto {
 
   UnidadDeMedida get unidadMedida => _unidadDeMedida;
   bool get preguntarPrecio => _preguntarPrecio;
+
+  @override
   UID get versionActual => _versionActual;
 
   @override
