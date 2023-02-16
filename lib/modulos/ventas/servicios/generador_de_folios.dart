@@ -7,8 +7,8 @@ Future<String> generarFolio() async {
   var folio = await consultas.obtenerFolioDeVentaMasReciente();
 
   if (folio == null) {
-    folio =
-        '${ModuloVentas.configLocal.prefijoFolioVentas}-${ModuloVentas.configLocal.folioInicial}';
+    folio = '${ModuloVentas.configLocal.prefijoFolioVentas}-'
+        '${ModuloVentas.configLocal.folioInicial}';
   } else {
     int incremental = int.parse(folio.split('-')[1]);
     incremental++;

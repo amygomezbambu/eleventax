@@ -87,6 +87,8 @@ class Moneda {
 
   //TODO: crear tipos especificos para cada error de moneda
   void _validar(dynamic monto) {
+    const maxInt = 999999999999;
+
     if (monto is num && monto < 0) {
       throw ValidationEx(
         mensaje: 'El monto debe ser positivo',
@@ -108,13 +110,13 @@ class Moneda {
       }
     } else if (monto is String) {
       _fromString(monto);
-      if (_montoInterno.truncate() > 999999999999) {
+      if (toDouble().truncate() > maxInt) {
         throw ValidationEx(
             mensaje: 'El valor máximo es 999 999 999 999',
             tipo: TipoValidationEx.errorDeValidacion);
       }
     } else if (monto is int) {
-      if (monto > 999999999999) {
+      if (monto > maxInt) {
         throw ValidationEx(
             mensaje: 'El valor máximo es 999 999 999 999',
             tipo: TipoValidationEx.errorDeValidacion);
