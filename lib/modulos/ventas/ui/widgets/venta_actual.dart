@@ -1,12 +1,14 @@
 //@visibleForTesting
 import 'package:eleventa/modulos/common/ui/tema/theme.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_campo_codigo_producto.dart';
+import 'package:eleventa/modulos/common/ui/widgets/ex_dialogo_responsivo.dart';
 import 'package:eleventa/modulos/ventas/domain/articulo.dart';
 import 'package:eleventa/modulos/ventas/domain/pago.dart';
 import 'package:eleventa/modulos/ventas/domain/venta.dart';
 import 'package:eleventa/modulos/ventas/modulo_ventas.dart';
 import 'package:eleventa/modulos/ventas/ui/acciones_de_venta.dart';
 import 'package:eleventa/modulos/ventas/ui/venta_provider.dart';
+import 'package:eleventa/modulos/ventas/ui/vista_cobrar.dart';
 import 'package:eleventa/modulos/ventas/ui/widgets/boton_cobrar.dart';
 import 'package:eleventa/modulos/ventas/ui/widgets/listado_articulos.dart';
 import 'package:flutter/material.dart';
@@ -14,9 +16,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:layout/layout.dart';
 
+import 'package:eleventa/modulos/common/domain/moneda.dart';
+
 class VentaActual extends ConsumerWidget {
-  final TextEditingController myController = TextEditingController();
+  final TextEditingController campoCodigoController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
+  Pago? _ultimoPagoSeleccionado;
 
   VentaActual({super.key});
 
@@ -24,49 +29,89 @@ class VentaActual extends ConsumerWidget {
     _focusNode.dispose();
   }
 
-  void _cobrarVenta({
-    required BuildContext context,
+  /// Regresa una instancia de Pago si se hizo el cobro exitoso
+  /// o [null] si el usuario canceló la operación
+  Future<Pago?> _mostrarVistaCobro(
+      BuildContext context, Moneda totalDeVenta) async {
+    var val = await showDialog<Pago?>(
+        context: context,
+        // No permitimos que se cierre la vista de cobro salvo con ESC o con el boton Cancelar
+        barrierDismissible: false,
+        barrierLabel: 'vistaCobrar',
+        builder: (BuildContext context) {
+          return ExDialogoResponsivo<Pago?>(
+              titulo: 'Cobrar Venta',
+              onBotonPrimarioTap: () {
+                // Regresamos el pago si se hizo tap en cobrar
+                Navigator.of(context).pop(_ultimoPagoSeleccionado);
+              },
+              onBotonSecundarioTap: () {
+                // Si se cancelo el cobro regresamos null
+                Navigator.of(context).pop(null);
+              },
+              child: VistaCobrar(
+                totalACobrar: totalDeVenta,
+                onPagoSeleccionado: (Pago pago) {
+                  // Almacenamos la ultima forma de pago seleccionada
+                  // para si tiene exito el proceso de cobro
+                  _ultimoPagoSeleccionado = pago;
+                },
+              ));
+        });
+
+    return val;
+  }
+
+  Future<void> _solicitarCobro(BuildContext context, Venta ventaEnProgreso,
+      NotificadorVenta notifier) async {
+    // Si la venta no tiene articulos no se puede cobrar
+    if (ventaEnProgreso.articulos.isEmpty) {
+      debugPrint('Sin articulos, cancelando cobro');
+      return;
+    }
+
+    // Mostramos la vista de cobro
+    var pago = await _mostrarVistaCobro(
+      context,
+      ventaEnProgreso.total,
+    );
+
+    // Si el pago es nulo es porque el usuario canceló el cobro
+    if (pago == null) {
+      debugPrint('Cobro cancelado, dejando de seguir');
+      return;
+    }
+
+    // TODO: Validar que el pago recibido sea igual al total
+    //var pagoCompleto = pago.copy !.monto = ventaEnProgreso.total;
+
+    //if (context.mounted) return;
+
+    // Cobramos la venta
+    await _registrarCobroDeVenta(
+      pago: pago,
+      ventaEnProgreso: ventaEnProgreso,
+      notifier: notifier,
+    );
+  }
+
+  Future<void> _registrarCobroDeVenta({
+    required Pago pago,
     required Venta ventaEnProgreso,
     required NotificadorVenta notifier,
   }) async {
-    final cobrarVenta = ModuloVentas.cobrarVenta();
-
-    // TODO: Cargar formas de pago desde la UI
-    final consultas = ModuloVentas.repositorioConsultaVentas();
-    var formasDePago = await consultas.obtenerFormasDePago();
-    var pago = Pago.crear(
-      forma: formasDePago.first,
-      monto: ventaEnProgreso.total,
-    );
+    // Agregamos el pago a la venta
     ventaEnProgreso.agregarPago(pago);
 
+    final cobrarVenta = ModuloVentas.cobrarVenta();
     cobrarVenta.req.venta = ventaEnProgreso;
 
     try {
       await cobrarVenta.exec();
       notifier.crearNuevaVenta();
     } catch (e) {
-      debugPrint('Error');
+      debugPrint('Error: $e');
     }
-
-    // myController.clear();
-    // myFocusNode.requestFocus();
-
-    // // Para evitar fallas al cerrar la app checamos que la app siga "viva"
-    // // ref: https://dart-lang.github.io/linter/lints/use_build_context_synchronously.html
-    // if (!context.mounted) return;
-
-    // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    //   content: const Text('Venta cobrada'),
-    //   width: 300,
-    //   //margin: EdgeInsets.only(bottom: -100),
-    //   padding: const EdgeInsets.symmetric(
-    //     vertical: 20,
-    //     horizontal: 30.0, // Inner padding for SnackBar content.
-    //   ),
-    //   behavior: SnackBarBehavior.floating,
-    //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-    // ));
 
     // Enfocamos de nuevo al campo código que es hijo del Focus widget
     if (_focusNode.children.first.canRequestFocus) {
@@ -87,7 +132,7 @@ class VentaActual extends ConsumerWidget {
             child: Row(
               children: [
                 _ControlesVentaActual(
-                  editingController: myController,
+                  editingController: campoCodigoController,
                   focusNode: _focusNode,
                   onBuscarCodigo: notifier.agregarArticulo,
                 ),
@@ -111,13 +156,12 @@ class VentaActual extends ConsumerWidget {
                         ),
                       ),
                       BotonCobrarVenta(
-                        totalDeVenta: ventaEnProgreso.venta.total.toDouble(),
-                        onTap: () => _cobrarVenta(
-                          context: context,
-                          ventaEnProgreso: ventaEnProgreso.venta,
-                          notifier: notifier,
-                        ),
-                      )
+                          totalDeVenta: ventaEnProgreso.venta.total.toDouble(),
+                          onTap: () => _solicitarCobro(
+                                context,
+                                ventaEnProgreso.venta,
+                                notifier,
+                              ))
                     ],
                   ),
                 )
@@ -128,19 +172,18 @@ class VentaActual extends ConsumerWidget {
             child: Column(
               children: [
                 _ControlesVentaActual(
-                  editingController: myController,
+                  editingController: campoCodigoController,
                   focusNode: _focusNode,
                   onBuscarCodigo: notifier.agregarArticulo,
                 ),
                 BotonCobrarVenta(
-                  dense: true,
-                  totalDeVenta: ventaEnProgreso.venta.total.toDouble(),
-                  onTap: () => _cobrarVenta(
-                    context: context,
-                    ventaEnProgreso: ventaEnProgreso.venta,
-                    notifier: notifier,
-                  ),
-                )
+                    dense: true,
+                    totalDeVenta: ventaEnProgreso.venta.total.toDouble(),
+                    onTap: () => _solicitarCobro(
+                          context,
+                          ventaEnProgreso.venta,
+                          notifier,
+                        ))
               ],
             ),
           );

@@ -48,4 +48,9 @@ class Pago extends Entidad {
           mensaje: 'El monto del pago debe ser mayor a cero');
     }
   }
+
+  @override
+  String toString() {
+    return 'Pago: ${forma.nombre.toString()}, ${monto.toString()}';
+  }
 }
