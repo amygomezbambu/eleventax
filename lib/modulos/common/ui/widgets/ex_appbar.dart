@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 class ExAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Widget? leading;
   final Widget? title;
+  final String? titleText;
   final bool? centerTitle;
   final List<Widget>? actions;
   final bool automaticallyImplyLeading;
@@ -18,6 +19,7 @@ class ExAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.centerTitle,
     this.actions,
     this.automaticallyImplyLeading = true,
+    this.titleText,
   }) : super(key: key);
 
   @override
@@ -37,6 +39,7 @@ class ExAppBar extends StatelessWidget implements PreferredSizeWidget {
         );
       } else {
         if (canPop) {
+          // TODO: Cambiar por icono de Chevron final
           leadingIcon = IconButton(
             tooltip: 'Regresar',
             onPressed: () => Navigator.of(context).pop(),
@@ -50,8 +53,16 @@ class ExAppBar extends StatelessWidget implements PreferredSizeWidget {
     }
 
     return AppBar(
-        leading: leadingIcon,
-        title: title,
+        leading: Padding(
+            padding: const EdgeInsets.only(top: Sizes.p3), child: leadingIcon),
+        title: title ??
+            Padding(
+                padding: const EdgeInsets.only(top: Sizes.p3),
+                child: Text(titleText ?? '',
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: TextSizes.textLg,
+                        fontWeight: FontWeight.w300))),
         centerTitle: centerTitle,
         backgroundColor: Colores.navegacionBackground,
         surfaceTintColor: null,

@@ -51,6 +51,6 @@ class Pago extends Entidad {
 
   @override
   String toString() {
-    return 'Pago: ${forma.nombre.toString()}, ${monto.toString()}';
+    return 'Pago: ${forma.nombre.toString()}, ${monto.toString()}, pagoCon: ${pagoCon.toString()}, referencia: ${referencia.toString()}';
   }
 }

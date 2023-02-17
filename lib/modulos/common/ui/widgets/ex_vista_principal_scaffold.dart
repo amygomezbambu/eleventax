@@ -1,4 +1,3 @@
-import 'package:eleventa/modulos/common/ui/tema/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:layout/layout.dart';
 
@@ -25,13 +24,9 @@ class VistaPrincipalScaffold extends StatelessWidget {
     return Scaffold(
         appBar: (context.layout.breakpoint <= LayoutBreakpoint.sm)
             ? ExAppBar(
-                title: Padding(
-                  padding: const EdgeInsets.only(top: Sizes.p3),
-                  child: Text(titulo,
-                      style: const TextStyle(
-                          color: Colors.white, fontSize: TextSizes.textLg)),
-                ),
-                actions: actions)
+                titleText: titulo,
+                actions: actions,
+              )
             : null,
         body: child);
   }

@@ -1,191 +1,94 @@
 import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/ui/tema/theme.dart';
-import 'package:eleventa/modulos/common/ui/widgets/ex_text_field.dart';
-import 'package:eleventa/modulos/ventas/domain/forma_de_pago.dart';
 import 'package:eleventa/modulos/ventas/domain/pago.dart';
-import 'package:eleventa/modulos/ventas/modulo_ventas.dart';
+import 'package:eleventa/modulos/ventas/ui/widgets/formas_de_pago_desktop.dart';
+import 'package:eleventa/modulos/ventas/ui/widgets/formas_de_pago_mobile.dart';
 import 'package:flutter/material.dart';
+import 'package:layout/layout.dart';
 
 class VistaCobrar extends StatelessWidget {
+  final _esDesktop = LayoutValue(xs: false, md: true);
   final Moneda totalACobrar;
+
+  /// Se manda llamar cuando se selecciona una forma de pago en la UI
+  /// en desktop esto sucede cada que se cambia de tab
   final Function(Pago pago) onPagoSeleccionado;
-  const VistaCobrar({
+
+  /// Se lanza cuando en mobile se selecciona una forma de pago lo cual concluye
+  /// el proceso de cobro
+  final Function() onCobroConcluido;
+
+  VistaCobrar({
     Key? key,
     required this.totalACobrar,
     required this.onPagoSeleccionado,
+    required this.onCobroConcluido,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: Sizes.p96,
+      height: _esDesktop.resolve(context) ? Sizes.p96 : double.infinity,
+      width: _esDesktop.resolve(context) ? null : double.infinity,
       child: Column(
         children: [
-          Expanded(
-            flex: 2,
-            child: Container(
-              padding: const EdgeInsets.only(top: 10),
-              child: Text(
-                // TODO: Mostrar el total localizado
-                totalACobrar.toString(),
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: Sizes.p20,
-                    fontWeight: FontWeight.w400,
-                    color: ColoresBase.neutral500),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 4,
-            child: Container(
-              color: ColoresBase.neutral50,
-              child: _ControlesFormasDePago(
-                totalACobrar: totalACobrar,
-                onPagoSeleccionado: onPagoSeleccionado,
-              ),
-            ),
-          ),
+          _esDesktop.resolve(context)
+              ? Expanded(
+                  flex: 2,
+                  child: TotalVentaWidget(
+                      totalACobrar: totalACobrar, esDesktop: _esDesktop),
+                )
+              : TotalVentaWidget(
+                  totalACobrar: totalACobrar, esDesktop: _esDesktop),
+          _esDesktop.resolve(context)
+              ? Expanded(
+                  flex: 4,
+                  child: Container(
+                      color: ColoresBase.neutral50,
+                      child: ControlesFormasDePagoDesktop(
+                        totalACobrar: totalACobrar,
+                        onPagoSeleccionado: onPagoSeleccionado,
+                      )),
+                )
+              : ControlesFormasDePagoMobile(
+                  totalACobrar: totalACobrar,
+                  onCobroConcluido: (Pago pago) {
+                    // En Mobile lanzamos los dos eventos, primero el que
+                    // se selecciono una forma de pago y luego el de cobro concluido
+                    onPagoSeleccionado(pago);
+                    onCobroConcluido();
+                  },
+                ),
         ],
       ),
     );
   }
 }
 
-class _ControlesFormasDePago extends StatefulWidget {
-  final Moneda totalACobrar;
-  final Function(Pago pago) onPagoSeleccionado;
-  const _ControlesFormasDePago({
-    required this.onPagoSeleccionado,
+class TotalVentaWidget extends StatelessWidget {
+  const TotalVentaWidget({
+    super.key,
     required this.totalACobrar,
-  });
+    required LayoutValue<bool> esDesktop,
+  }) : _esDesktop = esDesktop;
 
-  @override
-  State<_ControlesFormasDePago> createState() => _ControlesFormasDePagoState();
-}
-
-class _ControlesFormasDePagoState extends State<_ControlesFormasDePago>
-    with SingleTickerProviderStateMixin {
-  final textEditController = TextEditingController();
-  final consultas = ModuloVentas.repositorioConsultaVentas();
-
-  @override
-  void initState() {
-    //_tabController = TabController(length: 2, vsync: this);
-    super.initState();
-  }
-
-  Future<List<FormaDePago>> _obtenerFormasDePago() async {
-    var formasDePago = await consultas.obtenerFormasDePago();
-
-    // Avisamos que se selecciono la primer forma de pago
-    widget.onPagoSeleccionado(Pago.crear(
-        forma: formasDePago.first,
-        monto: widget.totalACobrar,
-        referencia: 'Referencia'));
-
-    return formasDePago;
-  }
-
-  List<Widget> _mostrarFormasDePago(List<FormaDePago> formasDePago) {
-    var resultado = <Widget>[];
-
-    for (var formaDePago in formasDePago) {
-      var tab = Tab(
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.attach_money_sharp,
-              color: ColoresBase.primario600,
-            ),
-            const SizedBox(width: 5),
-            Expanded(
-              child: Text(
-                formaDePago.nombre,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-                softWrap: false,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontFamily: 'Open Sans',
-                  fontWeight: FontWeight.normal,
-                  color: ColoresBase.primario700,
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-      resultado.add(tab);
-    }
-
-    return resultado;
-  }
-
-  List<Widget> _mostrarControlesDeFormaDePago(List<FormaDePago> formasDePago) {
-    var resultado = <Widget>[];
-
-    for (var formaDePago in formasDePago) {
-      var controles = Container(
-        color: ColoresBase.neutral100,
-        child: Padding(
-          padding: const EdgeInsets.only(top: 18.0),
-          child: Column(
-            children: [
-              ExTextField(
-                hintText: formaDePago.tipo == TipoFormaDePago.efectivo
-                    ? 'Pagó con'
-                    : 'Referencia',
-                controller: textEditController,
-                width: 300,
-              ),
-              formaDePago.tipo == TipoFormaDePago.efectivo
-                  ? const Text('Su Cambio: 0.00')
-                  : const SizedBox()
-            ],
-          ),
-        ),
-      );
-      resultado.add(controles);
-    }
-
-    return resultado;
-  }
+  final Moneda totalACobrar;
+  final LayoutValue<bool> _esDesktop;
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _obtenerFormasDePago(),
-      builder:
-          (BuildContext context, AsyncSnapshot<List<FormaDePago>> snapshot) {
-        if (!snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        return DefaultTabController(
-          length: snapshot.data!.length,
-          child: Column(children: [
-            TabBar(
-                indicatorColor: ColoresBase.primario600,
-                automaticIndicatorColorAdjustment: false,
-                onTap: (int index) {
-                  widget.onPagoSeleccionado(Pago.crear(
-                      forma: snapshot.data![index],
-                      monto: widget.totalACobrar,
-                      referencia: 'Referencia'));
-                },
-                tabs: _mostrarFormasDePago(snapshot.data!)),
-            Expanded(
-                child: TabBarView(
-              children: _mostrarControlesDeFormaDePago(snapshot.data!),
-            ))
-          ]),
-        );
-      },
+    return Container(
+      padding: const EdgeInsets.only(top: 10),
+      child: Text(
+        // TODO: Mostrar el total localizado
+        totalACobrar.toString(),
+        textAlign: TextAlign.center,
+        style: TextStyle(
+            fontFamily: 'Inter',
+            fontSize: _esDesktop.resolve(context) ? Sizes.p20 : Sizes.p16,
+            fontWeight: FontWeight.w400,
+            color: ColoresBase.neutral500),
+      ),
     );
   }
 }
