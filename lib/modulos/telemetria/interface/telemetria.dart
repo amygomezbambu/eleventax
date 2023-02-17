@@ -3,6 +3,8 @@ import 'package:eleventa/modulos/telemetria/entidad/evento_telemetria.dart';
 enum TipoEventoTelemetria {
   //los eventos siempre se ponen en pasado
   appIniciada('appIniciada'),
+  cobroRealizado('cobroRealizado'),
+  cobroCancelado('cobroCancelado'),
   appFallo('appFallo'); //placeholder temporal
 
   const TipoEventoTelemetria(this.nombre);
