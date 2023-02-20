@@ -141,10 +141,14 @@ class Venta extends Entidad {
     _totalImpuestos = Moneda(0);
     _total = Moneda(0);
     var impuestosDeVenta = <String, TotalDeImpuesto>{};
+    var totalEsperadoPorCliente = 0.00;
 
     _totalesDeImpuestos.clear();
 
     for (var articulo in _articulos) {
+      totalEsperadoPorCliente +=
+          articulo.producto.precioDeVenta!.toDouble() * articulo.cantidad;
+
       _subtotal += articulo.subtotal;
       _totalImpuestos += articulo.totalImpuestos;
 
@@ -170,20 +174,29 @@ class Venta extends Entidad {
 
     _totalesDeImpuestos.addAll(impuestosDeVenta.values);
 
-    // for (impuesto in impuestosArticulos.keys) {
-    //   var totalDeImpuesto = TotalDeImpuesto(base: 0, monto: impuest, impuesto: impuesto)
-    // }
-
-    // Redondeamos a 2 decimales el subtotal
-    // que es el que cobraremos a los usuarios
-
     _total = _subtotal + _totalImpuestos;
     _subtotal = _subtotal.importeCobrable;
     _totalImpuestos = _totalImpuestos.importeCobrable;
     _total = _total.importeCobrable;
+
+    ajustarTotales(totalEsperadoPorCliente);
   }
 
-  void ajustarTotales() {
+  void ajustarTotales(double totalEsperadoPorCliente) {
+    var diferencia =
+        Moneda(totalEsperadoPorCliente).importeCobrable.toDouble() -
+            _total.toDouble();
+
+    if (diferencia.abs() == 0.01) {
+      _subtotal += Moneda(diferencia);
+    }
+
+    if (diferencia.abs() == 0.02) {
+      _subtotal += Moneda(0.01);
+      _totalImpuestos += Moneda(0.01);
+    }
+
+    _total = (_subtotal + _totalImpuestos).importeCobrable;
     //Map<String, Moneda> totalesPorImpuesto = {};
 
     //return Moneda(_producto.precioDeVentaSinImpuestos.toDouble() * _cantidad);

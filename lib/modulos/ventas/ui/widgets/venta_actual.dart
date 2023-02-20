@@ -1,169 +1,43 @@
 //@visibleForTesting
 import 'package:eleventa/modulos/common/ui/tema/theme.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_campo_codigo_producto.dart';
-import 'package:eleventa/modulos/telemetria/interface/telemetria.dart';
-import 'package:eleventa/modulos/telemetria/modulo_telemetria.dart';
 import 'package:eleventa/modulos/ventas/domain/articulo.dart';
-import 'package:eleventa/modulos/ventas/domain/pago.dart';
-import 'package:eleventa/modulos/ventas/domain/venta.dart';
-import 'package:eleventa/modulos/ventas/modulo_ventas.dart';
-import 'package:eleventa/modulos/ventas/ui/acciones_de_venta.dart';
 import 'package:eleventa/modulos/ventas/ui/venta_provider.dart';
-import 'package:eleventa/modulos/ventas/ui/widgets/boton_cobrar.dart';
 import 'package:eleventa/modulos/ventas/ui/widgets/listado_articulos.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:layout/layout.dart';
 
+/// Representa una venta actual, el campo de código de barras y el listado de
+/// artículos de una venta en progreso. Es responsivo y se adapta a la pantalla
+/// del dispositivo.
 class VentaActual extends ConsumerWidget {
-  final TextEditingController myController = TextEditingController();
-  final FocusNode _focusNode = FocusNode();
+  final TextEditingController controller;
+  final FocusNode focusNode;
 
-  VentaActual({super.key});
-
-  void dispose() {
-    _focusNode.dispose();
-  }
-
-  void _cobrarVenta({
-    required BuildContext context,
-    required Venta ventaEnProgreso,
-    required NotificadorVenta notifier,
-  }) async {
-    final cobrarVenta = ModuloVentas.cobrarVenta();
-    final metricasCobro = ModuloTelemetria.enviarMetricasDeCobro();
-    final idVenta = ventaEnProgreso.uid;
-
-    // TODO: Cargar formas de pago desde la UI
-    final consultas = ModuloVentas.repositorioConsultaVentas();
-    var formasDePago = await consultas.obtenerFormasDePago();
-    var pago = Pago.crear(
-      forma: formasDePago.first,
-      monto: ventaEnProgreso.total,
-    );
-    ventaEnProgreso.agregarPago(pago);
-
-    cobrarVenta.req.venta = ventaEnProgreso;
-
-    try {
-      await cobrarVenta.exec();
-      notifier.crearNuevaVenta();
-
-      //TODO: implementar el caso de uso metricasCobro cuando se implemente cancelación del proceso de cobro
-      var ventaCobrada = await consultas.obtenerVenta(idVenta);
-      metricasCobro.req.venta = ventaCobrada;
-      metricasCobro.req.tipo = TipoEventoTelemetria.cobroRealizado;
-      await metricasCobro.exec();
-    } catch (e) {
-      debugPrint('Error');
-    }
-
-    // myController.clear();
-    // myFocusNode.requestFocus();
-
-    // // Para evitar fallas al cerrar la app checamos que la app siga "viva"
-    // // ref: https://dart-lang.github.io/linter/lints/use_build_context_synchronously.html
-    // if (!context.mounted) return;
-
-    // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    //   content: const Text('Venta cobrada'),
-    //   width: 300,
-    //   //margin: EdgeInsets.only(bottom: -100),
-    //   padding: const EdgeInsets.symmetric(
-    //     vertical: 20,
-    //     horizontal: 30.0, // Inner padding for SnackBar content.
-    //   ),
-    //   behavior: SnackBarBehavior.floating,
-    //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-    // ));
-
-    // Enfocamos de nuevo al campo código que es hijo del Focus widget
-    if (_focusNode.children.first.canRequestFocus) {
-      _focusNode.children.first.requestFocus();
-    }
-  }
+  const VentaActual(
+      {required this.controller, required this.focusNode, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    //final m = L10n.of(context);
-    final isTabletOrDestkop = (context.breakpoint >= LayoutBreakpoint.md);
-
-    final ventaEnProgreso = ref.watch(providerVenta);
     final notifier = ref.read(providerVenta.notifier);
 
-    return isTabletOrDestkop
-        ? Expanded(
-            child: Row(
-              children: [
-                _ControlesVentaActual(
-                  editingController: myController,
-                  focusNode: _focusNode,
-                  onBuscarCodigo: notifier.agregarArticulo,
-                ),
-                Container(
-                  width: 350,
-                  padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: Card(
-                          elevation: 1,
-                          shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(0))),
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 8.0),
-                            child: AccionesDeVenta(
-                              focusNode: _focusNode,
-                            ),
-                          ),
-                        ),
-                      ),
-                      BotonCobrarVenta(
-                        totalDeVenta: ventaEnProgreso.venta.total.toDouble(),
-                        onTap: () => _cobrarVenta(
-                          context: context,
-                          ventaEnProgreso: ventaEnProgreso.venta,
-                          notifier: notifier,
-                        ),
-                      )
-                    ],
-                  ),
-                )
-              ],
-            ),
-          )
-        : Expanded(
-            child: Column(
-              children: [
-                _ControlesVentaActual(
-                  editingController: myController,
-                  focusNode: _focusNode,
-                  onBuscarCodigo: notifier.agregarArticulo,
-                ),
-                BotonCobrarVenta(
-                  dense: true,
-                  totalDeVenta: ventaEnProgreso.venta.total.toDouble(),
-                  onTap: () => _cobrarVenta(
-                    context: context,
-                    ventaEnProgreso: ventaEnProgreso.venta,
-                    notifier: notifier,
-                  ),
-                )
-              ],
-            ),
-          );
+    return ControlesVentaActual(
+      editingController: controller,
+      focusNode: focusNode,
+      onBuscarCodigo: notifier.agregarArticulo,
+    );
   }
 }
 
-class _ControlesVentaActual extends ConsumerWidget {
+class ControlesVentaActual extends ConsumerWidget {
   final TextEditingController editingController;
   final Function onBuscarCodigo;
   final FocusNode focusNode;
 
-  const _ControlesVentaActual(
-      {required this.editingController,
+  const ControlesVentaActual(
+      {super.key,
+      required this.editingController,
       required this.focusNode,
       required this.onBuscarCodigo});
 

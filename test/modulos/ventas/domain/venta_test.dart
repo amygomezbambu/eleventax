@@ -3,7 +3,6 @@ import 'package:eleventa/modulos/productos/domain/impuesto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/porcentaje_de_impuesto.dart';
 import 'package:eleventa/modulos/ventas/domain/articulo.dart';
 import 'package:eleventa/modulos/ventas/domain/venta.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../loader_for_tests.dart';
@@ -34,12 +33,12 @@ void main() {
     await loader.iniciar();
   });
 
+  /// El total esperado es el precio que usuario introdujo por la cantidad
+  /// sin tomar en cuenta impuestos
   test('Debe actualizar los totales al agregar nuevos articulos', () {
     for (var datosVenta in ventas) {
       var venta = Venta.crear();
-      // ignore: unused_local_variable
       var totalEsperado = Moneda(0);
-      var totalDeImpuestos = Moneda(0);
 
       for (var datosProducto in datosVenta.productos) {
         totalEsperado +=
@@ -56,20 +55,13 @@ void main() {
             producto: producto, cantidad: datosProducto.cantidad);
 
         venta.agregarArticulo(articulo);
-
-        for (var totalImpuesto in articulo.totalesDeImpuestos) {
-          totalDeImpuestos += totalImpuesto.monto.importeCobrable;
-        }
       }
 
-      debugPrint('Subtotal: ${venta.subtotal.importeCobrable}');
-      debugPrint('Impuestos: ${totalDeImpuestos.importeCobrable}');
-      debugPrint('Total: ${venta.total.importeCobrable}');
-      debugPrint('----------------------------');
-
-      // expect(venta.total.importeCobrable, totalEsperado);
-      // expect(venta.subtotal.importeCobrable + totalDeImpuestos.importeCobrable,
-      //     venta.total.importeCobrable);
+      expect(venta.total.importeCobrable, totalEsperado);
+      expect(
+        venta.subtotal.importeCobrable + venta.totalImpuestos.importeCobrable,
+        venta.total.importeCobrable,
+      );
 
       expect(venta.subtotal, isNot(Moneda(0)));
       expect(venta.total, isNot(Moneda(0)));
@@ -159,13 +151,6 @@ void main() {
             'precios de venta de los productos más impuestos');
   });
 
-  // [TestCase('debe calcular totales correctos con IVA 8%, Escenario B','8,1*478.4141|3*258.9581|1*434.5229,')]
-  // [TestCase('debe calcular totales correctos con IVA 16%, Escenario D','16,1*478.4141|3*258.9581|1*434.5229,')]
-  // [TestCase('debe calcular totales correctos con IVA 16%, Escenario E','16,2*131.5425,')]
-  // [TestCase('debe calcular totales correctos con IVA 16%, Escenario F','16,1*881.8966|1*991.38|1*1312.93|1*881.8966,4719.00')]
-  // [TestCase('debe calcular totales correctos con IVA 16%, Escenario G','16,1*1325275.87,1537320.01')]
-  // [TestCase('debe calcular totales correctos con IVA 16%, Escenario H','16,1*6.989960,')]
-  // [TestCase('debe calcular totales correctos con IVA 16%, Escenario I','16,1*431.0345|1*108.4052|1*460.5604,1160.00')]
   test('Debe tener una fecha especificada al momento de crear la venta', () {
     //var fechaEsperada = DateTime.now();
   });

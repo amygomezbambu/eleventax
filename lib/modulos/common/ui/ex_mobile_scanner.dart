@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:camerawesome/camerawesome_plugin.dart';
 import 'package:eleventa/l10n/generated/l10n.dart';
 import 'package:eleventa/modulos/common/ui/ex_mobile_scanner_overlay.dart';
-import 'package:eleventa/modulos/common/ui/tema/theme.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -60,9 +59,7 @@ class _ExMobileScannerState extends State<ExMobileScanner> {
 
     return Scaffold(
       appBar: ExAppBar(
-        title: Text(m.escaner_titulo,
-            style: const TextStyle(
-                color: Colors.white, fontSize: TextSizes.textLg)),
+        titleText: m.escaner_titulo,
         centerTitle: true,
       ),
       body: CameraAwesomeBuilder.custom(

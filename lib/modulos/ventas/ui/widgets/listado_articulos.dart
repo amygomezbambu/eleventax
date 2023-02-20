@@ -51,7 +51,7 @@ class ListadoArticulos extends ConsumerWidget {
                   selectedTileColor: ColoresBase.neutral300,
                   title: Text(
                     articulos[index].descripcion,
-                    style: GoogleFonts.openSans(fontWeight: FontWeight.w500),
+                    style: GoogleFonts.inter(fontWeight: FontWeight.w500),
                   ),
                   trailing: Wrap(
                       spacing:

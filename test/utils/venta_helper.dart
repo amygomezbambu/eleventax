@@ -76,24 +76,55 @@ final ventas = [
     productos: [
       DatosProducto(
         cantidad: 1.00,
-        precioDeVenta: 554.960356,
-        impuestos: <Impuesto>[iva16],
-      ),
-      DatosProducto(
-        cantidad: 3.00,
-        precioDeVenta: 300.391396,
+        precioDeVenta: 500.00,
         impuestos: <Impuesto>[iva16],
       ),
       DatosProducto(
         cantidad: 1.00,
-        precioDeVenta: 504.046564,
-        impuestos: <Impuesto>[iva8],
+        precioDeVenta: 125.75,
+        impuestos: <Impuesto>[iva16],
+      ),
+      DatosProducto(
+        cantidad: 1.00,
+        precioDeVenta: 534.25,
+        impuestos: <Impuesto>[iva16],
       ),
     ],
-  )
+  ),
+  DatosVenta(
+    productos: [
+      DatosProducto(
+        cantidad: 1.00,
+        precioDeVenta: 1537320.00,
+        impuestos: <Impuesto>[iva16],
+      ),
+    ],
+  ),
+  DatosVenta(
+    productos: [
+      DatosProducto(
+        cantidad: 1.00,
+        precioDeVenta: 1023.00,
+        impuestos: <Impuesto>[iva16],
+      ),
+      DatosProducto(
+        cantidad: 1.00,
+        precioDeVenta: 1150.00,
+        impuestos: <Impuesto>[iva16],
+      ),
+      DatosProducto(
+        cantidad: 1.00,
+        precioDeVenta: 1023.00,
+        impuestos: <Impuesto>[iva16],
+      ),
+      DatosProducto(
+        cantidad: 1.00,
+        precioDeVenta: 1523.00,
+        impuestos: <Impuesto>[iva16],
+      ),
+    ],
+  ),
 ];
-
-
 
 // Venta crearVentaDePrueba(String cadenaArticulos, {required double tasaIVA}) {
   //   final impuestos = <Impuesto>[
