@@ -1,6 +1,7 @@
 //@visibleForTesting
 import 'package:eleventa/modulos/common/ui/tema/theme.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_campo_codigo_producto.dart';
+import 'package:eleventa/modulos/telemetria/interface/telemetria.dart';
 import 'package:eleventa/modulos/telemetria/modulo_telemetria.dart';
 import 'package:eleventa/modulos/ventas/domain/articulo.dart';
 import 'package:eleventa/modulos/ventas/domain/pago.dart';
@@ -49,15 +50,11 @@ class VentaActual extends ConsumerWidget {
       await cobrarVenta.exec();
       notifier.crearNuevaVenta();
 
-      try {
-        //TODO: implementar el caso de uso metricasCobro cuando se implemente cancelación del proceso de cobro
-        var ventaCobrada = await consultas.obtenerVenta(idVenta);
-        metricasCobro.req.venta = ventaCobrada;
-        await metricasCobro.exec();
-      } catch (e) {
-        //Que no brinque la excepción de las métricas para permitir el cobro de manera limpia
-        debugPrint('Error al enviar métricas: ${e.toString()}');
-      }
+      //TODO: implementar el caso de uso metricasCobro cuando se implemente cancelación del proceso de cobro
+      var ventaCobrada = await consultas.obtenerVenta(idVenta);
+      metricasCobro.req.venta = ventaCobrada;
+      metricasCobro.req.tipo = TipoEventoTelemetria.cobroRealizado;
+      await metricasCobro.exec();
     } catch (e) {
       debugPrint('Error');
     }
