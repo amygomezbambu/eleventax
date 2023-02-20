@@ -1,6 +1,8 @@
 import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_vista_responsiva.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_vista_principal_scaffold.dart';
+import 'package:eleventa/modulos/telemetria/interface/telemetria.dart';
+import 'package:eleventa/modulos/telemetria/modulo_telemetria.dart';
 import 'package:eleventa/modulos/ventas/domain/pago.dart';
 import 'package:eleventa/modulos/ventas/domain/venta.dart';
 import 'package:eleventa/modulos/ventas/modulo_ventas.dart';
@@ -101,10 +103,21 @@ class VistaVentasState extends ConsumerState<VistaVentas> {
 
     final cobrarVenta = ModuloVentas.cobrarVenta();
     cobrarVenta.req.venta = ventaEnProgreso;
+    final metricasCobro = ModuloTelemetria.enviarMetricasDeCobro();
+    final idVenta = ventaEnProgreso.uid;
+    final consultas = ModuloVentas.repositorioConsultaVentas();
 
     try {
       await cobrarVenta.exec();
       notifier.crearNuevaVenta();
+
+      //TODO: implementar el caso de uso metricasCobro cuando se implemente cancelación del proceso de cobro
+      var ventaCobrada = await consultas.obtenerVenta(idVenta);
+      if (ventaCobrada != null) {
+        metricasCobro.req.venta = ventaCobrada;
+        metricasCobro.req.tipo = TipoEventoTelemetria.cobroRealizado;
+        await metricasCobro.exec();
+      }
     } catch (e) {
       debugPrint('Error: $e');
     }
