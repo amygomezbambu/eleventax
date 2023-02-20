@@ -113,9 +113,11 @@ class VistaVentasState extends ConsumerState<VistaVentas> {
 
       //TODO: implementar el caso de uso metricasCobro cuando se implemente cancelación del proceso de cobro
       var ventaCobrada = await consultas.obtenerVenta(idVenta);
-      metricasCobro.req.venta = ventaCobrada;
-      metricasCobro.req.tipo = TipoEventoTelemetria.cobroRealizado;
-      await metricasCobro.exec();
+      if (ventaCobrada != null) {
+        metricasCobro.req.venta = ventaCobrada;
+        metricasCobro.req.tipo = TipoEventoTelemetria.cobroRealizado;
+        await metricasCobro.exec();
+      }
     } catch (e) {
       debugPrint('Error: $e');
     }
