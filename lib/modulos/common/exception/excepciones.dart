@@ -74,9 +74,14 @@ enum TipoInfraEx {
   errorInicializacionDB,
   errorConfiguracionDB,
   noSePudoObtenerIP,
+  errorAlAbrirImpresora,
+  errorAlImprimir,
 }
 
 class InfraEx extends EleventaEx {
+  @override
+  TipoInfraEx get tipo => tipo_ as TipoInfraEx;
+
   InfraEx({
     required String message,
     required Object innerException,

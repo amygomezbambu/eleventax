@@ -1,7 +1,5 @@
-import 'package:eleventa/dependencias.dart';
 import 'package:eleventa/globals.dart';
 import 'package:eleventa/modulos/common/app/interface/dispositivo.dart';
-import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/telemetria/entidad/evento_telemetria.dart';
 import 'package:eleventa/modulos/telemetria/interface/telemetria.dart';
 import 'package:eleventa/modulos/common/app/usecase/usecase.dart';

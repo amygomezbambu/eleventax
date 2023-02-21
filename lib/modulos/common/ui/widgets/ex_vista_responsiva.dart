@@ -33,6 +33,7 @@ Future<T?> mostrarVistaResponsiva<T>({
         context: context,
         barrierDismissible: barrierDismissible,
         barrierLabel: barrierLabel,
+        barrierColor: Colors.black38,
         builder: (BuildContext ctx) {
           return ExVistaResponsiva<T>.desktop(
             titulo: titulo,
