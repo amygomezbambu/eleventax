@@ -22,6 +22,28 @@ env:
   DB_PASSWORD: 12345
 
 jobs:
+  ejecutar-CI-Windows:
+    name: Revisar si hubo cambios en archivos cpp o h
+    outputs:
+      run_job: ${{ steps.check_files.outputs.run_job }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Obtenemos archivos modificados
+        id: archivos-modificados
+        uses: tj-actions/changed-files@v35
+        with:
+          files: |
+            **/*.cpp
+            **/*.h
+
+      - name: Si existe algun archivo cpp o .h modificado, asignamos el valor a la variable
+        id: check_files
+        if: steps.archivos-modificados.outputs.any_changed == 'true'
+        run: |
+          echo "run_job=true" >> $GITHUB_OUTPUT
+
   pruebas-unitarias:
     if: contains(github.event.pull_request.labels.*.name, 'sin pruebas de unidad') == false
     name: Unitarias
@@ -95,16 +117,17 @@ jobs:
         run: flutter test integration_test/productos_test.dart --no-pub --no-track-widget-creation -v --suppress-analytics
 
   integracion-android:
-    if: |
-      ( !contains(github.event.pull_request.labels.*.name, 'sin pruebas de integracion') )
     name: Integración (Android)
-    needs: [pruebas-unitarias]
+    needs: [pruebas-unitarias, ejecutar-CI-Windows]
     permissions:
       contents: "read"
       id-token: "write"
 
-    runs-on: ubuntu-latest
+    if: |
+      ( !contains(github.event.pull_request.labels.*.name, 'sin pruebas de integracion') ||
+        needs.ejecutar-CI-Windows.outputs.run_job != 'true' )
 
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Obtenemos la version de Flutter de pubspec.yaml
