@@ -10,6 +10,8 @@ on:
       # Solo se ejecutarán las pruebas cuando se cambió algún archivo dart o yaml
       - "**.dart"
       - "**.yaml"
+      - "**.cpp"
+      - "**.h"
 
 # Las variables de entorno tienen que estar disponibles en esta etapa
 # que es cuando se genera el env.g.dart con los secrets "hard codeados"
