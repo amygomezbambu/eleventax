@@ -240,25 +240,43 @@ class RepositorioConsultaVentas extends RepositorioConsulta
       sql = '''
       SELECT monto, pago_con, referencia, fp.nombre 
       FROM ventas_pagos vp 
-      JOIN formas_de_pago fp ON vp.forma_de_pago_uid = fp.uid
+        JOIN formas_de_pago fp ON vp.forma_de_pago_uid = fp.uid
       WHERE vp.venta_uid = ?
       ''';
 
       result = await query(sql: sql, params: [uid.toString()]);
 
-      if (result.isNotEmpty) {
-        for (var row in result) {
-          var pago = PagoDto();
-          pago.forma = row['nombre'] as String;
-          pago.monto = Moneda.deserialize(row['monto'] as int);
-          pago.pagoCon = row['pago_con'] != null
-              ? Moneda.deserialize(row['pago_con'] as int)
-              : null;
-          pago.referencia =
-              row['referencia'] != null ? row['referencia'] as String : null;
 
-          venta.pagos.add(pago);
-        }
+      for (var row in result) {
+        var pago = PagoDto();
+        pago.forma = row['nombre'] as String;
+        pago.monto = Moneda.deserialize(row['monto'] as int);
+        pago.pagoCon = row['pago_con'] != null
+            ? Moneda.deserialize(row['pago_con'] as int)
+            : null;
+        pago.referencia =
+            row['referencia'] != null ? row['referencia'] as String : null;
+
+        venta.pagos.add(pago);
+      }
+      
+
+      sql = '''
+      SELECT nombre_impuesto, porcentaje_impuesto, base_impuesto, monto 
+      FROM ventas_impuestos 
+      WHERE venta_uid = ?
+      ''';
+
+      result = await query(sql: sql, params: [uid.toString()]);
+
+      for (var row in result) {
+        var impuesto = TotalImpuestoDto();
+        impuesto.impuesto = row['nombre_impuesto'] as String;
+        impuesto.porcentaje = double.parse(row['porcentaje_impuesto'] as String);
+        impuesto.base = Moneda.deserialize(row['base_impuesto'] as int);
+        impuesto.monto = Moneda.deserialize(row['monto'] as int);
+
+        venta.totalesDeImpuestos.add(impuesto);
       }
     }
 
