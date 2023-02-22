@@ -13,7 +13,7 @@ class ImpresoraDeTicketsWindows implements IImpresoraDeTickets {
   final String _nombreImpresora;
   final AnchoTicket _anchoTicket;
   late Arena _alloc;
-  static const tipoImpresion = 'XPS_PASS'; // RAW, TEXT or XPS_PASS
+  static const tipoImpresion = 'RAW'; // RAW, TEXT or XPS_PASS
 
   ImpresoraDeTicketsWindows(
       {required String nombreImpresora, required AnchoTicket anchoTicket})
