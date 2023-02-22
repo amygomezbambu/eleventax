@@ -36,8 +36,8 @@ jobs:
         with:
           separator: ","
           files: |
-            **/*.cpp
-            **/*.h
+            *.cpp
+            *.h
 
       - name: Si existe algun archivo cpp o .h modificado, asignamos el valor a la variable
         id: verificar_archivos
