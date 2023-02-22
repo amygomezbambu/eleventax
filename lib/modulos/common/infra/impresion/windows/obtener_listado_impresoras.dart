@@ -1,5 +1,7 @@
 import 'dart:ffi';
 
+import 'package:eleventa/modulos/common/exception/excepciones.dart';
+import 'package:eleventa/modulos/common/exception/win32_utils.dart';
 import 'package:ffi/ffi.dart';
 import 'package:win32/win32.dart';
 
@@ -36,7 +38,11 @@ class ObtenerListadoDeImpresoras {
     EnumPrinters(flags, nullptr, 2, nullptr, 0, pBuffSize, bPrinterLen);
 
     if (pBuffSize.value == 0) {
-      throw 'Read printer buffer size fail';
+      throw InfraEx(
+        message: 'Falla al asignar tamaño de buffer de impresora',
+        innerException: generarExcepcionDeErrorWin32(),
+        tipo: TipoInfraEx.win32Exception,
+      );
     }
   }
 
@@ -48,7 +54,11 @@ class ObtenerListadoDeImpresoras {
         0;
 
     if (isRawBuffFail) {
-      throw 'Read printer raw buffer fail';
+      throw InfraEx(
+        message: 'Falla al asignar tamaño de buffer de impresora',
+        innerException: 0,
+        tipo: TipoInfraEx.win32Exception,
+      );
     }
   }
 

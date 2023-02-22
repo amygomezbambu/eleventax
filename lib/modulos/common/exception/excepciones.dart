@@ -76,6 +76,7 @@ enum TipoInfraEx {
   noSePudoObtenerIP,
   errorAlAbrirImpresora,
   errorAlImprimir,
+  win32Exception,
 }
 
 class InfraEx extends EleventaEx {
