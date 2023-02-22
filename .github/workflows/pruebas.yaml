@@ -39,7 +39,7 @@ jobs:
           files: |
             **/*.cpp
             **/*.h
-            l10n/*.arb
+            lib/l10n/*.arb
 
       - name: test archivos modificados
         run: |
