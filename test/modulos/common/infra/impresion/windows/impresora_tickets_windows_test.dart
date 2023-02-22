@@ -28,6 +28,26 @@ void main() {
     );
   }, skip: !Platform.isWindows);
   
+  test('Debe remover los caracteres no imprimibles (emojis, etc)', () async {
+    final impresora = ImpresoraDeTicketsWindows(
+      anchoTicket: AnchoTicket.mm80,
+      nombreImpresora: 'Microsoft Print to PDF',
+    );
+
+    var ocurrioExcepcion = false;
+    final lineasAimprimir = ['Primer 🤔linea🫠 con emojis 👁️', 'Caracteres *‎* invisibles',];
+    try {
+      impresora.imprimir(lineasAimprimir); 
+    } catch (e) {
+      ocurrioExcepcion = true;
+    }
+
+    // TODO: Ver una manera de corroborar que la impresión NO tenga emojis
+    expect(
+      ocurrioExcepcion,
+      false
+    );
+  }, skip: !Platform.isWindows);
 
   test('Debe asignar correctamente las propiedades de la impresora', () async {
     final impresora = ImpresoraDeTicketsWindows(

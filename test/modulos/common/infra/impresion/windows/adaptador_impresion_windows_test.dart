@@ -34,6 +34,7 @@ void main() {
     );
   }, skip: !Platform.isWindows);
 
+
   test('Debe imprimir una venta usando la impresora de tickets', () async {
     var adaptadorImpresion = AdaptadorImpresionWindows();
 

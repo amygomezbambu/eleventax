@@ -1,3 +1,7 @@
+
+
+import 'package:eleventa/modulos/common/utils/regex_emoji.dart';
+
 class StringUtils {
   bool isDigit(String s, int index) => (s.codeUnitAt(index) ^ 0x30) <= 9;
 
@@ -22,13 +26,17 @@ class StringUtils {
     return resultado;
   }
 
+  String removerEmojis(String texto) {
+    return texto.replaceAll(RegExp(regexEmoji), '');
+  }
+
   String removerExcesoDeEspacios(String input) {
     return input.trim().replaceAll(RegExp(' +'), ' ');
   }
 
   ///
   String removerEspacios(String input) {
-    return input.replaceAll(RegExp(r'\s+'), '');
+    return input.replaceAll(RegExp(r's+'), '');
   }
 
   String capitalizar(String input) {

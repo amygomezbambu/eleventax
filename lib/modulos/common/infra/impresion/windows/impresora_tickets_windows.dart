@@ -4,6 +4,7 @@ import 'package:eleventa/modulos/common/app/interface/impresora_tickets.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
 
 import 'package:eleventa/modulos/common/exception/win32_utils.dart';
+import 'package:eleventa/modulos/common/utils/utils.dart';
 
 import 'package:ffi/ffi.dart';
 import 'package:win32/win32.dart';
@@ -47,6 +48,12 @@ class ImpresoraDeTicketsWindows implements IImpresoraDeTickets {
     _imprimirLineas(lineasAImprimir, nombreDocumento: 'Ticket de prueba');
   }
 
+  String _removerCaracteresNoImprimibles(String texto) {
+    var resultado =  Utils.string.removerEmojis(texto);
+    resultado = Utils.string.limpiarCaracteresInvisibles(resultado);
+    return resultado;
+  }
+
   bool _imprimirLineas(List<String> data,
       {String nombreDocumento = 'Documento'}) {
     var res = false;
@@ -67,7 +74,7 @@ class ImpresoraDeTicketsWindows implements IImpresoraDeTickets {
 
       for (final item in data) {
         if (res) {
-          res = _printRawData(printerHandle, '$item\n');
+          res = _printRawData(printerHandle, '${_removerCaracteresNoImprimibles(item)}\n',);
         }
       }
       _endRawPrintPage(printerHandle);
