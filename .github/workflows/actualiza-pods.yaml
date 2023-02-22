@@ -15,6 +15,13 @@ jobs:
     if: contains(fromJson('["push", "workflow_dispatch"]'), github.event_name)
     name: Actualizar Pods (iOS/Mac)
     runs-on: macos-latest
+
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the
+      # added or changed files to the repository.
+      contents: write
+
+      
     steps:
       - uses: actions/checkout@v3
         with:
