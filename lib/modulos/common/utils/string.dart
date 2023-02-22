@@ -36,7 +36,7 @@ class StringUtils {
 
   ///
   String removerEspacios(String input) {
-    return input.replaceAll(RegExp(r's+'), '');
+    return input.replaceAll(RegExp(r'\s+'), '');
   }
 
   String capitalizar(String input) {
