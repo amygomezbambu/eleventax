@@ -1,4 +1,4 @@
-name: Pruebas
+name: Pruebas eleventa
 
 on:
   workflow_dispatch:
@@ -22,10 +22,10 @@ env:
   DB_PASSWORD: 12345
 
 jobs:
-  ejecutar-CI-Windows:
+  verificar-archivos-modificados:
     name: Revisar si hubo cambios en archivos cpp o h
     outputs:
-      run_job: ${{ steps.check_files.outputs.run_job }}
+      librerias_modificadas: ${{ steps.verificar_archivos.outputs.librerias_modificadas }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -34,15 +34,16 @@ jobs:
         id: archivos-modificados
         uses: tj-actions/changed-files@v35
         with:
+          separator: ","
           files: |
-            **/*.cpp
-            **/*.h
+            *.cpp
+            *.h
 
       - name: Si existe algun archivo cpp o .h modificado, asignamos el valor a la variable
-        id: check_files
+        id: verificar_archivos
         if: steps.archivos-modificados.outputs.any_changed == 'true'
         run: |
-          echo "run_job=true" >> $GITHUB_OUTPUT
+          echo "librerias_modificadas='true'" >> $GITHUB_OUTPUT
 
   pruebas-unitarias:
     if: contains(github.event.pull_request.labels.*.name, 'sin pruebas de unidad') == false
@@ -118,14 +119,14 @@ jobs:
 
   integracion-android:
     name: Integración (Android)
-    needs: [pruebas-unitarias, ejecutar-CI-Windows]
+    needs: [pruebas-unitarias, verificar-archivos-modificados]
     permissions:
       contents: "read"
       id-token: "write"
 
     if: |
-      ( !contains(github.event.pull_request.labels.*.name, 'sin pruebas de integracion') ||
-        needs.ejecutar-CI-Windows.outputs.run_job != 'true' )
+      ( !contains(github.event.pull_request.labels.*.name, 'sin pruebas de integracion') &&
+        needs.verificar-archivos-modificados.outputs.librerias_modificadas != 'true' )
 
     runs-on: ubuntu-latest
     steps:
