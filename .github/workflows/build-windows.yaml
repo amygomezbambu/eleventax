@@ -1,4 +1,4 @@
-name: Flutter CI
+name: build windows manual
 
 on:
   workflow_dispatch:
@@ -18,12 +18,12 @@ jobs:
           flutter-version: ${{ steps.get-flutter-version.outputs.version }}
       - name: Instalar dependencias
         run: flutter pub get
-        
+
       # Copiamos los DLLs a la carpeta donde se ejecutan las pruebas de unidad
       - name: Copiamos DLLs de SQLite para que funcionen las pruebas (solo Windows)
         if: runner.os == 'Windows'
         run: Copy-Item -Path "assets\windows\*" -Destination "build\windows\runner\Release\"
-        
+
       - name: Generar clases de Dart necesarias con secretos embebidos (y ofuscados)
         run: flutter pub run build_runner build --delete-conflicting-outputs
         # Las variables de entorno tienen que estar disponibles en esta etapa
@@ -32,25 +32,25 @@ jobs:
         env:
           MIXPANEL_PROJECT_ID: ${{ secrets.MIXPANEL_PROJECT_ID }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-          DB_PASSWORD: 12345  
-        
+          DB_PASSWORD: 12345
+
       - name: Compilar binario de Windows
         run: flutter build windows --release
-      
+
       - name: Archivar los binarios
         uses: thedoctor0/zip-release@master
         with:
           type: "zip"
           filename: eleventa-${{github.ref_name}}-windows.zip
           directory: build/windows/runner/Release
-          
+
       - name: Guardar archivos como artifact
         uses: actions/upload-artifact@v3
         with:
           name: eleventa-${{github.ref_name}}-windows.zip
           path: build/windows/runner/Release/eleventa-${{github.ref_name}}-windows.zip
           retention-days: 1
-          
+
       - name: Publicar binarios de Windows
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
@@ -74,7 +74,7 @@ jobs:
           flutter-version: ${{ steps.get-flutter-version.outputs.version }}
       - name: Instalar dependencias
         run: flutter pub get
-        
+
       - name: Generar clases de Dart necesarias con secretos embebidos (y ofuscados)
         run: flutter pub run build_runner build --delete-conflicting-outputs
         # Las variables de entorno tienen que estar disponibles en esta etapa
@@ -83,8 +83,8 @@ jobs:
         env:
           MIXPANEL_PROJECT_ID: ${{ secrets.MIXPANEL_PROJECT_ID }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-          DB_PASSWORD: 12345   
-        
+          DB_PASSWORD: 12345
+
       - name: Compilar binario de macOS
         run: flutter build macos --release
       - name: Archivar los binarios
@@ -100,7 +100,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: build/macos/Build/Products/Release/eleventa-${{github.ref_name}}-macos-x64.zip
-
 #   build-and-release-ios:
 #     runs-on: macos-latest
 

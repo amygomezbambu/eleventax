@@ -1,4 +1,4 @@
-name: "verificar_changelog"
+name: "verificar changelog"
 
 on:
   workflow_dispatch:

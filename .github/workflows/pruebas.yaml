@@ -45,9 +45,6 @@ jobs:
         run: |
           echo "librerias_modificadas=true" >> $GITHUB_OUTPUT
 
-      - name: Valor de librerias_modificadas
-        run: echo "el valor es ${{ steps.verificar_archivos.outputs.librerias_modificadas }}"
-
   pruebas-unitarias:
     if: contains(github.event.pull_request.labels.*.name, 'sin pruebas de unidad') == false
     name: Unitarias

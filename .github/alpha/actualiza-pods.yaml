@@ -1,4 +1,4 @@
-name: Actualizar Pods
+name: actualizar archivos pods
 
 on:
   workflow_dispatch:
