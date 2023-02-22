@@ -25,12 +25,13 @@ jobs:
   verificar-archivos-modificados:
     name: Revisar si hubo cambios en archivos cpp o h
     outputs:
-      librerias_modificadas: ${{ steps.verificar_archivos.outputs.librerias_modificadas }}
+      librerias_modificadas: ${{ steps.validar-librerias-modificadas.outputs.librerias_modificadas }}
+      arb_modificados: ${{ steps.validar-arb-modificados.outputs.arb_modificados }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
-      - name: Obtenemos archivos modificados
+      - name: verificamos si hubo archivos .cpp o .h modificados
         id: archivos-modificados
         uses: tj-actions/changed-files@v35
         with:
@@ -38,13 +39,29 @@ jobs:
           files: |
             **/*.cpp
             **/*.h
+            l10n/*.arb
 
-      - name: Si existe algun archivo cpp o .h modificado, asignamos el valor a la variable
-        id: verificar_archivos
-        if: steps.archivos-modificados.outputs.any_changed == 'true'
+      - name: si existe algun archivo cpp o .h modificado, asignamos el valor a la variable
+        id: validar-librerias-modificadas
+        if: contains(fromJSON('[".cpp", ".h"]'), steps.archivos-modificados.outputs.modified_files)
         run: |
           echo "librerias_modificadas=true" >> $GITHUB_OUTPUT
-          echo "List all the files that have changed: ${{ steps.archivos-modificados.outputs.all_changed_files }}"
+
+      - name: si existe algun archivo arb modificado, asignamos el valor a la variable
+        id: validar-arb-modificados
+        if: contains(steps.archivos-modificados.outputs.modified_files, '.arb')
+        run: |
+          echo "arb_modificados=true" >> $GITHUB_OUTPUT
+          
+
+      # - name: verificamos si hubo archivos .arb modificados
+      #   id: arb-modificados
+      #   uses: tj-actions/changed-files@v35
+      #   with:
+      #     separator: ","
+      #     files: |
+      #       l10n/*.arb
+
 
   pruebas-unitarias:
     if: contains(github.event.pull_request.labels.*.name, 'sin pruebas de unidad') == false
@@ -110,6 +127,7 @@ jobs:
         run: Copy-Item -Path "assets\windows\*" -Destination (New-Item -Type Directory -Force (".\build\windows\runner\Debug")) -Force -EA 0
 
       - name: Generar archivos de internacionalizacion
+        if: needs.verificar-archivos-modificados.outputs.arb_modificados == 'true'
         run: flutter gen-l10n
 
       - name: Generar clases de Dart necesarias con secretos embebidos (y ofuscados)
@@ -154,6 +172,7 @@ jobs:
         run: flutter pub get
 
       - name: Generar archivos de internacionalizacion
+        if: needs.verificar-archivos-modificados.outputs.arb_modificados == 'true'
         run: flutter gen-l10n
 
       - name: Generar clases de Dart necesarias con secretos embebidos (y ofuscados)
