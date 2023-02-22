@@ -1,4 +1,4 @@
-name: Pruebas
+name: Pruebas eleventa
 
 on:
   workflow_dispatch:
@@ -10,6 +10,8 @@ on:
       # Solo se ejecutarán las pruebas cuando se cambió algún archivo dart o yaml
       - "**.dart"
       - "**.yaml"
+      - "**.cpp"
+      - "**.h"
 
 # Las variables de entorno tienen que estar disponibles en esta etapa
 # que es cuando se genera el env.g.dart con los secrets "hard codeados"
@@ -20,6 +22,30 @@ env:
   DB_PASSWORD: 12345
 
 jobs:
+  verificar-archivos-modificados:
+    name: Revisar si hubo cambios en archivos cpp o h
+    outputs:
+      librerias_modificadas: ${{ steps.verificar_archivos.outputs.librerias_modificadas }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Obtenemos archivos modificados
+        id: archivos-modificados
+        uses: tj-actions/changed-files@v35
+        with:
+          separator: ","
+          files: |
+            **/*.cpp
+            **/*.h
+
+      - name: Si existe algun archivo cpp o .h modificado, asignamos el valor a la variable
+        id: verificar_archivos
+        if: steps.archivos-modificados.outputs.any_changed == 'true'
+        run: |
+          echo "librerias_modificadas=true" >> $GITHUB_OUTPUT
+          echo "List all the files that have changed: ${{ steps.archivos-modificados.outputs.all_changed_files }}"
+
   pruebas-unitarias:
     if: contains(github.event.pull_request.labels.*.name, 'sin pruebas de unidad') == false
     name: Unitarias
@@ -93,16 +119,17 @@ jobs:
         run: flutter test integration_test/productos_test.dart --no-pub --no-track-widget-creation -v --suppress-analytics
 
   integracion-android:
-    if: |
-      ( !contains(github.event.pull_request.labels.*.name, 'sin pruebas de integracion') )
     name: Integración (Android)
-    needs: [pruebas-unitarias]
+    needs: [pruebas-unitarias, verificar-archivos-modificados]
     permissions:
       contents: "read"
       id-token: "write"
 
-    runs-on: ubuntu-latest
+    if: |
+      ( !contains(github.event.pull_request.labels.*.name, 'sin pruebas de integracion') &&
+        needs.verificar-archivos-modificados.outputs.librerias_modificadas != 'true' )
 
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Obtenemos la version de Flutter de pubspec.yaml

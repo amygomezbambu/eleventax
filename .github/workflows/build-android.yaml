@@ -1,8 +1,7 @@
-name: Deploy Android
+name: deploy android manual
 
 on:
   workflow_dispatch:
-
 
 jobs:
   build-and-deploy-android:
@@ -10,7 +9,7 @@ jobs:
     #timeout-minutes: 5
 
     steps:
-      - name: Bajamos el codigo            
+      - name: Bajamos el codigo
         uses: actions/checkout@v3
 
       - name: Instalamos Java
@@ -35,14 +34,14 @@ jobs:
         with:
           fileName: key.jks
           encodedString: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-          
+
       - name: Creamos el archivo key.propierties para el firmado del binario
         run: |
           echo "keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}" >> android/key.properties
           echo "storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" >> android/key.properties
           echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/key.properties
           echo "storeFile=${{ steps.android_keystore.outputs.filePath }}" >> android/key.properties
-          
+
       - name: Instalar Ruby y fastlane
         uses: ruby/setup-ruby@d3c9825d67b0d8720afdfdde5af56c79fdb38d16
         with:

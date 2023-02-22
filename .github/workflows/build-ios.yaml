@@ -1,4 +1,4 @@
-name: Deploy iOS
+name: deploy iOS manual
 
 on:
   workflow_dispatch:
