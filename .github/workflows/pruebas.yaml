@@ -41,6 +41,10 @@ jobs:
             **/*.h
             l10n/*.arb
 
+      - name: test archivos modificados
+        run: |
+         echo "List all the files that have changed: ${{ steps.archivos-modificados.outputs.all_changed_files }}"
+
       - name: si existe algun archivo cpp o .h modificado, asignamos el valor a la variable
         id: validar-librerias-modificadas
         if: contains(fromJSON('[".cpp", ".h"]'), steps.archivos-modificados.outputs.modified_files)
@@ -96,7 +100,7 @@ jobs:
       ( !contains(github.event.pull_request.labels.*.name, 'sin pruebas de integracion') )
 
     name: Integración (Windows)
-    needs: [pruebas-unitarias]
+    needs: [pruebas-unitarias, verificar-archivos-modificados]
     runs-on: windows-latest
 
     steps:
