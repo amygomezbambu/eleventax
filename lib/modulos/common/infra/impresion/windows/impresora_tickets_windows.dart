@@ -6,7 +6,6 @@ import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/exception/win32_utils.dart';
 
 import 'package:ffi/ffi.dart';
-import 'package:flutter/foundation.dart';
 import 'package:win32/win32.dart';
 
 class ImpresoraDeTicketsWindows implements IImpresoraDeTickets {
@@ -67,7 +66,6 @@ class ImpresoraDeTicketsWindows implements IImpresoraDeTickets {
       res = _startRawPrintPage(printerHandle);
 
       for (final item in data) {
-        debugPrint(item);
         if (res) {
           res = _printRawData(printerHandle, '$item\n');
         }
