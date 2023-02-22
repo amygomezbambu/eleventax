@@ -1,4 +1,4 @@
-name: Actualizar Pods
+name: actualizar archivos pods
 
 on:
   workflow_dispatch:
@@ -15,8 +15,17 @@ jobs:
     if: contains(fromJson('["push", "workflow_dispatch"]'), github.event_name)
     name: Actualizar Pods (iOS/Mac)
     runs-on: macos-latest
+
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the
+      # added or changed files to the repository.
+      contents: write
+
+      
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
 
       - name: Obtenemos la version de Flutter de pubspec.yaml
         id: get-flutter-version
@@ -33,7 +42,19 @@ jobs:
       - name: Obtener dependencias de flutter
         run: flutter pub get
 
+      - name: Verificamos cambios en el pubspec.
+        uses: tj-actions/verify-changed-files@v13
+        id: verify-changed-files
+        with:
+          files: |
+            **/Podfile.lock
+
+      - name: Install Cocoapods
+        if: steps.verify-changed-files.outputs.files_changed == 'true'
+        run: gem install cocoapods
+
       - name: Realizando actualizacion de pods
+        if: steps.verify-changed-files.outputs.files_changed == 'true'
         run: |
           cd iOS
           pod update
@@ -42,20 +63,21 @@ jobs:
           cd macos
           pod update
           pod update Sentry/HybridSDK
+          cd ..
 
-      - name: Verificamos cambios en el pubspec.
-        uses: tj-actions/verify-changed-files@v13
-        id: verify-changed-files
-        with:
-          files: |
-            ios/Podfile.lock
-            macos/Podfile.lock
-
-      - name: Guardando los archivos actualizados.
+      - name: realizando commit de los cambios 
         if: steps.verify-changed-files.outputs.files_changed == 'true'
-        run: |
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add -A 
-          git commit -m "Actualizacion de cocoapods para iOS y MacOS"
-          git push
+        uses: stefanzweifel/git-auto-commit-action@v4
+        id: commit
+        with:
+          commit_message: "Actualizacion de cocoapods para iOS y MacOS"
+          push_options: --force
+
+      # - name: Realizamos commit los archivos actualizados.
+      #   if: steps.verify-changed-files.outputs.files_changed == 'true'
+      #   run: |
+      #     git config user.name github-actions[bot]
+      #     git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+      #     git add -A 
+      #     git commit -m "Actualizacion de cocoapods para iOS y MacOS"
+      #     git push
