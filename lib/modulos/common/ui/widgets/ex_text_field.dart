@@ -117,7 +117,13 @@ class ExTextField extends StatelessWidget {
         ),
       );
     } else {
-      return _textField();
+      return ConstrainedBox(
+          // Dimensiones máximas que tomará un edit para evitar overflows
+          constraints: BoxConstraints(
+            maxHeight: Sizes.p20,
+            maxWidth: width != null ? width! : Sizes.p96 * 3,
+          ),
+          child: _textField());
     }
   }
 }
