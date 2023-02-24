@@ -9,7 +9,7 @@
   // Permitimos el code lens a los invitados
   "liveshare.codeLens": true,
   // Auto guardamos al salir
-  "editor.formatOnSave": false,
+  "editor.formatOnSave": true,
   "files.eol": "\n",
   // Deshabilitamos codeLens al hacer merge en VSCode
   "diffEditor.codeLens": false,

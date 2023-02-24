@@ -67,7 +67,7 @@ SPEC CHECKSUMS:
   device_info_plus: 5401765fde0b8d062a2f8eb65510fb17e77cf07f
   FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
   package_info_plus: 02d7a575e80f194102bef286361c6c326e4c29ce
-  path_provider_foundation: 37748e03f12783f9de2cb2c4eadfaa25fe6d4852
+  path_provider_foundation: c68054786f1b4f3343858c1e1d0caaded73f0be9
   ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
   Sentry: 4c9babff9034785067c896fd580b1f7de44da020
   sentry_flutter: b10ae7a5ddcbc7f04648eeb2672b5747230172f1

@@ -1,3 +1,4 @@
+import 'package:eleventa/modulos/common/ui/widgets/ex_boton.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/config/ui/opcion_configurable.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,7 @@ class VistaConfiguracionSincronizacion extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        // TODO: Incluir opciones reales de configuración de sincronizacion
+        // TODO: Leer opciones reales de configuración de sincronizacion
         OpcionConfigurable(
           label: 'Ultima sincronización',
           child: Text(DateTime.now().toString()),
@@ -23,6 +24,16 @@ class VistaConfiguracionSincronizacion extends StatelessWidget {
         OpcionConfigurable(
           label: 'Cambios por sincronizar',
           child: const Text('12'),
+        ),
+        OpcionConfigurable(
+          child: ExBoton.secundario(
+            label: 'Sincronizar en este momento',
+            icon: Icons.sync,
+            width: 100,
+            onTap: () {
+              // TODO: Mandar llamar rutina de sincronizción on-demand
+            },
+          ),
         ),
       ],
     );

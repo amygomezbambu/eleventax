@@ -1,3 +1,4 @@
+import 'package:eleventa/modulos/common/ui/ex_icons.dart';
 import 'package:eleventa/modulos/config/ui/modulos/vista_configuracion_cuenta.dart';
 import 'package:eleventa/modulos/config/ui/modulos/vista_configuracion_dispositivos.dart';
 import 'package:eleventa/modulos/config/ui/modulos/vista_configuracion_sincronizacion.dart';
@@ -41,16 +42,16 @@ var configuracion = <ConfiguracionDeModulo>[
       configuraciones: [
         OpcionDeConfiguracion(
           nombre: 'Cuenta',
-          icono: Icons.account_circle_outlined,
+          icono: Iconos.store,
           vista: VistaConfiguracionCuenta(),
         ),
         OpcionDeConfiguracion(
           nombre: 'Sincronización',
-          icono: Icons.monitor_heart_outlined,
+          icono: Iconos.activity,
           vista: VistaConfiguracionSincronizacion(),
         ),
       ]),
-  ConfiguracionDeModulo(
+  const ConfiguracionDeModulo(
       nombre: 'Ventas',
       icono: Icons.person,
       configuraciones: [
@@ -59,10 +60,15 @@ var configuracion = <ConfiguracionDeModulo>[
           icono: Icons.numbers_rounded,
           vista: VistaConfiguracionVentas(),
         ),
-        const OpcionDeConfiguracion(
+        OpcionDeConfiguracion(
           nombre: 'Formas de Pago',
           icono: Icons.payments_outlined,
           vista: Text('Configurar Formas de pago'),
+        ),
+        OpcionDeConfiguracion(
+          nombre: 'Impuestos',
+          icono: Icons.money,
+          vista: Text('Configurar impuestos'),
         ),
       ]),
   const ConfiguracionDeModulo(

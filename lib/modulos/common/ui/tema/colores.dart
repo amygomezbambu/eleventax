@@ -18,6 +18,8 @@ class Colores {
 /// Paleta de colores estandard usado en la aplicación
 /// de acuerdo al Design System de eleventa
 class ColoresBase {
+  static const Color shadow100 = Color.fromARGB(45, 24, 40, 13);
+
   static const Color primario50 = Color(0xfff2f6fc);
   static const Color primario100 = Color(0xffe1ebf8);
   static const Color primario200 = Color(0xffCFDDF0);

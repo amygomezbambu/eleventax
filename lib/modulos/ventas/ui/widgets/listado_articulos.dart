@@ -1,4 +1,5 @@
-import 'package:eleventa/modulos/common/ui/tema/colores.dart';
+import 'package:eleventa/modulos/common/ui/tema/theme.dart';
+
 import 'package:eleventa/modulos/ventas/domain/articulo.dart';
 import 'package:eleventa/modulos/ventas/ui/venta_provider.dart';
 import 'package:flutter/material.dart';
@@ -86,7 +87,10 @@ class ListadoArticulos extends ConsumerWidget {
             separatorBuilder: (context, index) => const Padding(
               padding: EdgeInsets.only(left: 80, right: 15),
               child: Divider(
-                  height: 0, color: ColoresBase.neutral200, thickness: 0.5),
+                height: 0,
+                color: ColoresBase.neutral200,
+                thickness: Sizes.px,
+              ),
             ),
           );
   }

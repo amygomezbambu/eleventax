@@ -4,16 +4,14 @@ import 'package:layout/layout.dart';
 
 class OpcionConfigurable extends StatelessWidget {
   final esDesktop = LayoutValue(xs: false, md: true);
-  final String label;
+  final String? label;
   final String? textoAyuda;
   final Widget child;
   final EdgeInsetsGeometry? padding;
-  // Si la pantalla es muy grande el width "hijo" no podrá ser mas ancho que este valor
-  final _anchoMaximoChild = Sizes.p44 * 2;
 
   OpcionConfigurable({
     super.key,
-    required this.label,
+    this.label,
     required this.child,
     this.textoAyuda,
     this.padding,
@@ -28,7 +26,11 @@ class OpcionConfigurable extends StatelessWidget {
       width: double.infinity,
       padding: padding ??
           EdgeInsets.only(
-            top: esDesktop.resolve(context) ? Sizes.p0 : Sizes.p5,
+            top: esDesktop.resolve(context)
+                ? Sizes.p0
+                : label != null
+                    ? Sizes.p5
+                    : Sizes.p0,
           ),
       margin: const EdgeInsets.all(0),
       decoration: const BoxDecoration(
@@ -55,12 +57,14 @@ class OpcionConfigurable extends StatelessWidget {
               height: !esDesktop.resolve(context) ? Sizes.p6 : null,
               child: Wrap(
                 children: [
-                  Text(
-                    label,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
+                  label != null
+                      ? Text(
+                          label!,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w500,
+                          ),
+                        )
+                      : const SizedBox(),
                   (textoAyuda != null) && (esDesktop.resolve(context))
                       ? Padding(
                           padding: const EdgeInsets.only(left: Sizes.p2),

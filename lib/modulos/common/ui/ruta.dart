@@ -72,7 +72,7 @@ class Rutas {
       nombre: "Configuración",
       icon: Iconos.setting_24,
       pageBuilder: (context, state) =>
-          NoTransitionPage(child: VistaConfiguracion()),
+          const NoTransitionPage(child: VistaConfiguracion()),
     ),
   ];
 

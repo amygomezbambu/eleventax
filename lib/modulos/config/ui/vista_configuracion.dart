@@ -14,7 +14,7 @@ class VistaConfiguracion extends StatefulWidget {
 
 class _VistaConfiguracionState extends State<VistaConfiguracion> {
   final esDesktop = LayoutValue(xs: false, md: true);
-  int _indiceSeleccionado = 0;
+  int _indiceSeleccionado = 1;
   late Widget widgetViewSeleccionado;
   String? labelConfiguracionActual;
 

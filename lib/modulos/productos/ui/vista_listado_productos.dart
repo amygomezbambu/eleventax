@@ -53,10 +53,15 @@ class VistaListadoProductosState extends State<VistaListadoProductos> {
           children: [
             Flexible(
               flex: 2,
-              child: Card(
-                elevation: 1,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(Sizes.p2_0),
+              child: Container(
+                decoration: const BoxDecoration(
+                  border: Border(
+                    right: BorderSide(
+                      width: 1,
+                      color: ColoresBase.neutral200,
+                    ),
+                  ),
+                  color: ColoresBase.neutral100,
                 ),
                 child: _ListadoProductos(
                   onTap: _mandarModificarProducto,
@@ -115,69 +120,77 @@ class _ListadoProductos extends ConsumerWidget {
         SizedBox(
           height: esDesktop.resolve(context) ? Sizes.p28 : Sizes.p20,
           child: DismissKeyboard(
-            child: Card(
-              color: ColoresBase.neutral50,
-              elevation: 1,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(Sizes.p0),
+            child: Container(
+              decoration: const BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    width: 1,
+                    color: ColoresBase.neutral300,
+                  ),
+                ),
+                color: ColoresBase.neutral200,
               ),
               child: Padding(
-                padding: const EdgeInsets.only(
-                    top: Sizes.p2_0,
-                    bottom: 0,
-                    left: Sizes.p2,
-                    right: Sizes.p2),
+                padding: EdgeInsets.only(
+                  top: esDesktop.resolve(context) ? Sizes.p3 : Sizes.p4,
+                  bottom: 0,
+                  left: Sizes.p2,
+                  right: Sizes.p2,
+                ),
                 child: Column(
                   children: [
-                    ExTextField(
-                      controller: controllerBusqueda,
-                      icon: Iconos.search,
-                      autofocus: false,
-                      hintText: 'Buscar productos',
-                      aplicarResponsividad: false,
-                      onFieldSubmitted: (value) async {
-                        try {
-                          CodigoProducto codigo = CodigoProducto(value);
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: Sizes.p2),
+                      child: ExTextField(
+                        controller: controllerBusqueda,
+                        icon: Iconos.search,
+                        autofocus: false,
+                        hintText: 'Buscar productos',
+                        aplicarResponsividad: false,
+                        onFieldSubmitted: (value) async {
+                          try {
+                            CodigoProducto codigo = CodigoProducto(value);
 
-                          var producto = await ModuloProductos
-                                  .repositorioConsultaProductos()
-                              .obtenerProductoPorCodigo(codigo);
+                            var producto = await ModuloProductos
+                                    .repositorioConsultaProductos()
+                                .obtenerProductoPorCodigo(codigo);
 
-                          if (!mounted) return;
+                            if (!mounted) return;
 
-                          if (producto == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Producto no encontrado!'),
-                              ),
-                            );
-                          } else {
-                            if (!esDesktop.resolve(context)) {
-                              context.push(
-                                '/productos/modificar',
-                                extra: producto.uid.toString(),
+                            if (producto == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Producto no encontrado!'),
+                                ),
                               );
                             } else {
-                              onTap(producto);
+                              if (!esDesktop.resolve(context)) {
+                                context.push(
+                                  '/productos/modificar',
+                                  extra: producto.uid.toString(),
+                                );
+                              } else {
+                                onTap(producto);
+                              }
                             }
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Código inválido!'),
+                              ),
+                            );
                           }
-                        } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Código inválido!'),
-                            ),
-                          );
-                        }
 
-                        controllerBusqueda.clear();
-                      },
+                          controllerBusqueda.clear();
+                        },
+                      ),
                     ),
                     (context.breakpoint >= LayoutBreakpoint.md)
-                        ? ExBoton.primario(
+                        ? ExBoton.secundario(
                             key: VistaListadoProductos.keyBotonCobrar,
                             icon: Icons.create_outlined,
                             label: 'Crear producto',
-                            height: Sizes.p10,
+                            height: Sizes.p12,
                             onTap: () async {
                               debugPrint(
                                   'Ir a crear producto, desktop: ${esDesktop.resolve(context)}');
@@ -204,72 +217,75 @@ class _ListadoProductos extends ConsumerWidget {
             thumbVisibility: esDesktop.resolve(context),
             trackVisibility: esDesktop.resolve(context),
             controller: _scrollController,
-            child: ListView.separated(
-              scrollDirection: Axis.vertical,
-              shrinkWrap: true,
-              itemCount: productos.length,
-              controller: _scrollController,
-              itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                    contentPadding: EdgeInsets.only(
-                        top: Sizes.p1,
-                        bottom: Sizes.p1,
-                        left: (context.breakpoint > LayoutBreakpoint.sm)
-                            ? Sizes.p2
-                            : Sizes.p3,
-                        right: Sizes.p3),
-                    dense: (context.breakpoint <= LayoutBreakpoint.sm),
-                    leading: ClipRRect(
-                        borderRadius: BorderRadius.circular(Sizes.p2),
-                        child: Image.network(
-                          'https://source.unsplash.com/random/200×200/?${productos[index].nombre}',
-                          // Le indicamos que que tamaño será la imagen para que consuma
-                          // menos memoria aunque la imagen original sea más grande
-                          cacheHeight: Sizes.p12.toInt(),
-                          cacheWidth: Sizes.p12.toInt(),
-                          fit: BoxFit.cover,
-                        )),
-                    title: Text(
-                      productos[index].nombre,
-                      style: const TextStyle(
-                          fontSize: TextSizes.textSm,
-                          fontWeight: FontWeight.w500),
-                    ),
-                    hoverColor: ColoresBase.neutral300,
-                    trailing: Wrap(
-                        spacing: (context.breakpoint > LayoutBreakpoint.sm)
-                            ? Sizes.p40
-                            : Sizes.p28,
-                        children: <Widget>[
-                          Text(
-                            productos[index].precioDeVenta.toString(),
-                            style: TextStyle(
-                                fontSize: esDesktop.resolve(context)
-                                    ? TextSizes.textBase
-                                    : TextSizes.textBase,
-                                color: ColoresBase.primario600,
-                                fontWeight: FontWeight.w600),
-                          )
-                        ]),
-                    onTap: () {
-                      if (!esDesktop.resolve(context)) {
-                        context.push('/productos/modificar',
-                            extra: productos[index].uid.toString());
-                      } else {
-                        onTap(productos[index]);
-                      }
-                    });
-              },
-              separatorBuilder: (context, index) => const Margin(
-                margin: EdgeInsets.only(
-                    left: Sizes.p16,
-                    right: Sizes.p3,
-                    top: Sizes.p0,
-                    bottom: Sizes.p0),
-                child: Divider(
-                    height: Sizes.p0,
-                    color: ColoresBase.neutral300,
-                    thickness: Sizes.p0_5),
+            child: Material(
+              type: MaterialType.transparency,
+              child: ListView.separated(
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                itemCount: productos.length,
+                controller: _scrollController,
+                itemBuilder: (BuildContext context, int index) {
+                  return ListTile(
+                      contentPadding: EdgeInsets.only(
+                          top: Sizes.p1,
+                          bottom: Sizes.p1,
+                          left: (context.breakpoint > LayoutBreakpoint.sm)
+                              ? Sizes.p2
+                              : Sizes.p3,
+                          right: Sizes.p3),
+                      dense: (context.breakpoint <= LayoutBreakpoint.sm),
+                      leading: ClipRRect(
+                          borderRadius: BorderRadius.circular(Sizes.p2),
+                          child: Image.network(
+                            'https://source.unsplash.com/random/200×200/?${productos[index].nombre}',
+                            // Le indicamos que que tamaño será la imagen para que consuma
+                            // menos memoria aunque la imagen original sea más grande
+                            cacheHeight: Sizes.p12.toInt(),
+                            cacheWidth: Sizes.p12.toInt(),
+                            fit: BoxFit.cover,
+                          )),
+                      title: Text(
+                        productos[index].nombre,
+                        style: const TextStyle(
+                            fontSize: TextSizes.textSm,
+                            fontWeight: FontWeight.w500),
+                      ),
+                      hoverColor: ColoresBase.neutral300,
+                      trailing: Wrap(
+                          spacing: (context.breakpoint > LayoutBreakpoint.sm)
+                              ? Sizes.p40
+                              : Sizes.p28,
+                          children: <Widget>[
+                            Text(
+                              productos[index].precioDeVenta.toString(),
+                              style: TextStyle(
+                                  fontSize: esDesktop.resolve(context)
+                                      ? TextSizes.textBase
+                                      : TextSizes.textBase,
+                                  color: ColoresBase.primario600,
+                                  fontWeight: FontWeight.w600),
+                            )
+                          ]),
+                      onTap: () {
+                        if (!esDesktop.resolve(context)) {
+                          context.push('/productos/modificar',
+                              extra: productos[index].uid.toString());
+                        } else {
+                          onTap(productos[index]);
+                        }
+                      });
+                },
+                separatorBuilder: (context, index) => const Margin(
+                  margin: EdgeInsets.only(
+                      left: Sizes.p16,
+                      right: Sizes.p3,
+                      top: Sizes.p0,
+                      bottom: Sizes.p0),
+                  child: Divider(
+                      height: Sizes.p0,
+                      color: ColoresBase.neutral300,
+                      thickness: Sizes.p0_5),
+                ),
               ),
             ),
           ),

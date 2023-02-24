@@ -427,7 +427,8 @@ class _FormaProductoState extends State<FormaProducto> {
                                       builder: (BuildContext context,
                                           AsyncSnapshot<List<Categoria>>
                                               snapshot) {
-                                        if (snapshot.hasData) {
+                                        if ((snapshot.hasData) &&
+                                            (snapshot.data!.isNotEmpty)) {
                                           List<Categoria> listadoCategorias =
                                               snapshot.data!;
                                           if (UID.isValid(listadoCategorias
@@ -466,10 +467,10 @@ class _FormaProductoState extends State<FormaProducto> {
                                           );
                                         } else {
                                           return const SizedBox(
-                                            width: Sizes.p5,
-                                            height: Sizes.p5,
-                                            child: CircularProgressIndicator(),
-                                          );
+                                              // width: Sizes.p5,
+                                              // height: Sizes.p5,
+                                              // child: CircularProgressIndicator(),
+                                              );
                                         }
                                       }),
                                   ExRadioButton<ProductoSeVendePor>(
@@ -504,7 +505,8 @@ class _FormaProductoState extends State<FormaProducto> {
                                       builder: (BuildContext context,
                                           AsyncSnapshot<List<UnidadDeMedida>>
                                               snapshot) {
-                                        if (snapshot.hasData) {
+                                        if ((snapshot.hasData) &&
+                                            (snapshot.data!.isNotEmpty)) {
                                           List<UnidadDeMedida>
                                               listadoUnidadesDeMedida =
                                               snapshot.data!;
@@ -538,11 +540,12 @@ class _FormaProductoState extends State<FormaProducto> {
                                             }).toList(),
                                           );
                                         } else {
-                                          return const SizedBox(
-                                            width: Sizes.p5,
-                                            height: Sizes.p5,
-                                            child: CircularProgressIndicator(),
-                                          );
+                                          return const SizedBox();
+                                          // return const SizedBox(
+                                          //   width: Sizes.p5,
+                                          //   height: Sizes.p5,
+                                          //   child: CircularProgressIndicator(),
+                                          // );
                                         }
                                       }), //loaading, //ya termine
                                   FutureBuilder<List<Impuesto>>(
@@ -550,7 +553,8 @@ class _FormaProductoState extends State<FormaProducto> {
                                       builder: (BuildContext context,
                                           AsyncSnapshot<List<Impuesto>>
                                               snapshot) {
-                                        if (snapshot.hasData) {
+                                        if ((snapshot.hasData) &&
+                                            (snapshot.data!.isNotEmpty)) {
                                           List<Impuesto> listadoImpuestos =
                                               snapshot.data!;
                                           impuestoSeleccionado ??=
@@ -578,11 +582,12 @@ class _FormaProductoState extends State<FormaProducto> {
                                             }).toList(),
                                           );
                                         } else {
-                                          return const SizedBox(
-                                            width: Sizes.p5,
-                                            height: 20,
-                                            child: CircularProgressIndicator(),
-                                          );
+                                          // return const SizedBox(
+                                          //   width: Sizes.p5,
+                                          //   height: 20,
+                                          //   child: CircularProgressIndicator(),
+                                          // );
+                                          return const SizedBox();
                                         }
                                       }),
                                   ExTextField(

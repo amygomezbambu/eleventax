@@ -109,7 +109,7 @@ class _EleventaAppState extends State<EleventaApp> {
             height: 20,
           ),
 
-          scaffoldBackgroundColor: ColoresBase.neutral100,
+          scaffoldBackgroundColor: ColoresBase.neutral50,
           useMaterial3: true,
           // Deshabilitamos el efecto "Splash" de Material
           splashColor: Colors.transparent,
