@@ -15,13 +15,12 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../../../../loader_for_tests.dart';
 import '../../../../../utils/productos.dart';
 
-
 void main() {
-    setUpAll(() async {
+  setUpAll(() async {
     TestsLoader loader = TestsLoader();
     await loader.iniciar();
   });
-  
+
   test('Debe obtener el listado de las impresoras instaladas', () async {
     var adaptadorImpresion = AdaptadorImpresionWindows();
 
@@ -34,12 +33,11 @@ void main() {
     );
   }, skip: !Platform.isWindows);
 
-
   test('Debe imprimir una venta usando la impresora de tickets', () async {
     var adaptadorImpresion = AdaptadorImpresionWindows();
 
     var impresoraTickets = ImpresoraDeTicketsWindows(
-      nombreImpresora: 'Microsoft Print to PDF',
+      nombreImpresora: 'GP-5890X',
       anchoTicket: AnchoTicket.mm80,
     );
 
@@ -66,7 +64,6 @@ void main() {
       ...impuestos,
     ];
 
-
     var producto = ProductosUtils.crearProducto(
       impuestos: impuestoMultiples,
       precioCompra: Moneda(precio),
@@ -92,7 +89,7 @@ void main() {
 
     var venta = await consultas.obtenerVenta(ventaEnProgreso.uid);
 
-    await adaptadorImpresion.imprimirTicket(venta!);
-    
+    //await adaptadorImpresion.imprimirTicket(venta!);
+    await adaptadorImpresion.testTicket();
   }, skip: !Platform.isWindows);
 }

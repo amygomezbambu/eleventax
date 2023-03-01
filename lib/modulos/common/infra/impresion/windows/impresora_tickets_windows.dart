@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'dart:typed_data';
 
 import 'package:eleventa/modulos/common/app/interface/impresora_tickets.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
@@ -49,7 +50,7 @@ class ImpresoraDeTicketsWindows implements IImpresoraDeTickets {
   }
 
   String _removerCaracteresNoImprimibles(String texto) {
-    var resultado =  Utils.string.removerEmojis(texto);
+    var resultado = Utils.string.removerEmojis(texto);
     resultado = Utils.string.limpiarCaracteresInvisibles(resultado);
     return resultado;
   }
@@ -72,9 +73,21 @@ class ImpresoraDeTicketsWindows implements IImpresoraDeTickets {
 
       res = _startRawPrintPage(printerHandle);
 
-      for (final item in data) {
-        if (res) {
-          res = _printRawData(printerHandle, '${_removerCaracteresNoImprimibles(item)}\n',);
+      // for (final item in data) {
+      //   if (res) {
+      //     res = _printRawData(
+      //       printerHandle,
+      //       '${_removerCaracteresNoImprimibles(item)}\n',
+      //     );
+      //   }
+      // }
+
+      for(final item in data){
+        if(res){
+          res = _printRawData(
+            printerHandle,
+            '$item\n',
+          );
         }
       }
       _endRawPrintPage(printerHandle);
@@ -167,6 +180,6 @@ class ImpresoraDeTicketsWindows implements IImpresoraDeTickets {
 
     return result != 0;
   }
-
+  
   //ENDREGION
 }
