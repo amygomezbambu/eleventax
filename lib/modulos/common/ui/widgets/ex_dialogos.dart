@@ -58,8 +58,8 @@ class ExDialogos {
       String mensaje = '',
       String textoBotonEliminar = 'Eliminar'}) async {
     return await ExDialogos.mostrarDialogo<bool>(context, widgets: [
-      const Padding(
-          padding: EdgeInsets.all(Sizes.p2_5),
+      Padding(
+          padding: const EdgeInsets.all(Sizes.p2_5),
           child: CircleAvatar(
             backgroundColor: ColoresBase.yellow100,
             child: Icon(

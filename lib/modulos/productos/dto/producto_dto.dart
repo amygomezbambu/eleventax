@@ -7,7 +7,7 @@ class UnidadDeMedidaDto {
 }
 
 class ProductoDto {
-  var uid = '';
+  var uid = ''; //Se usa actualmente para la versión del producto
   var productoUid = '';
   var codigo = '';
   var nombre = '';

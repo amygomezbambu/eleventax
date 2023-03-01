@@ -15,6 +15,7 @@ import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.
 import 'package:eleventa/modulos/productos/domain/value_objects/porcentaje_de_impuesto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_compra_producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_venta_producto.dart';
+import 'package:eleventa/modulos/productos/dto/busqueda_producto_dto.dart';
 import 'package:eleventa/modulos/productos/dto/producto_dto.dart';
 import 'package:eleventa/modulos/productos/interfaces/repositorio_consulta_productos.dart';
 
@@ -117,6 +118,59 @@ class RepositorioConsultaProductos extends RepositorioConsulta
             uid: UID.fromString(row['uid'] as String),
             nombre: row['nombre'] as String,
             abreviacion: row['abreviacion'] as String));
+      }
+    }
+
+    return res;
+  }
+
+  @override
+
+  /// Realiza una búsqueda de productos por texto libre en el nombre, código y categoría.
+  /// El resultado es una lista de objetos [BusquedaProductoDto] que contiene los datos
+  /// del producto.
+  ///
+  /// Se usan los siguientes valores como valores de peso (weight) por campo:
+  /// nombre - 20.0, código - 10.0, categoría - 5.0.
+  Future<List<BusquedaProductoDto>> buscarProductos({
+    required String criterio,
+    int limite = 15,
+  }) async {
+    var res = <BusquedaProductoDto>[];
+
+    // Para evitar que las palabras sean tomadas como comandos
+    // de Full Text Search de SQLite los encerramos entre comillas
+    // y les agregamos un asterisco al final para que encuentre en cualquier parte de la palabra
+    final tokens = criterio.split(' ');
+    String expresion = '';
+    for (var token in tokens) {
+      final sanitizado = token.replaceAll('"', '""');
+      expresion += ' "$sanitizado"* ';
+    }
+
+    var dbResult = await query(
+      sql: '''
+              SELECT nombre, codigo, categoria_nombre, precio_venta, uid, rank  
+              FROM productos_busqueda
+              WHERE productos_busqueda MATCH ? AND rank MATCH 'bm25(20.0, 10.0, 5.0)' 
+              ORDER BY rank 
+              LIMIT $limite ;
+            ''',
+      params: [expresion],
+    );
+
+    if (dbResult.isNotEmpty) {
+      for (var row in dbResult) {
+        var producto = BusquedaProductoDto();
+
+        producto.productoUid = row['uid'] as String;
+        producto.nombre = row['nombre'] as String;
+        producto.codigo = row['codigo'] as String;
+        producto.precioDeVenta = Moneda.deserialize(row['precio_venta'] as int);
+        producto.nombreCategoria =
+            Utils.db.valorOCadenaVacia(row['categoria_nombre']);
+
+        res.add(producto);
       }
     }
 
