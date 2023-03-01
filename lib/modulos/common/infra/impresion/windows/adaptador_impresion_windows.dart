@@ -80,61 +80,60 @@ class AdaptadorImpresionWindows implements IImpresion {
     }
 
     List<String> lineasAImprimir = [];
-    var comando = '27 33 54';
-    lineasAImprimir.add(comando);
+    const InitializePrinter = "\x1B\x40"; // Reset printer
+    lineasAImprimir.add(InitializePrinter);
     lineasAImprimir.add('Ticket de prueba');
     //TODO: agregar datos de negocio
 
     lineasAImprimir.add('Gracias por su compra, vuelva pronto!');
 
-    const openCashDrawer = '\x1b\x70\x00';
-    lineasAImprimir.add(openCashDrawer);
+    // const openCashDrawer = '\x1b\x70\x00';
+    // lineasAImprimir.add(openCashDrawer);
 
-    const ESC = "\u001B"; // ESC command
-    const GS = "\u001D"; // Group separator
+    const ESC = "\x1B"; // ESC command
+    const GS = "\x1D"; // Group separator
 
-    const InitializePrinter = ESC + "@"; // Reset printer
-    const BoldOn = ESC + "E" + "\u0001"; // Bold font ON
-    const BoldOff = ESC + "E" + "\0"; // Bold font OFF
+    const BoldOn = ESC + "E" + "\x01"; // Bold font ON
+    const BoldOff = ESC + "E" + "\x00"; // Bold font OFF
     const DoubleOn =
-        GS + "!" + "\u0011"; // 2x sized text (double-high + double-wide)
-    const DoubleOff = GS + "!" + "\0"; // Normal text
+        GS + "!" + "\x11"; // 2x sized text (double-high + double-wide)
+    const DoubleOff = GS + "!" + "\x00"; // Normal text
 
-    const UnderlineOn = ESC + "-" + "\u0001"; // Underline font 1-dot ON
-    const UnderlineOff = ESC + "-" + "\0"; // Underline font 1-dot OFF
+    const UnderlineOn = ESC + "-" + "\x01"; // Underline font 1-dot ON
+    const UnderlineOff = ESC + "-" + "\x00"; // Underline font 1-dot OFF
 
-    const ReverseOn = GS + "B" + "\u0001"; // Reverse color ON
-    const ReverseOff = GS + "B" + "\0"; // Reverse color OFF
+    const ReverseOn = GS + "B" + "\x01"; // Reverse color ON
+    const ReverseOff = GS + "B" + "\x00"; // Reverse color OFF
 
-    const UpsideDownOn = ESC + "{" + "\u0001"; // Upside down ON
-    const UpsideDownOff = ESC + "{" + "\0"; // Upside down OFF
+    const UpsideDownOn = ESC + "{" + "\x01"; // Upside down ON
+    const UpsideDownOff = ESC + "{" + "\x00"; // Upside down OFF
 
-    const SmallOn = ESC + "M" + "\u0001"; // Small font ON
-    const SmallOff = ESC + "M" + "\0"; // Small font OFF
+    const SmallOn = ESC + "M" + "\x01"; // Small font ON
+    const SmallOff = ESC + "M" + "\x00"; // Small font OFF
 
-    const Cut = GS + "V" + "\u0001"; // Full cut paper
+    const Cut = GS + "V" + "\x01"; // Full cut paper
 
-    const FeedAndFullCut = GS + "V" + "\u0001"; // Full cut paper
+    const FeedAndFullCut = GS + "V" + "\x01"; // Full cut paper
 
-    const FeedAndPartialCut = GS + "V" + "\u0000"; // Partial cut paper
+    const FeedAndPartialCut = GS + "V" + "\x00"; // Partial cut paper
 
-    const AlignLeft = ESC + "a" + "\u0000"; // Left justification
+    const AlignLeft = ESC + "a" + "\x00"; // Left justification
 
-    const AlignCenter = ESC + "a" + "\u0001"; // Centering
+    const AlignCenter = ESC + "a" + "\x01"; // Centering
 
     const AlignRight = ESC + "a" + "\u0002"; // Right justification
 
-    const FontA = ESC + "M" + "\u0000"; // Font type A
+    const FontA = ESC + "M" + "\x00"; // Font type A
 
-    const FontB = ESC + "M" + "\u0001"; // Font type B
+    const FontB = ESC + "M" + "\x01"; // Font type B
 
-    const FontC = ESC + "M" + "\u0002"; // Font type C
+    const FontC = ESC + "M" + "\x02"; // Font type C
 
-    const CodePage = ESC + "t" + "\u0011"; // Code page spanish
+    const CodePage = ESC + "t" + "\x11"; // Code page spanish
 
-    const Tab = "\u0009"; // Tab
+    const Tab = "\x09"; // Tab
 
-    const PrintAndFeed = ESC + "d" + "\u000A"; // Print and feed paper
+    const PrintAndFeed = ESC + "d" + "\x0A"; // Print and feed paper
 
     // Control characters
     // as labelled in https://www.novopos.ch/client/EPSON/TM-T20/TM-T20_eng_qr.pdf
@@ -151,33 +150,26 @@ class AdaptadorImpresionWindows implements IImpresion {
     const CTL_FF = "\f"; // Form feed
     const CTL_CR = "\r"; // Carriage return
 
-    lineasAImprimir.add(InitializePrinter);
     lineasAImprimir.add("${BoldOn}Here is some bold text.$BoldOff");
     lineasAImprimir.add("Here is some normal text.");
     lineasAImprimir.add("${BoldOn}Here is some bold text.$BoldOff");
     lineasAImprimir.add("${DoubleOn}Here is some large text.$DoubleOff");
     lineasAImprimir.add(CTL_LF);
-    lineasAImprimir.add(CTL_LF);
-    lineasAImprimir.add(CTL_LF);
-    lineasAImprimir.add(CTL_LF);
-    lineasAImprimir.add(CTL_LF);
-    // lineasAImprimir.add(
-    //     ''' Lorem Ipsum is simply dummy text of the printing and typesetting industry.$CTL_CR$CTL_LF
-    //                      Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled
-    //                       it to make a type specimen book.$CTL_CR$CTL_LF It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.''');
-    lineasAImprimir.add(CTL_LF);
+    lineasAImprimir.add(
+        ''' Lorem Ipsum is simply dummy text of the printing and typesetting industry.$CTL_CR$CTL_LF
+                         Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled
+                          it to make a type specimen book.$CTL_CR$CTL_LF It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.''');
     lineasAImprimir.add(CTL_LF);
 
     const BeginQRCode = "\x0a"; // Beginning line feed
     const StartQRCode = "\x1c\x7d\x25"; // Start QR Code® command
     const LengthQRCode =
-        "\x15"; // Length of string to follow (21 bytes in this example)
+        "\x1C"; // Length of string to follow (28 bytes in this example)
     const EndQRCode = "\x0a"; // Ending line feed
-    const Eleventa = "https://eleventa.com/";
+    const Eleventa = "https://pyramidacceptors.com";
 
     lineasAImprimir.add(BeginQRCode);
-    lineasAImprimir.add(StartQRCode);
-    lineasAImprimir.add(LengthQRCode);
+    lineasAImprimir.add(StartQRCode + LengthQRCode);
     lineasAImprimir.add(Eleventa);
     lineasAImprimir.add(EndQRCode);
 
@@ -195,7 +187,15 @@ class AdaptadorImpresionWindows implements IImpresion {
     /*# Encode the text "pi = 3.14159265" as a Code 128 barcode,
     # using form 2 of the command, and modes B and C
     # Command header (includes code system and string length)*/
-    lineasAImprimir.add("\x1d\x6b\x49\x0f\x7b\x42\x70\x69\x20\x3a\x20\x33\x2e\x7b\x43\x0e\x0f\x5c\x41");
+    lineasAImprimir.add(
+        "\x1d\x6b\x49\x0f\x7b\x42\x70\x69\x20\x3a\x20\x33\x2e\x7b\x43\x0e\x0f\x5c\x41");
+    lineasAImprimir.add(CTL_LF);
+    lineasAImprimir.add("\x0d"); // newline
+    lineasAImprimir.add("\1d\x28\x6b"); // start command
+    lineasAImprimir.add("\x1f\x00"); // string length (28 bytes + 3)
+    lineasAImprimir.add("\x31\x50\x31"); // rest of command...
+    lineasAImprimir.add("https://pyramidacceptors.com"); // Actual string
+    lineasAImprimir.add("\x1d\x28\x6b\x03\x00\x31\x51\x31"); // Print now
 
     //
     //
