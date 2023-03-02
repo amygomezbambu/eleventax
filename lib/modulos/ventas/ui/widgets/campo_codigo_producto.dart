@@ -2,6 +2,7 @@ import 'package:eleventa/modulos/common/ui/ex_icons.dart';
 import 'package:eleventa/modulos/common/ui/tema/theme.dart';
 import 'package:eleventa/modulos/productos/dto/busqueda_producto_dto.dart';
 import 'package:eleventa/modulos/productos/modulo_productos.dart';
+import 'package:eleventa/modulos/ventas/ui/vista_ventas.dart';
 import 'package:eleventa/modulos/ventas/ui/widgets/resultados_busqueda.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -182,6 +183,7 @@ class _CampoCodigoProductoState extends State<CampoCodigoProducto> {
                   cursorColor: Colors.black,
                   autocorrect: false,
                   autofocus: true,
+                  key: VistaVentas.keyCampoCodigo,
                   style: const TextStyle(
                       color: ColoresBase.neutral700,
                       fontSize: DesignSystem.campoTamanoTexto,

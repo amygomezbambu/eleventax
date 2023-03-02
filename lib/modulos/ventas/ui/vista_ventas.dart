@@ -17,6 +17,9 @@ import 'package:layout/layout.dart';
 import 'package:eleventa/l10n/generated/l10n.dart';
 
 class VistaVentas extends ConsumerStatefulWidget {
+  static const keyCampoCodigo = Key('edtCampoCodigo');
+  static const keyBotonCobrar = Key('btnCobrar');
+
   const VistaVentas({Key? key, required String title}) : super(key: key);
 
   @override

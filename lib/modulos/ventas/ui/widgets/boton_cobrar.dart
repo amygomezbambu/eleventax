@@ -1,5 +1,6 @@
 import 'package:eleventa/modulos/common/ui/ex_icons.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_boton.dart';
+import 'package:eleventa/modulos/ventas/ui/vista_ventas.dart';
 import 'package:flutter/material.dart';
 import 'package:eleventa/l10n/generated/l10n.dart';
 
@@ -25,11 +26,11 @@ class BotonCobrarVenta extends StatelessWidget {
           : const EdgeInsets.fromLTRB(3, 10, 3, 10),
       height: dense ? 60 : 70,
       child: ExBoton.primario(
-          label: m.ventas_boton_cobrar(totalDeVenta),
+          label: '\$$totalDeVenta', //m.ventas_boton_cobrar(totalDeVenta),
           tamanoFuente: dense ? 20 : 25,
           icon: Iconos.register,
           onTap: onTap,
-          key: const ValueKey('payButton')),
+          key: VistaVentas.keyBotonCobrar),
     );
   }
 }
