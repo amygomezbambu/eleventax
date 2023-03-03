@@ -73,23 +73,15 @@ class ImpresoraDeTicketsWindows implements IImpresoraDeTickets {
 
       res = _startRawPrintPage(printerHandle);
 
-      // for (final item in data) {
-      //   if (res) {
-      //     res = _printRawData(
-      //       printerHandle,
-      //       '${_removerCaracteresNoImprimibles(item)}\n',
-      //     );
-      //   }
-      // }
-
-      for(final item in data){
-        if(res){
+      for (final item in data) {
+        if (res) {
           res = _printRawData(
             printerHandle,
             '$item\n',
           );
         }
       }
+      
       _endRawPrintPage(printerHandle);
       _endRawPrintJob(printerHandle);
     });
