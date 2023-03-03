@@ -6,6 +6,7 @@ import 'package:eleventa/modulos/migraciones/scripts/0004_crear_tablas_config.da
 import 'package:eleventa/modulos/migraciones/scripts/0005_crear_tablas_notificaciones.dart';
 import 'package:eleventa/modulos/migraciones/scripts/0006_crear_tabla_queue_metricas.dart';
 import 'package:eleventa/modulos/migraciones/scripts/0007_crear_tablas_ventas.dart';
+import 'package:eleventa/modulos/migraciones/scripts/0008_crear_tablas_busqueda.dart';
 
 /// Registro con el listado de todas las migraciones
 ///
@@ -20,6 +21,7 @@ List<Migracion> obtenerMigraciones() {
   migraciones.add(Migracion5());
   migraciones.add(Migracion6());
   migraciones.add(Migracion7());
+  migraciones.add(Migracion8());
 
   return migraciones;
 }

@@ -4,6 +4,7 @@ import 'package:eleventa/modulos/productos/domain/impuesto.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
+import 'package:eleventa/modulos/productos/dto/busqueda_producto_dto.dart';
 import 'package:eleventa/modulos/productos/dto/producto_dto.dart';
 
 abstract class IRepositorioConsultaProductos {
@@ -23,4 +24,9 @@ abstract class IRepositorioConsultaProductos {
   );
   Future<bool> existeCategoria({required String nombre});
   Future<bool> existe(UID uid);
+
+  Future<List<BusquedaProductoDto>> buscarProductos({
+    required String criterio,
+    int limite = 15,
+  });
 }

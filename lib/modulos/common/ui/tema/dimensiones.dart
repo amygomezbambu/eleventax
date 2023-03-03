@@ -7,6 +7,7 @@ class Sizes {
   static const p0 = 0.0;
   static const p0_5 = 0.5;
   static const px = 1.0;
+  static const px_5 = 1.5;
   static const p2_0 = 2.0;
   static const p1 = 4.0;
   static const p1_5 = 6.0;

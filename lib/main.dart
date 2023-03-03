@@ -11,6 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:layout/layout.dart';
 import 'package:go_router/go_router.dart';
 import 'package:eleventa/l10n/generated/l10n.dart';
+import 'package:multi_trigger_autocomplete/multi_trigger_autocomplete.dart';
 
 Future<void> main() async {
   var loader = Loader();
@@ -94,28 +95,30 @@ class _EleventaAppState extends State<EleventaApp> {
   Widget build(BuildContext context) {
     final ThemeData theme = ThemeData();
     return Layout(
-      child: MaterialApp.router(
-        localizationsDelegates: L10n.localizationsDelegates,
-        supportedLocales: L10n.supportedLocales,
-        // TODO: Verificar que sucede cuando el SO tiene un idioma no soportado
-        routerConfig: _router,
-        debugShowCheckedModeBanner: false,
-        restorationScopeId: 'eleventa',
-        theme: theme.copyWith(
-          colorScheme:
-              theme.colorScheme.copyWith(secondary: ColoresBase.primario600),
-          brightness: Brightness.light,
-          navigationBarTheme: const NavigationBarThemeData(
-            height: 20,
-          ),
+      child: Portal(
+        child: MaterialApp.router(
+          localizationsDelegates: L10n.localizationsDelegates,
+          supportedLocales: L10n.supportedLocales,
+          // TODO: Verificar que sucede cuando el SO tiene un idioma no soportado
+          routerConfig: _router,
+          debugShowCheckedModeBanner: false,
+          restorationScopeId: 'eleventa',
+          theme: theme.copyWith(
+            colorScheme:
+                theme.colorScheme.copyWith(secondary: ColoresBase.primario600),
+            brightness: Brightness.light,
+            navigationBarTheme: const NavigationBarThemeData(
+              height: 20,
+            ),
 
-          scaffoldBackgroundColor: ColoresBase.neutral50,
-          useMaterial3: true,
-          // Deshabilitamos el efecto "Splash" de Material
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-          hoverColor: Colors.transparent,
-          splashFactory: NoSplash.splashFactory,
+            scaffoldBackgroundColor: ColoresBase.neutral50,
+            useMaterial3: true,
+            // Deshabilitamos el efecto "Splash" de Material
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            hoverColor: Colors.transparent,
+            splashFactory: NoSplash.splashFactory,
+          ),
         ),
       ),
     );

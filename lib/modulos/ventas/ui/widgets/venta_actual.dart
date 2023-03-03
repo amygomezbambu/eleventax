@@ -1,8 +1,8 @@
 //@visibleForTesting
 import 'package:eleventa/modulos/common/ui/tema/theme.dart';
-import 'package:eleventa/modulos/common/ui/widgets/ex_campo_codigo_producto.dart';
 import 'package:eleventa/modulos/ventas/domain/articulo.dart';
 import 'package:eleventa/modulos/ventas/ui/venta_provider.dart';
+import 'package:eleventa/modulos/ventas/ui/widgets/campo_codigo_producto.dart';
 import 'package:eleventa/modulos/ventas/ui/widgets/listado_articulos.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -41,20 +41,14 @@ class ControlesVentaActual extends ConsumerWidget {
       required this.focusNode,
       required this.onBuscarCodigo});
 
-  void _agregarProductoAListado(String codigo) {
-    onBuscarCodigo(codigo);
+  Future<void> _agregarProductoAListado(String codigo) async {
+    await onBuscarCodigo(codigo);
     editingController.clear();
   }
 
   void _seleccionarArticulo(WidgetRef ref, Articulo articuloSeleccionado) {
     final notifier = ref.read(providerVenta.notifier);
-
     notifier.seleccionarArticulo(articuloSeleccionado);
-
-    // Enfocamos de nuevo al campo código que es hijo del Focus widget
-    if (focusNode.children.first.canRequestFocus) {
-      focusNode.children.first.requestFocus();
-    }
   }
 
   /// Cambia el control enfocado de acuerdo a las teclas de flecha arriba,
@@ -80,7 +74,7 @@ class ControlesVentaActual extends ConsumerWidget {
       }
 
       if (keyEvent.logicalKey == LogicalKeyboardKey.delete) {
-        debugPrint('TODO: Tecla DELETE presionada borrar articulo');
+        // TODO: Tecla DELETE presionada borrar articulo
         return KeyEventResult.handled;
       }
 
@@ -105,11 +99,17 @@ class ControlesVentaActual extends ConsumerWidget {
     return Expanded(
       child: Column(
         children: [
-          Card(
+          Container(
+            decoration: const BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  width: 1,
+                  color: ColoresBase.neutral200,
+                ),
+              ),
+              color: ColoresBase.neutral100,
+            ),
             margin: const EdgeInsets.all(0),
-            borderOnForeground: false,
-            elevation: 1.0,
-            shape: const RoundedRectangleBorder(),
             child: Padding(
               padding: const EdgeInsets.all(12.0),
               child: Container(
@@ -117,20 +117,19 @@ class ControlesVentaActual extends ConsumerWidget {
                   color: ColoresBase.neutral200,
                   borderRadius: BorderRadius.circular(5),
                 ),
-                child: Focus(
+                child: Column(children: [
+                  CampoCodigoProducto(
+                    textEditingController: editingController,
                     focusNode: focusNode,
-                    debugLabel: 'focoCampoCodigo',
-                    onKey: (FocusNode node, RawKeyEvent key) =>
-                        _cambiarControlEnFoco(ref, node, key),
-                    child: ExCampoCodigoProducto(
-                      key: const ValueKey('skuField'),
-                      hintText: 'Ingresa un código de producto...',
-                      aplicarResponsividad: false,
-                      controller: editingController,
-                      // Solo aplica para dispositivos móviles:
-                      onCodigoEscanado: _agregarProductoAListado,
-                      onFieldSubmitted: _agregarProductoAListado,
-                    )),
+                    onProductoElegido: (String codigoProducto) {
+                      // TODO: Regresar mejor UUID?
+                      _agregarProductoAListado(codigoProducto);
+                    },
+                    onKey: (focus, key) {
+                      return _cambiarControlEnFoco(ref, focus, key);
+                    },
+                  )
+                ]),
               ),
             ),
           ),

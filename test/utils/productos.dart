@@ -5,6 +5,7 @@ import 'package:eleventa/modulos/productos/domain/impuesto.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/nombre_categoria.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/porcentaje_de_impuesto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_compra_producto.dart';
@@ -25,6 +26,11 @@ class ProductosUtils {
     List<Impuesto>? impuestos,
   }) {
     var faker = Faker();
+
+    final categoria_ = categoria ??
+        Categoria.crear(
+          nombre: NombreCategoria.sinCategoria(),
+        );
 
     final codigo_ = codigo != null
         ? CodigoProducto(codigo)
@@ -61,6 +67,7 @@ class ProductosUtils {
         unidadDeMedida: unidadDeMedida_,
         precioDeCompra: precioCompra_,
         precioDeVenta: precioVenta_,
+        categoria: categoria_,
         impuestos: impuestos_);
   }
 }

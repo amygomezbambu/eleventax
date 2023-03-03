@@ -24,11 +24,6 @@ class AdaptadorSQLite implements IAdaptadorDeBaseDeDatos {
 
   var _verbose = false;
 
-  // Librerias de las que se depende en Windows
-  static const archivoLibcryptoWindows = 'libcrypto-1_1-x64.dll';
-  static const archivoSslWindows = 'libssl-1_1-x64.dll';
-  static const archivoSqlcipherWindows = 'sqlcipher.dll';
-
   // Codigos de error que queremos detectar de SQLite
   // https://www.sqlite.org/rescode.html
   static const sqliteNotADbError = 26;
@@ -43,48 +38,11 @@ class AdaptadorSQLite implements IAdaptadorDeBaseDeDatos {
     await _db.close();
   }
 
-  /// Lee la libreria de SQLite en Windows
-  ///
-  /// Se encarga de especificar la ruta de la libreria de SQLite
-  /// la cual debe estar presente en la carpeta donde esta el ejecutable
-  /// también es necesaria la prescencia de los archivos:
-  /// sqlcipher.dll, libcrypto-1_1-x64.dll, libssl-1_1-x64.dll
-  ///
-  /// Esta función y DLLs fueron tomados del paquete:
-  /// https://github.com/MobiliteDev/sqlcipher_library_windows
-  static DynamicLibrary _openSQLCipherOnWindows() {
-    late DynamicLibrary library;
-
-    if (!Platform.environment.containsKey('FLUTTER_TEST')) {
-      // Verificamos que existan las librerias que necesitamos
-      if (!File(AdaptadorSQLite.archivoLibcryptoWindows).existsSync()) {
-        debugPrint(
-            'No existe libreria requerida: $AdaptadorSQLite.libcryptoWindowsLibrary');
-      }
-
-      if (!File(AdaptadorSQLite.archivoSslWindows).existsSync()) {
-        debugPrint(
-            'No existe libreria requerida: $AdaptadorSQLite.sslWindowsLibrary');
-      }
-
-      if (!File(AdaptadorSQLite.archivoSqlcipherWindows).existsSync()) {
-        debugPrint(
-            'No existe libreria requerida: $AdaptadorSQLite.sqlcipherWindowsLibrary');
-      }
-    }
-
-    library = DynamicLibrary.open(AdaptadorSQLite.archivoSqlcipherWindows);
-
-    return library;
-  }
-
   static void _sqliteInit() {
     try {
       if (Platform.isAndroid) {
         open.overrideFor(OperatingSystem.android, openCipherOnAndroid);
-      } else if (Platform.isWindows) {
-        open.overrideFor(OperatingSystem.windows, _openSQLCipherOnWindows);
-      } else if (Platform.isLinux) {
+      } else if (Platform.isWindows || Platform.isLinux) {
         open.openSqlite();
       } else {
         open.overrideForAll(_sqlcipherOpen);
@@ -196,17 +154,17 @@ class AdaptadorSQLite implements IAdaptadorDeBaseDeDatos {
         if (_verbose) {
           _logger.debug(message: '[SQL] $sql [PARAMS] $params');
         }
-        await _db.execute(sql, _sanitizarParams(params));
+        await _db.rawQuery(sql, _sanitizarParams(params));
       } else {
         if (_verbose) {
           _logger.debug(message: '[SQL] $sql');
         }
-        await _db.execute(sql);
+        await _db.rawQuery(sql);
       }
     } catch (e, stack) {
       throw InfraEx(
         tipo: TipoInfraEx.errorConsultaDB,
-        message: 'Ocurrió un error al enviar un comando a la base de datos',
+        message: 'Ocurrió un error al enviar un comando a la base de datos $e',
         innerException: e,
         stackTrace: stack,
         input: '[SQL] $sql [PARAMS] $params',
