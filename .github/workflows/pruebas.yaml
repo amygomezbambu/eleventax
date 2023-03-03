@@ -122,9 +122,9 @@ jobs:
         if: runner.os == 'Windows'
         run: Copy-Item -Path "assets\windows\*" -Destination "${{ env.FLUTTER_ROOT }}\bin\cache\artifacts\engine\windows-x64"
 
-      - name: Copiamos DLLs de SQLite para que funcionen las pruebas de integración (solo Windows)
-        if: runner.os == 'Windows'
-        run: Copy-Item -Path "assets\windows\*" -Destination (New-Item -Type Directory -Force (".\build\windows\runner\Debug")) -Force -EA 0
+      # - name: Copiamos DLLs de SQLite para que funcionen las pruebas de integración (solo Windows)
+      #   if: runner.os == 'Windows'
+      #   run: Copy-Item -Path "assets\windows\*" -Destination (New-Item -Type Directory -Force (".\build\windows\runner\Debug")) -Force -EA 0
 
       - name: Generar archivos de internacionalizacion
         if: needs.verificar-archivos-modificados.outputs.arb_modificados == 'true'

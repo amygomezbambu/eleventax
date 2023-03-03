@@ -1,2 +1,5 @@
 SQLite v3.39.2
 SQLCipher v4.5.2 community
+
+#02/03/2023
+#Se eliminan las versiones compiladas y se comenzo a usar las de sqlcipher_flutter_libs
