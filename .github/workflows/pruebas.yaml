@@ -112,6 +112,9 @@ jobs:
           cache-key: "flutter-:os:-:channel:-:version:-:arch:"
           architecture: x64
 
+      - name: Instalar OpenSSL
+        run: choco install openssl
+
       - name: Obtener dependencias de flutter
         run: flutter pub get
 

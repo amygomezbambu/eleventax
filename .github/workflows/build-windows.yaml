@@ -16,6 +16,10 @@ jobs:
         with:
           channel: "stable"
           flutter-version: ${{ steps.get-flutter-version.outputs.version }}
+
+      - name: Instalar OpenSSL
+        run: choco install openssl
+
       - name: Instalar dependencias
         run: flutter pub get
 
