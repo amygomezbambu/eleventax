@@ -11,49 +11,52 @@ class Migracion2 extends Migracion {
   Future<void> operacion() async {
     /*Creacion de impuestos iniciales*/
     var command = 'insert into impuestos(uid,nombre,porcentaje,orden) '
-        'values(?, "IVA 8%", 8000000,2)';
+        'values(?, ?, 8000000,2)';
 
-    await db.command(sql: command, params: [UID().toString()]);
-
-    command = 'insert into impuestos(uid,nombre,porcentaje,orden) '
-        'values(?, "IVA 16%", 16000000,2)';
-
-    await db.command(sql: command, params: [UID().toString()]);
+    await db.command(sql: command, params: [UID().toString(), 'IVA 8%']);
 
     command = 'insert into impuestos(uid,nombre,porcentaje,orden) '
-        'values(?, "IVA 0%", 0,2)';
+        'values(?, ?, 16000000,2)';
 
-    await db.command(sql: command, params: [UID().toString()]);
+    await db.command(sql: command, params: [UID().toString(), 'IVA 16%']);
 
     command = 'insert into impuestos(uid,nombre,porcentaje,orden) '
-        'values(?, "IEPS 3%", 3000000, 1)';
+        'values(?, ?, 0,2)';
 
-    await db.command(sql: command, params: [UID().toString()]);
+    await db.command(sql: command, params: [UID().toString(), 'IVA 0%']);
+
+    command = 'insert into impuestos(uid,nombre,porcentaje,orden) '
+        'values(?, ?, 3000000, 1)';
+
+    await db.command(sql: command, params: [UID().toString(), 'IEPS 3%']);
 
     /* Categorias Iniciales */
-    command = 'INSERT INTO categorias (uid, nombre) VALUES (?, "Refrescos")';
-    await db.command(sql: command, params: [UID().toString()]);
-    command = 'INSERT INTO categorias (uid, nombre) VALUES (?, "Verduras")';
-    await db.command(sql: command, params: [UID().toString()]);
-    command = 'INSERT INTO categorias (uid, nombre) VALUES (?, "Frutas")';
-    await db.command(sql: command, params: [UID().toString()]);
+    command = 'INSERT INTO categorias (uid, nombre) VALUES (?, ?)';
+    await db.command(sql: command, params: [UID().toString(), 'Refrescos']);
+    command = 'INSERT INTO categorias (uid, nombre) VALUES (?, ?)';
+    await db.command(sql: command, params: [UID().toString(), 'Verduras']);
+    command = 'INSERT INTO categorias (uid, nombre) VALUES (?, ?)';
+    await db.command(sql: command, params: [UID().toString(), 'Frutas']);
 
     /*Creacion de Unidad de Medida*/
 
     command = 'insert into unidades_medida(uid,nombre,abreviacion) '
-        'values(?, "Pieza", "Pza")';
+        'values(?, ?, ?)';
 
-    await db.command(sql: command, params: [UID().toString()]);
-
-    command = 'insert into unidades_medida(uid,nombre,abreviacion) '
-        'values(?, "Kilogramo / Gramo", "Kg/gr")';
-
-    await db.command(sql: command, params: [UID().toString()]);
+    await db
+        .command(sql: command, params: [UID().toString(), 'Pieza', 'pz']); //
 
     command = 'insert into unidades_medida(uid,nombre,abreviacion) '
-        'values(?, "Metro / Centimetro", "m/cm")';
+        'values(?, ?, ?)';
 
-    await db.command(sql: command, params: [UID().toString()]);
+    await db
+        .command(sql: command, params: [UID().toString(), 'Kilogramo', 'kg']);
+
+    command = 'insert into unidades_medida(uid,nombre,abreviacion) '
+        'values(?, ?, ?)';
+
+    await db.command(
+        sql: command, params: [UID().toString(), 'Metro / Centimetro', 'm/cm']);
   }
 
   @override
