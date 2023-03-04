@@ -36,8 +36,11 @@ void main() {
 
     var ocurrioExcepcion = false;
     final lineasAimprimir = ['Primer 🤔linea🫠 con emojis 👁️', 'Caracteres *‎* invisibles',];
+
+    impresora.agregarLinea(lineasAimprimir[0]);
+    impresora.agregarLinea(lineasAimprimir[1]);
     try {
-      impresora.imprimir(lineasAimprimir); 
+      impresora.imprimir(); 
     } catch (e) {
       ocurrioExcepcion = true;
     }

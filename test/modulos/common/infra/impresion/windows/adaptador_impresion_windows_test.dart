@@ -38,7 +38,7 @@ void main() {
 
     var impresoraTickets = ImpresoraDeTicketsWindows(
       nombreImpresora: 'GP-5890X',
-      anchoTicket: AnchoTicket.mm80,
+      anchoTicket: AnchoTicket.mm58,
     );
 
     adaptadorImpresion.impresoraTickets = impresoraTickets;
@@ -89,7 +89,6 @@ void main() {
 
     var venta = await consultas.obtenerVenta(ventaEnProgreso.uid);
 
-    //await adaptadorImpresion.imprimirTicket(venta!);
-    await adaptadorImpresion.testTicket();
+    await adaptadorImpresion.imprimirTicket(venta!);
   }, skip: !Platform.isWindows);
 }
