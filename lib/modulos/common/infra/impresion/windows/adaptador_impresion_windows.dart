@@ -1,7 +1,9 @@
 import 'package:eleventa/modulos/common/app/interface/impresion.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
+import 'package:eleventa/modulos/common/infra/impresion/windows/comandosEscPos.dart';
 import 'package:eleventa/modulos/common/infra/impresion/windows/obtener_listado_impresoras.dart';
 import 'package:eleventa/modulos/ventas/read_models/venta.dart';
+import 'package:win32/win32.dart';
 
 class AdaptadorImpresionWindows implements IImpresion {
   @override
@@ -22,55 +24,66 @@ class AdaptadorImpresionWindows implements IImpresion {
           tipo: TipoValidationEx.errorDeValidacion);
     }
 
-    List<String> lineasAImprimir = [];
-
-// Forma de pago usada
-// Lineas finales de ticket (texto libre)
-// 5.5 - En caso de que la cantidad, nombre del producto e importe superen el ancho del ticket se optará por pasar el nombre del
-//producto a una segunda o tercera línea según corresponda para respetar que la linea completa del articulo aparezca justificada.
-
-    lineasAImprimir.add('Ticket de prueba');
+    // Forma de pago usada
+    // Lineas finales de ticket (texto libre)
+    // 5.5 - En caso de que la cantidad, nombre del producto e importe superen el ancho del ticket se optará por pasar el nombre del
+    //producto a una segunda o tercera línea según corresponda para respetar que la linea completa del articulo aparezca justificada.
     //TODO: agregar datos de negocio
-    lineasAImprimir.add('ABARROTES EL CHAPARRAL');
-    lineasAImprimir.add('Direccion: Av. 5 de Mayo # 123');
-    lineasAImprimir.add('Folio: ${venta.folio}');
-    lineasAImprimir.add('Fecha/Hora: ${venta.cobradaEn.toString()}');
-    //TODO: agregar datos del cajero que cobro la venta
-    lineasAImprimir.add('Cajero: Raul');
+    impresoraTickets!.agregarLinea('ABARROTES EL CHAPARRAL',
+        TipoAlineacion.centro, TipoTamanioFuente.grande);
+    impresoraTickets!.agregarLinea('Direccion: Av. 5 de Mayo # 123');
+    impresoraTickets!.agregarLinea('Folio: ${venta.folio}');
+    impresoraTickets!.agregarLinea('Fecha/Hora: ${venta.cobradaEn.toString()}');
 
-    lineasAImprimir.add('========================================');
+    //TODO: agregar datos del cajero que cobro la venta
+    impresoraTickets!.agregarLinea('Cajero: Raul');
+    impresoraTickets!.agregarLineaEnBlanco();
+
+    impresoraTickets!.agregarLineaJustificada('Cant. Descripcion', 'Importe');
+
+    impresoraTickets!.agregarDivisor('=');
+
     for (var articulo in venta.articulos) {
-      lineasAImprimir.add(
-          '${articulo.cantidad} | ${articulo.descripcion} | ${articulo.subtotal}');
+      impresoraTickets!.agregarLineaJustificada(
+          '${articulo.cantidad} ${articulo.descripcion}',
+          '${articulo.subtotal}');
     }
-    
-    lineasAImprimir.add('========================================');
-    lineasAImprimir.add('Subtotal: ${venta.subtotal.toString()}');
-    
+
+    impresoraTickets!.agregarDivisor('=');
+    impresoraTickets!.agregarLinea(
+        'Subtotal: ${venta.subtotal.toString()}', TipoAlineacion.derecha);
+
     //TODO: Agregar porcentaje a los impuestos cobrados
     for (var impuestoCobrado in venta.totalesDeImpuestos) {
-        lineasAImprimir.add(
+      impresoraTickets!.agregarLinea(
           '${impuestoCobrado.impuesto} '
           '${impuestoCobrado.porcentaje.toString()}: '
-          '${impuestoCobrado.monto.toString()}');
+          '${impuestoCobrado.monto.toString()}',
+          TipoAlineacion.derecha);
     }
 
-    lineasAImprimir.add('Total: ${venta.total}');
-    lineasAImprimir.add('Artículo: ${venta.articulos.length}');
-    lineasAImprimir.add('');
-    lineasAImprimir.add('Formas de Pago');
-    lineasAImprimir.add('');
-    for(var pago in venta.pagos){
-      lineasAImprimir.add('${pago.forma}: ${pago.monto.toString()}');
+    impresoraTickets!
+        .agregarLinea('Total: ${venta.total}', TipoAlineacion.derecha);
+    impresoraTickets!.agregarLinea(
+        'Artículos: ${venta.articulos.length}', TipoAlineacion.derecha);
+    impresoraTickets!.agregarLineaEnBlanco();
+    impresoraTickets!.agregarLinea('Formas de Pago');
+    for (var pago in venta.pagos) {
+      impresoraTickets!.agregarLinea('${pago.forma}: ${pago.monto.toString()}');
 
-      if(pago.pagoCon != null){
-        lineasAImprimir.add('Pago con: ${pago.pagoCon}');
+      if (pago.pagoCon != null) {
+        impresoraTickets!.agregarLinea('Pago con: ${pago.pagoCon}');
       }
     }
 
-    lineasAImprimir.add('');
-    lineasAImprimir.add('Gracias por su compra, vuelva pronto!');
+    impresoraTickets!.agregarLinea('');
+    impresoraTickets!
+        .agregarLinea("Gracias por su compra", TipoAlineacion.centro);
+    impresoraTickets!.agregarLinea("vuelva pronto!", TipoAlineacion.centro);
+    impresoraTickets!.agregarLinea('https://eleventa.com',
+        TipoAlineacion.centro, TipoTamanioFuente.grande);
+    impresoraTickets!.agregarEspaciadoFinal();
 
-    impresoraTickets!.imprimir(lineasAImprimir);
+    impresoraTickets!.imprimir();
   }
 }

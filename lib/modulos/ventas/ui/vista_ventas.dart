@@ -1,4 +1,8 @@
+import 'package:eleventa/globals.dart';
+import 'package:eleventa/modulos/common/app/interface/impresora_tickets.dart';
 import 'package:eleventa/modulos/common/domain/moneda.dart';
+import 'package:eleventa/modulos/common/infra/impresion/windows/adaptador_impresion_windows.dart';
+import 'package:eleventa/modulos/common/infra/impresion/windows/impresora_tickets_windows.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_vista_responsiva.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_vista_principal_scaffold.dart';
 import 'package:eleventa/modulos/telemetria/interface/telemetria.dart';
@@ -117,6 +121,16 @@ class VistaVentasState extends ConsumerState<VistaVentas> {
         metricasCobro.req.venta = ventaCobrada;
         metricasCobro.req.tipo = TipoEventoTelemetria.cobroRealizado;
         await metricasCobro.exec();
+
+        //TODO: implementar el caso de uso de imprimir ticket de venta
+        var adaptadorImpresion = AdaptadorImpresionWindows();
+        var impresoraTickets = ImpresoraDeTicketsWindows(
+          nombreImpresora: appConfig.nombreImpresora,
+          anchoTicket: AnchoTicket.mm58,
+        );
+
+        adaptadorImpresion.impresoraTickets = impresoraTickets;
+        await adaptadorImpresion.imprimirTicket(ventaCobrada);
       }
     } catch (e) {
       debugPrint('Error: $e');

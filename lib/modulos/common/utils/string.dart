@@ -1,5 +1,3 @@
-
-
 import 'package:eleventa/modulos/common/utils/regex_emoji.dart';
 
 class StringUtils {
@@ -24,6 +22,19 @@ class StringUtils {
     }
 
     return resultado;
+  }
+
+  String removerAcentos(String input) {
+
+    var conAcentos = 'ÀÁÂÃÄÅàáâãäåÒÓÔÕÕÖØòóôõöøÈÉÊËèéêëðÇçÐÌÍÎÏìíîïÙÚÛÜùúûüÑñŠšŸÿýŽž';
+    var sinAcentos = 'AAAAAAaaaaaaOOOOOOOooooooEEEEeeeeeCcDIIIIiiiiUUUUuuuuNnSsYyyZz'; 
+
+    for (int i = 0; i < conAcentos.length; i++) {      
+      input = input.replaceAll(conAcentos[i], sinAcentos[i]);
+    }
+
+    return input;
+
   }
 
   String removerEmojis(String texto) {
