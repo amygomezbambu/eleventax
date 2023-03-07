@@ -1,5 +1,5 @@
 import 'package:eleventa/modulos/ventas/read_models/venta.dart';
-import 'package:eleventa/modulos/common/infra/impresion/windows/comandosEscPos.dart';
+import 'package:eleventa/modulos/common/infra/impresion/windows/comandos_esc_pos.dart';
 
 abstract class IImpresion {
   IImpresora? impresoraTickets;
@@ -17,10 +17,8 @@ abstract class IImpresora {
   void agregarDivisor([String divisor = '=']);
   void agregarLinea(String linea,
       [TipoAlineacion alineacion = TipoAlineacion.izquierda,
-      TipoTamanioFuente tamanioFuente = TipoTamanioFuente.normal]); 
+      TipoTamanioFuente tamanioFuente = TipoTamanioFuente.normal]);
   void agregarLineaJustificada(String campo, String valor,
       [TipoTamanioFuente tamanioFuente = TipoTamanioFuente.normal]);
   void agregarLineaEnBlanco();
 }
-
-   

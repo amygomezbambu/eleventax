@@ -39,9 +39,9 @@ class Migracion7 extends Migracion {
           uid TEXT PRIMARY KEY,
           venta_uid TEXT,
           producto_uid TEXT,
+          producto_generico_uid TEXT,
           cantidad REAL,
           precio_venta INTEGER,
-          descripcion TEXT,
           agregado_en INTEGER NOT NULL
         ); 
       ''';
@@ -80,12 +80,12 @@ class Migracion7 extends Migracion {
     command = '''
         CREATE TABLE ventas_articulos(
           uid TEXT PRIMARY KEY,
-          version_producto_uid TEXT, 
+          version_producto_uid TEXT,
+          producto_generico_uid TEXT, 
           venta_uid TEXT,
           cantidad REAL,
           precio_venta INTEGER,
           subtotal INTEGER,
-          descripcion TEXT,
           agregado_en INTEGER
         ); 
       ''';

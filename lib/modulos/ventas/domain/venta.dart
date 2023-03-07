@@ -147,7 +147,7 @@ class Venta extends Entidad {
 
     for (var articulo in _articulos) {
       totalEsperadoPorCliente +=
-          articulo.producto.precioDeVenta!.toDouble() * articulo.cantidad;
+          articulo.producto.precioDeVenta.toDouble() * articulo.cantidad;
 
       _subtotal += articulo.subtotal;
       _totalImpuestos += articulo.totalImpuestos;

@@ -12,8 +12,6 @@ import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_compra
 import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_venta_producto.dart';
 import 'package:faker/faker.dart';
 
-enum TipoUnidadDeMedida { pieza, granel }
-
 class ProductosUtils {
   static Producto crearProducto({
     String? codigo,
@@ -22,7 +20,7 @@ class ProductosUtils {
     Moneda? precioVenta,
     Categoria? categoria,
     UnidadDeMedida? unidadDeMedida,
-    TipoUnidadDeMedida tipoUnidadDeMedida = TipoUnidadDeMedida.pieza,
+    ProductoSeVendePor productoSeVendePor = ProductoSeVendePor.unidad,
     List<Impuesto>? impuestos,
   }) {
     var faker = Faker();
@@ -62,12 +60,14 @@ class ProductosUtils {
         ];
 
     return Producto.crear(
-        codigo: codigo_,
-        nombre: nombre_,
-        unidadDeMedida: unidadDeMedida_,
-        precioDeCompra: precioCompra_,
-        precioDeVenta: precioVenta_,
-        categoria: categoria_,
-        impuestos: impuestos_);
+      codigo: codigo_,
+      nombre: nombre_,
+      unidadDeMedida: unidadDeMedida_,
+      precioDeCompra: precioCompra_,
+      precioDeVenta: precioVenta_,
+      categoria: categoria_,
+      impuestos: impuestos_,
+      seVendePor: productoSeVendePor,
+    );
   }
 }

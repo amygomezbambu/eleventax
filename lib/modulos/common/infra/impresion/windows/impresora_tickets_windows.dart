@@ -2,7 +2,7 @@ import 'dart:ffi';
 
 import 'package:eleventa/globals.dart';
 import 'package:eleventa/modulos/common/app/interface/impresora_tickets.dart';
-import 'package:eleventa/modulos/common/infra/impresion/windows/comandosEscPos.dart';
+import 'package:eleventa/modulos/common/infra/impresion/windows/comandos_esc_pos.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/exception/win32_utils.dart';
 import 'package:eleventa/modulos/common/utils/utils.dart';

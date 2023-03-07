@@ -1,9 +1,8 @@
 import 'package:eleventa/modulos/common/app/interface/impresion.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
-import 'package:eleventa/modulos/common/infra/impresion/windows/comandosEscPos.dart';
+import 'package:eleventa/modulos/common/infra/impresion/windows/comandos_esc_pos.dart';
 import 'package:eleventa/modulos/common/infra/impresion/windows/obtener_listado_impresoras.dart';
 import 'package:eleventa/modulos/ventas/read_models/venta.dart';
-import 'package:win32/win32.dart';
 
 class AdaptadorImpresionWindows implements IImpresion {
   @override

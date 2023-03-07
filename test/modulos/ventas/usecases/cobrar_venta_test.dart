@@ -1,6 +1,10 @@
 import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
+import 'package:eleventa/modulos/productos/domain/producto.dart';
+import 'package:eleventa/modulos/productos/domain/producto_generico.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_venta_producto.dart';
 import 'package:eleventa/modulos/productos/modulo_productos.dart';
 import 'package:eleventa/modulos/ventas/domain/articulo.dart';
 import 'package:eleventa/modulos/ventas/domain/pago.dart';
@@ -40,6 +44,8 @@ void main() {
     Venta ventaEnProgreso = Venta.crear();
 
     var cantidad = 1.00;
+    var cantidadGranel = 0.545;
+
     var precioVenta = 24411.00;
     var precioCompra = 21.680000;
 
@@ -48,14 +54,35 @@ void main() {
       precioVenta: Moneda(precioVenta),
     );
 
-    var formasDisponibles = await consultas.obtenerFormasDePago();
-    var articulo = Articulo.crear(producto: producto, cantidad: cantidad);
-    var pago = Pago.crear(
-      forma: formasDisponibles.first,
-      monto: Moneda(24411.00),
+    var productoGranel = ProductosUtils.crearProducto(
+      precioCompra: Moneda(precioCompra),
+      precioVenta: Moneda(precioVenta),
+      productoSeVendePor: ProductoSeVendePor.peso,
     );
 
+    var listaImpuestos = await consultasProductos.obtenerImpuestos();
+
+    var productoGenerico = ProductoGenerico.crear(
+      nombre: NombreProducto('Chicles'),
+      precioDeVenta: PrecioDeVentaProducto(Moneda(precioVenta)),
+      impuestos: [listaImpuestos.first],
+    );
+
+    var formasDisponibles = await consultas.obtenerFormasDePago();
+    var articulo = Articulo.crear(producto: producto, cantidad: cantidad);
+    var articuloGranel =
+        Articulo.crear(producto: productoGranel, cantidad: cantidadGranel);
+    var articuloGenerico =
+        Articulo.crear(producto: productoGenerico, cantidad: cantidad);
+
     ventaEnProgreso.agregarArticulo(articulo);
+    ventaEnProgreso.agregarArticulo(articuloGranel);
+    ventaEnProgreso.agregarArticulo(articuloGenerico);
+
+    var pago = Pago.crear(
+      forma: formasDisponibles.first,
+      monto: ventaEnProgreso.total,
+    );
     ventaEnProgreso.agregarPago(pago);
 
     final siguienteFolioEsperado = await obtenerSiguienteFolio();
@@ -203,6 +230,7 @@ void main() {
     var producto = ProductosUtils.crearProducto(
       precioCompra: Moneda(precioVenta),
       precioVenta: Moneda(precioVenta),
+      productoSeVendePor: ProductoSeVendePor.peso,
     );
 
     var articulo = Articulo.crear(producto: producto, cantidad: cantidad);

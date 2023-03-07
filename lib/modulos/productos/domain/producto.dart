@@ -29,6 +29,7 @@ class Producto extends Entidad implements IProducto {
 
   Moneda get precioDeCompra => _precioDeCompra.value;
   Categoria? get categoria => _categoria;
+  @override
   ProductoSeVendePor get seVendePor => _seVendePor;
   String get imagenURL => _imagenURL;
 

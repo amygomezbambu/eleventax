@@ -1,4 +1,5 @@
 import 'package:eleventa/globals.dart';
+import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/migraciones/repositorio_migraciones.dart';
 import 'package:eleventa/modulos/migraciones/registro_de_migraciones.dart'
     as registro_de_migraciones;
@@ -23,7 +24,12 @@ class MigrarDB {
           version = migracion.version;
         }
       } catch (e) {
-        error = e;
+        error = InfraEx(
+            message: 'Error al ejecutar migración $version -- $e}',
+            innerException: e,
+            input: version.toString(),
+            tipo: TipoInfraEx.errorInicializacionDB);
+
         break;
       }
     }

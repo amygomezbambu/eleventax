@@ -1,5 +1,7 @@
 import 'package:eleventa/modulos/common/domain/moneda.dart';
+import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/productos/domain/impuesto.dart';
+import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/porcentaje_de_impuesto.dart';
 import 'package:eleventa/modulos/ventas/domain/articulo.dart';
 import 'package:eleventa/modulos/ventas/domain/venta.dart';
@@ -112,6 +114,98 @@ void main() {
             'Debe sumar la cantidad cuando se agregue un producto ya existente a la venta');
   });
 
+  test(
+      'debe sumar la cantidad a granel y actualizar los totales cuando se agregue un producto',
+      () {
+    var cantidad = 2.125;
+    var cantidad2 = 3.879;
+    var cantidad3 = 0.001;
+
+    var precioVenta = 41.2431556329;
+    var precioSinImpuestos = precioVenta / 1.16;
+    var precioCompra = 21.54444448;
+    var articulosEsperados = 1;
+
+    var producto = ProductosUtils.crearProducto(
+      precioCompra: Moneda(precioCompra),
+      precioVenta: Moneda(precioVenta),
+      productoSeVendePor: ProductoSeVendePor.peso,
+    );
+
+    var articulo = Articulo.crear(producto: producto, cantidad: cantidad);
+    var articulo2 = Articulo.crear(producto: producto, cantidad: cantidad2);
+    var articulo3 = Articulo.crear(producto: producto, cantidad: cantidad3);
+
+    var venta = Venta.crear();
+    venta.agregarArticulo(articulo);
+    venta.agregarArticulo(articulo2);
+    venta.agregarArticulo(articulo3);
+
+    final cantidadEsperada = cantidad + cantidad2 + cantidad3;
+    final subtotalEsperado =
+        Moneda((precioSinImpuestos * cantidadEsperada).toDouble())
+            .importeCobrable;
+
+    expect(
+      venta.articulos.length,
+      articulosEsperados,
+      reason:
+          'Debe de regresar unicamente 1 registro al agregar el mismo articulo',
+    );
+    expect(
+      venta.articulos.first.subtotal.importeCobrable,
+      subtotalEsperado,
+      reason:
+          'Debe actualizar el total de la venta cuando incrementa la cantidad de un artículo',
+    );
+    expect(venta.articulos.first.cantidad, cantidadEsperada,
+        reason:
+            'Debe sumar la cantidad cuando se agregue un producto ya existente a la venta');
+  });
+
+  test(
+      'debe lanzar error cuando se agregue un producto que se vende a granel con cantidad menor a  0.001',
+      () {
+    var cantidad = 0.0001;
+
+    var producto = ProductosUtils.crearProducto(
+        productoSeVendePor: ProductoSeVendePor.peso);
+
+    Object? error;
+    try {
+      Articulo.crear(producto: producto, cantidad: cantidad);
+    } catch (e) {
+      error = e;
+    }
+
+    expect(error, isA<ValidationEx>());
+    expect((error as ValidationEx).tipo, TipoValidationEx.valorFueraDeRango,
+        reason: 'Debe lanzar un error tipo valorFueraDeRango');
+  });
+
+  test(
+      'debe lanzar error cuando se agregue un producto que se vende por unidad con cantidad decimal',
+      () {
+    var cantidad = 2.123;
+
+    var producto = ProductosUtils.crearProducto(
+        productoSeVendePor: ProductoSeVendePor.unidad);
+
+    Object? error;
+    try {
+      Articulo.crear(producto: producto, cantidad: cantidad);
+    } catch (e) {
+      error = e;
+    }
+
+    expect(error, isA<ValidationEx>());
+    expect(
+      (error as ValidationEx).tipo,
+      TipoValidationEx.valorFueraDeRango,
+      reason: 'Debe lanzar un error tipo valorFueraDeRango',
+    );
+  });
+
   test('debe cobrar una venta de IEPS e IVA', () {
     final precioConImpuestos = Moneda(24411.00);
 
@@ -159,3 +253,6 @@ void main() {
 
   test('Debe actualizar los totales al modificar un articulo', () {});
 }
+
+
+//TODO: limpiar y completar pruebas

@@ -1,4 +1,7 @@
 import 'package:eleventa/modulos/common/domain/moneda.dart';
+import 'package:eleventa/modulos/productos/domain/producto_generico.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
+import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_venta_producto.dart';
 import 'package:eleventa/modulos/productos/modulo_productos.dart';
 import 'package:eleventa/modulos/ventas/domain/articulo.dart';
 import 'package:eleventa/modulos/ventas/domain/venta.dart';
@@ -55,5 +58,52 @@ void main() {
     expect(ventaDb.subtotal != Moneda(0), true,
         reason: 'el subtotal de la venta obtenida no debe ser cero');
     //TODO: validar que tenga TODOS los datos que guardamos
+  });
+
+  test('Debe persistir la venta en progreso con productos genericos', () async {
+    final guardar = ModuloVentas.guardarVenta();
+    final consultas = ModuloVentas.repositorioConsultaVentas();
+
+    final consultasProductos = ModuloProductos.repositorioConsultaProductos();
+
+    var cantidad = 1.2345;
+    var precioVenta = 24411.00;
+    var nombreProducto = 'Chicles';
+
+    final impuestos = await consultasProductos.obtenerImpuestos();
+
+    var venta = Venta.crear();
+
+    var productoGenerico = ProductoGenerico.crear(
+      nombre: NombreProducto(nombreProducto),
+      precioDeVenta: PrecioDeVentaProducto(Moneda(precioVenta)),
+      impuestos: [impuestos.first],
+    );
+
+    var articulo =
+        Articulo.crear(producto: productoGenerico, cantidad: cantidad);
+    venta.agregarArticulo(articulo);
+
+    guardar.req.venta = venta;
+    await guardar.exec();
+
+    final ventaDb = await consultas.obtenerVentaEnProgreso(venta.uid);
+
+    expect(ventaDb, isNotNull, reason: 'la venta obtenida no debe ser nula');
+    expect(
+        ventaDb!.articulos.firstWhere((element) => element.uid == articulo.uid),
+        isNotNull,
+        reason: 'la venta obtenida debe contener el artículo agregado');
+    expect(ventaDb.total, isNot(Moneda(0)),
+        reason: 'el total de la venta obtenida no debe ser cero');
+    expect(ventaDb.subtotal != Moneda(0), true,
+        reason: 'el subtotal de la venta obtenida no debe ser cero');
+
+    expect(ventaDb.articulos.first.producto, isA<ProductoGenerico>());
+    expect(ventaDb.articulos.first.producto.nombre, nombreProducto);
+    expect(ventaDb.articulos.first.producto.precioDeVenta.importeCobrable,
+        Moneda(precioVenta));
+    expect(ventaDb.articulos.first.producto.impuestos, isNotEmpty);
+    expect(ventaDb.articulos.first.producto.impuestos.first, impuestos.first);
   });
 }

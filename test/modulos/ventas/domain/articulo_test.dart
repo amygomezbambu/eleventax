@@ -18,7 +18,7 @@ void main() {
 
   test('debe usar datos del producto si se agrega un producto existente', () {
     //
-    var cantidad = 2.45677;
+    var cantidad = 2.0;
     var precioVentaConImpuestos = 35.55444451111;
     var precioCompra = 21.54444448;
 

@@ -41,7 +41,7 @@ class CobrarVenta extends Usecase<void> {
       throw VentasEx(
           tipo: TiposVentasEx.pagosInsuficientes,
           message:
-              'El monto de los pagos recibidos difiere del total de la venta',
+              'El monto de los pagos recibidos difiere del total de la venta, totalPagos: ${req.venta.totalPagos}, totalVenta: ${req.venta.total}',
           input: req.venta.uid.toString());
     }
 

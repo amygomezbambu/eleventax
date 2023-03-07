@@ -1,9 +1,9 @@
 import 'package:eleventa/modulos/common/domain/entidad.dart';
 import 'package:eleventa/modulos/common/domain/moneda.dart';
+import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/productos/domain/interface/producto.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
-import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
 import 'package:eleventa/modulos/ventas/domain/total_de_impuesto.dart';
 
 class Articulo extends Entidad {
@@ -11,7 +11,6 @@ class Articulo extends Entidad {
   var _cantidad = 0.00;
   var _subtotal = Moneda(0);
   final DateTime _agregadoEn;
-  late NombreProducto _descripcion;
   var _precioDeVenta = Moneda(0);
   final List<TotalDeImpuesto> _totalesDeImpuestos;
 
@@ -20,8 +19,8 @@ class Articulo extends Entidad {
   Moneda get total => _subtotal + totalImpuestos;
   Moneda get precioDeVenta => _precioDeVenta;
   DateTime get agregadoEn => _agregadoEn;
-  String get descripcion => _descripcion.value;
   IProducto get producto => _producto;
+  String get descripcion => _producto.nombre;
 
   List<TotalDeImpuesto> get totalesDeImpuestos =>
       List.unmodifiable(_totalesDeImpuestos);
@@ -39,11 +38,9 @@ class Articulo extends Entidad {
     required UID uid,
     required double cantidad,
     required DateTime agregadoEn,
-    required NombreProducto descripcion,
-    required Producto producto,
+    required IProducto producto,
   })  : _cantidad = cantidad,
         _agregadoEn = agregadoEn,
-        _descripcion = descripcion,
         _producto = producto,
         _totalesDeImpuestos = [],
         super.cargar(uid) {
@@ -61,9 +58,31 @@ class Articulo extends Entidad {
         _producto = producto,
         _totalesDeImpuestos = [],
         super.crear() {
-    _descripcion = NombreProducto(producto.nombre);
-    _precioDeVenta = producto.precioDeVenta!;
+    _precioDeVenta = producto.precioDeVenta;
+    _validarCantidad(cantidad, producto.seVendePor);
     _calcularTotales();
+  }
+
+  /// Valida que la cantidad este dentro del rango, dependiendo de si el producto
+  /// se vende por unidad o por peso(granel)
+  /// Si el producto se vende por unidad, la cantidad debe ser un número entero
+  /// Si el producto se vende por peso(granel), la cantidad debe ser mayor a 0.001Kg (1 gramo)
+  void _validarCantidad(double cantidad, ProductoSeVendePor seVendePor) {
+    const double limiteInferior = 0.001;
+
+    if (seVendePor == ProductoSeVendePor.unidad && cantidad % 1 != 0) {
+      throw ValidationEx(
+        mensaje: 'La cantidad debe ser un número entero',
+        tipo: TipoValidationEx.valorFueraDeRango,
+      );
+    }
+
+    if (seVendePor == ProductoSeVendePor.peso && cantidad < limiteInferior) {
+      throw ValidationEx(
+        mensaje: 'La cantidad debe ser mayor o igual a $limiteInferior}',
+        tipo: TipoValidationEx.valorFueraDeRango,
+      );
+    }
   }
 
   void actualizarCantidad(double cantidad) {
