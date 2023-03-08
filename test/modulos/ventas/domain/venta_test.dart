@@ -249,9 +249,96 @@ void main() {
     //var fechaEsperada = DateTime.now();
   });
 
-  test('Debe actualizar los totales al eliminar algun articulo', () {});
+  test('Debe actualizar los totales al eliminar algun articulo', () {
+    var cantidad = 2.00;
+    var cantidad2 = 3.00;
 
-  test('Debe actualizar los totales al modificar un articulo', () {});
+    var precioVenta = 41.2431556329;
+    var precioSinImpuestos = precioVenta / 1.16;
+    var precioCompra = 21.54444448;
+
+    var articulosEsperados = 1;
+
+    var producto = ProductosUtils.crearProducto(
+      precioCompra: Moneda(precioCompra),
+      precioVenta: Moneda(precioVenta),
+    );
+
+    var articulo = Articulo.crear(producto: producto, cantidad: cantidad);
+    var articulo2 = Articulo.crear(producto: producto, cantidad: cantidad2);
+
+    var venta = Venta.crear();
+    venta.agregarArticulo(articulo);
+    venta.agregarArticulo(articulo2);
+
+    venta.eliminarArticulo(articulo2);
+
+    final subtotalEsperado =
+        Moneda((precioSinImpuestos * cantidad).toDouble()).importeCobrable;
+
+    expect(
+      venta.articulos.length,
+      articulosEsperados,
+      reason: 'Debe de regresar unicamente 1 registro al eliminar el articulo',
+    );
+
+    expect(
+      venta.subtotal.importeCobrable,
+      subtotalEsperado,
+      reason: 'Debe actualizar el total de la venta cuando elimina un articulo',
+    );
+    expect(venta.articulos.first.cantidad, cantidad,
+        reason:
+            'Debe sumar la cantidad cuando se elimine un articulo ya existente a la venta');
+  });
+
+  test('Debe actualizar los totales al modificar un articulo', () {
+    var cantidad = 2.00;
+    var cantidad2 = 3.00;
+    var cantidadNueva = 10.0;
+
+    var precioVenta = 41.2431556329;
+    var precioSinImpuestos = precioVenta / 1.16;
+    var precioCompra = 21.54444448;
+
+    var producto = ProductosUtils.crearProducto(
+      precioCompra: Moneda(precioCompra),
+      precioVenta: Moneda(precioVenta),
+      nombre: 'Coca Cola 600ml',
+    );
+
+    var producto2 = ProductosUtils.crearProducto(
+      precioCompra: Moneda(precioCompra),
+      precioVenta: Moneda(precioVenta),
+      nombre: 'Sandia Verde con Rojo',
+    );
+
+    var articulo = Articulo.crear(producto: producto, cantidad: cantidad);
+    var articulo2 = Articulo.crear(producto: producto2, cantidad: cantidad2);
+
+    var venta = Venta.crear();
+    venta.agregarArticulo(articulo);
+    venta.agregarArticulo(articulo2);
+
+    articulo2 = articulo2.copyWith(cantidad: cantidadNueva);
+    venta.actualizarArticulo(articulo2);
+
+    final subtotalEsperado =
+        Moneda((precioSinImpuestos * cantidadNueva).toDouble()).importeCobrable;
+
+    expect(
+      articulo2.cantidad,
+      cantidadNueva,
+      reason: 'Debe de regresar el valor de la cantidad actualizada',
+    );
+
+    expect(
+      venta.subtotal.importeCobrable,
+      subtotalEsperado,
+      reason:
+          'Debe actualizar el total de la venta cuando actualiza la cantidad de un articulo',
+    );
+  });
 }
 
 

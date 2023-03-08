@@ -190,8 +190,9 @@ class RepositorioVentas extends Repositorio implements IRepositorioVentas {
   Future<void> eliminarVentaEnProgreso(UID uid) async {
     var sql = '''
           SELECT producto_generico_uid FROM $tablaArticulosVentaEnProgreso 
-          WHERE venta_uid = ?;
+          WHERE venta_uid = ? AND producto_generico_uid IS NOT NULL;
         ''';
+
     final result = await db.query(sql: sql, params: [uid.toString()]);
 
     for (var row in result) {

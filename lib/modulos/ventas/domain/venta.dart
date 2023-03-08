@@ -1,11 +1,11 @@
 import 'package:eleventa/modulos/common/domain/entidad.dart';
 import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
-import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/ventas/domain/articulo.dart';
 import 'package:eleventa/modulos/ventas/domain/pago.dart';
 import 'package:eleventa/modulos/ventas/domain/total_de_impuesto.dart';
 import 'package:eleventa/modulos/ventas/ventas_ex.dart';
+import 'package:collection/collection.dart';
 
 enum EstadoDeVenta { enProgreso, cobrada, cancelada }
 
@@ -120,18 +120,46 @@ class Venta extends Entidad {
   }
 
   void agregarArticulo(Articulo articulo) {
-    var encontrado = false;
+    var articuloExistenteConMismoProducto = _articulos.firstWhereOrNull(
+        (articuloExistente) =>
+            articuloExistente.producto.uid == articulo.producto.uid);
 
-    for (var element in _articulos) {
-      if ((element.producto as Producto).uid == articulo.producto.uid) {
-        element.actualizarCantidad(element.cantidad + articulo.cantidad);
-        encontrado = true;
-      }
-    }
-
-    if (!encontrado) {
+    if (articuloExistenteConMismoProducto != null) {
+      var articuloActualizado = articuloExistenteConMismoProducto.copyWith(
+        cantidad:
+            articulo.cantidad + articuloExistenteConMismoProducto.cantidad,
+      );
+      actualizarArticulo(articuloActualizado);
+    } else {
       _articulos.add(articulo);
+      _actualizarTotales();
     }
+  }
+
+  void actualizarArticulo(Articulo articuloActualizado) {
+    Articulo? articuloAnterior = _obtenerArticuloSiExiste(articuloActualizado);
+
+    if (articuloAnterior != null) {
+      _articulos.remove(articuloAnterior);
+      _articulos.add(articuloActualizado);
+    } else {
+      throw VentasEx(
+          tipo: TiposVentasEx.errorDeValidacion,
+          message:
+              'No se encontró el artículo con el uid: ${articuloActualizado.uid}');
+    }
+
+    _actualizarTotales();
+  }
+
+  Articulo? _obtenerArticuloSiExiste(Articulo articuloBuscado) {
+    print('Articulo buscado: $articuloBuscado');
+    return _articulos
+        .firstWhereOrNull((articulo) => articulo.uid == articuloBuscado.uid);
+  }
+
+  void eliminarArticulo(Articulo articulo) {
+    _articulos.remove(articulo);
 
     _actualizarTotales();
   }
