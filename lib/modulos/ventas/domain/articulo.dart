@@ -8,11 +8,11 @@ import 'package:eleventa/modulos/ventas/domain/total_de_impuesto.dart';
 
 class Articulo extends Entidad {
   final IProducto _producto;
-  var _cantidad = 0.00;
+  final double _cantidad;
   var _subtotal = Moneda(0);
   final DateTime _agregadoEn;
   var _precioDeVenta = Moneda(0);
-  final List<TotalDeImpuesto> _totalesDeImpuestos;
+  final List<TotalDeImpuesto> _totalesDeImpuestos = [];
 
   double get cantidad => _cantidad;
   Moneda get subtotal => _subtotal;
@@ -42,7 +42,6 @@ class Articulo extends Entidad {
   })  : _cantidad = cantidad,
         _agregadoEn = agregadoEn,
         _producto = producto,
-        _totalesDeImpuestos = [],
         super.cargar(uid) {
     //TODO: validar que el precio de venta no sea cero, en este punto no debe
     //ser cero nunca
@@ -56,7 +55,6 @@ class Articulo extends Entidad {
   })  : _cantidad = cantidad,
         _agregadoEn = DateTime.now(),
         _producto = producto,
-        _totalesDeImpuestos = [],
         super.crear() {
     _precioDeVenta = producto.precioDeVenta;
     _validarCantidad(cantidad, producto.seVendePor);
@@ -85,11 +83,6 @@ class Articulo extends Entidad {
     }
   }
 
-  void actualizarCantidad(double cantidad) {
-    _cantidad = cantidad;
-    _calcularTotales();
-  }
-
   void _calcularTotales() {
     _subtotal =
         Moneda(_producto.precioDeVentaSinImpuestos.toDouble() * _cantidad);
@@ -116,5 +109,25 @@ class Articulo extends Entidad {
 
       baseDelImpuesto += Moneda(montoDeImpuesto);
     }
+  }
+
+  Articulo copyWith({
+    UID? uid,
+    double? cantidad,
+    Moneda? precioDeVenta,
+    DateTime? agregadoEn,
+    IProducto? producto,
+  }) {
+    return Articulo.cargar(
+      uid: uid ?? uid_,
+      cantidad: cantidad ?? this.cantidad,
+      agregadoEn: agregadoEn ?? this.agregadoEn,
+      producto: producto ?? this.producto,
+    );
+  }
+
+  @override
+  String toString() {
+    return 'Articulo{uid: $uid_, _producto: $_producto, _cantidad: $_cantidad, _subtotal: $_subtotal, _agregadoEn: $_agregadoEn, _precioDeVenta: $_precioDeVenta, _totalesDeImpuestos: $_totalesDeImpuestos}';
   }
 }

@@ -44,7 +44,7 @@ class AdaptadorImpresionWindows implements IImpresion {
 
     for (var articulo in venta.articulos) {
       impresoraTickets!.agregarLineaJustificada(
-          '${articulo.cantidad} ${articulo.descripcion}',
+          '${articulo.cantidad} ${articulo.productoNombre}',
           '${articulo.subtotal}');
     }
 
@@ -55,7 +55,7 @@ class AdaptadorImpresionWindows implements IImpresion {
     //TODO: Agregar porcentaje a los impuestos cobrados
     for (var impuestoCobrado in venta.totalesDeImpuestos) {
       impresoraTickets!.agregarLinea(
-          '${impuestoCobrado.impuesto} '
+          '${impuestoCobrado.nombreImpuesto} '
           '${impuestoCobrado.porcentaje.toString()}: '
           '${impuestoCobrado.monto.toString()}',
           TipoAlineacion.derecha);

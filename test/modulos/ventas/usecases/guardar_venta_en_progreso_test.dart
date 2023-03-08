@@ -60,6 +60,61 @@ void main() {
     //TODO: validar que tenga TODOS los datos que guardamos
   });
 
+  test('Debe persistir la venta cuando un artículo es modificado', () async {
+    final guardar = ModuloVentas.guardarVenta();
+    final consultas = ModuloVentas.repositorioConsultaVentas();
+    final crearProducto = ModuloProductos.crearProducto();
+
+    final consultasProductos = ModuloProductos.repositorioConsultaProductos();
+    final unidadesMedida = await consultasProductos.obtenerUnidadesDeMedida();
+
+    var cantidad = 1.00;
+    var precioVenta = 24411.00;
+    var precioCompra = 21.680000;
+
+    var venta = Venta.crear();
+    var producto = ProductosUtils.crearProducto(
+      precioCompra: Moneda(precioCompra),
+      precioVenta: Moneda(precioVenta),
+      unidadDeMedida: unidadesMedida.first,
+      impuestos: [],
+    );
+
+    final productoGenerico = ProductoGenerico.crear(
+      nombre: NombreProducto('Chicles'),
+      precioDeVenta: PrecioDeVentaProducto(Moneda(1000)),
+    );
+
+    crearProducto.req.producto = producto;
+    await crearProducto.exec();
+
+    var articulo1 = Articulo.crear(producto: producto, cantidad: cantidad);
+    venta.agregarArticulo(articulo1);
+
+    var articuloGenerico =
+        Articulo.crear(producto: productoGenerico, cantidad: 1.0);
+    venta.agregarArticulo(articuloGenerico);
+
+    guardar.req.venta = venta;
+    await guardar.exec();
+
+    // Alteramos la cantidad del artículo
+    final cantidadNuevaEsperada = cantidad + 10;
+    articulo1 = articulo1.copyWith(cantidad: cantidadNuevaEsperada);
+
+    venta.actualizarArticulo(articulo1);
+
+    guardar.req.venta = venta;
+    await guardar.exec();
+
+    final ventaDb = await consultas.obtenerVentaEnProgreso(venta.uid);
+
+    var articuloDb = ventaDb!.articulos.firstWhere(
+        (element) => element.producto.uid == articulo1.producto.uid);
+
+    expect(articuloDb.cantidad, cantidadNuevaEsperada, reason: 'Se debio de actualizar la cantidad del artículo aun guardada la venta');
+  });
+
   test('Debe persistir la venta en progreso con productos genericos', () async {
     final guardar = ModuloVentas.guardarVenta();
     final consultas = ModuloVentas.repositorioConsultaVentas();

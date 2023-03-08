@@ -100,8 +100,9 @@ void main() {
 
     //TODO: probar optimistic locking cuando se actualice un producto
 
-    final articulo = Articulo.crear(producto: producto, cantidad: cantidad);
-    articulo.actualizarCantidad(cantidad + cantidadAgregada);
+    var articulo = Articulo.crear(producto: producto, cantidad: cantidad);
+
+    articulo = articulo.copyWith(cantidad: cantidad + cantidadAgregada);
 
     var totalEsperado = (cantidad + cantidadAgregada) *
         Moneda(precioVentaConImpuestos).toDouble();
