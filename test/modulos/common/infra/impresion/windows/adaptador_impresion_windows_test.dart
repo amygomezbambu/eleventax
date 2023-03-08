@@ -6,10 +6,12 @@ import 'package:eleventa/modulos/common/infra/impresion/windows/adaptador_impres
 import 'package:eleventa/modulos/common/infra/impresion/windows/impresora_tickets_windows.dart';
 import 'package:eleventa/modulos/productos/domain/impuesto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/porcentaje_de_impuesto.dart';
+import 'package:eleventa/modulos/productos/modulo_productos.dart';
 import 'package:eleventa/modulos/ventas/domain/articulo.dart';
 import 'package:eleventa/modulos/ventas/domain/pago.dart';
 import 'package:eleventa/modulos/ventas/domain/venta.dart';
 import 'package:eleventa/modulos/ventas/modulo_ventas.dart';
+import 'package:eleventa/modulos/ventas/read_models/venta.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../../loader_for_tests.dart';
@@ -43,52 +45,45 @@ void main() {
 
     adaptadorImpresion.impresoraTickets = impresoraTickets;
 
+    final consultasProductos = ModuloProductos.repositorioConsultaProductos();
     final cobrarVenta = ModuloVentas.cobrarVenta();
     final consultas = ModuloVentas.repositorioConsultaVentas();
-    final formasDisponibles = await consultas.obtenerFormasDePago();
+    final crearProducto = ModuloProductos.crearProducto();
+    
+    Venta ventaEnProgreso = Venta.crear();
 
-    const precio = 11.55;
+    var cantidad = 1.00;
 
-    final impuestos = <Impuesto>[
-      Impuesto.crear(
-          nombre: 'IVA',
-          porcentaje: PorcentajeDeImpuesto(16.0),
-          ordenDeAplicacion: 2),
-    ];
+    var precioVenta = 24411.00;
+    var precioCompra = 21.680000;
 
-    final impuestoMultiples = <Impuesto>[
-      Impuesto.crear(
-          nombre: 'IEPS',
-          porcentaje: PorcentajeDeImpuesto(8.0),
-          ordenDeAplicacion: 1),
-      ...impuestos,
-    ];
+    var listaImpuestos = await consultasProductos.obtenerImpuestos();
 
     var producto = ProductosUtils.crearProducto(
-      impuestos: impuestoMultiples,
-      precioCompra: Moneda(precio),
-      precioVenta: Moneda(precio),
+      impuestos: listaImpuestos,
+      precioCompra: Moneda(precioCompra),
+      precioVenta: Moneda(precioVenta),
     );
 
-    Venta ventaEnProgreso = Venta.crear();
-    var articulo = Articulo.crear(
-      producto: producto,
-      cantidad: 1.0,
-    );
-    var pago = Pago.crear(
-      forma: formasDisponibles.first,
-      monto: Moneda(precio),
-      pagoCon: Moneda(precio),
-    );
+    crearProducto.req.producto = producto;
+    await crearProducto.exec();
+
+    var formasDisponibles = await consultas.obtenerFormasDePago();
+    
+    var articulo = Articulo.crear(producto: producto, cantidad: cantidad);
 
     ventaEnProgreso.agregarArticulo(articulo);
+    var pago = Pago.crear(
+      forma: formasDisponibles.first,
+      monto: ventaEnProgreso.total,
+    );
     ventaEnProgreso.agregarPago(pago);
 
     cobrarVenta.req.venta = ventaEnProgreso;
     await cobrarVenta.exec();
 
-    var venta = await consultas.obtenerVenta(ventaEnProgreso.uid);
-
-    await adaptadorImpresion.imprimirTicket(venta!);
+    VentaDto? ventaCobrada = await consultas.obtenerVenta(ventaEnProgreso.uid);
+   
+    await adaptadorImpresion.imprimirTicket(ventaCobrada!);
   }, skip: !Platform.isWindows);
 }

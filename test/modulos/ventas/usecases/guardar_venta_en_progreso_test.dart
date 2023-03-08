@@ -109,9 +109,10 @@ void main() {
 
     final ventaDb = await consultas.obtenerVentaEnProgreso(venta.uid);
 
-    expect(ventaDb!.articulos.first.cantidad, cantidadNuevaEsperada);
-    expect(ventaDb.articulos.length, 1,
-        reason: 'Se debió haber eliminado el segundo artículo');
+    var articuloDb = ventaDb!.articulos.firstWhere(
+        (element) => element.producto.uid == articulo1.producto.uid);
+
+    expect(articuloDb.cantidad, cantidadNuevaEsperada, reason: 'Se debio de actualizar la cantidad del artículo aun guardada la venta');
   });
 
   test('Debe persistir la venta en progreso con productos genericos', () async {

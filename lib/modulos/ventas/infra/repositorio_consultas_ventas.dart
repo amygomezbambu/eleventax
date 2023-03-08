@@ -220,7 +220,8 @@ class RepositorioConsultaVentas extends RepositorioConsulta
         articulo.agregadoEn =
             DateTime.fromMillisecondsSinceEpoch(row['agregado_en'] as int);
 
-        articulo.esGenerico = row['producto_generico_uid'] != null;
+        articulo.esGenerico = (row['producto_generico_uid'] != null);
+        
 
         if ((row['producto_generico_uid'] as String).isNotEmpty) {
           articulo.precioDeVenta =

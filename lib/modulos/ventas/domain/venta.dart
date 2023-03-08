@@ -153,15 +153,34 @@ class Venta extends Entidad {
   }
 
   Articulo? _obtenerArticuloSiExiste(Articulo articuloBuscado) {
-    print('Articulo buscado: $articuloBuscado');
     return _articulos
         .firstWhereOrNull((articulo) => articulo.uid == articuloBuscado.uid);
   }
 
   void eliminarArticulo(Articulo articulo) {
-    _articulos.remove(articulo);
+    var articuloExistenteConMismoProducto = _articulos.firstWhereOrNull(
+        (articuloExistente) =>
+            articuloExistente.producto.uid == articulo.producto.uid);
 
-    _actualizarTotales();
+    if (articuloExistenteConMismoProducto != null) {
+      var articuloActualizado = articuloExistenteConMismoProducto.copyWith(
+        cantidad:
+            articuloExistenteConMismoProducto.cantidad - articulo.cantidad,
+      );
+
+      if (articuloActualizado.cantidad == 0) {
+        _articulos.remove(articuloActualizado);
+      } else {
+        actualizarArticulo(articuloActualizado);
+      }
+
+      _actualizarTotales();
+    } else {
+      throw VentasEx(
+          tipo: TiposVentasEx.errorDeValidacion,
+          message:
+              'No se encontró el artículo con el uid: ${articulo.uid}');
+    }
   }
 
   void _actualizarTotales() {

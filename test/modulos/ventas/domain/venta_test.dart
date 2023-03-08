@@ -75,9 +75,11 @@ void main() {
       () {
     var cantidad = 2.00;
     var cantidad2 = 3.00;
+
     var precioVenta = 41.2431556329;
     var precioSinImpuestos = precioVenta / 1.16;
     var precioCompra = 21.54444448;
+
     var articulosEsperados = 1;
 
     var producto = ProductosUtils.crearProducto(
@@ -249,6 +251,7 @@ void main() {
     //var fechaEsperada = DateTime.now();
   });
 
+
   test('Debe actualizar los totales al eliminar algun articulo', () {
     var cantidad = 2.00;
     var cantidad2 = 3.00;
@@ -323,8 +326,8 @@ void main() {
     articulo2 = articulo2.copyWith(cantidad: cantidadNueva);
     venta.actualizarArticulo(articulo2);
 
-    final subtotalEsperado =
-        Moneda((precioSinImpuestos * cantidadNueva).toDouble()).importeCobrable;
+    final subtotalEsperado = articulo.subtotal.importeCobrable +
+        articulo2.subtotal.importeCobrable;
 
     expect(
       articulo2.cantidad,

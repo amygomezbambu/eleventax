@@ -63,30 +63,25 @@ void main() {
       precioVenta: Moneda(precioVenta),
     );
 
+    crearProducto.req.producto = producto;
+    await crearProducto.exec();
+
     var productoGranel = ProductosUtils.crearProducto(
       precioCompra: Moneda(precioCompra),
       precioVenta: Moneda(precioVenta),
       productoSeVendePor: ProductoSeVendePor.peso,
     );
 
-    var listaImpuestos = await consultasProductos.obtenerImpuestos();
-
-    var productoGenerico = ProductoGenerico.crear(
-      nombre: NombreProducto('Chicles'),
-      precioDeVenta: PrecioDeVentaProducto(Moneda(precioVenta)),
-      impuestos: [listaImpuestos.first],
-    );
+    crearProducto.req.producto = productoGranel;
+    await crearProducto.exec();
 
     var formasDisponibles = await consultas.obtenerFormasDePago();
     var articulo = Articulo.crear(producto: producto, cantidad: cantidad);
     var articuloGranel =
         Articulo.crear(producto: productoGranel, cantidad: cantidadGranel);
-    var articuloGenerico =
-        Articulo.crear(producto: productoGenerico, cantidad: cantidad);
 
     ventaEnProgreso.agregarArticulo(articulo);
     ventaEnProgreso.agregarArticulo(articuloGranel);
-    ventaEnProgreso.agregarArticulo(articuloGenerico);
 
     var pago = Pago.crear(
       forma: formasDisponibles.first,
@@ -143,7 +138,7 @@ void main() {
       isNull,
       reason: 'La venta en progreso no fue eliminada despues del cobro',
     );
-  }, skip: true);
+  });
 
   test('debe almacenar una venta con productos genericos', () async {
     final cobrarVenta = ModuloVentas.cobrarVenta();
