@@ -83,8 +83,7 @@ class Migracion7 extends Migracion {
           version_producto_uid TEXT,
           producto_generico_uid TEXT, 
           venta_uid TEXT,
-          cantidad REAL,
-          precio_venta INTEGER,
+          cantidad REAL,       
           subtotal INTEGER,
           agregado_en INTEGER
         ); 

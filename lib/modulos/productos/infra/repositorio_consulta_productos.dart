@@ -448,4 +448,53 @@ class RepositorioConsultaProductos extends RepositorioConsulta
 
     return producto;
   }
+
+  @override
+  Future<ProductoGenerico?> obtenerProductoGenerico(UID uid) async {
+    var command = '''
+      SELECT nombre, precio_venta FROM ventas_productos_genericos WHERE uid = ?;
+    ''';
+
+    ProductoGenerico? producto;
+
+    final dbResult = await query(sql: command, params: [uid.toString()]);
+    List<Impuesto> impuestos = [];
+
+    if (dbResult.isNotEmpty) {
+      final rowProducto = dbResult[0];
+
+      command = ''' 
+      SELECT gi.impuesto_uid, i.nombre, i.porcentaje, i.orden, i.activo 
+      FROM ventas_productos_genericos gi
+        JOIN impuestos i on i.uid = gi.impuesto_uid 
+      WHERE gi.producto_generico_uid = ? 
+    ''';
+
+      final dbResultImpuestos =
+          await query(sql: command, params: [rowProducto['uid'] as String]);
+
+      if (dbResultImpuestos.isNotEmpty) {
+        for (var row in dbResultImpuestos) {
+          impuestos.add(Impuesto.cargar(
+            uid: UID.fromString(row['impuesto_uid'] as String),
+            nombre: row['nombre'] as String,
+            porcentaje:
+                PorcentajeDeImpuesto.deserialize((row['porcentaje'] as int)),
+            ordenDeAplicacion: (row['orden'] as int),
+            activo: Utils.db.intToBool(row['activo'] as int),
+          ));
+        }
+      }
+
+      producto = ProductoGenerico.cargar(
+        nombre: NombreProducto(rowProducto['nombre'] as String),
+        precioDeVenta: PrecioDeVentaProducto(
+            Moneda.deserialize(rowProducto['precio_venta'] as int)),
+        uid: UID.fromString(rowProducto['uid'] as String),
+        impuestos: impuestos,
+      );
+    }
+
+    return producto;
+  }
 }

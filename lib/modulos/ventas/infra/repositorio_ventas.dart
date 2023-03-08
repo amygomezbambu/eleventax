@@ -66,14 +66,30 @@ class RepositorioVentas extends Repositorio implements IRepositorioVentas {
     }
 
     for (var articulo in venta.articulos) {
+      if (articulo.producto is ProductoGenerico) {
+        await adaptadorSync.sincronizar(
+          dataset: 'ventas_productos_genericos',
+          rowID: articulo.producto.uid.toString(),
+          fields: {
+            'precio_venta': articulo.producto.precioDeVenta.serialize(),
+            'nombre': articulo.producto.nombre,
+          },
+        );
+      }
+
       await adaptadorSync.sincronizar(
         dataset: 'ventas_articulos',
         rowID: articulo.uid.toString(),
         fields: {
           'venta_uid': venta.uid.toString(),
-          'version_producto_uid': articulo.producto.versionActual.toString(),
+          'version_producto_uid': (articulo.producto is Producto)
+              ? articulo.producto.versionActual.toString()
+              : '',
+          'producto_generico_uid': (articulo.producto is ProductoGenerico)
+              ? articulo.producto.uid.toString()
+              : '',
           'cantidad': articulo.cantidad,
-          'precio_venta': articulo.precioDeVenta.serialize(),
+          // 'precio_venta': articulo.precioDeVenta.serialize(),
           'subtotal': articulo.subtotal.serialize(),
           'agregado_en': articulo.agregadoEn.millisecondsSinceEpoch,
         },
