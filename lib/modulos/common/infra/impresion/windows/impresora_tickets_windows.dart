@@ -1,8 +1,9 @@
 import 'dart:ffi';
 
+import 'package:eleventa/globals.dart';
 import 'package:eleventa/modulos/common/app/interface/impresora_tickets.dart';
+import 'package:eleventa/modulos/common/infra/impresion/windows/comandos_esc_pos.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
-
 import 'package:eleventa/modulos/common/exception/win32_utils.dart';
 import 'package:eleventa/modulos/common/utils/utils.dart';
 
@@ -12,7 +13,9 @@ import 'package:win32/win32.dart';
 class ImpresoraDeTicketsWindows implements IImpresoraDeTickets {
   final String _nombreImpresora;
   final AnchoTicket _anchoTicket;
+  final List<String> _lineasAImprimir = [];
   late Arena _alloc;
+
   static const tipoImpresion = 'RAW'; // RAW, TEXT or XPS_PASS
 
   ImpresoraDeTicketsWindows(
@@ -21,21 +24,21 @@ class ImpresoraDeTicketsWindows implements IImpresoraDeTickets {
         _anchoTicket = anchoTicket;
 
   @override
-  Future<bool> abrirCajon() {
+  Future<bool> abrirCajon() async {
     // TODO: implement abrirCajon
-
-    throw UnimplementedError();
+    return Future.value(true);
   }
 
   @override
   configurarImpresora(AnchoTicket anchoTicket) {
     // TODO: implement configurarImpresora
     anchoTicket = _anchoTicket;
-    throw UnimplementedError();
   }
 
   @override
   imprimirPaginaDePrueba() {
+    _inicializarImpresora();
+
     final data = <String>[
       for (var i = 0; i < 10; i++) 'Hello world line $i',
     ];
@@ -44,15 +47,83 @@ class ImpresoraDeTicketsWindows implements IImpresoraDeTickets {
   }
 
   @override
-  imprimir(List<String> lineasAImprimir) {
-    _imprimirLineas(lineasAImprimir, nombreDocumento: 'Ticket de prueba');
+  imprimir() async {
+    if (_lineasAImprimir.isEmpty) {
+      throw InfraEx(
+        message: 'No hay lineas para imprimir',
+        innerException: 0,
+        tipo: TipoInfraEx.errorAlImprimir,
+      );
+    }
+
+    _inicializarImpresora();
+
+    if (await abrirCajon()) {
+      agregarLinea(ComandosEscPos.abrirCajon);
+    }
+
+    _imprimirLineas(_lineasAImprimir, nombreDocumento: 'Ticket de prueba');
+  }
+
+  @override
+  void agregarDivisor([String divisor = '=']) {
+    String auxDivisor = '';
+    for (int i = 0; i < appConfig.columnasTicket; i++) {
+      auxDivisor += divisor;
+    }
+
+    agregarLinea(auxDivisor);
+  }
+
+  @override
+  void agregarEspaciadoFinal() {
+    for (int i = 0; i < appConfig.lineasEspaciado; i++) {
+      agregarLineaEnBlanco();
+    }
+  }
+
+  @override
+  void agregarLinea(String linea,
+      [TipoAlineacion alineacion = TipoAlineacion.izquierda,
+      TipoTamanioFuente tamanioFuente = TipoTamanioFuente.normal]) {
+    _lineasAImprimir.add(alineacion.comando + tamanioFuente.comando + linea);
+  }
+
+  @override
+  void agregarLineaEnBlanco() {
+    agregarLinea(ComandosEscPos.saltoRetornoCarro);
+  }
+
+  @override
+  void agregarLineaJustificada(String campo, String valor,
+      [TipoTamanioFuente tamanioFuente = TipoTamanioFuente.normal]) {
+    agregarLinea(_impresionCampoValor(campo, valor, separador: ' '),
+        TipoAlineacion.izquierda, tamanioFuente);
+  }
+
+  void _inicializarImpresora() {
+    _lineasAImprimir.insert(0, ComandosEscPos.inicializarImpresora);
+  }
+
+  String _impresionCampoValor(String campo, String valor,
+      {String separador = ' '}) {
+    var res = campo + valor;
+    var espacios = separador;
+    while (res.length < appConfig.columnasTicket) {
+      res = campo + espacios + valor;
+      espacios += separador;
+    }
+    return res;
   }
 
   String _removerCaracteresNoImprimibles(String texto) {
-    var resultado =  Utils.string.removerEmojis(texto);
-    resultado = Utils.string.limpiarCaracteresInvisibles(resultado);
+    var resultado = Utils.string.removerEmojis(texto);
+    //resultado = Utils.string.limpiarCaracteresInvisibles(resultado);
+    resultado = Utils.string.removerAcentos(resultado);
     return resultado;
   }
+
+  /// **********************************************************************
 
   bool _imprimirLineas(List<String> data,
       {String nombreDocumento = 'Documento'}) {
@@ -74,9 +145,13 @@ class ImpresoraDeTicketsWindows implements IImpresoraDeTickets {
 
       for (final item in data) {
         if (res) {
-          res = _printRawData(printerHandle, '${_removerCaracteresNoImprimibles(item)}\n',);
+          res = _printRawData(
+            printerHandle,
+            '${_removerCaracteresNoImprimibles(item)}\n',
+          );
         }
       }
+
       _endRawPrintPage(printerHandle);
       _endRawPrintJob(printerHandle);
     });
@@ -167,6 +242,5 @@ class ImpresoraDeTicketsWindows implements IImpresoraDeTickets {
 
     return result != 0;
   }
-
   //ENDREGION
 }

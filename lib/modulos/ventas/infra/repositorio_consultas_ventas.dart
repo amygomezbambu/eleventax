@@ -4,7 +4,7 @@ import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/domain/nombre_value_object.dart';
 import 'package:eleventa/modulos/common/infra/repositorio_consulta.dart';
 import 'package:eleventa/modulos/common/utils/utils.dart';
-import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
+import 'package:eleventa/modulos/productos/domain/interface/producto.dart';
 import 'package:eleventa/modulos/productos/interfaces/repositorio_consulta_productos.dart';
 import 'package:eleventa/modulos/ventas/domain/articulo.dart';
 import 'package:eleventa/modulos/ventas/domain/forma_de_pago.dart';
@@ -52,7 +52,7 @@ class RepositorioConsultaVentas extends RepositorioConsulta
     for (var row in dbResult) {
       var totalImpuesto = TotalImpuestoDto();
       totalImpuesto.base = Moneda.deserialize(row['base_impuesto'] as int);
-      totalImpuesto.impuesto = row['nombre_impuesto'] as String;
+      totalImpuesto.nombreImpuesto = row['nombre_impuesto'] as String;
       totalImpuesto.monto = Moneda.deserialize(row['monto'] as int);
       totalImpuesto.porcentaje =
           double.parse(row['porcentaje_impuesto'] as String);
@@ -69,7 +69,7 @@ class RepositorioConsultaVentas extends RepositorioConsulta
 
     var sql = '''
         SELECT vp.uid, vp.creado_en,vp.subtotal,vp.total,vp.total_impuestos,
-          vpa.producto_uid,vpa.cantidad,vpa.descripcion,
+          vpa.producto_uid, vpa.producto_generico_uid, vpa.cantidad,
           vpa.agregado_en, vpa.uid as articulo_uid 
         FROM $_tablaVentasEnProgreso vp 
         LEFT JOIN $_tablaVentasEnProgresoArticulos vpa ON vpa.venta_uid = vp.uid 
@@ -82,8 +82,14 @@ class RepositorioConsultaVentas extends RepositorioConsulta
 
     if (result.isNotEmpty) {
       for (var row in result) {
-        var producto = await _productos
-            .obtenerProducto(UID.fromString(row['producto_uid'] as String));
+        IProducto? producto;
+        if (row['producto_uid'] != null) {
+          producto = (await _productos
+              .obtenerProducto(UID.fromString(row['producto_uid'] as String)));
+        } else {
+          producto = (await _productos.obtenerProductoGenericoEnProgreso(
+              UID.fromString(row['producto_generico_uid'] as String)));
+        }
 
         if (producto == null) {
           throw VentasEx(
@@ -97,7 +103,6 @@ class RepositorioConsultaVentas extends RepositorioConsulta
           cantidad: row['cantidad'] as double,
           agregadoEn:
               DateTime.fromMillisecondsSinceEpoch(row['agregado_en'] as int),
-          descripcion: NombreProducto(row['descripcion'] as String),
           producto: producto,
         );
 
@@ -192,10 +197,15 @@ class RepositorioConsultaVentas extends RepositorioConsulta
 
     var sql = '''
         SELECT v.uid, v.estado, v.creado_en, v.total, v.subtotal, v.total_impuestos, 
-        v.cobrado_en, v.folio, 
-        va.uid as articulo_uid, va.cantidad, va.precio_venta, va.descripcion, 
+        v.cobrado_en, v.folio, va.producto_generico_uid,
+        va.uid as articulo_uid, va.cantidad,
+        pv.nombre AS producto_nombre, pv.precio_venta AS producto_precio_venta,
+        g.nombre AS generico_nombre, g.precio_venta AS generico_precio_venta,
         va.agregado_en, va.version_producto_uid, va.subtotal as subtotal_articulo
-        FROM $_tablaVentas v JOIN $_tablaVentasArticulos va on va.venta_uid = v.uid 
+        FROM $_tablaVentas v 
+          JOIN $_tablaVentasArticulos va on va.venta_uid = v.uid     
+        LEFT JOIN productos_versiones pv ON pv.uid = va.version_producto_uid         
+        LEFT JOIN ventas_productos_genericos g ON g.uid = va.producto_generico_uid  
         WHERE v.uid = ?;
         ''';
 
@@ -209,8 +219,20 @@ class RepositorioConsultaVentas extends RepositorioConsulta
         articulo.cantidad = row['cantidad'] as double;
         articulo.agregadoEn =
             DateTime.fromMillisecondsSinceEpoch(row['agregado_en'] as int);
-        articulo.precioDeVenta = Moneda.deserialize(row['precio_venta'] as int);
-        articulo.descripcion = row['descripcion'] as String;
+
+        articulo.esGenerico = (row['producto_generico_uid'] != null);
+        
+
+        if ((row['producto_generico_uid'] as String).isNotEmpty) {
+          articulo.precioDeVenta =
+              Moneda.deserialize(row['generico_precio_venta'] as int);
+          articulo.productoNombre = row['generico_nombre'] as String;
+        } else {
+          articulo.precioDeVenta =
+              Moneda.deserialize(row['producto_precio_venta'] as int);
+          articulo.productoNombre = row['producto_nombre'] as String;
+        }
+
         articulo.subtotal = Moneda.deserialize(row['subtotal_articulo'] as int);
         articulo.totalesDeImpuestos =
             await _obtenerTotalesDeImpuestosDeArticulo(
@@ -246,7 +268,6 @@ class RepositorioConsultaVentas extends RepositorioConsulta
 
       result = await query(sql: sql, params: [uid.toString()]);
 
-
       for (var row in result) {
         var pago = PagoDto();
         pago.forma = row['nombre'] as String;
@@ -259,7 +280,6 @@ class RepositorioConsultaVentas extends RepositorioConsulta
 
         venta.pagos.add(pago);
       }
-      
 
       sql = '''
       SELECT nombre_impuesto, porcentaje_impuesto, base_impuesto, monto 
@@ -271,8 +291,9 @@ class RepositorioConsultaVentas extends RepositorioConsulta
 
       for (var row in result) {
         var impuesto = TotalImpuestoDto();
-        impuesto.impuesto = row['nombre_impuesto'] as String;
-        impuesto.porcentaje = double.parse(row['porcentaje_impuesto'] as String);
+        impuesto.nombreImpuesto = row['nombre_impuesto'] as String;
+        impuesto.porcentaje =
+            double.parse(row['porcentaje_impuesto'] as String);
         impuesto.base = Moneda.deserialize(row['base_impuesto'] as int);
         impuesto.monto = Moneda.deserialize(row['monto'] as int);
 

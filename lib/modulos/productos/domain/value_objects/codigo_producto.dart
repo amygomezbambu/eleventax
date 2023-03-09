@@ -6,6 +6,7 @@ class CodigoProducto {
   //Constantes
   final _codigoReservado = '0';
   final _longitudMaxima = 20;
+  static const codigoGenerico = '0';
   //final _regex = RegExp(r'[À-ÿa-zA-Z0-9_\-=@,\.\+;*\$&:"\/\s]+$');
 
   late String _codigo;
@@ -15,6 +16,10 @@ class CodigoProducto {
   CodigoProducto(String codigo) {
     _codigo = _sanitizar(codigo);
     _validar(_codigo);
+  }
+
+  CodigoProducto.generico() {
+    _codigo = CodigoProducto.codigoGenerico;
   }
 
   String _sanitizar(String codigo) {

@@ -112,12 +112,11 @@ class NotificadorVenta extends StateNotifier<VentaActualState> {
   }
 
   Future<void> _modificarCantidad(double cantidad) async {
-    state.articuloSeleccionado
-        .actualizarCantidad(state.articuloSeleccionado.cantidad + cantidad);
+    final articuloActualizado = state.articuloSeleccionado
+        .copyWith(cantidad: state.articuloSeleccionado.cantidad + cantidad);
+    state.venta.actualizarArticulo(articuloActualizado);
 
-    var venta = state.venta.copyWith(articulos: state.venta.articulos);
-    state = state.copyWith(venta: venta);
-
+    state = state.copyWith();
     await _guardarVenta();
   }
 }

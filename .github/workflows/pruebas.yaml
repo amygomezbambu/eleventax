@@ -52,7 +52,6 @@ jobs:
         if: contains(steps.archivos-modificados.outputs.modified_files, '.arb')
         run: |
           echo "arb_modificados=true" >> $GITHUB_OUTPUT
-          
 
       # - name: verificamos si hubo archivos .arb modificados
       #   id: arb-modificados
@@ -61,7 +60,6 @@ jobs:
       #     separator: ","
       #     files: |
       #       l10n/*.arb
-
 
   pruebas-unitarias:
     if: contains(github.event.pull_request.labels.*.name, 'sin pruebas de unidad') == false
@@ -114,17 +112,11 @@ jobs:
           cache-key: "flutter-:os:-:channel:-:version:-:arch:"
           architecture: x64
 
+      - name: Instalar OpenSSL
+        run: choco install openssl
+
       - name: Obtener dependencias de flutter
         run: flutter pub get
-
-      # Copiamos los DLLs a la carpeta donde se ejecutan las pruebas de unidad
-      - name: Copiamos DLLs de SQLite para que funcionen las pruebas (solo Windows)
-        if: runner.os == 'Windows'
-        run: Copy-Item -Path "assets\windows\*" -Destination "${{ env.FLUTTER_ROOT }}\bin\cache\artifacts\engine\windows-x64"
-
-      - name: Copiamos DLLs de SQLite para que funcionen las pruebas de integración (solo Windows)
-        if: runner.os == 'Windows'
-        run: Copy-Item -Path "assets\windows\*" -Destination (New-Item -Type Directory -Force (".\build\windows\runner\Debug")) -Force -EA 0
 
       - name: Generar archivos de internacionalizacion
         if: needs.verificar-archivos-modificados.outputs.arb_modificados == 'true'

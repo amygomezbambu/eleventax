@@ -7,7 +7,8 @@ class ArticuloDto {
   var cantidad = 0.00;
   var subtotal = Moneda(0);
   var agregadoEn = DateTime.now();
-  var descripcion = "";
+  bool esGenerico = false;
+  var productoNombre = '';
   var precioDeVenta = Moneda(0);
   var totalesDeImpuestos = <TotalImpuestoDto>[];
 }

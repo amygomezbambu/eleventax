@@ -38,6 +38,12 @@ class AppConfig extends ConfigLocal {
   var dbVersion = 0;
   var decimalesAMostrar = 2;
 
+  /*Configuracion de impresion*/
+  int columnasTicket = 32;
+  int lineasEspaciado = 3;
+  String nombreImpresora = 'GP-5890X';
+
+
   /* #region Singleton */
   static final AppConfig _instance = AppConfig._internal();
 

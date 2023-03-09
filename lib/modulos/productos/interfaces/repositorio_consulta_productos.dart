@@ -2,6 +2,7 @@ import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/productos/domain/categoria.dart';
 import 'package:eleventa/modulos/productos/domain/impuesto.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
+import 'package:eleventa/modulos/productos/domain/producto_generico.dart';
 import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
 import 'package:eleventa/modulos/productos/dto/busqueda_producto_dto.dart';
@@ -15,6 +16,8 @@ abstract class IRepositorioConsultaProductos {
   Future<bool> existeProducto(String codigo);
   Future<List<Producto>> obtenerProductos();
   Future<Producto?> obtenerProducto(UID uid);
+  Future<ProductoGenerico?> obtenerProductoGenericoEnProgreso(UID uid);
+  Future<ProductoGenerico?> obtenerProductoGenerico(UID uid);
   Future<ProductoDto?> obtenerVersionDeProducto(UID versionUid);
   Future<Producto?> obtenerProductoPorCodigo(CodigoProducto codigo);
   Future<List<Impuesto>> obtenerImpuestosParaProducto(UID productoUID);
