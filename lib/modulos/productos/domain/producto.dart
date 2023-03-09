@@ -5,7 +5,6 @@ import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/productos/domain/categoria.dart';
 import 'package:eleventa/modulos/productos/domain/impuesto.dart';
 import 'package:eleventa/modulos/productos/domain/interface/producto.dart';
-import 'package:eleventa/modulos/productos/domain/servicio/calcular_precio_sin_impuesto_de_producto.dart';
 import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/nombre_producto.dart';
@@ -47,9 +46,6 @@ class Producto extends Entidad implements IProducto {
   Moneda get precioDeVenta => _precioDeVenta.value;
   @override
   List<Impuesto> get impuestos => List.unmodifiable(_impuestos);
-  @override
-  Moneda get precioDeVentaSinImpuestos =>
-      calcularPrecioSinImpuestos(_precioDeVenta, _impuestos);
 
   set categoria(Categoria? val) => _categoria;
 

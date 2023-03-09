@@ -56,18 +56,15 @@ void main() {
     var cantidadGranel = 0.545;
 
     var precioVenta = 24411.00;
-    var precioCompra = 21.680000;
 
-    var producto = ProductosUtils.crearProducto(
-      precioCompra: Moneda(precioCompra),
+    var productoPorPieza = ProductosUtils.crearProducto(
       precioVenta: Moneda(precioVenta),
     );
 
-    crearProducto.req.producto = producto;
+    crearProducto.req.producto = productoPorPieza;
     await crearProducto.exec();
 
     var productoGranel = ProductosUtils.crearProducto(
-      precioCompra: Moneda(precioCompra),
       precioVenta: Moneda(precioVenta),
       productoSeVendePor: ProductoSeVendePor.peso,
     );
@@ -76,7 +73,8 @@ void main() {
     await crearProducto.exec();
 
     var formasDisponibles = await consultas.obtenerFormasDePago();
-    var articulo = Articulo.crear(producto: producto, cantidad: cantidad);
+    var articulo =
+        Articulo.crear(producto: productoPorPieza, cantidad: cantidad);
     var articuloGranel =
         Articulo.crear(producto: productoGranel, cantidad: cantidadGranel);
 
@@ -241,10 +239,8 @@ void main() {
 
     var cantidad = 1.00;
     var precioVenta = 24411.00;
-    var precioCompra = 21.680000;
 
     var producto = ProductosUtils.crearProducto(
-      precioCompra: Moneda(precioCompra),
       precioVenta: Moneda(precioVenta),
     );
 
@@ -255,7 +251,7 @@ void main() {
     var articulo = Articulo.crear(producto: producto, cantidad: cantidad);
     var pago = Pago.crear(
       forma: formasDisponibles.first,
-      monto: Moneda(24407.00),
+      monto: Moneda(precioVenta - 1000),
     );
 
     ventaEnProgreso.agregarArticulo(articulo);

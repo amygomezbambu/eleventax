@@ -9,7 +9,6 @@ abstract class IProducto {
   String get codigo;
   Moneda get precioDeVenta;
   List<Impuesto> get impuestos;
-  Moneda get precioDeVentaSinImpuestos;
   UID get versionActual;
   ProductoSeVendePor get seVendePor;
 }

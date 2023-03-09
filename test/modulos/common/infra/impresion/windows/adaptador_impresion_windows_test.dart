@@ -4,8 +4,6 @@ import 'package:eleventa/modulos/common/app/interface/impresora_tickets.dart';
 import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/infra/impresion/windows/adaptador_impresion_windows.dart';
 import 'package:eleventa/modulos/common/infra/impresion/windows/impresora_tickets_windows.dart';
-import 'package:eleventa/modulos/productos/domain/impuesto.dart';
-import 'package:eleventa/modulos/productos/domain/value_objects/porcentaje_de_impuesto.dart';
 import 'package:eleventa/modulos/productos/modulo_productos.dart';
 import 'package:eleventa/modulos/ventas/domain/articulo.dart';
 import 'package:eleventa/modulos/ventas/domain/pago.dart';
@@ -49,7 +47,7 @@ void main() {
     final cobrarVenta = ModuloVentas.cobrarVenta();
     final consultas = ModuloVentas.repositorioConsultaVentas();
     final crearProducto = ModuloProductos.crearProducto();
-    
+
     Venta ventaEnProgreso = Venta.crear();
 
     var cantidad = 1.00;
@@ -69,7 +67,7 @@ void main() {
     await crearProducto.exec();
 
     var formasDisponibles = await consultas.obtenerFormasDePago();
-    
+
     var articulo = Articulo.crear(producto: producto, cantidad: cantidad);
 
     ventaEnProgreso.agregarArticulo(articulo);
@@ -83,7 +81,7 @@ void main() {
     await cobrarVenta.exec();
 
     VentaDto? ventaCobrada = await consultas.obtenerVenta(ventaEnProgreso.uid);
-   
+
     await adaptadorImpresion.imprimirTicket(ventaCobrada!);
   }, skip: !Platform.isWindows);
 }

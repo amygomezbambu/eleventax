@@ -32,7 +32,7 @@ class Impuesto extends Entidad {
   ///
   /// Ejemplo:
   /// ```dart
-  /// Impuesto.crear(nombre: 'IVA', porcentaje: 16.00);
+  /// Impuesto.crear(nombre: 'IVA', porcentaje: PorcentajeDeImpuesto(16.00));
   /// ```
   Impuesto.crear({
     required String nombre,

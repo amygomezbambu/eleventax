@@ -4,19 +4,24 @@ import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/productos/domain/interface/producto.dart';
 import 'package:eleventa/modulos/productos/domain/producto.dart';
+import 'package:eleventa/modulos/ventas/servicios/calcular_precio_sin_impuestos.dart';
 import 'package:eleventa/modulos/ventas/domain/total_de_impuesto.dart';
+import 'package:eleventa/modulos/ventas/servicios/calcular_importe_con_impuestos.dart';
+
+import 'package:eleventa/modulos/productos/domain/value_objects/precio_de_venta_producto.dart';
 
 class Articulo extends Entidad {
   final IProducto _producto;
   final double _cantidad;
   var _subtotal = Moneda(0);
+  var _totalImpuestos = Moneda(0);
   final DateTime _agregadoEn;
   var _precioDeVenta = Moneda(0);
   final List<TotalDeImpuesto> _totalesDeImpuestos = [];
 
   double get cantidad => _cantidad;
   Moneda get subtotal => _subtotal;
-  Moneda get total => _subtotal + totalImpuestos;
+  Moneda get total => Moneda(_producto.precioDeVenta.toDouble() * _cantidad);
   Moneda get precioDeVenta => _precioDeVenta;
   DateTime get agregadoEn => _agregadoEn;
   IProducto get producto => _producto;
@@ -25,14 +30,7 @@ class Articulo extends Entidad {
   List<TotalDeImpuesto> get totalesDeImpuestos =>
       List.unmodifiable(_totalesDeImpuestos);
 
-  Moneda get totalImpuestos {
-    var resultado = Moneda(0.00);
-    for (var totalDeImpuesto in _totalesDeImpuestos) {
-      resultado += totalDeImpuesto.monto;
-    }
-
-    return resultado;
-  }
+  Moneda get totalImpuestos => _totalImpuestos;
 
   Articulo.cargar({
     required UID uid,
@@ -84,31 +82,23 @@ class Articulo extends Entidad {
   }
 
   void _calcularTotales() {
-    _subtotal =
-        Moneda(_producto.precioDeVentaSinImpuestos.toDouble() * _cantidad);
+    var precioSinImpuestosCalculado = calcularPrecioSinImpuestos(
+      PrecioDeVentaProducto(_producto.precioDeVenta),
+      _producto.impuestos,
+      paraCantidad: _cantidad,
+    );
 
-    var baseDelImpuesto = _subtotal;
+    var importesDeArticulo = calcularImporteConImpuestos(
+      PrecioDeVentaProducto(precioSinImpuestosCalculado),
+      _producto.impuestos,
+      paraCantidad: _cantidad,
+      comoImportesCobrables: false,
+    );
 
-    var impuestosDescendentes = [..._producto.impuestos];
-    impuestosDescendentes
-        .sort((a, b) => a.ordenDeAplicacion.compareTo(b.ordenDeAplicacion));
-
+    _subtotal = importesDeArticulo.subtotal;
     _totalesDeImpuestos.clear();
-
-    for (var impuesto in impuestosDescendentes) {
-      // TODO: Ver cómo multiplicar facilmente Moneda x double
-      final montoDeImpuesto = baseDelImpuesto.toDouble() *
-          impuesto.porcentaje.toPorcentajeDecimal();
-
-      TotalDeImpuesto totalDeImpuesto = TotalDeImpuesto(
-          base: baseDelImpuesto,
-          monto: Moneda(montoDeImpuesto),
-          impuesto: impuesto);
-
-      _totalesDeImpuestos.add(totalDeImpuesto);
-
-      baseDelImpuesto += Moneda(montoDeImpuesto);
-    }
+    _totalesDeImpuestos.addAll(importesDeArticulo.totalesDeImpuestos);
+    _totalImpuestos = importesDeArticulo.totalImpuestos;
   }
 
   Articulo copyWith({
@@ -128,6 +118,9 @@ class Articulo extends Entidad {
 
   @override
   String toString() {
-    return 'Articulo{uid: $uid_, _producto: $_producto, _cantidad: $_cantidad, _subtotal: $_subtotal, _agregadoEn: $_agregadoEn, _precioDeVenta: $_precioDeVenta, _totalesDeImpuestos: $_totalesDeImpuestos}';
+    return '''
+            Articulo {producto: $_producto, cantidad: $_cantidad, subtotal: ${_subtotal.montoInterno}, agregadoEn: $_agregadoEn, 
+            totalesDeImpuestos: $_totalesDeImpuestos}
+          ''';
   }
 }

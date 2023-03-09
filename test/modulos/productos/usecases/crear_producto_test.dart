@@ -47,22 +47,21 @@ void main() {
     const nombre = 'Atun tunny 200 grs.';
     final precioDeCompra = Moneda(10.40);
 
+    final unidadesDeMedida = await consultas.obtenerUnidadesDeMedida();
+
     var producto = Producto.crear(
         codigo: CodigoProducto('2343Q34'),
         nombre: NombreProducto(nombre),
         precioDeCompra: PrecioDeCompraProducto(precioDeCompra),
         precioDeVenta: PrecioDeVentaProducto(precioDeCompra),
-        unidadDeMedida: UnidadDeMedida.crear(
-          nombre: 'Pieza',
-          abreviacion: 'pz',
-        ));
+        unidadDeMedida: unidadesDeMedida.first);
 
     crearProducto.req.producto = producto;
 
     await crearProducto.exec();
     final productoObtenido = await consultas.obtenerProducto(producto.uid);
     expect(productoObtenido!.codigo, producto.codigo);
-  }, skip: true);
+  });
 
   test('debe persistir el producto cuando querramos que pregunte el precio',
       () async {
