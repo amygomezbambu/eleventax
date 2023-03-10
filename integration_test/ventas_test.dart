@@ -1,10 +1,16 @@
 import 'dart:io';
 
+import 'package:eleventa/main.dart';
+import 'package:eleventa/modulos/productos/domain/categoria.dart';
+import 'package:eleventa/modulos/productos/domain/impuesto.dart';
+import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
 import 'package:eleventa/modulos/productos/modulo_productos.dart';
 import 'package:eleventa/modulos/ventas/ui/vista_ventas.dart';
 import 'package:eleventa/modulos/ventas/ui/widgets/boton_cobrar.dart';
+import 'package:eleventa/modulos/ventas/ui/widgets/resultados_busqueda.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
@@ -15,7 +21,8 @@ import '../test/utils/productos.dart';
 void main() {
   var binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   final faker = Faker();
-  var codigoProducto = '';
+  final codigoProducto = '1';
+  final nombreProducto = 'Uno';
 
   Future<void> setup() async {
     // Almacenamos el manejador onError que trae el integration_test framework
@@ -39,13 +46,23 @@ void main() {
   }
 
   Future<void> crearProductosParaPrueba() async {
-    codigoProducto = faker.randomGenerator.numberOfLength(10).toString();
-
+    //codigoProducto = faker.randomGenerator.numberOfLength(10).toString();
     final crearProducto = ModuloProductos.crearProducto();
-    final prod1 =
-        ProductosUtils.crearProducto(codigo: codigoProducto, nombre: 'uno');
+    final lecturas = ModuloProductos.repositorioConsultaProductos();
+    final List<Impuesto> listaImpuestos = await lecturas.obtenerImpuestos();
+    final List<Categoria> listaCategorias = await lecturas.obtenerCategorias();
+    final List<UnidadDeMedida> listaUnidadesDeMedida =
+        await lecturas.obtenerUnidadesDeMedida();
+
+    var prod1 = ProductosUtils.crearProducto(
+        codigo: codigoProducto,
+        nombre: nombreProducto,
+        categoria: listaCategorias.first,
+        unidadDeMedida: listaUnidadesDeMedida.first,
+        impuestos: listaImpuestos);
 
     crearProducto.req.producto = prod1;
+
     await crearProducto.exec();
   }
 
@@ -60,21 +77,18 @@ void main() {
       try {
         await crearProductosParaPrueba();
       } catch (e) {
-        print('No se pudoc rear producto: $e');
+        print('No se pudo crear producto: $e');
       }
-
-      // var boton = find.descendant(
-      //   of: find.byType(NavigationRailDestination),
-      //   matching: find.text('Ventas'),
-      // );
-      // expect(boton, findsOneWidget);
-
-      // await tester.tap(boton);
-      // await tester.pumpAndSettle();
 
       // 1.1 - Al entrar por primera vez al módulo de ventas se muestra una
       // vista con la venta actual en curso la cual no tiene ningún artículo y
       //el total a cobrar es de cero.
+      expect(find.widgetWithText(BotonCobrarVenta, '\$0.0'), findsOneWidget);
+      expect(find.byType(BotonCobrarVenta), findsOneWidget);
+
+      // TODO: Verificar que NO exista el listado de productos (ListView)
+
+      // 1.3 - Existe un campo dentro de la interfase para que el usuario pueda ingresar o escanear un código de producto manualmente.
       expect(find.widgetWithText(BotonCobrarVenta, '\$0.0'), findsOneWidget);
       expect(find.byType(BotonCobrarVenta), findsOneWidget);
 
@@ -93,7 +107,7 @@ void main() {
 
       await tester.pump(const Duration(seconds: 5));
 
-      expect(find.text('uno'), findsOneWidget);
+      expect(find.text('Uno'), findsOneWidget);
 
       // corroborar que se agregue al listado, se actualice, total, etc.
     });
