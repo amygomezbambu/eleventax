@@ -824,7 +824,7 @@ packages:
       name: sqlite3
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.9.1"
+    version: "1.9.3"
   stack_trace:
     dependency: transitive
     description:
