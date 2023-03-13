@@ -36,7 +36,7 @@ dependencies:
   intl: any
 
   # sqflite:
-  sqlite3: 1.9.1 # [ARD-0007]
+  sqlite3: ^1.9.3 # [ARD-0007]
   sqflite_common_ffi: ^2.2.1 # [ARD-0007]
   # Incluye la libreria de sqlite compilada con SQLCiper para iOS, Android y Mac
   sqlcipher_flutter_libs: 0.5.4 # [ARD-0007]
