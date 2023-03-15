@@ -2,6 +2,7 @@ import 'package:eleventa/modulos/common/ui/ex_icons.dart';
 import 'package:eleventa/modulos/common/ui/tema/theme.dart';
 import 'package:eleventa/modulos/common/ui/widgets/dismiss_keyboard.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_vista_principal_scaffold.dart';
+import 'package:eleventa/modulos/productos/ui/widgets/avatar_producto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -63,18 +64,31 @@ class VistaListadoProductosState extends State<VistaListadoProductos> {
                   ),
                   color: ColoresBase.neutral100,
                 ),
-                child: _ListadoProductos(
-                  onTap: _mandarModificarProducto,
-                  onNuevoProducto: _mostrarNuevoProducto,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Expanded(
+                      child: _ListadoProductos(
+                        onTap: _mandarModificarProducto,
+                        onNuevoProducto: _mostrarNuevoProducto,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
             Flexible(
-              flex: 4,
-              child: editando
-                  ? VistaModificarProducto(productoId: producto!.uid.toString())
-                  : NuevoProducto(),
-            ),
+                flex: 4,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: editando
+                          ? VistaModificarProducto(
+                              productoId: producto!.uid.toString())
+                          : NuevoProducto(),
+                    )
+                  ],
+                )),
           ],
         ),
       ),
@@ -234,21 +248,26 @@ class _ListadoProductos extends ConsumerWidget {
                               : Sizes.p3,
                           right: Sizes.p3),
                       dense: (context.breakpoint <= LayoutBreakpoint.sm),
-                      leading: ClipRRect(
-                          borderRadius: BorderRadius.circular(Sizes.p2),
-                          child: Image.network(
-                            'https://source.unsplash.com/random/200×200/?${productos[index].nombre}',
-                            // Le indicamos que que tamaño será la imagen para que consuma
-                            // menos memoria aunque la imagen original sea más grande
-                            cacheHeight: Sizes.p12.toInt(),
-                            cacheWidth: Sizes.p12.toInt(),
-                            fit: BoxFit.cover,
-                          )),
+                      leading: AvatarProducto(
+                        uniqueId: productos[index].uid.toString(),
+                        productName: productos[index].nombre,
+                      ),
                       title: Text(
-                        productos[index].nombre,
+                        productos[index].codigo.toString(),
                         style: const TextStyle(
                             fontSize: TextSizes.textSm,
-                            fontWeight: FontWeight.w500),
+                            color: ColoresBase.neutral500,
+                            fontWeight: FontWeight.w400),
+                      ),
+                      subtitle: Padding(
+                        padding: const EdgeInsets.only(top: Sizes.p2),
+                        child: Text(
+                          productos[index].nombre,
+                          style: const TextStyle(
+                              fontSize: TextSizes.textSm,
+                              color: ColoresBase.neutral700,
+                              fontWeight: FontWeight.w500),
+                        ),
                       ),
                       hoverColor: ColoresBase.neutral300,
                       trailing: Wrap(
@@ -277,10 +296,7 @@ class _ListadoProductos extends ConsumerWidget {
                 },
                 separatorBuilder: (context, index) => const Margin(
                   margin: EdgeInsets.only(
-                      left: Sizes.p16,
-                      right: Sizes.p3,
-                      top: Sizes.p0,
-                      bottom: Sizes.p0),
+                      right: Sizes.p3, top: Sizes.p0, bottom: Sizes.p0),
                   child: Divider(
                       height: Sizes.p0,
                       color: ColoresBase.neutral300,

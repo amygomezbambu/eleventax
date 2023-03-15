@@ -59,7 +59,7 @@ class _FormaProductoState extends State<FormaProducto> {
   final mostrarMargenLabel = LayoutValue(xs: false, md: true);
   Producto? productoEnModificacion;
 
-  final FocusNode _focusNode = FocusNode();
+  late FocusNode _focusTeclado;
   late FocusNode _codigoFocusNode;
   final scrollController = ScrollController(initialScrollOffset: 0.0);
 
@@ -73,7 +73,7 @@ class _FormaProductoState extends State<FormaProducto> {
 
   final _formKey = GlobalKey<FormState>();
 
-  final _imagenURL = GlobalKey<FormFieldState<dynamic>>();
+  //final _imagenURL = GlobalKey<FormFieldState<dynamic>>();
 
   late final Future<List<Impuesto>> _impuestos = lecturas.obtenerImpuestos();
   late final Future<List<Categoria>> _categorias = lecturas.obtenerCategorias();
@@ -146,12 +146,13 @@ class _FormaProductoState extends State<FormaProducto> {
       keyNombre.currentState!.reset();
       keyPrecioCompra.currentState!.reset();
       keyPrecioVenta.currentState!.reset();
-      _imagenURL.currentState!.reset();
+      //_imagenURL.currentState!.reset();
     }
 
     if (widget.productoEnModificacionId != null) {
       productoEnModificacion = await lecturas
           .obtenerProducto(UID.fromString(widget.productoEnModificacionId!));
+
       _controllerCodigo.text = productoEnModificacion!.codigo;
       _controllerNombre.text = productoEnModificacion!.nombre;
       _controllerPrecioDeCompra.text =
@@ -186,7 +187,8 @@ class _FormaProductoState extends State<FormaProducto> {
   void initState() {
     super.initState();
 
-    _codigoFocusNode = FocusNode();
+    _focusTeclado = FocusNode(debugLabel: 'focusTeclado');
+    _codigoFocusNode = FocusNode(debugLabel: 'focusCodigo');
   }
 
   @override
@@ -197,7 +199,7 @@ class _FormaProductoState extends State<FormaProducto> {
     _controllerPrecioDeVenta.dispose();
     _controllerImagen.dispose();
     _controllerUtilidad.dispose();
-    _focusNode.dispose();
+    _focusTeclado.dispose();
     scrollController.dispose();
 
     _codigoFocusNode.dispose();
@@ -207,6 +209,7 @@ class _FormaProductoState extends State<FormaProducto> {
   @override
   void didUpdateWidget(FormaProducto oldWidget) {
     super.didUpdateWidget(oldWidget);
+
     if (widget.productoEnModificacionId != oldWidget.productoEnModificacionId) {
       // Forzamos a que se vuelva a cargar la forma
       _formaCargada = false;
@@ -344,9 +347,8 @@ class _FormaProductoState extends State<FormaProducto> {
   Widget build(BuildContext context) {
     return DismissKeyboard(
       child: FutureBuilder(
-        future: _cargarFormaProducto(),
-        builder: (BuildContext context, snapshot) {
-          if (true) {
+          future: _cargarFormaProducto(),
+          builder: (BuildContext context, snapshot) {
             return Scrollbar(
               thumbVisibility: esDesktop.resolve(context),
               trackVisibility: esDesktop.resolve(context),
@@ -359,7 +361,7 @@ class _FormaProductoState extends State<FormaProducto> {
                   child: SizedBox(
                     width: Sizes.p96 * 2,
                     child: KeyboardListener(
-                      focusNode: _focusNode,
+                      focusNode: _focusTeclado,
                       onKeyEvent: (KeyEvent key) => _cambiarControlEnFoco(key),
                       child: FocusTraversalGroup(
                         policy: OrderedTraversalPolicy(),
@@ -380,6 +382,7 @@ class _FormaProductoState extends State<FormaProducto> {
                                       focusNode: _codigoFocusNode,
                                       controller: _controllerCodigo,
                                       hintText: 'Código',
+                                      validarAlPerderFoco: true,
                                       validator: (value) async {
                                         return _validarCodigoIngresado(value);
                                       }),
@@ -466,11 +469,7 @@ class _FormaProductoState extends State<FormaProducto> {
                                             }).toList(),
                                           );
                                         } else {
-                                          return const SizedBox(
-                                              // width: Sizes.p5,
-                                              // height: Sizes.p5,
-                                              // child: CircularProgressIndicator(),
-                                              );
+                                          return const SizedBox();
                                         }
                                       }),
                                   ExRadioButton<ProductoSeVendePor>(
@@ -541,11 +540,6 @@ class _FormaProductoState extends State<FormaProducto> {
                                           );
                                         } else {
                                           return const SizedBox();
-                                          // return const SizedBox(
-                                          //   width: Sizes.p5,
-                                          //   height: Sizes.p5,
-                                          //   child: CircularProgressIndicator(),
-                                          // );
                                         }
                                       }), //loaading, //ya termine
                                   FutureBuilder<List<Impuesto>>(
@@ -582,11 +576,6 @@ class _FormaProductoState extends State<FormaProducto> {
                                             }).toList(),
                                           );
                                         } else {
-                                          // return const SizedBox(
-                                          //   width: Sizes.p5,
-                                          //   height: 20,
-                                          //   child: CircularProgressIndicator(),
-                                          // );
                                           return const SizedBox();
                                         }
                                       }),
@@ -663,12 +652,12 @@ class _FormaProductoState extends State<FormaProducto> {
                                           }
                                         }
                                       }),
-                                  ExTextField(
-                                    fieldKey: _imagenURL,
-                                    inputType: InputType.texto,
-                                    hintText: 'Imagen URL',
-                                    controller: _controllerImagen,
-                                  ),
+                                  // ExTextField(
+                                  //   fieldKey: _imagenURL,
+                                  //   inputType: InputType.texto,
+                                  //   hintText: 'Imagen URL',
+                                  //   controller: _controllerImagen,
+                                  // ),
                                 ],
                               ),
                             ),
@@ -739,9 +728,7 @@ class _FormaProductoState extends State<FormaProducto> {
                 ),
               ),
             );
-          }
-        },
-      ),
+          }),
     );
   }
 }

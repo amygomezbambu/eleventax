@@ -18,6 +18,7 @@ class ExCampoCodigoProducto extends StatefulWidget {
   final GlobalKey? fieldKey;
   final ValidadorTextField? validator;
   final FocusNode? focusNode;
+  final bool validarAlPerderFoco;
 
   const ExCampoCodigoProducto({
     Key? key,
@@ -29,6 +30,7 @@ class ExCampoCodigoProducto extends StatefulWidget {
     this.validator,
     this.focusNode,
     this.onCodigoEscanado,
+    this.validarAlPerderFoco = false,
   }) : super(key: key);
 
   @override
@@ -47,7 +49,7 @@ class _ExCampoCodigoProductoState extends State<ExCampoCodigoProducto> {
         icon: Iconos.barcode,
         autofocus: true,
         aplicarResponsividad: widget.aplicarResponsividad,
-        validarAlPerderFoco: false,
+        validarAlPerderFoco: widget.validarAlPerderFoco,
         onFieldSubmitted: widget.onFieldSubmitted,
 
         // Mostramos el icono para escanear solo en plataformas móviles

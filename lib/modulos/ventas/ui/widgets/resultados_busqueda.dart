@@ -1,5 +1,6 @@
 import 'package:eleventa/modulos/common/ui/tema/theme.dart';
 import 'package:eleventa/modulos/productos/dto/busqueda_producto_dto.dart';
+import 'package:eleventa/modulos/productos/ui/widgets/avatar_producto.dart';
 import 'package:flutter/material.dart';
 import 'package:layout/layout.dart';
 
@@ -76,16 +77,10 @@ class ResultadosDeBusqueda extends StatelessWidget {
                 return ListTile(
                   visualDensity: VisualDensity.comfortable,
                   dense: (context.breakpoint <= LayoutBreakpoint.sm),
-                  leading: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        'https://source.unsplash.com/random/200×200/?${producto.nombre}',
-                        // Le indicamos que que tamaño será la imagen para que consuma
-                        // menos memoria aunque la imagen original sea más grande
-                        cacheHeight: 50,
-                        cacheWidth: 50,
-                        fit: BoxFit.cover,
-                      )),
+                  leading: AvatarProducto(
+                    uniqueId: producto.productoUid,
+                    productName: producto.nombre,
+                  ),
                   subtitle: Text(producto.codigo),
                   selected: (selectedIndex != null) && (i == selectedIndex),
                   tileColor: ColoresBase.neutral200,

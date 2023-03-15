@@ -1,5 +1,8 @@
 import 'package:eleventa/modulos/common/ui/ex_icons.dart';
 import 'package:eleventa/modulos/common/ui/tema/theme.dart';
+import 'package:eleventa/modulos/common/ui/widgets/ex_dialogos.dart';
+import 'package:eleventa/modulos/ventas/read_models/producto_generico.dart';
+import 'package:eleventa/modulos/ventas/ui/dialogo_venta_rapida.dart';
 import 'package:eleventa/modulos/ventas/ui/venta_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:eleventa/modulos/ventas/ui/widgets/boton_accion_de_venta.dart';
@@ -78,12 +81,32 @@ class AccionesDeVenta extends ConsumerWidget {
               )
             ],
           ),
-          // Row(
-          //   children: const [
-          //     BotonAccionDeVenta('Venta Rápida', Icons.person),
-          //     BotonAccionDeVenta('Asignar Cliente', Icons.person)
-          //   ],
-          // ),
+          Row(
+            children: [
+              BotonAccionDeVenta(
+                label: 'Venta Rápida',
+                hintText: 'Venta de producto rapido',
+                atajoTeclado: '0',
+                icon: Iconos.flash4,
+                onTap: () async {
+                  final productoGenerico =
+                      await ExDialogos.mostrarDialogo<ProductoGenericoDto>(
+                    context,
+                    titulo: 'Venta Rápida',
+                    mensaje:
+                        'Ingresa los datos del producto a agregar a la venta',
+                    icono: Iconos.flash4,
+                    widgets: [const DialogoVentaRapida()],
+                  );
+
+                  if (productoGenerico != null) {
+                    final notifier = ref.read(providerVenta.notifier);
+                    await notifier.agregarVentaRapida(productoGenerico);
+                  }
+                },
+              )
+            ],
+          ),
           // Row(
           //   children: const [
           //     BotonAccionDeVenta('Aplicar Descuento', Icons.person),

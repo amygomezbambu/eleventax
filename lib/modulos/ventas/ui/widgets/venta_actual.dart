@@ -1,12 +1,19 @@
 //@visibleForTesting
+
+import 'package:eleventa/modulos/common/ui/ex_icons.dart';
 import 'package:eleventa/modulos/common/ui/tema/theme.dart';
+import 'package:eleventa/modulos/common/ui/widgets/ex_dialogos.dart';
 import 'package:eleventa/modulos/ventas/domain/articulo.dart';
+import 'package:eleventa/modulos/ventas/read_models/producto_generico.dart';
+import 'package:eleventa/modulos/ventas/ui/dialogo_venta_rapida.dart';
 import 'package:eleventa/modulos/ventas/ui/venta_provider.dart';
+import 'package:eleventa/modulos/ventas/ui/widgets/boton_accion_de_venta.dart';
 import 'package:eleventa/modulos/ventas/ui/widgets/campo_codigo_producto.dart';
 import 'package:eleventa/modulos/ventas/ui/widgets/listado_articulos.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:layout/layout.dart';
 
 /// Representa una venta actual, el campo de código de barras y el listado de
 /// artículos de una venta en progreso. Es responsivo y se adapta a la pantalla
@@ -31,19 +38,43 @@ class VentaActual extends ConsumerWidget {
 }
 
 class ControlesVentaActual extends ConsumerWidget {
+  final esDesktop = LayoutValue(xs: false, md: true);
   final TextEditingController editingController;
   final Function onBuscarCodigo;
   final FocusNode focusNode;
 
-  const ControlesVentaActual(
+  ControlesVentaActual(
       {super.key,
       required this.editingController,
       required this.focusNode,
       required this.onBuscarCodigo});
 
-  Future<void> _agregarProductoAListado(String codigo) async {
-    await onBuscarCodigo(codigo);
+  Future<void> _agregarProductoAListado(
+      BuildContext context, WidgetRef ref, String codigo) async {
+    if (codigo == "0") {
+      await _solicitarVentaGenerico(context, ref, codigo);
+    } else {
+      await onBuscarCodigo(codigo);
+    }
+
     editingController.clear();
+  }
+
+  Future<void> _solicitarVentaGenerico(
+      BuildContext context, WidgetRef ref, String codigo) async {
+    final productoGenerico =
+        await ExDialogos.mostrarDialogo<ProductoGenericoDto>(
+      context,
+      titulo: 'Venta Rápida',
+      mensaje: 'Ingresa los datos del producto a agregar',
+      icono: Iconos.flash4,
+      widgets: [const DialogoVentaRapida()],
+    );
+
+    if (productoGenerico != null) {
+      final notifier = ref.read(providerVenta.notifier);
+      await notifier.agregarVentaRapida(productoGenerico);
+    }
   }
 
   void _seleccionarArticulo(WidgetRef ref, Articulo articuloSeleccionado) {
@@ -53,8 +84,8 @@ class ControlesVentaActual extends ConsumerWidget {
 
   /// Cambia el control enfocado de acuerdo a las teclas de flecha arriba,
   /// flecha abajo y ENTER como en eleventa 5.
-  KeyEventResult _cambiarControlEnFoco(
-      WidgetRef ref, FocusNode node, RawKeyEvent keyEvent) {
+  KeyEventResult _cambiarControlEnFoco(BuildContext context, WidgetRef ref,
+      FocusNode node, RawKeyEvent keyEvent) {
     final notifier = ref.read(providerVenta.notifier);
 
     if (keyEvent is RawKeyDownEvent) {
@@ -69,7 +100,7 @@ class ControlesVentaActual extends ConsumerWidget {
       }
 
       if (keyEvent.logicalKey == LogicalKeyboardKey.enter) {
-        _agregarProductoAListado(editingController.text);
+        _agregarProductoAListado(context, ref, editingController.text);
         return KeyEventResult.handled;
       }
 
@@ -123,10 +154,10 @@ class ControlesVentaActual extends ConsumerWidget {
                     focusNode: focusNode,
                     onProductoElegido: (String codigoProducto) {
                       // TODO: Regresar mejor UUID?
-                      _agregarProductoAListado(codigoProducto);
+                      _agregarProductoAListado(context, ref, codigoProducto);
                     },
                     onKey: (focus, key) {
-                      return _cambiarControlEnFoco(ref, focus, key);
+                      return _cambiarControlEnFoco(context, ref, focus, key);
                     },
                   )
                 ]),
@@ -138,13 +169,54 @@ class ControlesVentaActual extends ConsumerWidget {
                 onSeleccionarArticulo: (articulo) =>
                     _seleccionarArticulo(ref, articulo)),
           ),
-          Container(
-            height: 90,
+          !esDesktop.resolve(context)
+              ? ControlesVentaMobile(onTap: () async {
+                  await _solicitarVentaGenerico(context, ref, '0');
+                })
+              : const Center()
+        ],
+      ),
+    );
+  }
+}
+
+class ControlesVentaMobile extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const ControlesVentaMobile({
+    super.key,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: Sizes.p20,
+      decoration: const BoxDecoration(
+        color: ColoresBase.neutral100,
+        border: Border(
+          top: BorderSide(
+            width: 1,
             color: ColoresBase.neutral200,
-            child: Row(
-              children: const [
-                // TODO: Implementar controles de la venta
-              ],
+          ),
+          bottom: BorderSide(
+            width: 1,
+            color: ColoresBase.neutral200,
+          ),
+        ),
+      ),
+      child: Row(
+        children: [
+          // TODO: Implementar controles de la venta
+          Padding(
+            padding: const EdgeInsets.all(2.0),
+            child: BotonAccionDeVenta(
+              label: 'Venta Rápida',
+              hintText: 'Venta de producto rapido',
+              atajoTeclado: '0',
+              icon: Iconos.flash4,
+              enabled: true,
+              onTap: onTap,
             ),
           )
         ],

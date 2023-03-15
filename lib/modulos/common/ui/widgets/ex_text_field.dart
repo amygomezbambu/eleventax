@@ -231,6 +231,7 @@ class _ExTextFieldState extends State<_ExTextField> {
               controller: widget.controller,
               cursorColor: Colors.black,
               focusNode: widget.focusNode,
+              autocorrect: false,
               keyboardType: (widget.inputType == InputType.texto)
                   ? TextInputType.text
                   : const TextInputType.numberWithOptions(decimal: true),
@@ -322,7 +323,7 @@ class _ExTextFieldState extends State<_ExTextField> {
               },
             ),
             parentBuilder: (Widget child) => Focus(
-                  child: child,
+                  canRequestFocus: false,
                   onFocusChange: (hasFocus) async {
                     if (!hasFocus) {
                       if (widget.inputType == InputType.numerico) {
@@ -353,6 +354,7 @@ class _ExTextFieldState extends State<_ExTextField> {
                       widget.onExit!();
                     }
                   },
+                  child: child,
                 )));
   }
 }

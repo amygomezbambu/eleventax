@@ -111,30 +111,35 @@ class VistaVentasState extends ConsumerState<VistaVentas> {
     final idVenta = ventaEnProgreso.uid;
     final consultas = ModuloVentas.repositorioConsultaVentas();
 
-    try {
-      await cobrarVenta.exec();
-      notifier.crearNuevaVenta();
+    //try {
+    await cobrarVenta.exec();
+    notifier.crearNuevaVenta();
 
-      //TODO: implementar el caso de uso metricasCobro cuando se implemente cancelación del proceso de cobro
-      var ventaCobrada = await consultas.obtenerVenta(idVenta);
-      if (ventaCobrada != null) {
-        metricasCobro.req.venta = ventaCobrada;
-        metricasCobro.req.tipo = TipoEventoTelemetria.cobroRealizado;
-        await metricasCobro.exec();
+    //TODO: implementar el caso de uso metricasCobro cuando se implemente cancelación del proceso de cobro
+    var ventaCobrada = await consultas.obtenerVenta(idVenta);
+    if (ventaCobrada != null) {
+      metricasCobro.req.venta = ventaCobrada;
+      metricasCobro.req.tipo = TipoEventoTelemetria.cobroRealizado;
+      await metricasCobro.exec();
 
-        //TODO: implementar el caso de uso de imprimir ticket de venta
-        var adaptadorImpresion = AdaptadorImpresionWindows();
-        var impresoraTickets = ImpresoraDeTicketsWindows(
-          nombreImpresora: appConfig.nombreImpresora,
-          anchoTicket: AnchoTicket.mm58,
-        );
+      //TODO: implementar el caso de uso de imprimir ticket de venta
+      var adaptadorImpresion = AdaptadorImpresionWindows();
+      var impresoraTickets = ImpresoraDeTicketsWindows(
+        nombreImpresora: appConfig.nombreImpresora,
+        anchoTicket: AnchoTicket.mm58,
+      );
 
-        adaptadorImpresion.impresoraTickets = impresoraTickets;
-        await adaptadorImpresion.imprimirTicket(ventaCobrada);
-      }
-    } catch (e) {
-      debugPrint('Error: $e');
+      adaptadorImpresion.impresoraTickets = impresoraTickets;
+      await adaptadorImpresion.imprimirTicket(ventaCobrada);
     }
+    // } catch (e) {
+    //   debugPrint('Error: $e');
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(
+    //       content: Text('Error al cobrar venta'),
+    //     ),
+    //   );
+    // }
 
     // Enfocamos de nuevo al campo código que es hijo del Focus widget
     if (_focusNode.children.first.canRequestFocus) {

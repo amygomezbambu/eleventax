@@ -1,13 +1,15 @@
 import 'package:eleventa/dependencias.dart';
+import 'package:eleventa/modulos/productos/domain/producto_generico.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
 import 'package:eleventa/modulos/ventas/domain/articulo.dart';
 import 'package:eleventa/modulos/ventas/domain/venta.dart';
 import 'package:eleventa/modulos/ventas/modulo_ventas.dart';
+import 'package:eleventa/modulos/ventas/read_models/producto_generico.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class VentaActualState {
-  late Articulo articuloSeleccionado;
+  Articulo? articuloSeleccionado;
   late Venta _venta;
   Venta get venta => _venta;
 
@@ -17,7 +19,7 @@ class VentaActualState {
 
   VentaActualState.cargar({
     required Venta venta,
-    required Articulo articulo,
+    Articulo? articulo,
   })  : _venta = venta,
         articuloSeleccionado = articulo;
 
@@ -74,6 +76,22 @@ class NotificadorVenta extends StateNotifier<VentaActualState> {
     state = state.copyWith();
   }
 
+  Future<void> agregarVentaRapida(ProductoGenericoDto producto) async {
+    final productoGenerico = ProductoGenerico.crear(
+      nombre: producto.nombre,
+      precioDeVenta: producto.precio,
+      impuestos: [],
+    );
+
+    state.venta.agregarArticulo(Articulo.crear(
+      producto: productoGenerico,
+      cantidad: producto.cantidad,
+    ));
+
+    await _guardarVenta();
+    state = state.copyWith();
+  }
+
   void crearNuevaVenta() {
     // Reiniciamos el estado porque es una nueva venta
     super.state = VentaActualState();
@@ -85,21 +103,23 @@ class NotificadorVenta extends StateNotifier<VentaActualState> {
   }
 
   void seleccionarArticuloSiguiente() {
+    if (state.articuloSeleccionado == null) return;
     // Si es el ultimo articulo, no intentamos avanzar
     if (state.articuloSeleccionado == state.venta.articulos.last) return;
 
     var indiceArticuloActual =
-        state.venta.articulos.indexOf(state.articuloSeleccionado);
+        state.venta.articulos.indexOf(state.articuloSeleccionado!);
 
     seleccionarArticulo(state.venta.articulos[indiceArticuloActual + 1]);
   }
 
   void seleccionarArticuloAnterior() {
+    if (state.articuloSeleccionado == null) return;
     // Si es el primer articulo, no intentamos retroceder
     if (state.articuloSeleccionado == state.venta.articulos.first) return;
 
     var indiceArticuloActual =
-        state.venta.articulos.indexOf(state.articuloSeleccionado);
+        state.venta.articulos.indexOf(state.articuloSeleccionado!);
     seleccionarArticulo(state.venta.articulos[indiceArticuloActual - 1]);
   }
 
@@ -112,8 +132,10 @@ class NotificadorVenta extends StateNotifier<VentaActualState> {
   }
 
   Future<void> _modificarCantidad(double cantidad) async {
-    final articuloActualizado = state.articuloSeleccionado
-        .copyWith(cantidad: state.articuloSeleccionado.cantidad + cantidad);
+    if (state.articuloSeleccionado == null) return;
+
+    final articuloActualizado = state.articuloSeleccionado!
+        .copyWith(cantidad: state.articuloSeleccionado!.cantidad + cantidad);
     state.venta.actualizarArticulo(articuloActualizado);
 
     state = state.copyWith();

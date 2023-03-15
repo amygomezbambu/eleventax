@@ -43,8 +43,11 @@ class VistaModificarProducto extends StatelessWidget {
               tooltip: m.eliminar,
               onPressed: () async {
                 var eliminarProducto =
-                    await ExDialogos.mostrarConfirmacionEliminar(context,
-                        titulo: m.productos_eliminarConfirmacion);
+                    await ExDialogos.mostrarConfirmacionEliminar(
+                  context,
+                  titulo: 'Eliminar producto',
+                  mensaje: '¿Estás seguro que deseas eliminar el producto?',
+                );
 
                 if ((eliminarProducto != null) && (eliminarProducto == true)) {
                   await _eliminarProducto();
