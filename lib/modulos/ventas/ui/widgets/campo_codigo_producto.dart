@@ -184,6 +184,9 @@ class _CampoCodigoProductoState extends State<CampoCodigoProducto> {
                   autocorrect: false,
                   autofocus: true,
                   key: VistaVentas.keyCampoCodigo,
+                  onSubmitted: (value) {
+                    widget.onProductoElegido(value);
+                  },
                   style: const TextStyle(
                       color: ColoresBase.neutral700,
                       fontSize: DesignSystem.campoTamanoTexto,

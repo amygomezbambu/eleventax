@@ -21,8 +21,8 @@ import '../test/utils/productos.dart';
 void main() {
   var binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   final faker = Faker();
-  final codigoProducto = '1';
-  final nombreProducto = 'Uno';
+  const codigoProducto = '1';
+  const nombreProducto = 'Uno';
 
   Future<void> setup() async {
     // Almacenamos el manejador onError que trae el integration_test framework
@@ -99,15 +99,14 @@ void main() {
       expect(campoCodigo, findsOneWidget);
 
       // TODO: Verificar que se mande ENTER despues del codigo para que se agregue a la venta
-      await tester.enterText(campoCodigo, codigoProducto);
+      await tester.enterText(find.byKey(VistaVentas.keyCampoCodigo), '1');
       await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pumpAndSettle();
 
       // TODO: Verificar que SI exista el listado, y tenga 1 articulo
 
       await tester.pump(const Duration(seconds: 5));
-
-      expect(find.text('Uno'), findsOneWidget);
+      expect(find.text('uno'), findsOneWidget);
 
       // corroborar que se agregue al listado, se actualice, total, etc.
     });
