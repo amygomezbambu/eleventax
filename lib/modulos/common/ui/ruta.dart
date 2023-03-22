@@ -1,5 +1,6 @@
 import 'package:eleventa/modulos/productos/ui/vista_modificar_producto.dart';
 import 'package:eleventa/modulos/productos/ui/nuevo_producto.dart';
+import 'package:eleventa/modulos/transacciones/ui/vista_transacciones.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -66,6 +67,13 @@ class Rutas {
           ),
         ),
       ],
+    ),
+    Ruta(
+      rutaURL: "/transacciones",
+      nombre: "Transacciones de ventas",
+      icon: Icons.list,
+      pageBuilder: (context, state) =>
+          const NoTransitionPage(child: VistaTransacciones()),
     ),
     Ruta(
       rutaURL: "/configuracion",

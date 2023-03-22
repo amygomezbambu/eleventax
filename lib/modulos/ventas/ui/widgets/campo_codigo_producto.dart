@@ -182,6 +182,9 @@ class _CampoCodigoProductoState extends State<CampoCodigoProducto> {
                   cursorColor: Colors.black,
                   autocorrect: false,
                   autofocus: true,
+                  onSubmitted: (value) {
+                    widget.onProductoElegido(value);
+                  },
                   style: const TextStyle(
                       color: ColoresBase.neutral700,
                       fontSize: DesignSystem.campoTamanoTexto,
