@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 import 'package:eleventa/dependencias.dart';
 import 'package:eleventa/modulos/common/app/interface/remote_config.dart';
+=======
+>>>>>>> d883161 (feat - Se termina vista de transacciones de ventas (#479))
 import 'package:eleventa/modulos/common/ui/widgets/ex_vista_detalle.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_appbar.dart';
 import 'package:eleventa/modulos/productos/ui/vista_modificar_producto.dart';
@@ -74,6 +77,7 @@ class Rutas {
         ),
       ],
     ),
+<<<<<<< HEAD
     if (Dependencias.infra
         .remoteConfig()
         .tieneFeatureFlag(FeatureFlag.transacciones))
@@ -84,6 +88,15 @@ class Rutas {
         pageBuilder: (context, state) =>
             const NoTransitionPage(child: VistaTransacciones()),
       ),
+=======
+    Ruta(
+      rutaURL: "/transacciones",
+      nombre: "Transacciones",
+      icon: Icons.list,
+      pageBuilder: (context, state) =>
+          const NoTransitionPage(child: VistaTransacciones()),
+    ),
+>>>>>>> d883161 (feat - Se termina vista de transacciones de ventas (#479))
     Ruta(
       rutaURL: "/configuracion",
       nombre: "Configuración",

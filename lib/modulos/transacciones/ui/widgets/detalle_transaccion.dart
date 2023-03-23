@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import 'dart:async';
 import 'dart:io';
 
@@ -9,11 +10,20 @@ import 'package:eleventa/modulos/common/ui/ex_icons.dart';
 import 'package:eleventa/modulos/common/ui/tema/theme.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_boton.dart';
 import 'package:eleventa/modulos/common/ui/widgets/texto_valor.dart';
+=======
+import 'package:eleventa/modulos/common/ui/ex_icons.dart';
+import 'package:eleventa/modulos/common/ui/tema/theme.dart';
+import 'package:eleventa/modulos/common/ui/widgets/ex_boton.dart';
+>>>>>>> d883161 (feat - Se termina vista de transacciones de ventas (#479))
 import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/productos/ui/widgets/avatar_producto.dart';
 import 'package:eleventa/modulos/ventas/read_models/venta.dart';
+import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:intl/intl.dart';
+=======
+>>>>>>> d883161 (feat - Se termina vista de transacciones de ventas (#479))
 import 'package:layout/layout.dart';
 
 class DetalleTransaccion extends StatefulWidget {
@@ -22,24 +32,36 @@ class DetalleTransaccion extends StatefulWidget {
   final VentaDto venta;
 
   const DetalleTransaccion(
+<<<<<<< HEAD
       {super.key,
       required this.venta,
       required this.ventaUid,
       required this.title});
+=======
+      {super.key, required this.ventaUid, required this.title});
+>>>>>>> d883161 (feat - Se termina vista de transacciones de ventas (#479))
 
   @override
   State<DetalleTransaccion> createState() => _DetalleTransaccionState();
 }
 
 class _DetalleTransaccionState extends State<DetalleTransaccion> {
+<<<<<<< HEAD
   final esDesktop = LayoutValue(xs: false, md: true);
 
+=======
+>>>>>>> d883161 (feat - Se termina vista de transacciones de ventas (#479))
   Future<VentaDto> _leerDetalleDeVenta(UID ventaUid) async {
     // Simulamos una lectura de la base de datos lenta
     await Future.delayed(const Duration(milliseconds: 500));
 
+<<<<<<< HEAD
     return widget.venta;
   }
+=======
+    final demoData = VentaDto();
+    demoData.folio = ventaUid.toString();
+>>>>>>> d883161 (feat - Se termina vista de transacciones de ventas (#479))
 
   Future<void> _reImprimirTicket(VentaDto ventaCobrada) async {
     if (Platform.isWindows) {
@@ -62,7 +84,11 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final venta = snapshot.data!;
+<<<<<<< HEAD
           var articulos = venta.articulos;
+=======
+          var articulos = Faker().lorem.words(5);
+>>>>>>> d883161 (feat - Se termina vista de transacciones de ventas (#479))
 
           return SizedBox(
             child:
@@ -75,6 +101,7 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
                     ExBoton.secundario(
                       label: 'Reimprimir ticket',
                       icon: Iconos.printer,
+<<<<<<< HEAD
                       onTap: () {
                         _reImprimirTicket(venta);
                       },
@@ -82,16 +109,28 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
                       height: 60,
                     ),
                     const SizedBox(width: Sizes.p2),
+=======
+                      onTap: () {},
+                      width: 200,
+                      height: 60,
+                    ),
+                    const Spacer(flex: 11),
+>>>>>>> d883161 (feat - Se termina vista de transacciones de ventas (#479))
                     ExBoton.secundario(
                       label: 'Realizar devolución',
                       icon: Iconos.receipt,
                       onTap: () {},
+<<<<<<< HEAD
                       width: esDesktop.resolve(context) ? Sizes.p52 : Sizes.p48,
+=======
+                      width: 200,
+>>>>>>> d883161 (feat - Se termina vista de transacciones de ventas (#479))
                       height: 60,
                     )
                   ],
                 ),
               ),
+<<<<<<< HEAD
               TextoValor(
                   'Cobrado en',
                   DateFormat(
@@ -105,6 +144,11 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
                   Text('${articulos.length} articulos'),
                 ],
               ),
+=======
+              const TextoValor('Cobrado en', '12 Septiembee 2023 12:00'),
+              const TextoValor('Caja', 'Caja 1 (Windows)'),
+              const Encabezado('Articulos'),
+>>>>>>> d883161 (feat - Se termina vista de transacciones de ventas (#479))
               Container(
                 decoration: BoxDecoration(
                     border: Border.all(
@@ -122,6 +166,7 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
                       contentPadding: const EdgeInsets.all(0),
                       dense: (context.breakpoint <= LayoutBreakpoint.sm),
                       leading: AvatarProducto(
+<<<<<<< HEAD
                         uniqueId: articulos[index].uid.toString(),
                         productName: articulos[index].productoNombre.toString(),
                       ),
@@ -130,6 +175,12 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
                               fontSize: 12,
                               color: ColoresBase.neutral500,
                               fontWeight: FontWeight.w500)),
+=======
+                        uniqueId: articulos[index],
+                        productName: articulos[index],
+                      ),
+                      subtitle: const Text('122345'),
+>>>>>>> d883161 (feat - Se termina vista de transacciones de ventas (#479))
                       // selected: !soportaTouch &&
                       //     ventaEnProgreso.articuloSeleccionado ==
                       //         articulos[index],
@@ -138,12 +189,17 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
                       title: Padding(
                         padding: const EdgeInsets.only(bottom: 6.0),
                         child: Text(
+<<<<<<< HEAD
                           articulos[index].productoNombre.toString(),
                           textAlign: TextAlign.left,
+=======
+                          articulos[index],
+>>>>>>> d883161 (feat - Se termina vista de transacciones de ventas (#479))
                           //style: GoogleFonts.inter(fontWeight: FontWeight.w500),
                         ),
                       ),
                       trailing: Wrap(
+<<<<<<< HEAD
                           runAlignment: WrapAlignment.spaceBetween,
                           spacing: (context.breakpoint >= LayoutBreakpoint.sm)
                               ? 80
@@ -153,11 +209,22 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
                               'x ${articulos[index].cantidad.toString()}',
                               textAlign: TextAlign.center,
                               style: const TextStyle(
+=======
+                          spacing: (context.breakpoint >= LayoutBreakpoint.sm)
+                              ? 80
+                              : 31,
+                          children: const <Widget>[
+                            Text(
+                              '1.0',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+>>>>>>> d883161 (feat - Se termina vista de transacciones de ventas (#479))
                                   fontSize: 18,
                                   color: ColoresBase.neutral500,
                                   fontWeight: FontWeight.w500),
                             ),
                             Text(
+<<<<<<< HEAD
                               '\$${articulos[index].precioDeVenta.toString()}',
                               textAlign: TextAlign.center,
                               style: const TextStyle(
@@ -169,6 +236,10 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
                               '\$${articulos[index].subtotal.toString()}',
                               textAlign: TextAlign.center,
                               style: const TextStyle(
+=======
+                              '12.33',
+                              style: TextStyle(
+>>>>>>> d883161 (feat - Se termina vista de transacciones de ventas (#479))
                                   fontSize: 18,
                                   color: Colores.accionPrimaria,
                                   fontWeight: FontWeight.w600),
@@ -189,6 +260,7 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+<<<<<<< HEAD
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -221,12 +293,25 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
                               );
                             }
                           },
+=======
+                  Flexible(
+                    fit: FlexFit.tight,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        Encabezado('Pagos'),
+                        TextoValor(
+                          'Tarjeta de crédito',
+                          '12.33',
+                          tamanoFuente: TextSizes.textBase,
+>>>>>>> d883161 (feat - Se termina vista de transacciones de ventas (#479))
                         ),
                       ],
                     ),
                   ),
                   //const Spacer(),
                   const SizedBox(width: 60),
+<<<<<<< HEAD
                   Expanded(
                     child: Column(
                       children: [
@@ -249,6 +334,31 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
                         TextoValor(
                           'Total',
                           '\$${venta.total.toString()}',
+=======
+                  Flexible(
+                    fit: FlexFit.tight,
+                    child: Column(
+                      children: const [
+                        Encabezado('Totales'),
+                        TextoValor(
+                          'Subtotal',
+                          '212.33',
+                          tamanoFuente: TextSizes.textBase,
+                        ),
+                        TextoValor(
+                          'IVA 16%',
+                          '65.13',
+                          tamanoFuente: TextSizes.textBase,
+                        ),
+                        TextoValor(
+                          'IEPS 8%',
+                          '22.53',
+                          tamanoFuente: TextSizes.textBase,
+                        ),
+                        TextoValor(
+                          'Total',
+                          '2122.50',
+>>>>>>> d883161 (feat - Se termina vista de transacciones de ventas (#479))
                           tamanoFuente: TextSizes.textBase,
                         ),
                       ],
@@ -266,6 +376,59 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
   }
 }
 
+<<<<<<< HEAD
+=======
+class TextoValor extends StatelessWidget {
+  final String campo;
+  final String valor;
+  final TextAlign align;
+  final double tamanoFuente;
+
+  const TextoValor(this.campo, this.valor,
+      {super.key,
+      this.align = TextAlign.right,
+      this.tamanoFuente = TextSizes.textSm});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 5),
+      child: Container(
+        //color: Colors.cyan,
+        child: Row(
+          children: [
+            SizedBox(
+              //width: 150,
+              child: Container(
+                //color: Colors.green,
+                child: Text(
+                  campo,
+                  textAlign: align,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: tamanoFuente,
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: Container(
+                //color: Colors.amber,
+                child: Text(valor,
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                      fontSize: tamanoFuente,
+                    )),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+>>>>>>> d883161 (feat - Se termina vista de transacciones de ventas (#479))
 class Encabezado extends StatelessWidget {
   final String encabezado;
 

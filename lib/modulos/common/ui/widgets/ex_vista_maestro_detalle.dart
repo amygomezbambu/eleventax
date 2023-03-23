@@ -12,7 +12,10 @@ import 'package:layout/layout.dart';
 /// detalle del elemento seleccionado en la derecha.
 class ExVistaMaestroDetalle extends StatefulWidget {
   final String title;
+<<<<<<< HEAD
   final String footer;
+=======
+>>>>>>> d883161 (feat - Se termina vista de transacciones de ventas (#479))
   final String rutaDetalleModal;
   final List<IListadoResponsivoItem> items;
   final double desktopWidth;
@@ -23,7 +26,10 @@ class ExVistaMaestroDetalle extends StatefulWidget {
     super.key,
     required this.items,
     required this.title,
+<<<<<<< HEAD
     this.footer = '',
+=======
+>>>>>>> d883161 (feat - Se termina vista de transacciones de ventas (#479))
     this.rutaDetalleModal = 'detalle-modal-responsivo',
     this.desktopWidth = Sizes.p72,
     this.factorAnchoDesktop = 0.7,
