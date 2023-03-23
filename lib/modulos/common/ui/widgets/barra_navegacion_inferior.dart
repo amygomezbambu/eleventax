@@ -12,9 +12,10 @@ class BarraNavegacionInferior extends StatelessWidget {
     required this.onBotonSeleccionado,
   }) : super(key: key);
 
-  void _manejarIndiceSeleccionado(int indice) {
+  void _manejarIndiceSeleccionado(BuildContext context, int indice) {
     Ruta rutaSeleccionada =
         Rutas.rutas.firstWhere((e) => Rutas.rutas.indexOf(e) == indice);
+
     onBotonSeleccionado(rutaSeleccionada);
   }
 
@@ -55,7 +56,9 @@ class BarraNavegacionInferior extends StatelessWidget {
         color: ColoresBase.primario500,
       ),
       unselectedIconTheme: const IconThemeData(size: Sizes.p5),
-      onTap: _manejarIndiceSeleccionado,
+      onTap: (index) {
+        _manejarIndiceSeleccionado(context, index);
+      },
       items: [
         ...construirNavegacion(context),
       ],
