@@ -10,11 +10,14 @@ import 'package:eleventa/modulos/common/ui/ex_icons.dart';
 import 'package:eleventa/modulos/common/ui/tema/theme.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_boton.dart';
 import 'package:eleventa/modulos/common/ui/widgets/texto_valor.dart';
+<<<<<<< HEAD
 =======
 import 'package:eleventa/modulos/common/ui/ex_icons.dart';
 import 'package:eleventa/modulos/common/ui/tema/theme.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_boton.dart';
 >>>>>>> d883161 (feat - Se termina vista de transacciones de ventas (#479))
+=======
+>>>>>>> b63dc5c (feat - Se implementa diálogo de venta a granel (#480))
 import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/productos/ui/widgets/avatar_producto.dart';
 import 'package:eleventa/modulos/ventas/read_models/venta.dart';
@@ -47,10 +50,15 @@ class DetalleTransaccion extends StatefulWidget {
 
 class _DetalleTransaccionState extends State<DetalleTransaccion> {
 <<<<<<< HEAD
+<<<<<<< HEAD
   final esDesktop = LayoutValue(xs: false, md: true);
 
 =======
 >>>>>>> d883161 (feat - Se termina vista de transacciones de ventas (#479))
+=======
+  final esDesktop = LayoutValue(xs: false, md: true);
+
+>>>>>>> b63dc5c (feat - Se implementa diálogo de venta a granel (#480))
   Future<VentaDto> _leerDetalleDeVenta(UID ventaUid) async {
     // Simulamos una lectura de la base de datos lenta
     await Future.delayed(const Duration(milliseconds: 500));
@@ -111,25 +119,34 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
                     const SizedBox(width: Sizes.p2),
 =======
                       onTap: () {},
-                      width: 200,
+                      width: esDesktop.resolve(context) ? Sizes.p52 : Sizes.p48,
                       height: 60,
                     ),
+<<<<<<< HEAD
                     const Spacer(flex: 11),
 >>>>>>> d883161 (feat - Se termina vista de transacciones de ventas (#479))
+=======
+                    const SizedBox(width: Sizes.p2),
+>>>>>>> b63dc5c (feat - Se implementa diálogo de venta a granel (#480))
                     ExBoton.secundario(
                       label: 'Realizar devolución',
                       icon: Iconos.receipt,
                       onTap: () {},
 <<<<<<< HEAD
+<<<<<<< HEAD
                       width: esDesktop.resolve(context) ? Sizes.p52 : Sizes.p48,
 =======
                       width: 200,
 >>>>>>> d883161 (feat - Se termina vista de transacciones de ventas (#479))
+=======
+                      width: esDesktop.resolve(context) ? Sizes.p52 : Sizes.p48,
+>>>>>>> b63dc5c (feat - Se implementa diálogo de venta a granel (#480))
                       height: 60,
                     )
                   ],
                 ),
               ),
+<<<<<<< HEAD
 <<<<<<< HEAD
               TextoValor(
                   'Cobrado en',
@@ -146,6 +163,9 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
               ),
 =======
               const TextoValor('Cobrado en', '12 Septiembee 2023 12:00'),
+=======
+              TextoValor('Cobrado en', venta.cobradaEn.toString()),
+>>>>>>> b63dc5c (feat - Se implementa diálogo de venta a granel (#480))
               const TextoValor('Caja', 'Caja 1 (Windows)'),
               const Encabezado('Articulos'),
 >>>>>>> d883161 (feat - Se termina vista de transacciones de ventas (#479))
@@ -261,6 +281,7 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
 <<<<<<< HEAD
+<<<<<<< HEAD
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -296,6 +317,9 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
 =======
                   Flexible(
                     fit: FlexFit.tight,
+=======
+                  Expanded(
+>>>>>>> b63dc5c (feat - Se implementa diálogo de venta a granel (#480))
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: const [
@@ -311,6 +335,7 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
                   ),
                   //const Spacer(),
                   const SizedBox(width: 60),
+<<<<<<< HEAD
 <<<<<<< HEAD
                   Expanded(
                     child: Column(
@@ -337,6 +362,9 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
 =======
                   Flexible(
                     fit: FlexFit.tight,
+=======
+                  Expanded(
+>>>>>>> b63dc5c (feat - Se implementa diálogo de venta a granel (#480))
                     child: Column(
                       children: const [
                         Encabezado('Totales'),
@@ -376,6 +404,7 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
   }
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 class TextoValor extends StatelessWidget {
@@ -429,6 +458,8 @@ class TextoValor extends StatelessWidget {
 }
 
 >>>>>>> d883161 (feat - Se termina vista de transacciones de ventas (#479))
+=======
+>>>>>>> b63dc5c (feat - Se implementa diálogo de venta a granel (#480))
 class Encabezado extends StatelessWidget {
   final String encabezado;
 
