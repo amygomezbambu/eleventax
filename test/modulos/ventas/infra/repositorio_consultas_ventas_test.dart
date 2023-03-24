@@ -71,4 +71,22 @@ void main() {
 
     expect(versionDeProducto!.nombre, nombreOriginal);
   });
+
+  test('Debe obtener el listado de ventas cobradas de un dia especifico',
+      () async 
+  {
+    //TODO: crear ventas de prueba
+  });
+
+  test('Debe obtener el listado de articulos por venta en un dia especifico en un solo renglon',
+      () async 
+  {
+    //TODO: crear ventas de prueba
+  });
+
+   test('Debe obtener el listado de articulos por venta en un dia especifico en un solo renglon',
+      () async 
+  {
+    //TODO: crear ventas de prueba
+  });
 }

@@ -5,6 +5,7 @@ import 'package:eleventa/modulos/ventas/read_models/venta.dart';
 
 abstract class IRepositorioConsultaVentas {
   Future<VentaDto?> obtenerVenta(UID uid);
+  Future<List<VentaDto>> obtenerHistoricoVentas(DateTime fechaReporte);
   Future<List<FormaDePago>> obtenerFormasDePago();
   Future<FormaDePago?> obtenerFormaDePago(UID uid);
   Future<Venta?> obtenerVentaEnProgreso(UID uid);
