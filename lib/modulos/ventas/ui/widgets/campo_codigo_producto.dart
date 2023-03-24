@@ -87,6 +87,7 @@ class _CampoCodigoProductoState extends State<CampoCodigoProducto> {
         // entonces mandamos el texto ingresado "tal cual"
         if (_productoBuscadoSeleccionado == null) {
           widget.onProductoElegido(widget.textEditingController.text);
+          autocomplete.closeOptions();
         } else {
           _indiceProductoSeleccionado = null;
           controller.clear();

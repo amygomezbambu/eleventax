@@ -92,7 +92,7 @@ class ExDialogos {
       barrierLabel: 'dialogo',
       barrierDismissible: true,
       barrierColor: Colors.black45,
-      transitionDuration: const Duration(milliseconds: 200),
+      transitionDuration: const Duration(milliseconds: 100),
       pageBuilder: (context, anim1, anim2) {
         return Padding(
           padding:
@@ -104,7 +104,10 @@ class ExDialogos {
             child: Container(
               width: esDesktop.resolve(context) ? Sizes.p96 * 1.2 : null,
               margin: const EdgeInsets.only(
-                  bottom: Sizes.p4, left: Sizes.p3, right: Sizes.p3),
+                bottom: Sizes.p4,
+                left: Sizes.p3,
+                right: Sizes.p3,
+              ),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius:
@@ -278,7 +281,7 @@ class DialogoTitulo extends StatelessWidget {
                           style: TextStyle(
                             decoration: TextDecoration.none,
                             fontSize: esDesktop.resolve(context)
-                                ? TextSizes.textXs
+                                ? TextSizes.textSm
                                 : TextSizes.textSm,
                             color: ColoresBase.neutral600,
                             fontWeight: FontWeight.w400,

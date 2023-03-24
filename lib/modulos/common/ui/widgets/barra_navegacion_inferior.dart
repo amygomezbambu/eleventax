@@ -23,6 +23,7 @@ class BarraNavegacionInferior extends StatelessWidget {
     List<BottomNavigationBarItem> navegacion = [];
 
     for (var ruta in Rutas.rutas) {
+      if (ruta.visible == false) continue;
       var destination = BottomNavigationBarItem(
         backgroundColor: Colores.navegacionBackground,
         icon: Icon(ruta.icon),

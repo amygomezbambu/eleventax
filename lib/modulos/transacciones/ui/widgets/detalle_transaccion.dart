@@ -1,6 +1,7 @@
 import 'package:eleventa/modulos/common/ui/ex_icons.dart';
 import 'package:eleventa/modulos/common/ui/tema/theme.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_boton.dart';
+import 'package:eleventa/modulos/common/ui/widgets/texto_valor.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/productos/ui/widgets/avatar_producto.dart';
 import 'package:eleventa/modulos/ventas/read_models/venta.dart';
@@ -20,6 +21,8 @@ class DetalleTransaccion extends StatefulWidget {
 }
 
 class _DetalleTransaccionState extends State<DetalleTransaccion> {
+  final esDesktop = LayoutValue(xs: false, md: true);
+
   Future<VentaDto> _leerDetalleDeVenta(UID ventaUid) async {
     // Simulamos una lectura de la base de datos lenta
     await Future.delayed(const Duration(milliseconds: 500));
@@ -52,21 +55,21 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
                       label: 'Reimprimir ticket',
                       icon: Iconos.printer,
                       onTap: () {},
-                      width: 200,
+                      width: esDesktop.resolve(context) ? Sizes.p52 : Sizes.p48,
                       height: 60,
                     ),
-                    const Spacer(flex: 11),
+                    const SizedBox(width: Sizes.p2),
                     ExBoton.secundario(
                       label: 'Realizar devolución',
                       icon: Iconos.receipt,
                       onTap: () {},
-                      width: 200,
+                      width: esDesktop.resolve(context) ? Sizes.p52 : Sizes.p48,
                       height: 60,
                     )
                   ],
                 ),
               ),
-              const TextoValor('Cobrado en', '12 Septiembee 2023 12:00'),
+              TextoValor('Cobrado en', venta.cobradaEn.toString()),
               const TextoValor('Caja', 'Caja 1 (Windows)'),
               const Encabezado('Articulos'),
               Container(
@@ -138,8 +141,7 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Flexible(
-                    fit: FlexFit.tight,
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: const [
@@ -154,8 +156,7 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
                   ),
                   //const Spacer(),
                   const SizedBox(width: 60),
-                  Flexible(
-                    fit: FlexFit.tight,
+                  Expanded(
                     child: Column(
                       children: const [
                         Encabezado('Totales'),
@@ -190,56 +191,6 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
           return const CircularProgressIndicator();
         }
       },
-    );
-  }
-}
-
-class TextoValor extends StatelessWidget {
-  final String campo;
-  final String valor;
-  final TextAlign align;
-  final double tamanoFuente;
-
-  const TextoValor(this.campo, this.valor,
-      {super.key,
-      this.align = TextAlign.right,
-      this.tamanoFuente = TextSizes.textSm});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 5),
-      child: Container(
-        //color: Colors.cyan,
-        child: Row(
-          children: [
-            SizedBox(
-              //width: 150,
-              child: Container(
-                //color: Colors.green,
-                child: Text(
-                  campo,
-                  textAlign: align,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: tamanoFuente,
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                //color: Colors.amber,
-                child: Text(valor,
-                    textAlign: TextAlign.right,
-                    style: TextStyle(
-                      fontSize: tamanoFuente,
-                    )),
-              ),
-            )
-          ],
-        ),
-      ),
     );
   }
 }

@@ -1,8 +1,8 @@
 import 'package:eleventa/modulos/common/ui/tema/theme.dart';
-import 'package:eleventa/modulos/common/ui/vista_maestro_detalle_responsiva.dart';
+import 'package:eleventa/modulos/common/ui/widgets/ex_vista_maestro_detalle.dart';
 import 'package:flutter/material.dart';
 
-class TransaccionDeVenta implements ListadoItem {
+class TransaccionDeVenta extends ListadoResponsivoItem {
   final String label;
   final IconData icon;
   final Widget child;
