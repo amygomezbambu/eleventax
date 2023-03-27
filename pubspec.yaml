@@ -50,8 +50,8 @@ dependencies:
   murmurhash: ^1.0.1
   hlc: ^1.0.3
   logging: ^1.1.0 # [ADR-0004]
-  sentry_flutter: ^6.22.0 # [ADR-0004]
-  sentry_logging: ^6.18.1 # [ADR-0004]
+  sentry_flutter: ^7.2.0 # [ADR-0004]
+  sentry_logging: ^7.2.0 # [ADR-0004]
   path_provider_foundation:
   path_provider: ^2.0.12
   layout: ^1.0.3 # [ADR-0009]
