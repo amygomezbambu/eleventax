@@ -121,20 +121,20 @@ echo "\nexport PATH=$JAVA_HOME:$PATH\n" >> /Users/$(whoami)/.zshrc
 printHeading "🔵 Instalando Graddle"
 brew install gradle
 ## Reinstall Gradle to Latest Version
-echo "\nGRADLE_VERSION=$(echo $(arr=($(gradle --version | awk '{ print $2 }')) && echo ${arr[1]}))\n" >> /Users/$(whoami)/.zshrc
-echo "\nexport GRADLE_HOME=`brew --prefix`/Cellar/gradle/$GRADLE_VERSION\n" >> /Users/$(whoami)/.zshrc
-echo "\nexport PATH=$GRADLE_HOME/bin:$PATH\n" >> /Users/$(whoami)/.zshrc
+echo "GRADLE_VERSION=$(echo $(arr=($(gradle --version | awk '{ print $2 }')) && echo ${arr[1]}))\n" >> /Users/$(whoami)/.zshrc
+echo "export GRADLE_HOME=`brew --prefix`/Cellar/gradle/$GRADLE_VERSION\n" >> /Users/$(whoami)/.zshrc
+echo "export PATH=$GRADLE_HOME/bin:$PATH\n" >> /Users/$(whoami)/.zshrc
 
 printHeading "🔵 Instalando herramientas adicionales de Android Studio..."
 
-echo "\nexport ANDROID_HOME=`brew --prefix`/share/android-commandlinetools\n" >> /Users/$(whoami)/.zshrc
-echo "\nexport PATH=$ANDROID_HOME:$PATH\n" >> /Users/$(whoami)/.zshrc
+echo "export ANDROID_HOME=`brew --prefix`/share/android-commandlinetools\n" >> /Users/$(whoami)/.zshrc
+echo "export PATH=$ANDROID_HOME:$PATH\n" >> /Users/$(whoami)/.zshrc
 
-echo "\nexport SDK_MANAGER=`brew --prefix`/bin/sdkmanager\n" >> /Users/$(whoami)/.zshrc
-echo "\nexport PATH=$SDK_MANAGER:$PATH\n" >> /Users/$(whoami)/.zshrc
+echo "export SDK_MANAGER=`brew --prefix`/bin/sdkmanager\n" >> /Users/$(whoami)/.zshrc
+echo "export PATH=$SDK_MANAGER:$PATH\n" >> /Users/$(whoami)/.zshrc
 
-echo "\nexport AVD=`brew --prefix`/bin/avdmanager\n" >> /Users/$(whoami)/.zshrc
-echo "\nexport PATH=$AVD:$PATH\n" >> /Users/$(whoami)/.zshrc
+echo "export AVD=`brew --prefix`/bin/avdmanager\n" >> /Users/$(whoami)/.zshrc
+echo "export PATH=$AVD:$PATH\n" >> /Users/$(whoami)/.zshrc
 
 # Then Install Tools
 sdkmanager "cmdline-tools;latest"
@@ -185,6 +185,10 @@ else
     echo "✅ GCloud instalado."
 fi
 
+print "🔵 Instalando Cider para generación de changelog"
+flutter pub global activate cider
+echo "export PATH=$PATH:$HOME/.pub-cache/bin" >> /Users/$(whoami)/.zshrc
+
 # Instalar tweaks de sistema
 echo "✔ Tweak: Deshabilitar los smart quotes que interfieren al teclear código"
 defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
@@ -192,6 +196,9 @@ defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
 
 echo "Configurando VSCode como editor de Git"
 git config --global core.editor "code --wait"
+
+echo "Instalando herramientas para Conveyor"
+brew install yq
 
 # echo "✔ Instalando GitHooks locales"
 # bash setup_githooks.sh

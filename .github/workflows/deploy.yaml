@@ -1,0 +1,46 @@
+name: Deploy to GitHub
+
+on: [workflow_dispatch]
+jobs:
+  build:
+    uses: ./.github/workflows/build-desktop.yml
+  deploy:
+    needs: [build-desktop]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Descargar binario macOS ARM
+        uses: actions/download-artifact@v3
+        with:
+          name: build-macos-aarch64
+          path: ./artifacts
+
+      - name: Descargar binario macOS AMD64
+        uses: actions/download-artifact@v3
+        with:
+          name: build-macos-amd64
+          path: ./artifacts
+
+      - name: Descargar binario de Windows
+        uses: actions/download-artifact@v3
+        with:
+          name: build-windows-amd64
+          # Windows is not in a tarball, so we extract to a separate directory.
+          path: ./artifacts/windows
+
+      - name: Ejecutamos Conveyor
+        uses: hydraulic-software/conveyor/actions/build@v1
+        with:
+          command: make site
+          signing_key: ${{ secrets.CONVEYOR_SIGNING_KEY }}
+          agree_to_license: 1
+
+      - uses: shallwefootball/s3-upload-action@master
+        with:
+          aws_key_id: ${{ secrets.UPLOAD_AWS_S3_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.UPLOAD_AWS_S3_SECRET_ACCESS_KEY}}
+          aws_bucket: ${{ secrets.UPLOAD_AWS_S3_BUCKET }}
+          source_dir: "output"
+          destination_dir: "eleventax" # Directorio destino en el bucket de S3

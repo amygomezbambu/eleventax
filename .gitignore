@@ -59,3 +59,4 @@ libssl-1_1-x64.dll
 sqlcipher.dll
 testlab_serviceaccount.json
 lib/l10n/generated/
+output/
