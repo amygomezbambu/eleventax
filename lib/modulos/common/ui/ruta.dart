@@ -1,5 +1,8 @@
+import 'package:eleventa/modulos/common/ui/widgets/ex_vista_detalle.dart';
+import 'package:eleventa/modulos/common/ui/widgets/ex_appbar.dart';
 import 'package:eleventa/modulos/productos/ui/vista_modificar_producto.dart';
 import 'package:eleventa/modulos/productos/ui/nuevo_producto.dart';
+import 'package:eleventa/modulos/transacciones/ui/vista_transacciones.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -11,17 +14,19 @@ import 'package:eleventa/modulos/ventas/ui/vista_ventas.dart';
 class Ruta {
   final String rutaURL;
   final String nombre;
-  final IconData icon;
+  final IconData? icon;
   final Widget Function(BuildContext, GoRouterState)? builder;
   final Page<dynamic> Function(BuildContext, GoRouterState)? pageBuilder;
   final List<Ruta> subRutas;
+  final bool visible;
 
   Ruta({
     this.builder,
     this.pageBuilder,
     required this.rutaURL,
     required this.nombre,
-    required this.icon,
+    this.icon,
+    this.visible = true,
     this.subRutas = const [],
   });
 }
@@ -68,11 +73,29 @@ class Rutas {
       ],
     ),
     Ruta(
+      rutaURL: "/transacciones",
+      nombre: "Transacciones",
+      icon: Icons.list,
+      pageBuilder: (context, state) =>
+          const NoTransitionPage(child: VistaTransacciones()),
+    ),
+    Ruta(
       rutaURL: "/configuracion",
       nombre: "Configuración",
       icon: Iconos.setting_24,
       pageBuilder: (context, state) =>
           const NoTransitionPage(child: VistaConfiguracion()),
+    ),
+    Ruta(
+      rutaURL: "/detalle/:titulo",
+      nombre: "detalle-modal-responsivo",
+      visible: false,
+      builder: (context, state) => Scaffold(
+        appBar: ExAppBar(
+          titleText: state.params['titulo'],
+        ),
+        body: VistaDetalle(child: (state.extra! as Widget)),
+      ),
     ),
   ];
 

@@ -88,6 +88,82 @@ else
     echo "✅ Visual Studio Code instalado."
 fi
 
+printHeading "🔵 Instalando aplicaciones de la AppStore..."
+printDivider        
+printStep "Visual Studio Code" "brew install mas"
+printStep "XCode" "mas install 497799835"
+printStep "Android Studio" "brew install --cask android-studio"
+printStep "Android Command Line Tools" "brew install --cask android-commandlinetools"
+printDivider        
+
+printHeading "🔵 Aceptando EULAs"
+flutter doctor --android-licenses
+sudo xcodebuild -license
+
+printHeading "🔵 Instalando Java"
+
+echo '\nnexport JABBA_VERSION="0.11.2"\n' >> /Users/$(whoami)/.zshrc
+curl -sL https://github.com/shyiko/jabba/raw/master/install.sh | bash && . ~/.jabba/jabba.sh
+
+[ -s "/Users/$(whoami)/.jabba/jabba.sh" ] && source "/Users/$(whoami)/.jabba/jabba.sh"
+
+jabba install openjdk@1.16.0
+java -version
+
+# Switch to a different Java version (need to first be installed using Jabba)
+jabba use ...
+
+# Actualizar variables de entorno
+echo "\nexport JAVA_HOME=/Users/$(whoami)/.jabba/jdk/openjdk@1.16.0/Contents/Home\n" >> /Users/$(whoami)/.zshrc
+echo "\nexport PATH=$JAVA_HOME:$PATH\n" >> /Users/$(whoami)/.zshrc
+
+
+printHeading "🔵 Instalando Graddle"
+brew install gradle
+## Reinstall Gradle to Latest Version
+echo "\nGRADLE_VERSION=$(echo $(arr=($(gradle --version | awk '{ print $2 }')) && echo ${arr[1]}))\n" >> /Users/$(whoami)/.zshrc
+echo "\nexport GRADLE_HOME=`brew --prefix`/Cellar/gradle/$GRADLE_VERSION\n" >> /Users/$(whoami)/.zshrc
+echo "\nexport PATH=$GRADLE_HOME/bin:$PATH\n" >> /Users/$(whoami)/.zshrc
+
+printHeading "🔵 Instalando herramientas adicionales de Android Studio..."
+
+echo "\nexport ANDROID_HOME=`brew --prefix`/share/android-commandlinetools\n" >> /Users/$(whoami)/.zshrc
+echo "\nexport PATH=$ANDROID_HOME:$PATH\n" >> /Users/$(whoami)/.zshrc
+
+echo "\nexport SDK_MANAGER=`brew --prefix`/bin/sdkmanager\n" >> /Users/$(whoami)/.zshrc
+echo "\nexport PATH=$SDK_MANAGER:$PATH\n" >> /Users/$(whoami)/.zshrc
+
+echo "\nexport AVD=`brew --prefix`/bin/avdmanager\n" >> /Users/$(whoami)/.zshrc
+echo "\nexport PATH=$AVD:$PATH\n" >> /Users/$(whoami)/.zshrc
+
+# Then Install Tools
+sdkmanager "cmdline-tools;latest"
+sdkmanager "patcher;v4"
+sdkmanager "build-tools;30.0.2"
+sdkmanager "platforms;android-32"
+sdkmanager "emulator"
+sdkmanager "tools"
+sdkmanager "platform-tools"
+
+yes | sdkmanager --licenses
+sdkmanager "ndk-bundle"
+
+print "🔵 Instalando Ruby"
+brew install ruby
+echo 'export PATH="/opt/homebrew/opt/ruby/bin:$PATH"' >> ~/.zshrc
+echo 'export PATH=`gem environment gemdir`/bin:$PATH' >> ~/.zshrc
+source ~/.zshrc
+brew pin ruby
+
+print "🔵 Instalando Cocoapods"
+gem install cocoapods
+
+print "🔵 Instalando Simuladores de iOS"
+sudo gem install xcode-install
+xcversion simulators --install="iOS 16.2 Simulator"
+
+
+## Abrir Android Studio y abrir la carpeta para aceptar el contrato y que baje los gradle, etc.
 if ! command -v flutter &> /dev/null
 then
     print "🔵 Instalando Flutter"
@@ -128,5 +204,7 @@ fi
 
 printDivider "🔵 Evaluando si funciona 1Password Client. Se te pedirá autenticarte..."
 echo "Resultado:"
-op read "op://eleventax/eleventax - TestLab Service Account" 
+op read "op://Desarrollo/eleventax prueba/credencial" 
 
+printDivider "🔵 Verificando que esté todo en orden"
+flutter doctor

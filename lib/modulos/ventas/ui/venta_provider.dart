@@ -1,4 +1,5 @@
 import 'package:eleventa/dependencias.dart';
+import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/productos/domain/producto_generico.dart';
 import 'package:eleventa/modulos/productos/domain/value_objects/codigo_producto.dart';
 import 'package:eleventa/modulos/ventas/domain/articulo.dart';
@@ -46,28 +47,23 @@ class NotificadorVenta extends StateNotifier<VentaActualState> {
     await guardarVentaEnProgreso.exec();
   }
 
-  Future<void> agregarArticulo(String value) async {
+  Future<Producto?> obtenerProductoPorCodigo(String codigo) async {
+    return await consultas.obtenerProductoPorCodigo(CodigoProducto(codigo));
+  }
+
+  Future<void> agregarArticulo(Producto producto, double cantidad) async {
     try {
-      var producto =
-          await consultas.obtenerProductoPorCodigo(CodigoProducto(value));
+      state.venta.agregarArticulo(Articulo.crear(
+        producto: producto,
+        cantidad: cantidad,
+      ));
 
-      if (producto == null) {
-        // TODO: Mostrar mensaje de error en la UI
-        debugPrint('PRODUCTO NO ENCONTRADO!!');
-      } else {
-        state.venta.agregarArticulo(Articulo.crear(
-          producto: producto,
-          cantidad: 1.00,
-        ));
+      await _guardarVenta();
 
-        await _guardarVenta();
-
-        // El articulo seleccionado será el último si es nuevo
-        // o el que ya exista si tiene el mismo código de producto
-        state.articuloSeleccionado = state.venta.articulos.firstWhere(
-            (element) =>
-                element.producto.codigo == CodigoProducto(value).value);
-      }
+      // El articulo seleccionado será el último si es nuevo
+      // o el que ya exista si tiene el mismo código de producto
+      state.articuloSeleccionado = state.venta.articulos.firstWhere((element) =>
+          element.producto.codigo == CodigoProducto(producto.codigo).value);
     } on Exception catch (e) {
       // TODO: mostrar mensaje de error o decidir que hacer
       debugPrint(e.toString());

@@ -3,8 +3,10 @@
 import 'package:eleventa/modulos/common/ui/ex_icons.dart';
 import 'package:eleventa/modulos/common/ui/tema/theme.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_dialogos.dart';
+import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/ventas/domain/articulo.dart';
 import 'package:eleventa/modulos/ventas/read_models/producto_generico.dart';
+import 'package:eleventa/modulos/ventas/ui/dialogo_venta_granel.dart';
 import 'package:eleventa/modulos/ventas/ui/dialogo_venta_rapida.dart';
 import 'package:eleventa/modulos/ventas/ui/venta_provider.dart';
 import 'package:eleventa/modulos/ventas/ui/widgets/boton_accion_de_venta.dart';
@@ -22,8 +24,11 @@ class VentaActual extends ConsumerWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
 
-  const VentaActual(
-      {required this.controller, required this.focusNode, super.key});
+  const VentaActual({
+    required this.controller,
+    required this.focusNode,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -32,7 +37,8 @@ class VentaActual extends ConsumerWidget {
     return ControlesVentaActual(
       editingController: controller,
       focusNode: focusNode,
-      onBuscarCodigo: notifier.agregarArticulo,
+      onBuscarProducto: notifier.obtenerProductoPorCodigo,
+      onAgregarProducto: notifier.agregarArticulo,
     );
   }
 }
@@ -40,24 +46,69 @@ class VentaActual extends ConsumerWidget {
 class ControlesVentaActual extends ConsumerWidget {
   final esDesktop = LayoutValue(xs: false, md: true);
   final TextEditingController editingController;
-  final Function onBuscarCodigo;
+  final Future<Producto?> Function(String) onBuscarProducto;
+  final Function(Producto, double) onAgregarProducto;
+  //final Function onSolicitarCantidad;
   final FocusNode focusNode;
 
-  ControlesVentaActual(
-      {super.key,
-      required this.editingController,
-      required this.focusNode,
-      required this.onBuscarCodigo});
+  ControlesVentaActual({
+    super.key,
+    required this.editingController,
+    required this.focusNode,
+    required this.onBuscarProducto,
+    required this.onAgregarProducto,
+  });
 
   Future<void> _agregarProductoAListado(
       BuildContext context, WidgetRef ref, String codigo) async {
+    if (codigo.isEmpty) return;
+
+    editingController.clear();
+
     if (codigo == "0") {
       await _solicitarVentaGenerico(context, ref, codigo);
     } else {
-      await onBuscarCodigo(codigo);
-    }
+      final producto = await onBuscarProducto(codigo);
 
-    editingController.clear();
+      // TODO: Ver como resolver esta recomendacion del linter
+      // ignore: use_build_context_synchronously
+      if (!context.mounted) return;
+
+      if (producto != null) {
+        double? cantidad;
+
+        if (producto.seVendePor == ProductoSeVendePor.peso) {
+          cantidad = await ExDialogos.mostrarDialogo<double>(
+            context,
+            titulo: 'Cantidad a vender',
+            mensaje: 'Ingresa la cantidad del producto a vender',
+            // TODO: Icono de granel.
+            icono: Iconos.special_check,
+            widgets: [
+              DialogoVentaGranel(
+                nombreProducto: producto.nombre,
+                precioDeVenta: producto.precioDeVenta,
+              )
+            ],
+          );
+
+          // Si viene null es porque se canceló el diálogo.
+          if (cantidad == null) return;
+        }
+
+        cantidad ??= 1.0;
+
+        onAgregarProducto(producto, cantidad);
+      } else {
+        // TODO: Hacer beep con el S.O.
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('No se encontró el producto $codigo'),
+          ),
+        );
+      }
+    }
   }
 
   Future<void> _solicitarVentaGenerico(
