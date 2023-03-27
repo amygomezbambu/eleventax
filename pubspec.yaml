@@ -53,7 +53,7 @@ dependencies:
   sentry_flutter: ^7.2.0 # [ADR-0004]
   sentry_logging: ^7.2.0 # [ADR-0004]
   path_provider_foundation:
-  path_provider: ^2.0.12
+  path_provider: ^2.0.14
   layout: ^1.0.3 # [ADR-0009]
   flutter_svg: ^2.0.4
   mixpanel_analytics: ^2.1.1
