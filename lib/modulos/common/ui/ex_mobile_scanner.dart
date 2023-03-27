@@ -63,7 +63,6 @@ class _ExMobileScannerState extends State<ExMobileScanner> {
         centerTitle: true,
       ),
       body: CameraAwesomeBuilder.custom(
-        initialCaptureMode: CaptureMode.photo,
         // No necesitamos audio
         enableAudio: false,
         saveConfig:
@@ -73,6 +72,7 @@ class _ExMobileScannerState extends State<ExMobileScanner> {
           outputFormat: InputAnalysisImageFormat.nv21,
           width: tamanoImagen,
           maxFramesPerSecond: cuadrosPorSegundo, //12
+          autoStart: true,
         ),
         builder: (cameraModeState, previewSize, previewRect) {
           return const ExMobileScannerOverlay(
