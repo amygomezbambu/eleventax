@@ -13,14 +13,14 @@ jobs:
       fail-fast: true
       matrix:
         include:
-          - arch: aarch64
-            os: macos-latest
-            target: macos
-            lipo-arch: arm64
-          - arch: amd64
-            os: macos-latest
-            target: macos
-            lipo-arch: x86_64
+          # - arch: aarch64
+          #   os: macos-latest
+          #   target: macos
+          #   lipo-arch: arm64
+          # - arch: amd64
+          #   os: macos-latest
+          #   target: macos
+          #   lipo-arch: x86_64
           - arch: amd64
             os: windows-2019
             target: windows
