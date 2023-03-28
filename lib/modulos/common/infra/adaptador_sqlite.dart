@@ -74,9 +74,6 @@ class AdaptadorSQLite implements IAdaptadorDeBaseDeDatos {
   Future<void> conectar({bool verbose = false}) async {
     _verbose = verbose;
 
-    _carpetaBd = (await getApplicationDocumentsDirectory()).path;
-    _logger.info('Carpeta BD: $_carpetaBd');
-
     final DatabaseFactory dbFactory =
         createDatabaseFactoryFfi(ffiInit: _sqliteInit);
 
@@ -85,6 +82,8 @@ class AdaptadorSQLite implements IAdaptadorDeBaseDeDatos {
     if (Platform.environment.containsKey('FLUTTER_TEST')) {
       archivoBD = inMemoryDatabasePath;
     } else {
+      _carpetaBd = (await getApplicationDocumentsDirectory()).path;
+      _logger.info('Carpeta BD: $_carpetaBd');
       archivoBD = join(_carpetaBd, 'eleventa.db');
     }
 

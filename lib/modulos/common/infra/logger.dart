@@ -66,8 +66,12 @@ class Logger implements ILogger {
   Future<void> iniciar({required LoggerConfig config}) async {
     _config = config;
 
-    _carpetaLogs = (await getApplicationSupportDirectory()).path;
-    _logger.info('Archivo log: $_carpetaLogs/eleventa.log');
+    if (!Platform.environment.containsKey('FLUTTER_TEST')) {
+      _carpetaLogs = (await getApplicationSupportDirectory()).path;
+      _logger.info('Archivo log: $_carpetaLogs/eleventa.log');
+    } else {
+      _carpetaLogs = '';
+    }
 
     if (config.nivelesRemotos.isNotEmpty) {
       await SentryFlutter.init(
