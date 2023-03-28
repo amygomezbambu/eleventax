@@ -17,17 +17,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Descargar binario macOS ARM
-        uses: actions/download-artifact@v3
-        with:
-          name: build-macos-aarch64
-          path: ./artifacts
+      # - name: Descargar binario macOS ARM
+      #   uses: actions/download-artifact@v3
+      #   with:
+      #     name: build-macos-aarch64
+      #     path: ./artifacts
 
-      - name: Descargar binario macOS AMD64
-        uses: actions/download-artifact@v3
-        with:
-          name: build-macos-amd64
-          path: ./artifacts
+      # - name: Descargar binario macOS AMD64
+      #   uses: actions/download-artifact@v3
+      #   with:
+      #     name: build-macos-amd64
+      #     path: ./artifacts
 
       - name: Descargar binario de Windows
         uses: actions/download-artifact@v3
@@ -39,7 +39,8 @@ jobs:
       - name: Ejecutamos Conveyor
         uses: hydraulic-software/conveyor/actions/build@v1
         with:
-          command: make site --passphrase=${{ secrets.CONVEYOR_PASSPHRASE }}
+          command: make site
+          extra_flags: "--passphrase=${{ secrets.CONVEYOR_PASSPHRASE }}"
           signing_key: ${{ secrets.CONVEYOR_SIGNING_KEY }}
           agree_to_license: 1
 
