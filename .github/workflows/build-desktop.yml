@@ -1,11 +1,17 @@
 name: Desplegar binarios desktop
 
 on:
+<<<<<<< HEAD:.github/workflows/build-desktop.yml
   # Para que se generen correctamente las ligas de nightly.link
   # se necesita que se ejecute en cada push a main
   # push:
   #   branches:
   #     - main
+=======
+  push:
+    branches:
+      - main
+>>>>>>> 6da91b8 (Deploy - Se mejora config de Conveyor (#489)):.github/workflows/build-desktop.yaml
   workflow_dispatch:
   workflow_call:
 
@@ -44,10 +50,13 @@ jobs:
           channel: "stable"
           cache: true
 
+<<<<<<< HEAD:.github/workflows/build-desktop.yml
       - if: ${{ matrix.target == 'windows' }}
         name: Instalar OpenSSL necesario para SQLite/SQLCipher
         run: choco install openssl
 
+=======
+>>>>>>> 6da91b8 (Deploy - Se mejora config de Conveyor (#489)):.github/workflows/build-desktop.yaml
       - name: Instalar dependencias
         run: flutter pub get
 

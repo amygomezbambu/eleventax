@@ -7,6 +7,16 @@ on:
   workflow_dispatch:
   workflow_call:
 
+<<<<<<< HEAD:.github/workflows/deploy.yml
+=======
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+  workflow_call:
+
+>>>>>>> 6da91b8 (Deploy - Se mejora config de Conveyor (#489)):.github/workflows/deploy.yaml
 jobs:
   build-desktop:
     uses: ./.github/workflows/build-desktop.yml
