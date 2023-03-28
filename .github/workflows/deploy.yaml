@@ -51,3 +51,12 @@ jobs:
           aws_bucket: ${{ secrets.UPLOAD_AWS_S3_BUCKET }}
           source_dir: "output"
           destination_dir: "eleventax" # Directorio destino en el bucket de S3
+
+      - name: Invalidamos el caché de CloudFront
+        uses: chetan/invalidate-cloudfront-action@v2
+        env:
+          DISTRIBUTION: ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION }}
+          PATHS: "/eleventax/*"
+          AWS_REGION: "us-east-1"
+          AWS_ACCESS_KEY_ID: ${{ secrets.UPLOAD_AWS_S3_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.UPLOAD_AWS_S3_SECRET_ACCESS_KEY}}
