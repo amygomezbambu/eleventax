@@ -62,6 +62,11 @@ jobs:
       - name: Compilar binario
         run: flutter build ${{ matrix.target }} --release -v
 
+      - if: ${{ matrix.target == 'windows' }}
+        name: Copiar archivos DLL de OpenSSL a carpeta de build
+        run: |
+          mv "$(cygpath -u 'C:\Program Files\OpenSSL-Win64\bin\libcrypto-1_1-x64.dll')" build/windows/runner/Release/libcrypto-1_1-x64__.dll
+
       - if: ${{ matrix.target == 'macos' }}
         name: "MacOS: Adelgazar binario"
         run: >-
