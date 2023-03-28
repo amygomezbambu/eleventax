@@ -18,11 +18,18 @@ on:
 
 >>>>>>> 6da91b8 (Deploy - Se mejora config de Conveyor (#489)):.github/workflows/deploy.yaml
 jobs:
+<<<<<<< HEAD:.github/workflows/deploy.yml
   build-desktop:
     uses: ./.github/workflows/build-desktop.yml
 
   despliegue:
     needs: [build-desktop]
+=======
+  build:
+    uses: ./.github/workflows/build-desktop.yaml
+  despliegue:
+    needs: [build]
+>>>>>>> eb01c87 (fix - Se corrigen errores de sintaxis de yaml. (#491)):.github/workflows/deploy.yaml
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
