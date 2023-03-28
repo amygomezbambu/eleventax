@@ -2,6 +2,7 @@ name: Desplegar binarios desktop
 
 on:
 <<<<<<< HEAD:.github/workflows/build-desktop.yml
+<<<<<<< HEAD:.github/workflows/build-desktop.yml
   # Para que se generen correctamente las ligas de nightly.link
   # se necesita que se ejecute en cada push a main
   # push:
@@ -12,6 +13,11 @@ on:
     branches:
       - main
 >>>>>>> 6da91b8 (Deploy - Se mejora config de Conveyor (#489)):.github/workflows/build-desktop.yaml
+=======
+  # push:
+  #   branches:
+  #     - main
+>>>>>>> a13a575 (build - Se cambia deploy de automático a manual (#492)):.github/workflows/build-desktop.yaml
   workflow_dispatch:
   workflow_call:
 

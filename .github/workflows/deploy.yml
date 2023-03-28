@@ -1,9 +1,9 @@
 name: Despliegue automático
 
 on:
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
   workflow_dispatch:
   workflow_call:
 
@@ -62,8 +62,12 @@ jobs:
         env:
           NIGHTLYLINK_SECRET: ${{ secrets.NIGHTLYLINK_SECRET }}
         with:
+<<<<<<< HEAD:.github/workflows/deploy.yml
           command: make site --rerun=all
           extra_flags: "--passphrase=${{ secrets.CONVEYOR_PASSPHRASE }}"
+=======
+          command: make site --passphrase=${{ secrets.CONVEYOR_PASSPHRASE }}
+>>>>>>> a13a575 (build - Se cambia deploy de automático a manual (#492)):.github/workflows/deploy.yaml
           signing_key: ${{ secrets.CONVEYOR_SIGNING_KEY }}
           agree_to_license: 1
 
