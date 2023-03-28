@@ -1,4 +1,4 @@
-name: Deploy to GitHub
+name: Despliegue automático
 
 on:
   push:
@@ -9,9 +9,9 @@ on:
 
 jobs:
   build:
-    uses: ./.github/workflows/build-desktop.yml
-  deploy:
-    needs: [build-desktop]
+    uses: ./.github/workflows/build-desktop.yaml
+  despliegue:
+    needs: [build]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
