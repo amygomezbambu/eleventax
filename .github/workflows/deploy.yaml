@@ -39,7 +39,8 @@ jobs:
       - name: Ejecutamos Conveyor
         uses: hydraulic-software/conveyor/actions/build@v1
         with:
-          command: make site --passphrase=${{ secrets.CONVEYOR_PASSPHRASE }}
+          command: make site
+          extra_flags: "--passphrase=${{ secrets.CONVEYOR_PASSPHRASE }}"
           signing_key: ${{ secrets.CONVEYOR_SIGNING_KEY }}
           agree_to_license: 1
 
