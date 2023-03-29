@@ -17,13 +17,8 @@ class VistaTransacciones extends StatelessWidget {
 
     var ventas = <VentaDto>[];
     final consultas = ModuloVentas.repositorioConsultaVentas();
-
-    try{
-      ventas = await consultas.obtenerVentasPorDia(DateTime.now());
-    }catch(e){
-      debugPrint(e.toString());
-    }
-
+    ventas = await consultas.obtenerVentasPorDia(fechaReporte: DateTime.now());
+    
     return ventas;
   }
 

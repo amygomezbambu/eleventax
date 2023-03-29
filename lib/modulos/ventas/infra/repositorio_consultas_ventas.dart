@@ -16,7 +16,6 @@ import 'package:eleventa/modulos/ventas/read_models/pago.dart';
 import 'package:eleventa/modulos/ventas/read_models/total_impuesto.dart';
 import 'package:eleventa/modulos/ventas/read_models/venta.dart';
 import 'package:eleventa/modulos/ventas/ventas_ex.dart';
-import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 
 class RepositorioConsultaVentas extends RepositorioConsulta
@@ -324,9 +323,11 @@ class RepositorioConsultaVentas extends RepositorioConsulta
   }
 
   @override
-  Future<List<VentaDto>> obtenerVentasPorDia(DateTime fechaReporte) async {
+  Future<List<VentaDto>> obtenerVentasPorDia({DateTime? fechaReporte}) async {
     List<VentaDto> ventas = [];
     VentaDto? venta;
+
+    fechaReporte ??= DateTime.now();
 
     final DateFormat formatter = DateFormat('yyyy-MM-dd');
     final String fechaReporteParametro = formatter.format(fechaReporte);

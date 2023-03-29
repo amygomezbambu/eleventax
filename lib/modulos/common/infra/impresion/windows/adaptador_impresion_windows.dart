@@ -3,6 +3,7 @@ import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/infra/impresion/windows/comandos_esc_pos.dart';
 import 'package:eleventa/modulos/common/infra/impresion/windows/obtener_listado_impresoras.dart';
 import 'package:eleventa/modulos/ventas/read_models/venta.dart';
+import 'package:intl/intl.dart';
 
 class AdaptadorImpresionWindows implements IImpresion {
   @override
@@ -32,7 +33,7 @@ class AdaptadorImpresionWindows implements IImpresion {
         TipoAlineacion.centro, TipoTamanioFuente.grande);
     impresoraTickets!.agregarLinea('Direccion: Av. 5 de Mayo # 123');
     impresoraTickets!.agregarLinea('Folio: ${venta.folio}');
-    impresoraTickets!.agregarLinea('Fecha/Hora: ${venta.cobradaEn.toString()}');
+    impresoraTickets!.agregarLinea('Fecha/Hora: ${DateFormat.yMd().add_jm().format(venta.cobradaEn!)}');
 
     //TODO: agregar datos del cajero que cobro la venta
     impresoraTickets!.agregarLinea('Cajero: Raul');

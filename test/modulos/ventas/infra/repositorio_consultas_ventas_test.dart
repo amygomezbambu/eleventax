@@ -72,21 +72,49 @@ void main() {
     expect(versionDeProducto!.nombre, nombreOriginal);
   });
 
-  test('Debe obtener el listado de ventas cobradas de un dia especifico',
+  test('Debe obtener el listado de ventas cobradas en el dia actual',
       () async 
   {
     //TODO: crear ventas de prueba
   });
 
-  test('Debe obtener el listado de articulos por venta en un dia especifico en un solo renglon',
+  test('Si no existen ventas en un dia especificado, debe retornar un listado de ventas vacio',
       () async 
   {
     //TODO: crear ventas de prueba
   });
 
-   test('Debe obtener el listado de articulos por venta en un dia especifico en un solo renglon',
+  test('Debe obtener el listado de articulos de una venta cobrada',
       () async 
   {
     //TODO: crear ventas de prueba
   });
+
+  test('Debe obtener los articulos cobrados en un solo renglon, de una venta en especifico',
+      () async 
+  {
+    //TODO: crear ventas de prueba
+  });
+
+  test('Debe obtener el listado de pagos realizado a una venta cobrada',
+      () async 
+  {
+    //TODO: crear ventas de prueba
+  });
+
+   test('Debe obtener el listado de impuestos cobrados por venta',
+      () async 
+  {
+    //TODO: crear ventas de prueba
+  });
+
+  test('Debe obtener el listado de formas de pago disponibles',
+      () async {
+
+  //TODO: crear ventas de prueba
+  });
+
+ 
+
+
 }
