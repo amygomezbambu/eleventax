@@ -41,6 +41,7 @@ class VistaTransacciones extends StatelessWidget {
                 child: DetalleTransaccion(
                   title: 'Venta ${venta.folio}',
                   ventaUid: UID(),
+                  //venta: VentaDto(),
                 )));
           }
 

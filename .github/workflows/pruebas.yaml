@@ -19,6 +19,7 @@ on:
 env:
   MIXPANEL_PROJECT_ID: ${{ secrets.MIXPANEL_PROJECT_ID }}
   SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+  FLAGSMITH_APIKEY: ${{ secrets.FLAGSMITH_APIKEY }}
   DB_PASSWORD: 12345
 
 jobs:

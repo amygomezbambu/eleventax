@@ -1,15 +1,21 @@
 import 'package:eleventa/dependencias.dart';
 import 'package:eleventa/globals.dart';
+import 'package:eleventa/modulos/common/app/interface/remote_config.dart';
 import 'package:eleventa/modulos/sync/sync.dart';
 import 'package:eleventa/modulos/sync/sync_config.dart';
 
 class SincronizacionLoader {
   static Future<void> iniciar() async {
+    final remoteConfig = Dependencias.infra.remoteConfig();
+    final syncHabilitada =
+        remoteConfig.tieneFeatureFlag(FeatureFlag.sincronizacion);
+
     var config = SyncConfig(
       dbVersionTable: 'migrations',
       dbVersionField: 'version',
       groupId: 'CH0002',
       deviceId: appConfig.deviceId.toString(),
+      sendChangesInmediatly: syncHabilitada,
       addChangesEndpoint:
           'https://qgfy59gc83.execute-api.us-west-1.amazonaws.com/dev/sync',
       getChangesEndpoint:
@@ -26,7 +32,9 @@ class SincronizacionLoader {
 
     var syncEngine = Sync(config: config);
 
-    await syncEngine.initListening();
+    if (syncHabilitada) {
+      await syncEngine.initListening();
+    }
   }
 
   ///Registra los uniques constraints para que el motor de sincronización los maneje
