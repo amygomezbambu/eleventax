@@ -38,6 +38,8 @@ class Migracion1 extends Migracion {
 
     await db.command(sql: command);
 
+    //TODO: no necesitamos los datos en el producto, solo que apunte a la ultima version
+    // y de ahi obtenemos los datos
     command = '''
         CREATE TABLE productos(
           uid TEXT PRIMARY KEY,
@@ -71,6 +73,7 @@ class Migracion1 extends Migracion {
           unidad_medida_abreviacion TEXT NULL,
           url_imagen TEXT NULL,
           se_vende_por INTEGER NULL,
+          preguntar_precio BOOLEAN NOT NULL CHECK (preguntar_precio IN (0,1)) DEFAULT 0,
           guardado_en INTEGER
         );
         ''';

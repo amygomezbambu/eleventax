@@ -26,7 +26,7 @@ class RepositorioVentas extends Repositorio implements IRepositorioVentas {
     await adaptadorSync.sincronizar(
       dataset: 'ventas',
       rowID: venta.uid.toString(),
-      fields: {
+      campos: {
         'creado_en': venta.creadoEn.millisecondsSinceEpoch,
         'cobrado_en': venta.cobradaEn!.millisecondsSinceEpoch,
         'subtotal': venta.subtotal.serialize(),
@@ -41,7 +41,7 @@ class RepositorioVentas extends Repositorio implements IRepositorioVentas {
       await adaptadorSync.sincronizar(
         dataset: 'ventas_impuestos',
         rowID: UID().toString(),
-        fields: {
+        campos: {
           'venta_uid': venta.uid.toString(),
           'nombre_impuesto': totalImpuesto.impuesto.nombre,
           'porcentaje_impuesto': totalImpuesto.impuesto.porcentaje.toString(),
@@ -55,7 +55,7 @@ class RepositorioVentas extends Repositorio implements IRepositorioVentas {
       await adaptadorSync.sincronizar(
         dataset: 'ventas_pagos',
         rowID: UID().toString(),
-        fields: {
+        campos: {
           'venta_uid': venta.uid.toString(),
           'forma_de_pago_uid': pago.forma.uid.toString(),
           'monto': pago.monto.serialize(),
@@ -70,7 +70,7 @@ class RepositorioVentas extends Repositorio implements IRepositorioVentas {
         await adaptadorSync.sincronizar(
           dataset: 'ventas_productos_genericos',
           rowID: articulo.producto.uid.toString(),
-          fields: {
+          campos: {
             'precio_venta': articulo.producto.precioDeVenta.serialize(),
             'nombre': articulo.producto.nombre,
           },
@@ -80,7 +80,7 @@ class RepositorioVentas extends Repositorio implements IRepositorioVentas {
       await adaptadorSync.sincronizar(
         dataset: 'ventas_articulos',
         rowID: articulo.uid.toString(),
-        fields: {
+        campos: {
           'venta_uid': venta.uid.toString(),
           'version_producto_uid': (articulo.producto is Producto)
               ? articulo.producto.versionActual.toString()
@@ -99,7 +99,7 @@ class RepositorioVentas extends Repositorio implements IRepositorioVentas {
         await adaptadorSync.sincronizar(
           dataset: 'ventas_articulos_impuestos',
           rowID: UID().toString(),
-          fields: {
+          campos: {
             'articulo_uid': articulo.uid.toString(),
             'nombre_impuesto': totalDeImpuesto.impuesto.nombre,
             'porcentaje_impuesto':

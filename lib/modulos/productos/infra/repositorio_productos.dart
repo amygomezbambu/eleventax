@@ -46,7 +46,7 @@ class RepositorioProductos extends Repositorio
     await adaptadorSync.sincronizar(
       dataset: 'productos',
       rowID: producto.uid.toString(),
-      fields: {
+      campos: {
         'codigo': producto.codigo,
         'nombre': producto.nombre,
         if (producto.categoria != null)
@@ -65,7 +65,7 @@ class RepositorioProductos extends Repositorio
     await adaptadorSync.sincronizar(
       dataset: 'productos_versiones',
       rowID: producto.versionActual.toString(),
-      fields: {
+      campos: {
         'producto_uid': producto.uid.toString(),
         'codigo': producto.codigo,
         'nombre': producto.nombre,
@@ -83,11 +83,12 @@ class RepositorioProductos extends Repositorio
       },
     );
 
+    //TODO:explorar tipo "asociar" para este tipo de relaciones
     for (var impuesto in producto.impuestos) {
       await adaptadorSync.sincronizar(
         dataset: 'productos_impuestos',
         rowID: producto.uid.toString(),
-        fields: {
+        campos: {
           'uid': UID().toString(),
           'producto_uid': producto.uid.toString(),
           'impuesto_uid': impuesto.uid.toString(),
@@ -101,7 +102,7 @@ class RepositorioProductos extends Repositorio
     await adaptadorSync.sincronizar(
       dataset: 'categorias',
       rowID: categoria.uid.toString(),
-      fields: {
+      campos: {
         'nombre': categoria.nombre,
       },
     );
@@ -112,7 +113,7 @@ class RepositorioProductos extends Repositorio
     await adaptadorSync.sincronizar(
       dataset: 'productos',
       rowID: id.toString(),
-      fields: {
+      campos: {
         'borrado': true,
       },
     );
@@ -135,10 +136,18 @@ class RepositorioProductos extends Repositorio
 
       // Solo creamos una nueva version si hubo al menos un cambio
       if (diferencias.isNotEmpty) {
+        // Actualizar el producto original
+        await adaptadorSync.sincronizar(
+          dataset: 'productos',
+          rowID: productoModificado.uid.toString(),
+          campos: diferencias,
+        );
+
+        //Crear la version del producto
         await adaptadorSync.sincronizar(
           dataset: 'productos_versiones',
           rowID: productoModificado.versionActual.toString(),
-          fields: {
+          campos: {
             'producto_uid': productoModificado.uid.toString(),
             'codigo': productoModificado.codigo,
             'nombre': productoModificado.nombre,
@@ -154,6 +163,7 @@ class RepositorioProductos extends Repositorio
             'precio_venta': productoModificado.precioDeVenta.serialize(),
             'se_vende_por': productoModificado.seVendePor.index,
             'url_imagen': productoModificado.imagenURL,
+            'preguntar_precio': productoModificado.preguntarPrecio,
             'guardado_en': DateTime.now().millisecondsSinceEpoch,
           },
         );
@@ -162,8 +172,10 @@ class RepositorioProductos extends Repositorio
       await adaptadorSync.sincronizar(
         dataset: _tablaProductos,
         rowID: productoModificado.uid.toString(),
-        fields: diferencias,
+        campos: diferencias,
       );
+
+      //TODO: simplificar esto
 
       var difImpuestos = obtenerDiferenciasDeListasDeRelaciones<Impuesto>(
         productoModificado.impuestos,
@@ -174,7 +186,7 @@ class RepositorioProductos extends Repositorio
         await adaptadorSync.sincronizar(
           dataset: 'productos_impuestos',
           rowID: UID().toString(),
-          fields: {
+          campos: {
             'producto_uid': productoModificado.uid.toString(),
             'impuesto_uid': impuesto.uid.toString(),
           },
@@ -190,7 +202,7 @@ class RepositorioProductos extends Repositorio
         await adaptadorSync.sincronizar(
           dataset: 'productos_impuestos',
           rowID: relacionUID.toString(),
-          fields: {
+          campos: {
             'borrado': true,
           },
         );
@@ -210,7 +222,7 @@ class RepositorioProductos extends Repositorio
     await adaptadorSync.sincronizar(
       dataset: 'config_productos',
       rowID: config.uid.toString(),
-      fields: {'permitirPrecioCompraCero': config.permitirPrecioCompraCero},
+      campos: {'permitirPrecioCompraCero': config.permitirPrecioCompraCero},
     );
   }
 
@@ -241,7 +253,7 @@ class RepositorioProductos extends Repositorio
     await adaptadorSync.sincronizar(
       dataset: _tablaCategorias,
       rowID: uid.toString(),
-      fields: {
+      campos: {
         'borrado': true,
       },
     );
@@ -261,7 +273,7 @@ class RepositorioProductos extends Repositorio
       await adaptadorSync.sincronizar(
         dataset: _tablaCategorias,
         rowID: categoriaModificada.uid.toString(),
-        fields: diferencias,
+        campos: diferencias,
       );
     } else {
       throw ValidationEx(

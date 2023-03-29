@@ -5,7 +5,7 @@ enum TiposSyncEx {
   noInicializado,
   configuracionIncorrecta,
   parametrosIncorrectos,
-  errorAlSubirCambios,
+  errorAlSubirEventos,
 }
 
 class SyncEx extends AppEx {
