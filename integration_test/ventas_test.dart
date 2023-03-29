@@ -106,7 +106,8 @@ void main() {
       // TODO: Verificar que SI exista el listado, y tenga 1 articulo
 
       await tester.pump(const Duration(seconds: 5));
-      expect(find.text('uno'), findsOneWidget);
+      expect(find.text('1.0'), findsOneWidget);
+      await tester.pumpAndSettle();
 
       // corroborar que se agregue al listado, se actualice, total, etc.
     });
