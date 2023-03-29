@@ -9,7 +9,7 @@ Algunas reglas:
 - Los cambios son para que sean interpreatos por *humanos* en específico nuestros clientes.
 - Evitar hacer uso de tecnicismos y acrónimos (salvo cuando sea necesario).
 
-## Unreleased
+## [1.0.4] - 2023-03-29
 ### Added
 - Se agrega compatibilidad para Windows, iOS y Android.
 - Rastreo de métricas de uso de la aplicación
@@ -18,3 +18,6 @@ Algunas reglas:
 - Se agrega módulo básico de ventas con impresión de tickets en Windows.
 - Se agrega soporte para ventas rápidas y ventas de productos a granel.
 - Se agregan mensajes de error más amigables cuando la aplicación no puede iniciar
+- Se mejora icono de la aplicación
+
+[1.0.4]: https://github.com/bambucode/eleventax/releases/tag/1.0.4
