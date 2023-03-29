@@ -4,17 +4,24 @@ import 'package:eleventa/modulos/common/ui/widgets/ex_boton.dart';
 import 'package:eleventa/modulos/common/ui/widgets/texto_valor.dart';
 import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/productos/ui/widgets/avatar_producto.dart';
+import 'package:eleventa/modulos/ventas/modulo_ventas.dart';
+import 'package:eleventa/modulos/ventas/read_models/articulo.dart';
 import 'package:eleventa/modulos/ventas/read_models/venta.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:layout/layout.dart';
 
 class DetalleTransaccion extends StatefulWidget {
   final String title;
   final UID ventaUid;
+  final VentaDto venta;
 
   const DetalleTransaccion(
-      {super.key, required this.ventaUid, required this.title});
+      {super.key,
+      required this.venta,
+      required this.ventaUid,
+      required this.title});
 
   @override
   State<DetalleTransaccion> createState() => _DetalleTransaccionState();
@@ -27,10 +34,7 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
     // Simulamos una lectura de la base de datos lenta
     await Future.delayed(const Duration(milliseconds: 500));
 
-    final demoData = VentaDto();
-    demoData.folio = ventaUid.toString();
-
-    return demoData;
+    return widget.venta;
   }
 
   @override
@@ -41,7 +45,7 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final venta = snapshot.data!;
-          var articulos = Faker().lorem.words(5);
+          var articulos = venta.articulos;
 
           return SizedBox(
             child:
@@ -69,9 +73,15 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
                   ],
                 ),
               ),
-              TextoValor('Cobrado en', venta.cobradaEn.toString()),
+              TextoValor('Cobrado en', DateFormat('h:mm a').format(venta.cobradaEn!)),
               const TextoValor('Caja', 'Caja 1 (Windows)'),
-              const Encabezado('Articulos'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Encabezado('Articulos'),
+                  Text('${articulos.length} articulos'),
+                ],
+              ),
               Container(
                 decoration: BoxDecoration(
                     border: Border.all(
@@ -89,10 +99,14 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
                       contentPadding: const EdgeInsets.all(0),
                       dense: (context.breakpoint <= LayoutBreakpoint.sm),
                       leading: AvatarProducto(
-                        uniqueId: articulos[index],
-                        productName: articulos[index],
+                        uniqueId: articulos[index].uid.toString(),
+                        productName: articulos[index].productoNombre.toString(),
                       ),
-                      subtitle: const Text('122345'),
+                      subtitle: Text(articulos[index].productoCodigo.toString(),
+                          style: const TextStyle(
+                              fontSize: 12,
+                              color: ColoresBase.neutral500,
+                              fontWeight: FontWeight.w500)),
                       // selected: !soportaTouch &&
                       //     ventaEnProgreso.articuloSeleccionado ==
                       //         articulos[index],
@@ -101,26 +115,37 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
                       title: Padding(
                         padding: const EdgeInsets.only(bottom: 6.0),
                         child: Text(
-                          articulos[index],
+                          articulos[index].productoNombre.toString(),
+                          textAlign: TextAlign.left,
                           //style: GoogleFonts.inter(fontWeight: FontWeight.w500),
                         ),
                       ),
                       trailing: Wrap(
+                          runAlignment: WrapAlignment.spaceBetween,
                           spacing: (context.breakpoint >= LayoutBreakpoint.sm)
                               ? 80
                               : 31,
-                          children: const <Widget>[
-                            Text(
-                              '1.0',
+                          children: <Widget>[
+                             Text(
+                              'x ${articulos[index].cantidad.toString()}',
                               textAlign: TextAlign.center,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 18,
                                   color: ColoresBase.neutral500,
                                   fontWeight: FontWeight.w500),
                             ),
                             Text(
-                              '12.33',
-                              style: TextStyle(
+                              '\$${articulos[index].precioDeVenta.toString()}',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                  fontSize: 18,
+                                  color: ColoresBase.neutral500,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                            Text(
+                              '\$${articulos[index].subtotal.toString()}',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
                                   fontSize: 18,
                                   color: Colores.accionPrimaria,
                                   fontWeight: FontWeight.w600),
@@ -144,12 +169,16 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Encabezado('Pagos'),
-                        TextoValor(
-                          'Tarjeta de crédito',
-                          '12.33',
-                          tamanoFuente: TextSizes.textBase,
+                      children:  [
+                        const Encabezado('Pagos'),
+                        ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: venta.pagos.length,
+                          itemBuilder: (context, index) =>  TextoValor(
+                            venta.pagos[index].forma.toString(),
+                            '\$${venta.pagos[index].monto.toString()}',
+                            tamanoFuente: TextSizes.textBase,
+                          ),
                         ),
                       ],
                     ),
@@ -158,26 +187,25 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
                   const SizedBox(width: 60),
                   Expanded(
                     child: Column(
-                      children: const [
-                        Encabezado('Totales'),
+                      children: [
+                        const Encabezado('Totales'),
                         TextoValor(
                           'Subtotal',
-                          '212.33',
+                          '\$${venta.subtotal.toString()}',
                           tamanoFuente: TextSizes.textBase,
                         ),
-                        TextoValor(
-                          'IVA 16%',
-                          '65.13',
-                          tamanoFuente: TextSizes.textBase,
-                        ),
-                        TextoValor(
-                          'IEPS 8%',
-                          '22.53',
-                          tamanoFuente: TextSizes.textBase,
+                         ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: venta.totalesDeImpuestos.length,
+                          itemBuilder: (context, index) =>  TextoValor(
+                            venta.totalesDeImpuestos[index].nombreImpuesto.toString(),
+                            '\$${venta.totalesDeImpuestos[index].monto.toString()}',
+                            tamanoFuente: TextSizes.textBase,
+                          ),
                         ),
                         TextoValor(
                           'Total',
-                          '2122.50',
+                          '\$${venta.total.toString()}',
                           tamanoFuente: TextSizes.textBase,
                         ),
                       ],

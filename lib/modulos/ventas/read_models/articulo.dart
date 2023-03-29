@@ -9,6 +9,7 @@ class ArticuloDto {
   var agregadoEn = DateTime.now();
   bool esGenerico = false;
   var productoNombre = '';
+  var productoCodigo = '';
   var precioDeVenta = Moneda(0);
   var totalesDeImpuestos = <TotalImpuestoDto>[];
 }
