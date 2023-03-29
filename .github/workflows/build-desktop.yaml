@@ -65,7 +65,10 @@ jobs:
       - if: ${{ matrix.target == 'windows' }}
         name: Copiar archivos DLL de OpenSSL a carpeta de build
         run: |
-          mv "$(cygpath -u 'C:\Program Files\OpenSSL-Win64\bin\libcrypto-1_1-x64.dll')" build/windows/runner/Release/libcrypto-1_1-x64__.dll
+          cd "C:\Program Files\OpenSSL-Win64\bin"
+          .\openssl.exe version > $null  # Este comando solo se utiliza para asegurarse de que OpenSSL se encuentra en el path
+          .\openssl.exe version -a | Select-String "^library$"
+          copy-item .\libcrypto-1_1-x64.dll build/windows/runner/Release/libcrypto-1_1-x64__.dll -Force
 
       - if: ${{ matrix.target == 'macos' }}
         name: "MacOS: Adelgazar binario"
