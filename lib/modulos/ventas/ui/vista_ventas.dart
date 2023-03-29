@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:eleventa/globals.dart';
 import 'package:eleventa/modulos/common/app/interface/impresora_tickets.dart';
 import 'package:eleventa/modulos/common/domain/moneda.dart';
@@ -123,14 +126,16 @@ class VistaVentasState extends ConsumerState<VistaVentas> {
       await metricasCobro.exec();
 
       //TODO: implementar el caso de uso de imprimir ticket de venta
-      var adaptadorImpresion = AdaptadorImpresionWindows();
-      var impresoraTickets = ImpresoraDeTicketsWindows(
-        nombreImpresora: appConfig.nombreImpresora,
-        anchoTicket: AnchoTicket.mm58,
-      );
+      if (Platform.isWindows) {
+        final adaptadorImpresion = AdaptadorImpresionWindows();
+        final impresoraTickets = ImpresoraDeTicketsWindows(
+          nombreImpresora: appConfig.nombreImpresora,
+          anchoTicket: AnchoTicket.mm58,
+        );
 
-      adaptadorImpresion.impresoraTickets = impresoraTickets;
-      await adaptadorImpresion.imprimirTicket(ventaCobrada);
+        adaptadorImpresion.impresoraTickets = impresoraTickets;
+        unawaited(adaptadorImpresion.imprimirTicket(ventaCobrada));
+      }
     }
     // } catch (e) {
     //   debugPrint('Error: $e');

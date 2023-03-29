@@ -50,14 +50,16 @@ class RepositorioConsultaVentas extends RepositorioConsulta
     final dbResult = await query(sql: sql, params: [uid.toString()]);
 
     for (var row in dbResult) {
-      var totalImpuesto = TotalImpuestoDto();
-      totalImpuesto.base = Moneda.deserialize(row['base_impuesto'] as int);
-      totalImpuesto.nombreImpuesto = row['nombre_impuesto'] as String;
-      totalImpuesto.monto = Moneda.deserialize(row['monto'] as int);
-      totalImpuesto.porcentaje =
-          double.parse(row['porcentaje_impuesto'] as String);
+      if (row['base_impuesto'] != null) {
+        var totalImpuesto = TotalImpuestoDto();
+        totalImpuesto.base = Moneda.deserialize(row['base_impuesto'] as int);
+        totalImpuesto.nombreImpuesto = row['nombre_impuesto'] as String;
+        totalImpuesto.monto = Moneda.deserialize(row['monto'] as int);
+        totalImpuesto.porcentaje =
+            double.parse(row['porcentaje_impuesto'] as String);
 
-      totales.add(totalImpuesto);
+        totales.add(totalImpuesto);
+      }
     }
 
     return totales;
@@ -221,7 +223,6 @@ class RepositorioConsultaVentas extends RepositorioConsulta
             DateTime.fromMillisecondsSinceEpoch(row['agregado_en'] as int);
 
         articulo.esGenerico = (row['producto_generico_uid'] != null);
-        
 
         if ((row['producto_generico_uid'] as String).isNotEmpty) {
           articulo.precioDeVenta =

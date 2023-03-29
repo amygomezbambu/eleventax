@@ -1,33 +1,34 @@
 name: Despliegue automático
 
 on:
-  # push:
-  #   branches:
-  #     - main
+  push:
+    branches:
+      - main
   workflow_dispatch:
   workflow_call:
 
 jobs:
-  build:
+  build-desktop:
     uses: ./.github/workflows/build-desktop.yml
+
   despliegue:
-    needs: [build]
+    needs: [build-desktop]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      # - name: Descargar binario macOS ARM
-      #   uses: actions/download-artifact@v3
-      #   with:
-      #     name: build-macos-aarch64
-      #     path: ./artifacts
+      - name: Descargar binario macOS ARM
+        uses: actions/download-artifact@v3
+        with:
+          name: build-macos-aarch64
+          path: ./artifacts
 
-      # - name: Descargar binario macOS AMD64
-      #   uses: actions/download-artifact@v3
-      #   with:
-      #     name: build-macos-amd64
-      #     path: ./artifacts
+      - name: Descargar binario macOS AMD64
+        uses: actions/download-artifact@v3
+        with:
+          name: build-macos-amd64
+          path: ./artifacts
 
       - name: Descargar binario de Windows
         uses: actions/download-artifact@v3

@@ -67,6 +67,9 @@ cider log added "Se agrega una nueva funcionalidad"
 
 ### Windows
 
+* Base de datos: `C:\Users\%USERPROFILE%\Documents\eleventa.db`
+* Logs: `C:\Users\%USERPROFILE%\AppData\Roaming\BAMBU CODE SAPI DE CV\eleventa\eleventa.log`
+
 ### Android
 
 ### iOS

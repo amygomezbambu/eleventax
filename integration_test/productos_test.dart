@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:eleventa/dependencias.dart';
+import 'package:eleventa/modulos/common/app/interface/remote_config.dart';
 import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/productos/ui/forma_producto.dart';
 import 'package:eleventa/modulos/productos/ui/vista_listado_productos.dart';
@@ -39,6 +41,8 @@ void main() {
         originalOnError(details);
       };
 
+      final remoteConfig = Dependencias.infra.remoteConfig();
+
       await tester.binding.setLocale('es', '');
       await tester.pumpAndSettle();
 
@@ -73,13 +77,16 @@ void main() {
       await tester.enterText(
           find.byKey(FormaProducto.txtNombre), nombreProductoEsperado);
 
-      await tester.tap(find.byKey(FormaProducto.cbxCategoria));
-      await tester.pumpAndSettle();
+      if (remoteConfig.tieneFeatureFlag(FeatureFlag.categorias)) {
+        await tester.tap(find.byKey(FormaProducto.cbxCategoria));
+        await tester.pumpAndSettle();
+        final dropdownItem = find.text('Frutas').last;
 
-      final dropdownItem = find.text('Frutas').last;
-
-      await tester.tap(dropdownItem);
-      await tester.pumpAndSettle();
+        await tester.tap(dropdownItem);
+        await tester.pumpAndSettle();
+      } else {
+        print('Omitiendo llenar categorias, feature no disponible');
+      }
 
       await tester.tap(find.byKey(FormaProducto.rdbSeVendePorPeso));
       await tester.pumpAndSettle();
@@ -92,13 +99,17 @@ void main() {
       await tester.tap(dropdownItemUnidadDeMedida);
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byKey(FormaProducto.cbxImpuestos));
+      if (remoteConfig.tieneFeatureFlag(FeatureFlag.impuestos)) {
+        await tester.tap(find.byKey(FormaProducto.cbxImpuestos));
 
-      await tester.pumpAndSettle();
-      final dropdownImpuestos = find.text('IVA 0%').last;
+        await tester.pumpAndSettle();
+        final dropdownImpuestos = find.text('IVA 0%').last;
 
-      await tester.tap(dropdownImpuestos);
-      await tester.pumpAndSettle();
+        await tester.tap(dropdownImpuestos);
+        await tester.pumpAndSettle();
+      } else {
+        print('Omitiendo llenar impuestos, feature no disponible');
+      }
 
       await tester.enterText(
           find.byKey(FormaProducto.txtPrecioCompra), '29.4507');

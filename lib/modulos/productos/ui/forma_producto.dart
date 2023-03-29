@@ -1,3 +1,4 @@
+import 'package:eleventa/dependencias.dart';
 import 'package:eleventa/modulos/common/domain/moneda.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/common/ui/ex_icons.dart';
@@ -28,6 +29,8 @@ import 'package:eleventa/modulos/productos/domain/producto.dart';
 import 'package:eleventa/modulos/productos/domain/unidad_medida.dart';
 import 'package:eleventa/modulos/productos/modulo_productos.dart';
 
+import 'package:eleventa/modulos/common/app/interface/remote_config.dart';
+
 class FormaProducto extends StatefulWidget {
   static const txtNombre = Key('txtNombreProducto');
   static const btnGuardar = Key('btnGuardar');
@@ -57,6 +60,7 @@ typedef EstadoFormField = FormFieldState<String>;
 class _FormaProductoState extends State<FormaProducto> {
   final esDesktop = LayoutValue(xs: false, md: true);
   final mostrarMargenLabel = LayoutValue(xs: false, md: true);
+  final _remoteConfig = Dependencias.infra.remoteConfig();
   Producto? productoEnModificacion;
 
   late FocusNode _focusTeclado;
@@ -305,7 +309,7 @@ class _FormaProductoState extends State<FormaProducto> {
           PrecioDeCompraProducto(Moneda(_controllerPrecioDeCompra.text)),
       seVendePor: seVendePor,
       categoria: categoriaSeleccionada,
-      impuestos: [impuestoSeleccionado!],
+      impuestos: [if (impuestoSeleccionado != null) impuestoSeleccionado!],
       unidadDeMedida: unidadDeMedidaSeleccionada!,
       preguntarPrecio: !hayPrecioDeVenta,
       precioDeVenta: precioDeVenta,
@@ -425,53 +429,56 @@ class _FormaProductoState extends State<FormaProducto> {
                                           }
                                         }
                                       }),
-                                  FutureBuilder<List<Categoria>>(
-                                      future: _categorias,
-                                      builder: (BuildContext context,
-                                          AsyncSnapshot<List<Categoria>>
-                                              snapshot) {
-                                        if ((snapshot.hasData) &&
-                                            (snapshot.data!.isNotEmpty)) {
-                                          List<Categoria> listadoCategorias =
-                                              snapshot.data!;
-                                          if (UID.isValid(listadoCategorias
-                                              .first.uid
-                                              .toString())) {
-                                            listadoCategorias.insert(
-                                              0,
-                                              _obtenerSinCategoria(),
-                                            );
-                                          }
-
-                                          categoriaSeleccionada ??=
-                                              listadoCategorias.first;
-
-                                          return ExDropDown<Categoria>(
-                                            key: FormaProducto.cbxCategoria,
-                                            hintText: 'Categoría',
-                                            dropDownKey: keyCategoria,
-                                            value: categoriaSeleccionada!,
-                                            onChanged: (Categoria? categoria) {
-                                              setState(() {
-                                                categoriaSeleccionada =
-                                                    categoria!;
-                                              });
-                                            },
-                                            items: listadoCategorias.map<
-                                                    DropdownMenuItem<
-                                                        Categoria>>(
-                                                (Categoria value) {
-                                              return DropdownMenuItem<
-                                                  Categoria>(
-                                                value: value,
-                                                child: Text(value.nombre),
+                                  if (_remoteConfig
+                                      .tieneFeatureFlag(FeatureFlag.categorias))
+                                    FutureBuilder<List<Categoria>>(
+                                        future: _categorias,
+                                        builder: (BuildContext context,
+                                            AsyncSnapshot<List<Categoria>>
+                                                snapshot) {
+                                          if ((snapshot.hasData) &&
+                                              (snapshot.data!.isNotEmpty)) {
+                                            List<Categoria> listadoCategorias =
+                                                snapshot.data!;
+                                            if (UID.isValid(listadoCategorias
+                                                .first.uid
+                                                .toString())) {
+                                              listadoCategorias.insert(
+                                                0,
+                                                _obtenerSinCategoria(),
                                               );
-                                            }).toList(),
-                                          );
-                                        } else {
-                                          return const SizedBox();
-                                        }
-                                      }),
+                                            }
+
+                                            categoriaSeleccionada ??=
+                                                listadoCategorias.first;
+
+                                            return ExDropDown<Categoria>(
+                                              key: FormaProducto.cbxCategoria,
+                                              hintText: 'Categoría',
+                                              dropDownKey: keyCategoria,
+                                              value: categoriaSeleccionada!,
+                                              onChanged:
+                                                  (Categoria? categoria) {
+                                                setState(() {
+                                                  categoriaSeleccionada =
+                                                      categoria!;
+                                                });
+                                              },
+                                              items: listadoCategorias.map<
+                                                      DropdownMenuItem<
+                                                          Categoria>>(
+                                                  (Categoria value) {
+                                                return DropdownMenuItem<
+                                                    Categoria>(
+                                                  value: value,
+                                                  child: Text(value.nombre),
+                                                );
+                                              }).toList(),
+                                            );
+                                          } else {
+                                            return const SizedBox();
+                                          }
+                                        }),
                                   ExRadioButton<ProductoSeVendePor>(
                                       key: FormaProducto.rdbSeVendePorUnidad,
                                       value: ProductoSeVendePor.unidad,
@@ -542,43 +549,47 @@ class _FormaProductoState extends State<FormaProducto> {
                                           return const SizedBox();
                                         }
                                       }), //loaading, //ya termine
-                                  FutureBuilder<List<Impuesto>>(
-                                      future: _impuestos,
-                                      builder: (BuildContext context,
-                                          AsyncSnapshot<List<Impuesto>>
-                                              snapshot) {
-                                        if ((snapshot.hasData) &&
-                                            (snapshot.data!.isNotEmpty)) {
-                                          List<Impuesto> listadoImpuestos =
-                                              snapshot.data!;
-                                          impuestoSeleccionado ??=
-                                              listadoImpuestos.first;
+                                  if (_remoteConfig
+                                      .tieneFeatureFlag(FeatureFlag.impuestos))
+                                    FutureBuilder<List<Impuesto>>(
+                                        future: _impuestos,
+                                        builder: (BuildContext context,
+                                            AsyncSnapshot<List<Impuesto>>
+                                                snapshot) {
+                                          if ((snapshot.hasData) &&
+                                              (snapshot.data!.isNotEmpty)) {
+                                            List<Impuesto> listadoImpuestos =
+                                                snapshot.data!;
+                                            impuestoSeleccionado ??=
+                                                listadoImpuestos.first;
 
-                                          return ExDropDown<Impuesto>(
-                                            key: FormaProducto.cbxImpuestos,
-                                            hintText: 'Impuesto',
-                                            width: Sizes.p44,
-                                            dropDownKey: keyImpuestos,
-                                            value: impuestoSeleccionado!,
-                                            onChanged: (Impuesto? impuesto) {
-                                              setState(() {
-                                                impuestoSeleccionado =
-                                                    impuesto!;
-                                              });
-                                            },
-                                            items: listadoImpuestos.map<
-                                                    DropdownMenuItem<Impuesto>>(
-                                                (Impuesto value) {
-                                              return DropdownMenuItem<Impuesto>(
-                                                value: value,
-                                                child: Text(value.nombre),
-                                              );
-                                            }).toList(),
-                                          );
-                                        } else {
-                                          return const SizedBox();
-                                        }
-                                      }),
+                                            return ExDropDown<Impuesto>(
+                                              key: FormaProducto.cbxImpuestos,
+                                              hintText: 'Impuesto',
+                                              width: Sizes.p44,
+                                              dropDownKey: keyImpuestos,
+                                              value: impuestoSeleccionado!,
+                                              onChanged: (Impuesto? impuesto) {
+                                                setState(() {
+                                                  impuestoSeleccionado =
+                                                      impuesto!;
+                                                });
+                                              },
+                                              items: listadoImpuestos.map<
+                                                      DropdownMenuItem<
+                                                          Impuesto>>(
+                                                  (Impuesto value) {
+                                                return DropdownMenuItem<
+                                                    Impuesto>(
+                                                  value: value,
+                                                  child: Text(value.nombre),
+                                                );
+                                              }).toList(),
+                                            );
+                                          } else {
+                                            return const SizedBox();
+                                          }
+                                        }),
                                   ExTextField(
                                     key: FormaProducto.txtPrecioCompra,
                                     fieldKey: keyPrecioCompra,

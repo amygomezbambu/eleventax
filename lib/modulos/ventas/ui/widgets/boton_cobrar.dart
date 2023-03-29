@@ -25,7 +25,7 @@ class BotonCobrarVenta extends StatelessWidget {
           : const EdgeInsets.fromLTRB(3, 10, 3, 10),
       height: dense ? 60 : 70,
       child: ExBoton.primario(
-          label: m.ventas_boton_cobrar(totalDeVenta),
+          label: 'Cobrar \$${totalDeVenta.toStringAsFixed(2)}',
           tamanoFuente: dense ? 20 : 25,
           icon: Iconos.register,
           onTap: onTap,

@@ -9,6 +9,10 @@ Algunas reglas:
 - Los cambios son para que sean interpreatos por *humanos* en específico nuestros clientes.
 - Evitar hacer uso de tecnicismos y acrónimos (salvo cuando sea necesario).
 
+## [1.0.5] - 2023-03-29
+### Fixed
+- Correcciones y mejoras menores
+
 ## [1.0.4] - 2023-03-29
 ### Added
 - Se agrega compatibilidad para Windows, iOS y Android.
@@ -20,4 +24,5 @@ Algunas reglas:
 - Se agregan mensajes de error más amigables cuando la aplicación no puede iniciar
 - Se mejora icono de la aplicación
 
+[1.0.5]: https://github.com/bambucode/eleventax/compare/1.0.4...1.0.5
 [1.0.4]: https://github.com/bambucode/eleventax/releases/tag/1.0.4

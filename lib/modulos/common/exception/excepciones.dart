@@ -72,6 +72,7 @@ class AppEx extends EleventaEx {
 enum TipoInfraEx {
   errorConsultaDB,
   errorInicializacionDB,
+  errorInicializacionRemoteConfig,
   errorConfiguracionDB,
   noSePudoObtenerIP,
   errorAlAbrirImpresora,

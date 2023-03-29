@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:eleventa/dependencias.dart';
 import 'package:eleventa/modulos/common/app/interface/remote_config.dart';
 import 'package:eleventa/modulos/common/ui/ex_icons.dart';
@@ -56,11 +58,11 @@ var configuracion = <ConfiguracionDeModulo>[
             vista: VistaConfiguracionSincronizacion(),
           )
       ]),
-  const ConfiguracionDeModulo(
+  ConfiguracionDeModulo(
       nombre: 'Ventas',
       icono: Icons.person,
       configuraciones: [
-        OpcionDeConfiguracion(
+        const OpcionDeConfiguracion(
           nombre: 'Folio de Ventas',
           icono: Icons.numbers_rounded,
           vista: VistaConfiguracionVentas(),
@@ -70,25 +72,27 @@ var configuracion = <ConfiguracionDeModulo>[
         //   icono: Icons.payments_outlined,
         //   vista: Text('Configurar Formas de pago'),
         // ),
-        // OpcionDeConfiguracion(
-        //   nombre: 'Impuestos',
-        //   icono: Icons.money,
-        //   vista: Text('Configurar impuestos'),
-        // ),
+        if (remoteConfig.tieneFeatureFlag(FeatureFlag.impuestos))
+          const OpcionDeConfiguracion(
+            nombre: 'Impuestos',
+            icono: Icons.money,
+            vista: Text('Configurar impuestos'),
+          ),
       ]),
-  const ConfiguracionDeModulo(
-      nombre: 'Impresión',
-      icono: Icons.person,
-      configuraciones: [
-        OpcionDeConfiguracion(
-          nombre: 'Impresora de tickets',
-          icono: Icons.local_printshop_rounded,
-          vista: VistaConfiguracionImpresoraDeTickets(),
-        ),
-        // OpcionDeConfiguracion(
-        //   nombre: 'Configuración de Ticket',
-        //   icono: Icons.file_copy,
-        //   vista: VistaConfiguracionImpresoraDeTickets(),
-        // ),
-      ]),
+  if (Platform.isWindows)
+    const ConfiguracionDeModulo(
+        nombre: 'Impresión',
+        icono: Icons.person,
+        configuraciones: [
+          OpcionDeConfiguracion(
+            nombre: 'Impresora de tickets',
+            icono: Icons.local_printshop_rounded,
+            vista: VistaConfiguracionImpresoraDeTickets(),
+          ),
+          // OpcionDeConfiguracion(
+          //   nombre: 'Configuración de Ticket',
+          //   icono: Icons.file_copy,
+          //   vista: VistaConfiguracionImpresoraDeTickets(),
+          // ),
+        ]),
 ];
