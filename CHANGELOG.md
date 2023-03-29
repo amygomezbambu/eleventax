@@ -18,3 +18,4 @@ Algunas reglas:
 - Se agrega módulo básico de ventas con impresión de tickets en Windows.
 - Se agrega soporte para ventas rápidas y ventas de productos a granel.
 - Se agregan mensajes de error más amigables cuando la aplicación no puede iniciar
+- Se mejora icono de la aplicación
