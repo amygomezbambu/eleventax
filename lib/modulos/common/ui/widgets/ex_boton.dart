@@ -20,7 +20,7 @@ class ExBoton extends StatefulWidget {
     required this.onTap,
     this.tamanoFuente = TextSizes.textSm,
     this.height = Sizes.p12,
-    this.width = Sizes.infinito,
+    this.width = double.maxFinite,
     this.colorBoton = Colores.accionPrimaria,
     this.colorIcono = ColoresBase.primario400,
     this.colorTexto = ColoresBase.white,
@@ -52,7 +52,7 @@ class _ExBotonState extends State<ExBoton> {
   void _onTap() {
     // setState(() {
     //   loading = true;
-    // }); 
+    // });
 
     // // Pasando unos segundos restauramos el estado del botón
     // Future.delayed(const Duration(seconds: 1), () {
@@ -68,26 +68,28 @@ class _ExBotonState extends State<ExBoton> {
   Widget build(BuildContext context) {
     return ElevatedButton(
         style: ElevatedButton.styleFrom(
-          surfaceTintColor: Colors.transparent,
-          
-          side:  widget.colorBorde != null ? BorderSide(
-              width: Sizes.px,
-              color: widget.colorBorde!,
-            ) : null,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(Sizes.p2),
-              
-            ),                    
-            backgroundColor: widget.colorBoton,
-            foregroundColor: widget.colorBoton, //ColoresBase.primario700,
-            disabledBackgroundColor: ColoresBase.primario300,
-            elevation: 1.5,
-            shadowColor: ColoresBase.shadow100,            
-            minimumSize: Size(widget.width, widget.height)),
-            
+          //surfaceTintColor: Colors.transparent,
+
+          side: widget.colorBorde != null
+              ? BorderSide(
+                  width: Sizes.px,
+                  color: widget.colorBorde!,
+                )
+              : null,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(Sizes.p2),
+          ),
+          backgroundColor: widget.colorBoton,
+          foregroundColor: widget.colorBoton,
+          disabledBackgroundColor: ColoresBase.primario300,
+          elevation: 1.5,
+          shadowColor: ColoresBase.shadow100,
+          minimumSize: Size(widget.width, widget.height),
+        ),
+
         // Si ya se hizo clic, des-asignamos el evento onPressed
         // para evitar doble clics y por tanto repetir una acción
-        onPressed:  _onTap,
+        onPressed: _onTap,
         //onPressed: loading ? null : _onTap,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

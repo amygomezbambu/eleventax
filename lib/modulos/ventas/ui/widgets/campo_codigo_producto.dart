@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:eleventa/modulos/common/ui/ex_icons.dart';
+import 'package:eleventa/modulos/common/ui/ex_mobile_scanner.dart';
 import 'package:eleventa/modulos/common/ui/tema/theme.dart';
 import 'package:eleventa/modulos/productos/dto/busqueda_producto_dto.dart';
 import 'package:eleventa/modulos/productos/modulo_productos.dart';
@@ -88,6 +91,7 @@ class _CampoCodigoProductoState extends State<CampoCodigoProducto> {
         // entonces mandamos el texto ingresado "tal cual"
         if (_productoBuscadoSeleccionado == null) {
           widget.onProductoElegido(widget.textEditingController.text);
+          autocomplete.closeOptions();
         } else {
           _indiceProductoSeleccionado = null;
           controller.clear();
@@ -184,6 +188,7 @@ class _CampoCodigoProductoState extends State<CampoCodigoProducto> {
                   autocorrect: false,
                   autofocus: true,
                   key: VistaVentas.keyCampoCodigo,
+
                   onSubmitted: (value) {
                     widget.onProductoElegido(value);
                   },
@@ -198,14 +203,36 @@ class _CampoCodigoProductoState extends State<CampoCodigoProducto> {
                     filled: true,
                     isDense: true,
                     fillColor: ColoresBase.white,
-                    suffix: _buscando
-                        ? const SizedBox(
-                            width: 0,
-                            height: 0,
-                            child: CircularProgressIndicator(
-                                strokeWidth: 3.0,
-                                color: ColoresBase.primario700))
+                    suffixIcon: Platform.isIOS || Platform.isAndroid
+                        ? IconButton(
+                            onPressed: () async {
+                              var valor = await Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (BuildContext context) {
+                                    return const ExMobileScanner();
+                                  },
+                                ),
+                              );
+
+                              if (valor != null) {
+                                widget.onProductoElegido(valor);
+                              }
+                            },
+                            icon: const Icon(
+                              Iconos.barcode_scan,
+                              color: ColoresBase.neutral500,
+                            ),
+                          )
                         : null,
+                    suffix:
+                        !(Platform.isIOS || Platform.isAndroid) && (_buscando)
+                            ? const SizedBox(
+                                width: 0,
+                                height: 0,
+                                child: CircularProgressIndicator(
+                                    strokeWidth: 3.0,
+                                    color: ColoresBase.primario700))
+                            : null,
                     prefixIcon: const Icon(
                       Iconos.barcode,
                       color: ColoresBase.neutral300,

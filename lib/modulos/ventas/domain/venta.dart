@@ -33,7 +33,8 @@ class Venta extends Entidad {
   Moneda get totalImpuestos => _totalImpuestos;
   Moneda get total => _total;
   List<Pago> get pagos => List.unmodifiable(_pagos);
-  List<Articulo> get articulos => List.unmodifiable(_articulos);
+  List<Articulo> get articulos => List.unmodifiable(
+      _articulos.sorted((a, b) => a.agregadoEn.compareTo(b.agregadoEn)));
   List<TotalDeImpuesto> get totalDeImpuestos =>
       List.unmodifiable(_totalesDeImpuestos);
 

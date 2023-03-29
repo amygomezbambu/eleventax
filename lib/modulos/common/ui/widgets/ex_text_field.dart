@@ -22,6 +22,7 @@ class ExTextField extends StatelessWidget {
   final bool validarAlPerderFoco;
   final Widget? suffixIcon;
   final FocusNode? focusNode;
+  final int? longitudMaxima;
 
   /// Evento lanzado cuando el widget pierde el foco,
   /// usualmente usado para validaciones
@@ -48,6 +49,7 @@ class ExTextField extends StatelessWidget {
     this.aplicarResponsividad = true,
     this.validarAlPerderFoco = true,
     this.autofocus = false,
+    this.longitudMaxima,
     this.suffixIcon,
     this.focusNode,
   }) : super(key: key);
@@ -70,6 +72,7 @@ class ExTextField extends StatelessWidget {
       validarAlPerderFoco: validarAlPerderFoco,
       autofocus: autofocus,
       suffixIcon: suffixIcon,
+      longitudMaxima: longitudMaxima,
       focusNode: focusNode,
     );
   }
@@ -170,6 +173,7 @@ class _ExTextField extends StatefulWidget {
   final Widget? suffixIcon;
   final FocusNode? focusNode;
   final bool validarAlPerderFoco;
+  final int? longitudMaxima;
 
   const _ExTextField({
     Key? key,
@@ -188,6 +192,7 @@ class _ExTextField extends StatefulWidget {
     required this.validarAlPerderFoco,
     this.onFieldSubmitted,
     required this.autofocus,
+    this.longitudMaxima,
     this.suffixIcon,
     this.focusNode,
   }) : super(key: key);
@@ -231,6 +236,8 @@ class _ExTextFieldState extends State<_ExTextField> {
               controller: widget.controller,
               cursorColor: Colors.black,
               focusNode: widget.focusNode,
+              autocorrect: false,
+              maxLength: widget.longitudMaxima,
               keyboardType: (widget.inputType == InputType.texto)
                   ? TextInputType.text
                   : const TextInputType.numberWithOptions(decimal: true),
@@ -263,6 +270,7 @@ class _ExTextFieldState extends State<_ExTextField> {
                 return _errValidacion;
               },
               decoration: InputDecoration(
+                counterText: "",
                 contentPadding: const EdgeInsets.all(Sizes.p4),
                 prefixText: widget.prefixText,
                 suffixText: widget.suffixText,
@@ -322,7 +330,7 @@ class _ExTextFieldState extends State<_ExTextField> {
               },
             ),
             parentBuilder: (Widget child) => Focus(
-                  child: child,
+                  canRequestFocus: false,
                   onFocusChange: (hasFocus) async {
                     if (!hasFocus) {
                       if (widget.inputType == InputType.numerico) {
@@ -353,6 +361,7 @@ class _ExTextFieldState extends State<_ExTextField> {
                       widget.onExit!();
                     }
                   },
+                  child: child,
                 )));
   }
 }

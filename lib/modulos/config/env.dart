@@ -9,4 +9,7 @@ abstract class Env {
 
   @EnviedField(varName: 'SENTRY_DSN', obfuscate: true)
   static final sentryDSN = _Env.sentryDSN;
+
+  @EnviedField(varName: 'FLAGSMITH_APIKEY', obfuscate: true)
+  static final flagsmithKey = _Env.flagsmithKey;
 }

@@ -1,3 +1,5 @@
+import 'package:eleventa/dependencias.dart';
+import 'package:eleventa/modulos/common/app/interface/remote_config.dart';
 import 'package:eleventa/modulos/common/ui/ex_icons.dart';
 import 'package:eleventa/modulos/config/ui/modulos/vista_configuracion_cuenta.dart';
 import 'package:eleventa/modulos/config/ui/modulos/vista_configuracion_dispositivos.dart';
@@ -33,23 +35,26 @@ class ConfiguracionDeModulo {
   });
 }
 
+final remoteConfig = Dependencias.infra.remoteConfig();
+
 // TODO: Extraer esto en otro archivo y/o ver cómo cada modulo
 // exponga sus opciones configurables y widget y aqui solo se lean
 var configuracion = <ConfiguracionDeModulo>[
-  const ConfiguracionDeModulo(
+  ConfiguracionDeModulo(
       nombre: 'General',
       icono: Icons.person,
       configuraciones: [
-        OpcionDeConfiguracion(
+        const OpcionDeConfiguracion(
           nombre: 'Cuenta',
           icono: Iconos.store,
           vista: VistaConfiguracionCuenta(),
         ),
-        OpcionDeConfiguracion(
-          nombre: 'Sincronización',
-          icono: Iconos.activity,
-          vista: VistaConfiguracionSincronizacion(),
-        ),
+        if (remoteConfig.tieneFeatureFlag(FeatureFlag.sincronizacion))
+          const OpcionDeConfiguracion(
+            nombre: 'Sincronización',
+            icono: Iconos.activity,
+            vista: VistaConfiguracionSincronizacion(),
+          )
       ]),
   const ConfiguracionDeModulo(
       nombre: 'Ventas',
@@ -60,16 +65,16 @@ var configuracion = <ConfiguracionDeModulo>[
           icono: Icons.numbers_rounded,
           vista: VistaConfiguracionVentas(),
         ),
-        OpcionDeConfiguracion(
-          nombre: 'Formas de Pago',
-          icono: Icons.payments_outlined,
-          vista: Text('Configurar Formas de pago'),
-        ),
-        OpcionDeConfiguracion(
-          nombre: 'Impuestos',
-          icono: Icons.money,
-          vista: Text('Configurar impuestos'),
-        ),
+        // OpcionDeConfiguracion(
+        //   nombre: 'Formas de Pago',
+        //   icono: Icons.payments_outlined,
+        //   vista: Text('Configurar Formas de pago'),
+        // ),
+        // OpcionDeConfiguracion(
+        //   nombre: 'Impuestos',
+        //   icono: Icons.money,
+        //   vista: Text('Configurar impuestos'),
+        // ),
       ]),
   const ConfiguracionDeModulo(
       nombre: 'Impresión',
@@ -80,10 +85,10 @@ var configuracion = <ConfiguracionDeModulo>[
           icono: Icons.local_printshop_rounded,
           vista: VistaConfiguracionImpresoraDeTickets(),
         ),
-        OpcionDeConfiguracion(
-          nombre: 'Configuración de Ticket',
-          icono: Icons.file_copy,
-          vista: VistaConfiguracionImpresoraDeTickets(),
-        ),
+        // OpcionDeConfiguracion(
+        //   nombre: 'Configuración de Ticket',
+        //   icono: Icons.file_copy,
+        //   vista: VistaConfiguracionImpresoraDeTickets(),
+        // ),
       ]),
 ];

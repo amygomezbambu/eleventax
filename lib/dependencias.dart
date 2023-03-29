@@ -1,6 +1,7 @@
 import 'package:eleventa/modulos/common/app/interface/database.dart';
 import 'package:eleventa/modulos/common/app/interface/dispositivo.dart';
 import 'package:eleventa/modulos/common/app/interface/red.dart';
+import 'package:eleventa/modulos/common/app/interface/remote_config.dart';
 import 'package:eleventa/modulos/common/app/interface/sync.dart';
 import 'package:eleventa/modulos/common/app/interface/logger.dart';
 import 'package:eleventa/modulos/telemetria/interface/repositorio_telemetria.dart';
@@ -50,6 +51,10 @@ class DependenciasDeInfraestructura extends _RegistroDeDependencias {
 
   ILogger logger() {
     return obtenerDependencia<ILogger>();
+  }
+
+  IRemoteConfig remoteConfig() {
+    return obtenerDependencia<IRemoteConfig>();
   }
 
   ISync sync() {

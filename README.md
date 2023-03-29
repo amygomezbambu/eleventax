@@ -62,3 +62,16 @@ Ejemplo:
 ```bash
 cider log added "Se agrega una nueva funcionalidad"
 ```
+
+## Carpetas usadas por el sistema
+
+### Windows
+
+### Android
+
+### iOS
+
+### macOS
+
+* Base de datos: `~/Library/Containers/com.bambucode.eleventa/Data/Documents/eleventa.db`
+* Logs: `~/Library/Containers/com.bambucode.eleventa/Data/Library/Application Support/com.bambucode.eleventa/`

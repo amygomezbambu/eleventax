@@ -11,11 +11,13 @@ PODS:
     - Flutter
     - FlutterMacOS
   - ReachabilitySwift (5.0.0)
-  - Sentry/HybridSDK (7.31.5)
+  - Sentry/HybridSDK (8.3.1):
+    - SentryPrivate (= 8.3.1)
   - sentry_flutter (0.0.1):
     - Flutter
     - FlutterMacOS
-    - Sentry/HybridSDK (= 7.31.5)
+    - Sentry/HybridSDK (= 8.3.1)
+  - SentryPrivate (8.3.1)
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
@@ -42,6 +44,7 @@ SPEC REPOS:
   trunk:
     - ReachabilitySwift
     - Sentry
+    - SentryPrivate
     - SQLCipher
 
 EXTERNAL SOURCES:
@@ -69,12 +72,13 @@ SPEC CHECKSUMS:
   package_info_plus: 02d7a575e80f194102bef286361c6c326e4c29ce
   path_provider_foundation: c68054786f1b4f3343858c1e1d0caaded73f0be9
   ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
-  Sentry: 4c9babff9034785067c896fd580b1f7de44da020
-  sentry_flutter: b10ae7a5ddcbc7f04648eeb2672b5747230172f1
+  Sentry: 316f997b2f89557014ae9919f0d0c71e6e43c01e
+  sentry_flutter: f0e51fac01e46af2e16f0a7458e3014bbc131ff5
+  SentryPrivate: 63dd9ee25187d20427ab7b5d03054df149912c23
   shared_preferences_foundation: 986fc17f3d3251412d18b0265f9c64113a8c2472
   SQLCipher: 57fa9f863fa4a3ed9dd3c90ace52315db8c0fdca
   sqlcipher_flutter_libs: f6d600a386ad90a33149ac0d95dd32a5b3219fd6
 
 PODFILE CHECKSUM: 353c8bcc5d5b0994e508d035b5431cfe18c1dea7
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.12.0

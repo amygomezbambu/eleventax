@@ -1,4 +1,6 @@
+import 'package:eleventa/modulos/common/ui/ex_icons.dart';
 import 'package:eleventa/modulos/common/ui/tema/theme.dart';
+import 'package:eleventa/modulos/productos/ui/widgets/avatar_producto.dart';
 
 import 'package:eleventa/modulos/ventas/domain/articulo.dart';
 import 'package:eleventa/modulos/ventas/ui/venta_provider.dart';
@@ -35,24 +37,21 @@ class ListadoArticulos extends ConsumerWidget {
             itemBuilder: (BuildContext context, int index) {
               return ListTile(
                   dense: (context.breakpoint <= LayoutBreakpoint.sm),
-                  leading: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        'https://source.unsplash.com/random/200×200/?${articulos[index].descripcion}',
-                        // Le indicamos que que tamaño será la imagen para que consuma
-                        // menos memoria aunque la imagen original sea más grande
-                        cacheHeight: 50,
-                        cacheWidth: 50,
-                        fit: BoxFit.cover,
-                      )),
+                  leading: AvatarProducto(
+                    uniqueId: articulos[index].producto.uid.toString(),
+                    productName: articulos[index].descripcion,
+                  ),
                   subtitle: Text(articulos[index].producto.codigo),
                   selected: !soportaTouch &&
                       ventaEnProgreso.articuloSeleccionado == articulos[index],
                   selectedColor: ColoresBase.neutral800,
                   selectedTileColor: ColoresBase.neutral300,
-                  title: Text(
-                    articulos[index].descripcion,
-                    style: GoogleFonts.inter(fontWeight: FontWeight.w500),
+                  title: Padding(
+                    padding: const EdgeInsets.only(bottom: 6.0),
+                    child: Text(
+                      articulos[index].descripcion,
+                      style: GoogleFonts.inter(fontWeight: FontWeight.w500),
+                    ),
                   ),
                   trailing: Wrap(
                       spacing:
@@ -93,5 +92,30 @@ class ListadoArticulos extends ConsumerWidget {
               ),
             ),
           );
+  }
+}
+
+class CodigoDeProducto extends StatelessWidget {
+  final bool esGenerico;
+  final String codigoDeProducto;
+
+  const CodigoDeProducto(
+      {Key? key, required this.esGenerico, required this.codigoDeProducto})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return esGenerico
+        ? const Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: EdgeInsets.only(top: 4),
+              child: Icon(
+                Iconos.flash4,
+                size: 14,
+              ),
+            ),
+          )
+        : Text(codigoDeProducto);
   }
 }
