@@ -21,6 +21,7 @@ import 'dart:ffi';
 class AdaptadorSQLite implements IAdaptadorDeBaseDeDatos {
   late final Database _db;
   final _logger = Dependencias.infra.logger();
+  late final String _carpetaBd;
 
   var _verbose = false;
 
@@ -72,25 +73,27 @@ class AdaptadorSQLite implements IAdaptadorDeBaseDeDatos {
   @override
   Future<void> conectar({bool verbose = false}) async {
     _verbose = verbose;
-    String dbPath = '';
 
     final DatabaseFactory dbFactory =
         createDatabaseFactoryFfi(ffiInit: _sqliteInit);
 
+    var archivoBD = '';
+
     if (Platform.environment.containsKey('FLUTTER_TEST')) {
-      dbPath = inMemoryDatabasePath;
+      archivoBD = inMemoryDatabasePath;
     } else {
-      dbPath = (await getApplicationDocumentsDirectory()).path;
-      dbPath = join(dbPath, 'eleventa.db');
+      _carpetaBd = (await getApplicationDocumentsDirectory()).path;
+      _logger.info('Carpeta BD: $_carpetaBd');
+      archivoBD = join(_carpetaBd, 'eleventa.db');
     }
 
     if (!Platform.environment.containsKey('FLUTTER_TEST')) {
-      _logger.info('Conectando a BD en "$dbPath"');
+      _logger.info('Conectando a BD en "$archivoBD"');
     }
 
     try {
       _db = await dbFactory.openDatabase(
-        dbPath,
+        archivoBD,
         options: OpenDatabaseOptions(
             version: 1,
             onConfigure: (db) async {

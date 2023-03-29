@@ -51,6 +51,12 @@ class Loader {
     );
   }
 
+  Future<void> iniciarRemoteConfig() async {
+    var featureFlags = Dependencias.infra.remoteConfig();
+
+    await featureFlags.iniciar();
+  }
+
   Future<void> iniciarDB() async {
     adaptadorDB = Dependencias.infra.database();
     await adaptadorDB.conectar();
@@ -78,6 +84,7 @@ class Loader {
     await appConfig.cargar();
     await iniciarLogging();
     await iniciarDB();
+    await iniciarRemoteConfig();
     await SincronizacionLoader.iniciar();
   }
 

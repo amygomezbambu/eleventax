@@ -11,6 +11,7 @@ import 'package:path_provider/path_provider.dart';
 
 class Logger implements ILogger {
   var _logeoParaPruebasActivo = false;
+  late final String _carpetaLogs;
 
   @override
   bool get logeoParaPruebasActivo => _logeoParaPruebasActivo;
@@ -64,6 +65,13 @@ class Logger implements ILogger {
   @override
   Future<void> iniciar({required LoggerConfig config}) async {
     _config = config;
+
+    if (!Platform.environment.containsKey('FLUTTER_TEST')) {
+      _carpetaLogs = (await getApplicationSupportDirectory()).path;
+      _logger.info('Archivo log: $_carpetaLogs/eleventa.log');
+    } else {
+      _carpetaLogs = '';
+    }
 
     if (config.nivelesRemotos.isNotEmpty) {
       await SentryFlutter.init(
@@ -179,10 +187,7 @@ class Logger implements ILogger {
   }
 
   Future<void> _addLogTofile(EntradaDeLog entry, NivelDeLog level) async {
-    var path = (await getApplicationSupportDirectory()).path;
-    _logger.info('$path/eleventa.log');
-
-    var file = File('$path/eleventa.log');
+    final file = File('$_carpetaLogs/eleventa.log');
     var levelName = '';
 
     switch (level) {

@@ -29,14 +29,14 @@ class AdaptadorImpresionWindows implements IImpresion {
     // 5.5 - En caso de que la cantidad, nombre del producto e importe superen el ancho del ticket se optará por pasar el nombre del
     //producto a una segunda o tercera línea según corresponda para respetar que la linea completa del articulo aparezca justificada.
     //TODO: agregar datos de negocio
-    impresoraTickets!.agregarLinea('ABARROTES EL CHAPARRAL',
-        TipoAlineacion.centro, TipoTamanioFuente.grande);
-    impresoraTickets!.agregarLinea('Direccion: Av. 5 de Mayo # 123');
+    // impresoraTickets!.agregarLinea('ABARROTES EL CHAPARRAL',
+    //     TipoAlineacion.centro, TipoTamanioFuente.grande);
+    // //impresoraTickets!.agregarLinea('Direccion: Av. 5 de Mayo # 123');
     impresoraTickets!.agregarLinea('Folio: ${venta.folio}');
     impresoraTickets!.agregarLinea('Fecha/Hora: ${DateFormat.yMd().add_jm().format(venta.cobradaEn!)}');
 
     //TODO: agregar datos del cajero que cobro la venta
-    impresoraTickets!.agregarLinea('Cajero: Raul');
+    //impresoraTickets!.agregarLinea('Cajero: Raul');
     impresoraTickets!.agregarLineaEnBlanco();
 
     impresoraTickets!.agregarLineaJustificada('Cant. Descripcion', 'Importe');
@@ -79,9 +79,9 @@ class AdaptadorImpresionWindows implements IImpresion {
     impresoraTickets!.agregarLinea('');
     impresoraTickets!
         .agregarLinea("Gracias por su compra", TipoAlineacion.centro);
-    impresoraTickets!.agregarLinea("vuelva pronto!", TipoAlineacion.centro);
-    impresoraTickets!.agregarLinea('https://eleventa.com',
-        TipoAlineacion.centro, TipoTamanioFuente.grande);
+    // impresoraTickets!.agregarLinea("¡Vuelva pronto!", TipoAlineacion.centro);
+    // impresoraTickets!.agregarLinea('https://eleventa.com',
+    //     TipoAlineacion.centro, TipoTamanioFuente.grande);
     impresoraTickets!.agregarEspaciadoFinal();
 
     impresoraTickets!.imprimir();
