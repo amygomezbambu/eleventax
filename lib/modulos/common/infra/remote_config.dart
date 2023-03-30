@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:eleventa/dependencias.dart';
 import 'package:eleventa/modulos/common/app/interface/remote_config.dart';
+import 'package:eleventa/modulos/common/exception/excepciones.dart';
 import 'package:eleventa/modulos/config/env.dart';
 import 'package:flagsmith/flagsmith.dart';
 
@@ -33,8 +34,16 @@ class RemoteConfig implements IRemoteConfig {
       );
 
       _logger.info('Obteniendo feature flags...');
-      await _flagsmithClient.getFeatureFlags(reload: true);
-      await _obtenerFlags();
+      try {
+        await _flagsmithClient.getFeatureFlags(reload: true);
+        await _obtenerFlags();
+      } catch (e) {
+        _logger.warn(InfraEx(
+          message: 'No se pudo obtener remote config',
+          innerException: e,
+          tipo: TipoInfraEx.errorInicializacionRemoteConfig,
+        ));
+      }
     }
   }
 
@@ -47,7 +56,7 @@ class RemoteConfig implements IRemoteConfig {
       final valor =
           await _flagsmithClient.isFeatureFlagEnabled(nombreSinPrefijoEnum);
 
-      _logger.info('> "$nombreSinPrefijoEnum " : $valor');
+      _logger.info('> $nombreSinPrefijoEnum : $valor');
       _featureFlags[featureFlag] = valor;
     }
   }

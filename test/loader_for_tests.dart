@@ -63,15 +63,16 @@ class TestsLoader {
   Future<void> iniciarSync() async {
     Sync(
       config: SyncConfig(
-          dbVersionTable: 'migrations',
-          dbVersionField: 'version',
+          dbVersion: appConfig.dbVersion,
           groupId: 'CH0001',
+          userId: 'AlexGamboa',
           deviceId: appConfig.deviceId.toString(),
           addChangesEndpoint: 'http://localhost:3000/sync',
           getChangesEndpoint: 'http://localhost:3000/sync',
           deleteChangesEndpoint: 'http://localhost:3000/sync-delete-changes',
           pullInterval: 10000,
           sendChangesInmediatly: false,
+          timeout: const Duration(seconds: 3),
           onError: (ex, stack) {
             Dependencias.infra.logger().error(ex: ex, stackTrace: stack);
             throw ex;

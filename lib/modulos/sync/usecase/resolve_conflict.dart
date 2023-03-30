@@ -74,7 +74,7 @@ class ResolveConflict {
     await _sync.sincronizar(
       dataset: duplicado.dataset,
       rowID: duplicado.happenLastUID,
-      fields: {
+      campos: {
         'borrado': true,
       },
     );
@@ -91,7 +91,7 @@ class ResolveConflict {
     await _sync.sincronizar(
       dataset: duplicado.dataset,
       rowID: duplicado.happenFirstUID,
-      fields: {
+      campos: {
         'borrado': true,
         'bloqueado': true,
       },
@@ -104,7 +104,7 @@ class ResolveConflict {
     await _sync.sincronizar(
       dataset: duplicado.dataset,
       rowID: duplicado.happenLastUID,
-      fields: {
+      campos: {
         'bloqueado': false,
       },
     );
@@ -127,7 +127,7 @@ class ResolveConflict {
     await _sync.sincronizar(
       dataset: duplicado.dataset,
       rowID: duplicado.happenLastUID,
-      fields: {
+      campos: {
         duplicado.column: _req.renameValue!,
         'bloqueado': false,
       },

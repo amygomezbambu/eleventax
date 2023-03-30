@@ -11,17 +11,19 @@ class SincronizacionLoader {
         remoteConfig.tieneFeatureFlag(FeatureFlag.sincronizacion);
 
     var config = SyncConfig(
-      dbVersionTable: 'migrations',
-      dbVersionField: 'version',
-      groupId: 'CH0002',
+      dbVersion: appConfig.dbVersion,
+      userId: 'AlexGamboa', //TODO: Cambiar por el usuario real
+      groupId: 'CH0002', //TODO: Cambiar por el grupo real
       deviceId: appConfig.deviceId.toString(),
+      //TODO: usar variables de entorno
       sendChangesInmediatly: syncHabilitada,
       addChangesEndpoint:
-          'https://qgfy59gc83.execute-api.us-west-1.amazonaws.com/dev/sync',
+          'https://cug3d1zh2k.execute-api.us-west-1.amazonaws.com/prod/agregar-eventos',
       getChangesEndpoint:
-          'https://qgfy59gc83.execute-api.us-west-1.amazonaws.com/dev/sync-get-changes',
+          'https://cug3d1zh2k.execute-api.us-west-1.amazonaws.com/prod/obtener-eventos',
       deleteChangesEndpoint: 'http://localhost:3000/sync-delete-changes',
-      pullInterval: 10000,
+      pullInterval: 30000,
+      timeout: const Duration(seconds: 15),
       onError: (ex, stack) {
         Dependencias.infra.logger().error(ex: ex, stackTrace: stack);
         throw ex;

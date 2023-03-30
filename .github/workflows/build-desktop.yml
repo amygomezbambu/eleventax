@@ -1,20 +1,13 @@
 name: Desplegar binarios desktop
 
 on:
-  # push:
-  #   branches:
-  #     - main
+  # Para que se generen correctamente las ligas de nightly.link
+  # se necesita que se ejecute en cada push a main
+  push:
+    branches:
+      - main
   workflow_dispatch:
   workflow_call:
-
-# Las variables de entorno tienen que estar disponibles en esta etapa
-# que es cuando se genera el env.g.dart con los secrets "hard codeados"
-# y que se usarán despues en las pruebas
-env:
-  MIXPANEL_PROJECT_ID: ${{ secrets.MIXPANEL_PROJECT_ID }}
-  SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-  FLAGSMITH_APIKEY: ${{ secrets.FLAGSMITH_APIKEY }}
-  DB_PASSWORD: 12345
 
 jobs:
   build-desktop:
@@ -22,14 +15,14 @@ jobs:
       fail-fast: true
       matrix:
         include:
-          # - arch: aarch64
-          #   os: macos-latest
-          #   target: macos
-          #   lipo-arch: arm64
-          # - arch: amd64
-          #   os: macos-latest
-          #   target: macos
-          #   lipo-arch: x86_64
+          - arch: aarch64
+            os: macos-latest
+            target: macos
+            lipo-arch: arm64
+          - arch: amd64
+            os: macos-latest
+            target: macos
+            lipo-arch: x86_64
           - arch: amd64
             os: windows-latest
             target: windows
@@ -66,6 +59,7 @@ jobs:
         env:
           MIXPANEL_PROJECT_ID: ${{ secrets.MIXPANEL_PROJECT_ID }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          FLAGSMITH_APIKEY: ${{ secrets.FLAGSMITH_APIKEY }}
           DB_PASSWORD: 12345
 
       - name: Compilar binario

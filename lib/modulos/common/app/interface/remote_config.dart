@@ -2,6 +2,8 @@
 enum FeatureFlag {
   sincronizacion,
   impuestos,
+  categorias,
+  transacciones,
 }
 
 abstract class IRemoteConfig {

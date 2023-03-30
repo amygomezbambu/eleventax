@@ -32,7 +32,7 @@ class EnviarMetricasDeCobro extends Usecase<void> {
   }
 
   Future<void> _operation() async {
-    var conexionDisponible = await Utils.red.hayConexionAInternet();
+    final conexionDisponible = await Utils.red.hayConexionAInternet();
     info = await _dispositivo.obtenerDatos();
 
     req.tipo == TipoEventoTelemetria.cobroRealizado

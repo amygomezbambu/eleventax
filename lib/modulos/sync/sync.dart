@@ -1,20 +1,19 @@
 import 'dart:async';
 
 import 'package:eleventa/modulos/common/utils/uid.dart';
+import 'package:eleventa/modulos/common/utils/utils.dart';
+import 'package:eleventa/modulos/sync/adapter/enviar_eventos_request.dart';
 import 'package:eleventa/modulos/sync/error.dart';
-import 'package:eleventa/modulos/sync/usecase/add_local_changes.dart';
+import 'package:eleventa/modulos/sync/usecase/aplicar_evento_localmente.dart';
 import 'package:eleventa/modulos/sync/usecase/process_queue.dart';
 import 'package:eleventa/modulos/sync/config.dart';
 import 'package:eleventa/modulos/sync/entity/queue_entry.dart';
 import 'package:eleventa/modulos/sync/interfaces/sync_repository.dart';
 import 'package:eleventa/modulos/sync/interfaces/sync_server.dart';
 import 'package:eleventa/modulos/sync/sync_container.dart';
-import 'package:hlc/hlc.dart';
-
 import 'package:eleventa/modulos/common/app/interface/sync.dart';
-import 'package:eleventa/modulos/common/utils/utils.dart';
-import 'package:eleventa/modulos/sync/usecase/obtain_remote_changes.dart';
-import 'package:eleventa/modulos/sync/entity/change.dart';
+import 'package:eleventa/modulos/sync/usecase/obtener_eventos_remotos.dart';
+import 'package:eleventa/modulos/sync/entity/evento.dart';
 import 'package:eleventa/modulos/sync/sync_config.dart';
 
 /// Clase principal de Sincronización
@@ -24,9 +23,9 @@ class Sync implements ISync {
   late IRepositorioSync _repoSync;
   late IServidorSync _servidorSync;
 
-  late ObtainRemoteChanges _obtainRemoteChanges;
+  late ObtenerEventosRemotos _obtainRemoteChanges;
   late ProcessQueue _processQueue;
-  late AddLocalChanges _addLocalChanges;
+  late AplicarEventoLocalmente _aplicarEventoLocalmente;
 
   static final Sync _instance = Sync._internal();
 
@@ -43,8 +42,9 @@ class Sync implements ISync {
     instance._repoSync = repoSync ?? SyncContainer.repositorioSync();
     instance._servidorSync = servidorSync ?? SyncContainer.servidorSync();
 
-    instance._addLocalChanges = AddLocalChanges(repoSync: instance._repoSync);
-    instance._obtainRemoteChanges = ObtainRemoteChanges(
+    instance._aplicarEventoLocalmente =
+        AplicarEventoLocalmente(repoSync: instance._repoSync);
+    instance._obtainRemoteChanges = ObtenerEventosRemotos(
       repoSync: instance._repoSync,
       servidorSync: instance._servidorSync,
     );
@@ -82,28 +82,40 @@ class Sync implements ISync {
   /// la base de datos y el envio se quedara en background.
   @override
   Future<void> sincronizar({
-    required String dataset,
+    TipoEventoSync tipo = TipoEventoSync.actualizar,
     required String rowID,
-    required Map<String, Object?> fields,
+    required String dataset,
+    required Map<String, Object?> campos,
     bool awaitServerResponse = false,
   }) async {
-    if (fields.isEmpty) {
-      return;
-    }
-
     try {
-      var changes = await _generateChanges(
-        dataset,
-        rowID,
-        _sanitizarFields(fields),
+      campos = _sanitizarFields(campos);
+
+      var camposSync = campos.entries
+          .map(
+            (e) => CampoEventoSync.crear(
+              nombre: e.key,
+              valor: e.value,
+            ),
+          )
+          .toList();
+
+      var evento = EventoSync(
+        tipo: tipo,
+        rowId: rowID,
+        dispositivoID: syncConfig!.deviceId,
+        usuarioUID: syncConfig!.userUID,
+        dataset: dataset,
+        campos: camposSync,
+        version: syncConfig!.dbVersion,
       );
 
-      await _applyChangesToLocalDatabase(changes);
+      await _aplicarEventoLocalmente.exec(evento);
 
       if (awaitServerResponse) {
-        await _sendChangesToRemoteServer(changes);
+        await _enviarEventoANube(evento);
       } else {
-        unawaited(_sendChangesToRemoteServer(changes));
+        unawaited(_enviarEventoANube(evento));
       }
     } catch (e, stack) {
       if (syncConfig?.onError != null) {
@@ -114,11 +126,14 @@ class Sync implements ISync {
 
   Map<String, Object?> _sanitizarFields(Map<String, Object?> fields) {
     Map<String, Object?> nuevosFields = {};
+
     for (var key in fields.keys) {
       nuevosFields[key] = fields[key] is bool
           ? Utils.db.boolToInt(fields[key] as bool)
           : fields[key];
     }
+
+    //TODO: validar que todos los tipos sean primitivos, no se pueden enviar objetos
 
     return nuevosFields;
   }
@@ -134,51 +149,23 @@ class Sync implements ISync {
     _obtainRemoteChanges.stop();
   }
 
-  Future<void> _sendChangesToRemoteServer(List<Change> changes) async {
+  Future<void> _enviarEventoANube(EventoSync evento) async {
     if (syncConfig!.sendChangesInmediatly) {
       try {
-        await _servidorSync.enviarCambios(changes);
+        await _servidorSync.enviarEvento(evento);
       } catch (e) {
+        final request = EnviarEventosRequest(eventos: [evento]);
         await _repoSync.agregarEntradaQueue(
           QueueEntry(
             uid: UID().toString(),
-            payload: _servidorSync.changesToJsonPayload(changes),
+            body: request.body,
+            headers: request.headers,
           ),
         );
 
         rethrow;
       }
     }
-  }
-
-  Future<void> _applyChangesToLocalDatabase(List<Change> changes) async {
-    _addLocalChanges.req.changes = changes;
-    await _addLocalChanges.exec();
-  }
-
-  Future<List<Change>> _generateChanges(
-    String dataset,
-    String rowID,
-    Map<String, Object?> fields,
-  ) async {
-    var changes = <Change>[];
-
-    var dbversion = await _repoSync.obtenerVersionDeDB();
-    var hlc = HLC.now(syncConfig!.deviceId);
-
-    for (var field in fields.keys) {
-      changes.add(Change.create(
-          column: field,
-          value: fields[field],
-          dataset: dataset,
-          rowId: rowID.toString(),
-          version: dbversion,
-          hlc: hlc.pack()));
-
-      hlc.increment();
-    }
-
-    return changes;
   }
 
   @override

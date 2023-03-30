@@ -64,7 +64,7 @@ class Repositorio {
   ///
   /// NOTA: no obtiene diferencias entre listas o iterables, por ejemplo un Producto
   /// puede tener N impuestos, la lista de impuestos no se comparará correctamente, se
-  /// debe usar obtenerDiferenciaListas para cada propiedad que sea una lista.
+  /// debe usar obtenerDiferenciasDeListasDeRelaciones para cada propiedad que sea una lista.
   ///
   /// El campo UID se ignora ya que la sincronización espera que se pase dentro del parametro
   /// rowID

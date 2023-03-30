@@ -17,19 +17,19 @@ class VistaConfiguracionCuenta extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        OpcionConfigurable(
-          label: 'Correo electrónico',
-          textoAyuda: 'Tu cuenta de mieleventa.com',
-          child: const Text('luis@bambucode.com'),
-        ),
-        OpcionConfigurable(
-          label: 'Negocio',
-          child: const Text('Super Chihuas'),
-        ),
-        OpcionConfigurable(
-          label: 'Sucursal',
-          child: const Text('Matriz'),
-        ),
+        // OpcionConfigurable(
+        //   label: 'Correo electrónico',
+        //   textoAyuda: 'Tu cuenta de mieleventa.com',
+        //   child: const Text('luis@bambucode.com'),
+        // ),
+        // OpcionConfigurable(
+        //   label: 'Negocio',
+        //   child: const Text('Super Chihuas'),
+        // ),
+        // OpcionConfigurable(
+        //   label: 'Sucursal',
+        //   child: const Text('Matriz'),
+        // ),
         OpcionConfigurable(
           label: 'Demostración',
           child: ExBoton.secundario(

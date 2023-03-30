@@ -3,10 +3,10 @@ import 'package:eleventa/modulos/notificaciones/domain/notificacion_sync.dart';
 import 'package:eleventa/modulos/notificaciones/modulo_notificaciones.dart';
 import 'package:eleventa/modulos/notificaciones/usecases/crear_notificacion.dart';
 import 'package:eleventa/modulos/sync/config.dart';
+import 'package:eleventa/modulos/sync/entity/evento.dart';
 import 'package:eleventa/modulos/sync/interfaces/sync_repository.dart';
 import 'package:eleventa/modulos/sync/sync_container.dart';
 import 'package:hlc/hlc.dart';
-import 'package:eleventa/modulos/sync/entity/change.dart';
 
 /// Controla la aplicacion de los cambios a la base de datos
 ///
@@ -18,46 +18,57 @@ class CRDTAdapter {
   CRDTAdapter([IRepositorioSync? syncRepo])
       : _repo = syncRepo ?? SyncContainer.repositorioSync();
 
-  Future<void> applyPendingChanges() async {
-    var pendingChanges = await _repo.obtenerCambiosNoAplicados();
+  Future<void> aplicarEventosPendientes() async {
+    //TODO: refactor para hacer mas legible, aclarar logica
 
-    for (var change in pendingChanges) {
-      await processUniques(change);
+    var eventos = await _repo.obtenerEventosNoAplicados();
 
-      var newerChangesCount =
-          await _repo.obtenerNumeroDeCambiosMasRecientes(change);
+    for (var evento in eventos) {
+      for (var campo in evento.campos) {
+        var huboConflicto = await procesarUniques(evento, campo);
 
-      if (newerChangesCount == 0) {
-        await _applyChange(change);
-        await _updateHLC(change.hlc);
-      } else {
-        await _discardChange(change);
+        if (!huboConflicto) {
+          var numeroDeCambiosMasNuevos =
+              await _repo.obtenerNumeroDeCambiosMasRecientesParaCampo(
+                  evento, campo.nombre);
+
+          if (numeroDeCambiosMasNuevos == 0) {
+            await _aplicarCampo(evento, campo);
+          }
+        }
       }
+
+      await _actualizarHLC(evento.hlc.pack());
+
+      await _repo.marcarEventoComoAplicado(evento);
     }
   }
 
-  Future<void> processUniques(Change change) async {
+  /// Busca si el campo tiene una regla de unique, si la tiene busca si hay
+  /// algun conflicto con otro registro, si no hay conflicto se retorna false,
+  /// si hay conflicto se procesa y aplica el campo y se retorna true
+  Future<bool> procesarUniques(EventoSync evento, CampoEventoSync campo) async {
+    var hayConflicto = false;
+
     for (var rule in syncConfig!.uniqueRules) {
-      if (rule.dataset == change.dataset && rule.column == change.column) {
+      if (rule.dataset == evento.dataset && rule.column == campo.nombre) {
         var currentCRDTValues = await _repo.obtenerCRDTPorDatos(
-            rule.dataset, rule.column, change.value as String, change.rowId);
+            evento.dataset, campo.nombre, campo.valor, evento.rowId);
 
         if (currentCRDTValues != null) {
-          if (currentCRDTValues['rowId']! == change.rowId) {
-            continue;
-          }
+          hayConflicto = true;
 
           var dbHLC = HLC.unpack(currentCRDTValues['hlc']!);
-          var changeHLC = HLC.unpack(change.hlc);
+          var changeHLC = evento.hlc;
 
           String sucedioPrimero;
           String sucedioDespues;
 
           if (dbHLC.compareTo(changeHLC) < 0) {
             sucedioPrimero = currentCRDTValues['rowId']!;
-            sucedioDespues = change.rowId;
+            sucedioDespues = evento.rowId;
           } else {
-            sucedioPrimero = change.rowId;
+            sucedioPrimero = evento.rowId;
             sucedioDespues = currentCRDTValues['rowId']!;
           }
 
@@ -76,10 +87,10 @@ class CRDTAdapter {
           ]);
 
           //CREAR EL ROW
-          await _applyChange(change);
+          await _aplicarCampo(evento, campo);
 
           //marcar el cambio local como bloqueado
-          command = 'update ${change.dataset} set bloqueado = ? where uid = ?;';
+          command = 'update ${evento.dataset} set bloqueado = ? where uid = ?;';
 
           await _repo.ejecutarComandoRaw(command, [true, sucedioDespues]);
 
@@ -87,54 +98,53 @@ class CRDTAdapter {
             uidDuplicados: duplicadoUID,
             tipo: TipoNotificacion.conflictoSync,
             mensaje:
-                'Se ha detectado un duplicado en [${change.dataset}:${change.column}]',
+                'Se ha detectado un duplicado en [${evento.dataset}:${campo.nombre}]',
           );
 
-          await crearNotificacion.exec();
+          //TODO: esto no se puede manejar desde aqui porque es un caso de uso
+          //si se manda llamar provoca un conflicto de sqlite por usar transacciones
+          //dentro de otra transaccion
+          //explorar que el adaptador retorne una respuesta y si hubo notificaciones
+          //que se procesen en la capa de aplicacion
+          //await crearNotificacion.exec();
         }
 
         break;
       }
     }
+
+    return hayConflicto;
   }
 
-  Future<void> _applyChange(Change change) async {
+  Future<void> _aplicarCampo(EventoSync evento, CampoEventoSync campo) async {
     var command = '';
-    var rowExist = await _repo.existeRow(change.dataset, change.rowId);
+    var rowExist = await _repo.existeRow(evento.dataset, evento.rowId);
 
     if (!rowExist) {
       command =
-          'insert into ${change.dataset}(uid,${change.column}) values(?,?);';
+          'insert into ${evento.dataset}(uid,${campo.nombre}) values(?,?);';
 
-      await _repo.ejecutarComandoRaw(command, [change.rowId, change.value]);
+      await _repo.ejecutarComandoRaw(command, [evento.rowId, campo.valor]);
     } else {
       command =
-          'update ${change.dataset} set ${change.column} = ? where uid = ?;';
+          'update ${evento.dataset} set ${campo.nombre} = ? where uid = ?;';
 
-      await _repo.ejecutarComandoRaw(command, [change.value, change.rowId]);
+      await _repo.ejecutarComandoRaw(command, [campo.valor, evento.rowId]);
     }
-
-    //marcar el cambio como aplicado
-    await _repo.marcarCambioComoAplicado(change);
   }
 
-  Future<void> _discardChange(Change change) async {
-    await _repo.marcarCambioComoAplicado(change);
-  }
+  Future<void> _actualizarHLC(String eventoHLC) async {
+    HLC hlcEvento = HLC.unpack(eventoHLC);
 
-  Future<void> _updateHLC(String changeHLC) async {
-    HLC localHLC;
-    HLC remoteHLC = HLC.unpack(changeHLC);
+    var hlcDb = await _repo.obtenerHLCActual();
 
-    var currentHLC = await _repo.obtenerHLCActual();
-
-    if (currentHLC.isEmpty) {
-      await _repo.actualizarHLCActual(remoteHLC.pack());
+    if (hlcDb.isEmpty) {
+      await _repo.actualizarHLCActual(hlcEvento.pack());
     } else {
-      localHLC = HLC.unpack(currentHLC);
+      var localHLC = HLC.unpack(hlcDb);
 
-      if (localHLC.compareTo(remoteHLC) < 0) {
-        await _repo.actualizarHLCActual(remoteHLC.pack());
+      if (localHLC.compareTo(hlcEvento) < 0) {
+        await _repo.actualizarHLCActual(hlcEvento.pack());
       }
     }
   }

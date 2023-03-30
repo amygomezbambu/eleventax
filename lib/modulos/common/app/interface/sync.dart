@@ -1,13 +1,22 @@
+enum TipoEventoSync {
+  crear,
+  actualizar,
+  eliminar,
+}
+
 abstract class ISync {
-  /// Sincroniza los cambios.
+  /// Sincroniza eventos.
   ///
-  /// Para cada columna en [fields] y su respectivo valor en [values]
-  /// aplica los cambios a la base de datos local en la tabla [dataset] y
-  /// el row [rowID] y posteriormente los envia al servidor remoto de sincronización
+  /// Para cada campo [evento.campos[n].nombre] y su respectivo valor [evento.campos[n].valor]
+  /// aplica los cambios a la base de datos local en la tabla [evento.dataset] y
+  /// el row [evento.rowID] y posteriormente envia el evento al servidor remoto de sincronización
+  ///
+  /// si [awaitServerResponse] es true, el proceso esperará hasta que reciba respuesta del servidor
   Future<void> sincronizar({
-    required String dataset,
+    TipoEventoSync tipo = TipoEventoSync.actualizar,
     required String rowID,
-    required Map<String, Object?> fields,
+    required String dataset,
+    required Map<String, Object?> campos,
     bool awaitServerResponse = false,
   });
 

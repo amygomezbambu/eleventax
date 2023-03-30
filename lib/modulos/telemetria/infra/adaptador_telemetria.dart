@@ -38,17 +38,17 @@ class AdaptadorDeTelemetria implements IAdaptadorDeTelemetria {
 
   @override
   Future<void> nuevoEvento(EventoTelemetria evento) async {
-    var success = await _mixpanel!.track(
+    final success = await _mixpanel!.track(
       event: evento.tipo!.name,
       properties: evento.propiedades,
       ip: evento.ip,
     );
 
     if (!success) {
-      throw TelemetriaEx(
+      _logger.warn(TelemetriaEx(
         tipo: TiposTelemetriaEx.errorAlReportarEvento,
         message: 'No se registro el evento ${evento.tipo!.name}',
-      );
+      ));
     }
   }
 

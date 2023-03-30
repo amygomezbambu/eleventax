@@ -124,12 +124,12 @@ class VistaVentasState extends ConsumerState<VistaVentas> {
       metricasCobro.req.tipo = TipoEventoTelemetria.cobroRealizado;
       await metricasCobro.exec();
 
-     if (Platform.isWindows) {
-        final adaptadorImpresion = AdaptadorImpresionWindows();
-        final impresoraTickets = ImpresoraDeTicketsWindows(
-          nombreImpresora: appConfig.nombreImpresora,
-          anchoTicket: AnchoTicket.mm58,
-        );
+      //TODO: implementar el caso de uso de imprimir ticket de venta
+      var adaptadorImpresion = AdaptadorImpresionWindows();
+      var impresoraTickets = ImpresoraDeTicketsWindows(
+        nombreImpresora: appConfig.nombreImpresora,
+        anchoTicket: AnchoTicket.mm58,
+      );
 
         adaptadorImpresion.impresoraTickets = impresoraTickets;
         unawaited(adaptadorImpresion.imprimirTicket(ventaCobrada));

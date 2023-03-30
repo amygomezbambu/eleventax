@@ -22,7 +22,7 @@ class RepositorioNotificaciones extends Repositorio
     await adaptadorSync.sincronizar(
       dataset: 'notificaciones',
       rowID: notificacion.uid.toString(),
-      fields: {
+      campos: {
         'tipo': notificacion.tipo.index,
         'mensaje': notificacion.mensaje,
         'cuerpo': notificacion.cuerpoToJson(),
