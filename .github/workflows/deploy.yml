@@ -41,6 +41,7 @@ jobs:
         uses: hydraulic-software/conveyor/actions/build@v1
         env:
           NIGHTLYLINK_SECRET: ${{ secrets.NIGHTLYLINK_SECRET }}
+          GITHUB_RUNID: ${{ github.run_id }}
         with:
           command: make site
           extra_flags: "--passphrase=${{ secrets.CONVEYOR_PASSPHRASE }}"
