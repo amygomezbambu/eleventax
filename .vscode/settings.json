@@ -34,5 +34,8 @@
       ]
     }
   },
-  "cmake.configureOnOpen": false
+  "cmake.configureOnOpen": false,
+  "githubPullRequests.ignoredPullRequestBranches": [
+    "main"
+  ]
 }
