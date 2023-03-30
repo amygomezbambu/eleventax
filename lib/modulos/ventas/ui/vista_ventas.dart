@@ -114,7 +114,6 @@ class VistaVentasState extends ConsumerState<VistaVentas> {
     final idVenta = ventaEnProgreso.uid;
     final consultas = ModuloVentas.repositorioConsultaVentas();
 
-    //try {
     await cobrarVenta.exec();
     notifier.crearNuevaVenta();
 
@@ -125,8 +124,7 @@ class VistaVentasState extends ConsumerState<VistaVentas> {
       metricasCobro.req.tipo = TipoEventoTelemetria.cobroRealizado;
       await metricasCobro.exec();
 
-      //TODO: implementar el caso de uso de imprimir ticket de venta
-      if (Platform.isWindows) {
+     if (Platform.isWindows) {
         final adaptadorImpresion = AdaptadorImpresionWindows();
         final impresoraTickets = ImpresoraDeTicketsWindows(
           nombreImpresora: appConfig.nombreImpresora,
@@ -137,14 +135,6 @@ class VistaVentasState extends ConsumerState<VistaVentas> {
         unawaited(adaptadorImpresion.imprimirTicket(ventaCobrada));
       }
     }
-    // } catch (e) {
-    //   debugPrint('Error: $e');
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     const SnackBar(
-    //       content: Text('Error al cobrar venta'),
-    //     ),
-    //   );
-    // }
 
     // Enfocamos de nuevo al campo código que es hijo del Focus widget
     if (_focusNode.children.first.canRequestFocus) {

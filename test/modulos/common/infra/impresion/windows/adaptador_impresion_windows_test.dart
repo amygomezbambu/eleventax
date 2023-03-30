@@ -11,12 +11,14 @@ import 'package:eleventa/modulos/ventas/domain/venta.dart';
 import 'package:eleventa/modulos/ventas/modulo_ventas.dart';
 import 'package:eleventa/modulos/ventas/read_models/venta.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 import '../../../../../loader_for_tests.dart';
 import '../../../../../utils/productos.dart';
 
 void main() {
   setUpAll(() async {
+    await initializeDateFormatting('es', null);
     TestsLoader loader = TestsLoader();
     await loader.iniciar();
   });

@@ -1,7 +1,9 @@
 import 'package:eleventa/modulos/common/ui/tema/theme.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_vista_maestro_detalle.dart';
+import 'package:eleventa/modulos/ventas/read_models/pago.dart';
 import 'package:eleventa/modulos/ventas/read_models/venta.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class TransaccionDeVentaListItem extends ListadoResponsivoItem {
   final String label;
@@ -28,18 +30,14 @@ class TransaccionDeVentaListItem extends ListadoResponsivoItem {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Text(venta.cobradaEn.toString(),
+        Text(DateFormat('h:mm a').format(venta.cobradaEn!),
             style: const TextStyle(
               fontSize: 10,
               color: ColoresBase.neutral700,
             )),
-        const Padding(
-          padding: EdgeInsets.only(top: 0.0),
-          child: Icon(
-            Icons.credit_card,
-            color: ColoresBase.neutral700,
-            //size: 20,
-          ),
+        Padding(
+          padding: const EdgeInsets.only(top: 0.0),
+          child: _obtenerIconoFormaDePago(venta.pagos),
         ),
       ],
     );
@@ -47,11 +45,11 @@ class TransaccionDeVentaListItem extends ListadoResponsivoItem {
 
   @override
   Widget? buildSubtitle(BuildContext context, {bool selecciondo = false}) {
-    return const Text(
-      'Coca Cola 600ml, 2 x Tomate, 1 x Cebolla',
-      maxLines: 1,
+    return Text(
+      venta.resumenArticulos.toString(),
+      maxLines: 2,
       overflow: TextOverflow.ellipsis,
-      style: TextStyle(
+      style: const TextStyle(
         fontSize: 12,
         color: ColoresBase.neutral700,
       ),
@@ -60,7 +58,7 @@ class TransaccionDeVentaListItem extends ListadoResponsivoItem {
 
   @override
   Widget? buildTrailing(BuildContext context, {bool selecciondo = false}) {
-    return Text(venta.total.toString());
+    return Text('\$${venta.total.toString()}');
   }
 
   @override
@@ -71,5 +69,53 @@ class TransaccionDeVentaListItem extends ListadoResponsivoItem {
   @override
   String tituloVentana() {
     return 'Venta #${venta.folio}';
+  }
+
+  Icon _obtenerIconoFormaDePago(List<PagoDto> formasDePago) {
+    var icon = const Icon(
+            Icons.money,
+            color: ColoresBase.neutral700,
+            //size: 20,
+          );
+
+    if (formasDePago.length > 1) {
+      icon = const Icon(
+        Icons.payments,
+        color: ColoresBase.neutral700,
+        //size: 20,
+      );
+    } else if (formasDePago.isNotEmpty) {
+      switch (formasDePago.first.forma) {
+        case 'Efectivo':
+          icon = const Icon(
+            Icons.money,
+            color: ColoresBase.neutral700,
+            //size: 20,
+          );
+          break;
+        case 'Tarjeta de crédito/débito':
+          icon = const Icon(
+            Icons.credit_card,
+            color: ColoresBase.neutral700,
+            //size: 20,
+          );
+          break;
+        case 'Transferencia electrónica':
+          icon = const Icon(
+            Icons.currency_exchange,
+            color: ColoresBase.neutral700,
+            //size: 20,
+          );
+          break;
+        default:
+          icon = const Icon(
+            Icons.money,
+            color: ColoresBase.neutral700,
+            //size: 20,
+          );
+      }
+    }
+
+    return icon;
   }
 }

@@ -27,6 +27,9 @@ class PagoEnEfectivoWidget extends StatelessWidget {
               : 'Referencia',
           controller: textEditController,
           width: 300,
+          inputType: formaDePago.tipo == TipoFormaDePago.efectivo
+              ? InputType.moneda
+              : InputType.texto,
         ),
         formaDePago.tipo == TipoFormaDePago.efectivo
             ? const Text('Su Cambio: 0.00')

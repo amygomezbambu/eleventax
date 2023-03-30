@@ -16,6 +16,7 @@ import 'package:eleventa/modulos/ventas/read_models/pago.dart';
 import 'package:eleventa/modulos/ventas/read_models/total_impuesto.dart';
 import 'package:eleventa/modulos/ventas/read_models/venta.dart';
 import 'package:eleventa/modulos/ventas/ventas_ex.dart';
+import 'package:intl/intl.dart';
 
 class RepositorioConsultaVentas extends RepositorioConsulta
     implements IRepositorioConsultaVentas {
@@ -27,6 +28,8 @@ class RepositorioConsultaVentas extends RepositorioConsulta
   final _tablaFormasDePago = "formas_de_pago";
   final _tablaVentasArticulos = "ventas_articulos";
   final _tablaVentasArticulosImpuestos = "ventas_articulos_impuestos";
+  final _tablaProductos = 'productos_versiones';
+  final _tablaVentaProductosGenericos = 'ventas_productos_genericos';
 
   RepositorioConsultaVentas({
     required IAdaptadorDeBaseDeDatos db,
@@ -50,16 +53,25 @@ class RepositorioConsultaVentas extends RepositorioConsulta
     final dbResult = await query(sql: sql, params: [uid.toString()]);
 
     for (var row in dbResult) {
-      if (row['base_impuesto'] != null) {
-        var totalImpuesto = TotalImpuestoDto();
-        totalImpuesto.base = Moneda.deserialize(row['base_impuesto'] as int);
-        totalImpuesto.nombreImpuesto = row['nombre_impuesto'] as String;
-        totalImpuesto.monto = Moneda.deserialize(row['monto'] as int);
-        totalImpuesto.porcentaje =
-            double.parse(row['porcentaje_impuesto'] as String);
+      var totalImpuesto = TotalImpuestoDto();
 
-        totales.add(totalImpuesto);
+      if (row['base_impuesto'] != null) {
+        totalImpuesto.base = Moneda.deserialize(row['base_impuesto'] as int);
       }
+
+      totalImpuesto.base = row['base_impuesto'] != null
+          ? Moneda.deserialize(row['base_impuesto'] as int)
+          : Moneda(0);
+      totalImpuesto.nombreImpuesto = row['nombre_impuesto'] != null
+          ? row['nombre_impuesto'] as String
+          : '';
+      totalImpuesto.monto = row['monto'] != null
+          ? Moneda.deserialize(row['monto'] as int)
+          : Moneda(0);
+      totalImpuesto.porcentaje = row['porcentaje_impuesto'] != null
+          ? double.parse(row['porcentaje_impuesto'] as String)
+          : 0.0;
+      totales.add(totalImpuesto);
     }
 
     return totales;
@@ -201,13 +213,13 @@ class RepositorioConsultaVentas extends RepositorioConsulta
         SELECT v.uid, v.estado, v.creado_en, v.total, v.subtotal, v.total_impuestos, 
         v.cobrado_en, v.folio, va.producto_generico_uid,
         va.uid as articulo_uid, va.cantidad,
-        pv.nombre AS producto_nombre, pv.precio_venta AS producto_precio_venta,
+        pv.nombre AS producto_nombre, pv.precio_venta AS producto_precio_venta, pv.codigo as producto_codigo,
         g.nombre AS generico_nombre, g.precio_venta AS generico_precio_venta,
         va.agregado_en, va.version_producto_uid, va.subtotal as subtotal_articulo
         FROM $_tablaVentas v 
           JOIN $_tablaVentasArticulos va on va.venta_uid = v.uid     
-        LEFT JOIN productos_versiones pv ON pv.uid = va.version_producto_uid         
-        LEFT JOIN ventas_productos_genericos g ON g.uid = va.producto_generico_uid  
+        LEFT JOIN $_tablaProductos pv ON pv.uid = va.version_producto_uid         
+        LEFT JOIN $_tablaVentaProductosGenericos g ON g.uid = va.producto_generico_uid  
         WHERE v.uid = ?;
         ''';
 
@@ -223,6 +235,9 @@ class RepositorioConsultaVentas extends RepositorioConsulta
             DateTime.fromMillisecondsSinceEpoch(row['agregado_en'] as int);
 
         articulo.esGenerico = (row['producto_generico_uid'] != null);
+
+        articulo.productoCodigo =
+            articulo.esGenerico ? '0' : row['producto_codigo'] as String;
 
         if ((row['producto_generico_uid'] as String).isNotEmpty) {
           articulo.precioDeVenta =
@@ -254,6 +269,8 @@ class RepositorioConsultaVentas extends RepositorioConsulta
       venta.total = Moneda.deserialize(row['total'] as int);
       venta.folio = row['folio'] as String;
       venta.articulos = articulos;
+
+      venta.resumenArticulos = await obtenerLineaDeArticulosEnTexto(uid);
 
       if (row['cobrado_en'] != null) {
         venta.cobradaEn =
@@ -303,5 +320,193 @@ class RepositorioConsultaVentas extends RepositorioConsulta
     }
 
     return venta;
+  }
+
+  @override
+  Future<List<VentaDto>> obtenerVentasPorDia({DateTime? fechaReporte}) async {
+    List<VentaDto> ventas = [];
+    VentaDto? venta;
+
+    fechaReporte ??= DateTime.now();
+
+    final DateFormat formatter = DateFormat('yyyy-MM-dd');
+    final String fechaReporteParametro = formatter.format(fechaReporte);
+
+    var sql = '''
+        SELECT v.uid, v.estado, v.creado_en, v.total, v.subtotal, v.total_impuestos, 
+        v.cobrado_en, v.folio
+        FROM $_tablaVentas v 
+        WHERE date(v.cobrado_en/1000, 'unixepoch', 'localtime') = date('$fechaReporteParametro')
+        ORDER BY v.cobrado_en DESC ;
+        ''';
+
+    var result = await query(sql: sql);
+
+    if (result.isNotEmpty) {
+      for (var row in result) {
+        venta = VentaDto();
+        venta.uid = row['uid'] as String;
+        venta.estado = EstadoDeVenta.values[row['estado'] as int];
+        venta.creadoEn =
+            DateTime.fromMillisecondsSinceEpoch(row['creado_en'] as int);
+        venta.subtotal = Moneda.deserialize(row['subtotal'] as int);
+        venta.totalImpuestos =
+            Moneda.deserialize(row['total_impuestos'] as int);
+        venta.total = Moneda.deserialize(row['total'] as int);
+        venta.folio = row['folio'] as String;
+        venta.articulos =
+            await obtenerArticulosDeVenta(UID.fromString(venta.uid));
+
+        venta.resumenArticulos =
+            await obtenerLineaDeArticulosEnTexto(UID.fromString(venta.uid));
+
+        if (row['cobrado_en'] != null) {
+          venta.cobradaEn =
+              DateTime.fromMillisecondsSinceEpoch(row['creado_en'] as int);
+        }
+
+        venta.pagos = await obtenerPagosDeVenta(UID.fromString(venta.uid));
+
+        venta.totalesDeImpuestos =
+            await obtenerTotalesImpuestosDeVenta(UID.fromString(venta.uid));
+
+        ventas.add(venta);
+      }
+    }
+
+    return ventas;
+  }
+
+  @override
+  Future<String?> obtenerLineaDeArticulosEnTexto(UID uid) async {
+    String? resumenArticulos;
+
+    final sql = '''
+       SELECT  group_concat(CASE 
+                              WHEN va.cantidad > 1 THEN (va.cantidad || ' x ' || IFNULL(pv.nombre,g.nombre)) ELSE IFNULL(pv.nombre,g.nombre) END, ', ') as detalle_venta
+        FROM $_tablaVentas v 
+          JOIN $_tablaVentasArticulos va on va.venta_uid = v.uid
+          LEFT JOIN $_tablaProductos pv ON pv.uid = va.version_producto_uid         
+          LEFT JOIN $_tablaVentaProductosGenericos g ON g.uid = va.producto_generico_uid  
+        WHERE v.uid = ?
+        ORDER BY va.agregado_en ASC;
+        ''';
+
+    final dbResult = await query(sql: sql, params: [uid.toString()]);
+
+    if ((dbResult.isNotEmpty) && (dbResult.first['detalle_venta'] != null)){
+      resumenArticulos = dbResult.first['detalle_venta'] as String;
+    }
+
+    return resumenArticulos;
+  }
+
+  @override
+  Future<List<ArticuloDto>> obtenerArticulosDeVenta(UID uid) async {
+    List<ArticuloDto> articulos = [];
+
+    var sql = '''
+        SELECT va.producto_generico_uid,
+        va.uid as articulo_uid, va.cantidad,
+        pv.nombre AS producto_nombre, pv.precio_venta AS producto_precio_venta,
+        g.nombre AS generico_nombre, g.precio_venta AS generico_precio_venta,
+        va.agregado_en, va.version_producto_uid, va.subtotal as subtotal_articulo, pv.codigo as producto_codigo
+        FROM $_tablaVentasArticulos va   
+          LEFT JOIN $_tablaProductos pv ON pv.uid = va.version_producto_uid         
+          LEFT JOIN $_tablaVentaProductosGenericos g ON g.uid = va.producto_generico_uid  
+        WHERE  va.venta_uid = ?   
+        ORDER BY va.agregado_en ASC ;
+        ''';
+
+    var result = await query(sql: sql, params: [uid.toString()]);
+
+    if (result.isNotEmpty) {
+      for (var row in result) {
+        var articulo = ArticuloDto();
+        articulo.uid = row['articulo_uid'] as String;
+        articulo.versionProductoUID = row['version_producto_uid'] as String;
+        articulo.cantidad = row['cantidad'] as double;
+        articulo.agregadoEn =
+            DateTime.fromMillisecondsSinceEpoch(row['agregado_en'] as int);
+
+        articulo.esGenerico =
+            ((row['producto_generico_uid'] as String).isNotEmpty);
+
+        if ((row['producto_generico_uid'] as String).isNotEmpty) {
+          articulo.precioDeVenta =
+              Moneda.deserialize(row['generico_precio_venta'] as int);
+          articulo.productoNombre = row['generico_nombre'] as String;
+          articulo.productoCodigo = '0';
+        } else {
+          articulo.precioDeVenta =
+              Moneda.deserialize(row['producto_precio_venta'] as int);
+          articulo.productoNombre = row['producto_nombre'] as String;
+          articulo.productoCodigo = row['producto_codigo'] as String;
+        }
+
+        articulo.subtotal = Moneda.deserialize(row['subtotal_articulo'] as int);
+        articulo.totalesDeImpuestos =
+            await _obtenerTotalesDeImpuestosDeArticulo(
+                UID.fromString(articulo.uid));
+
+        articulos.add(articulo);
+      }
+    }
+
+    return articulos;
+  }
+
+  @override
+  Future<List<PagoDto>> obtenerPagosDeVenta(UID uid) async {
+    List<PagoDto> pagos = [];
+
+    var sql = '''
+      SELECT monto, pago_con, referencia, fp.nombre 
+      FROM ventas_pagos vp 
+        JOIN formas_de_pago fp ON vp.forma_de_pago_uid = fp.uid
+      WHERE vp.venta_uid = ?
+      ''';
+
+    var result = await query(sql: sql, params: [uid.toString()]);
+
+    for (var row in result) {
+      var pago = PagoDto();
+      pago.forma = row['nombre'] as String;
+      pago.monto = Moneda.deserialize(row['monto'] as int);
+      pago.pagoCon = row['pago_con'] != null
+          ? Moneda.deserialize(row['pago_con'] as int)
+          : null;
+      pago.referencia =
+          row['referencia'] != null ? row['referencia'] as String : null;
+
+      pagos.add(pago);
+    }
+
+    return pagos;
+  }
+
+  @override
+  Future<List<TotalImpuestoDto>> obtenerTotalesImpuestosDeVenta(UID uid) async {
+    List<TotalImpuestoDto> totalesDeImpuestos = [];
+
+    var sql = '''
+      SELECT nombre_impuesto, porcentaje_impuesto, base_impuesto, monto 
+      FROM ventas_impuestos 
+      WHERE venta_uid = ?
+      ''';
+
+    var result = await query(sql: sql, params: [uid.toString()]);
+
+    for (var row in result) {
+      var impuesto = TotalImpuestoDto();
+      impuesto.nombreImpuesto = row['nombre_impuesto'] as String;
+      impuesto.porcentaje = double.parse(row['porcentaje_impuesto'] as String);
+      impuesto.base = Moneda.deserialize(row['base_impuesto'] as int);
+      impuesto.monto = Moneda.deserialize(row['monto'] as int);
+
+      totalesDeImpuestos.add(impuesto);
+    }
+
+    return totalesDeImpuestos;
   }
 }

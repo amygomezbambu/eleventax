@@ -2,6 +2,7 @@ import 'package:eleventa/modulos/common/ui/widgets/ex_vista_maestro_detalle.dart
 import 'package:eleventa/modulos/common/utils/uid.dart';
 import 'package:eleventa/modulos/transacciones/ui/widgets/detalle_transaccion.dart';
 import 'package:eleventa/modulos/transacciones/ui/widgets/transaccion_de_venta_list_item.dart';
+import 'package:eleventa/modulos/ventas/modulo_ventas.dart';
 import 'package:eleventa/modulos/ventas/read_models/venta.dart';
 import 'package:flutter/material.dart';
 
@@ -14,13 +15,11 @@ class VistaTransacciones extends StatelessWidget {
     // Simulamos una lectura de la base de las transacciones del dia
     await Future.delayed(const Duration(seconds: 1));
 
-    var res = <VentaDto>[];
-    for (var i = 0; i < 100; i++) {
-      final demoData = VentaDto();
-      demoData.folio = i.toString();
-      res.add(demoData);
-    }
-    return res;
+    var ventas = <VentaDto>[];
+    final consultas = ModuloVentas.repositorioConsultaVentas();
+    ventas = await consultas.obtenerVentasPorDia();
+    
+    return ventas;
   }
 
   @override
@@ -29,7 +28,7 @@ class VistaTransacciones extends StatelessWidget {
       future: _leerListadoDeVentas(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          final listadoVentas = snapshot.data!;
+          var listadoVentas = snapshot.data!;
 
           var ventas = <TransaccionDeVentaListItem>[];
 
@@ -40,8 +39,8 @@ class VistaTransacciones extends StatelessWidget {
                 venta: venta,
                 child: DetalleTransaccion(
                   title: 'Venta ${venta.folio}',
-                  ventaUid: UID(),
-                  //venta: VentaDto(),
+                  ventaUid: UID.fromString(venta.uid),
+                  venta: venta,
                 )));
           }
 
