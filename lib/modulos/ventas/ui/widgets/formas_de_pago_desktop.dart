@@ -40,10 +40,13 @@ class _ControlesFormasDePagoDesktopState
     // Asignamos una forma de pago por defecto que será la primera
     _formaPagoSeleccionada = formasDePago.first;
 
-    widget.onPagoSeleccionado(Pago.crear(
+    textEditController.text = widget.totalACobrar.toString();
+
+     widget.onPagoSeleccionado(Pago.crear(
         forma: _formaPagoSeleccionada,
         monto: widget.totalACobrar,
-        pagoCon: null));
+        pagoCon: widget.totalACobrar,
+        referencia: ''));
 
     return formasDePago;
   }
@@ -101,6 +104,7 @@ class _ControlesFormasDePagoDesktopState
           ),
         ),
       );
+
       resultado.add(controles);
     }
 
@@ -126,13 +130,24 @@ class _ControlesFormasDePagoDesktopState
                 onTap: (int index) {
                   _formaPagoSeleccionada = snapshot.data![index];
 
+                  var pagoCon = Moneda(0);
+                  var referencia = '';
+
+                  if(_formaPagoSeleccionada.tipo == TipoFormaDePago.efectivo){
+                    textEditController.text = widget.totalACobrar.toString();
+                    pagoCon = Moneda(textEditController.text);
+                  }else{
+                    textEditController.text = '';
+                    referencia = textEditController.text;
+                  }                
+
                   // Avisamos que se selecciono una forma de pago
                   widget.onPagoSeleccionado(Pago.crear(
                       forma: _formaPagoSeleccionada,
                       monto: widget.totalACobrar,
                       // TODO: Falta regresar este dato
-                      pagoCon: null,
-                      referencia: 'Referencia'));
+                       pagoCon: pagoCon,
+                       referencia: referencia));
                 },
                 tabs: _mostrarFormasDePago(snapshot.data!)),
             Expanded(

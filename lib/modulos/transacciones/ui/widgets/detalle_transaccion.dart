@@ -1,3 +1,10 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:eleventa/globals.dart';
+import 'package:eleventa/modulos/common/app/interface/impresora_tickets.dart';
+import 'package:eleventa/modulos/common/infra/impresion/windows/adaptador_impresion_windows.dart';
+import 'package:eleventa/modulos/common/infra/impresion/windows/impresora_tickets_windows.dart';
 import 'package:eleventa/modulos/common/ui/ex_icons.dart';
 import 'package:eleventa/modulos/common/ui/tema/theme.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_boton.dart';
@@ -34,6 +41,19 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
     return widget.venta;
   }
 
+  Future<void> _reImprimirTicket(VentaDto ventaCobrada) async {
+    if (Platform.isWindows) {
+      final adaptadorImpresion = AdaptadorImpresionWindows();
+      final impresoraTickets = ImpresoraDeTicketsWindows(
+        nombreImpresora: appConfig.nombreImpresora,
+        anchoTicket: AnchoTicket.mm58,
+      );
+
+      adaptadorImpresion.impresoraTickets = impresoraTickets;
+      unawaited(adaptadorImpresion.imprimirTicket(ventaCobrada));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: Integrar aqui la lectura del detalle de la venta
@@ -55,7 +75,9 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
                     ExBoton.secundario(
                       label: 'Reimprimir ticket',
                       icon: Iconos.printer,
-                      onTap: () {},
+                      onTap: () {
+                        _reImprimirTicket(venta);
+                      },
                       width: esDesktop.resolve(context) ? Sizes.p52 : Sizes.p48,
                       height: 60,
                     ),
@@ -70,7 +92,11 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
                   ],
                 ),
               ),
-              TextoValor('Cobrado en', DateFormat('h:mm a').format(venta.cobradaEn!)),
+              TextoValor(
+                  'Cobrado en',
+                  DateFormat(
+                    'd MMMM y h:mm a',
+                  ).format(venta.cobradaEn!)),
               const TextoValor('Caja', 'Caja 1 (Windows)'),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -123,7 +149,7 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
                               ? 80
                               : 31,
                           children: <Widget>[
-                             Text(
+                            Text(
                               'x ${articulos[index].cantidad.toString()}',
                               textAlign: TextAlign.center,
                               style: const TextStyle(
@@ -166,16 +192,35 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children:  [
+                      children: [
                         const Encabezado('Pagos'),
                         ListView.builder(
                           shrinkWrap: true,
                           itemCount: venta.pagos.length,
-                          itemBuilder: (context, index) =>  TextoValor(
-                            venta.pagos[index].forma.toString(),
-                            '\$${venta.pagos[index].monto.toString()}',
-                            tamanoFuente: TextSizes.textBase,
-                          ),
+                          itemBuilder: (context, index) {
+                            if (venta.pagos[index].forma == 'Efectivo') {
+                              return Column(
+                                children: [
+                                  TextoValor(
+                                    venta.pagos[index].forma.toString(),
+                                    '\$${venta.pagos[index].monto.toString()}',
+                                    tamanoFuente: TextSizes.textBase,
+                                  ),
+                                  TextoValor(
+                                    '',
+                                    'Pago con \$${venta.pagos[index].pagoCon.toString()}',
+                                    tamanoFuente: TextSizes.textBase,
+                                  ),
+                                ],
+                              );
+                            } else {
+                              return TextoValor(
+                                venta.pagos[index].forma.toString(),
+                                '\$${venta.pagos[index].monto.toString()}',
+                                tamanoFuente: TextSizes.textBase,
+                              );
+                            }
+                          },
                         ),
                       ],
                     ),
@@ -191,11 +236,12 @@ class _DetalleTransaccionState extends State<DetalleTransaccion> {
                           '\$${venta.subtotal.toString()}',
                           tamanoFuente: TextSizes.textBase,
                         ),
-                         ListView.builder(
+                        ListView.builder(
                           shrinkWrap: true,
                           itemCount: venta.totalesDeImpuestos.length,
-                          itemBuilder: (context, index) =>  TextoValor(
-                            venta.totalesDeImpuestos[index].nombreImpuesto.toString(),
+                          itemBuilder: (context, index) => TextoValor(
+                            venta.totalesDeImpuestos[index].nombreImpuesto
+                                .toString(),
                             '\$${venta.totalesDeImpuestos[index].monto.toString()}',
                             tamanoFuente: TextSizes.textBase,
                           ),

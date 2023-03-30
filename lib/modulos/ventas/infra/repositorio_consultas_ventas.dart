@@ -336,7 +336,7 @@ class RepositorioConsultaVentas extends RepositorioConsulta
         SELECT v.uid, v.estado, v.creado_en, v.total, v.subtotal, v.total_impuestos, 
         v.cobrado_en, v.folio
         FROM $_tablaVentas v 
-        --WHERE date(v.cobrado_en/1000, 'unixepoch') = date('$fechaReporteParametro')
+        WHERE date(v.cobrado_en/1000, 'unixepoch', 'localtime') = date('$fechaReporteParametro')
         ORDER BY v.cobrado_en DESC ;
         ''';
 
@@ -394,7 +394,7 @@ class RepositorioConsultaVentas extends RepositorioConsulta
 
     final dbResult = await query(sql: sql, params: [uid.toString()]);
 
-    if (dbResult.isNotEmpty) {
+    if ((dbResult.isNotEmpty) && (dbResult.first['detalle_venta'] != null)){
       resumenArticulos = dbResult.first['detalle_venta'] as String;
     }
 

@@ -33,7 +33,7 @@ class AdaptadorImpresionWindows implements IImpresion {
     //     TipoAlineacion.centro, TipoTamanioFuente.grande);
     // //impresoraTickets!.agregarLinea('Direccion: Av. 5 de Mayo # 123');
     impresoraTickets!.agregarLinea('Folio: ${venta.folio}');
-    impresoraTickets!.agregarLinea('Fecha/Hora: ${DateFormat.yMd().add_jm().format(venta.cobradaEn!)}');
+    impresoraTickets!.agregarLinea('Fecha/Hora: ${DateFormat('d MMM y h:mm a','es-MX').format(venta.cobradaEn!)}');
 
     //TODO: agregar datos del cajero que cobro la venta
     //impresoraTickets!.agregarLinea('Cajero: Raul');
