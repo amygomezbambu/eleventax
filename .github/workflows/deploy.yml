@@ -37,13 +37,15 @@ jobs:
           # Windows is not in a tarball, so we extract to a separate directory.
           path: ./artifacts/windows
 
+      - name: Mostrar archivos descargados de los artifacts
+        run: ls -R
+
       - name: Ejecutamos Conveyor
         uses: hydraulic-software/conveyor/actions/build@v1
         env:
           NIGHTLYLINK_SECRET: ${{ secrets.NIGHTLYLINK_SECRET }}
-          GITHUB_RUNID: ${{ github.run_id }}
         with:
-          command: make site
+          command: make site --rerun=all
           extra_flags: "--passphrase=${{ secrets.CONVEYOR_PASSPHRASE }}"
           signing_key: ${{ secrets.CONVEYOR_SIGNING_KEY }}
           agree_to_license: 1
@@ -64,3 +66,12 @@ jobs:
           AWS_REGION: "us-east-1"
           AWS_ACCESS_KEY_ID: ${{ secrets.UPLOAD_AWS_S3_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.UPLOAD_AWS_S3_SECRET_ACCESS_KEY}}
+
+      # - name: Release
+      #   uses: "marvinpinto/action-automatic-releases@latest"
+      #   with:
+      #     repo_token: "${{ secrets.GITHUB_TOKEN }}"
+      #     automatic_release_tag: "latest"
+      #     prerelease: false
+      #     title: "Flutter Demo"
+      #     files: output/*
