@@ -1,9 +1,11 @@
 name: Desplegar binarios desktop
 
 on:
-  # push:
-  #   branches:
-  #     - main
+  # Para que se generen correctamente las ligas de nightly.link
+  # se necesita que se ejecute en cada push a main
+  push:
+    branches:
+      - main
   workflow_dispatch:
   workflow_call:
 
