@@ -1,3 +1,5 @@
+import 'package:eleventa/dependencias.dart';
+import 'package:eleventa/modulos/common/app/interface/remote_config.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_vista_detalle.dart';
 import 'package:eleventa/modulos/common/ui/widgets/ex_appbar.dart';
 import 'package:eleventa/modulos/productos/ui/vista_modificar_producto.dart';
@@ -72,13 +74,16 @@ class Rutas {
         ),
       ],
     ),
-    Ruta(
-      rutaURL: "/transacciones",
-      nombre: "Transacciones",
-      icon: Icons.list,
-      pageBuilder: (context, state) =>
-          const NoTransitionPage(child: VistaTransacciones()),
-    ),
+    if (Dependencias.infra
+        .remoteConfig()
+        .tieneFeatureFlag(FeatureFlag.transacciones))
+      Ruta(
+        rutaURL: "/transacciones",
+        nombre: "Transacciones",
+        icon: Icons.list,
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: VistaTransacciones()),
+      ),
     Ruta(
       rutaURL: "/configuracion",
       nombre: "Configuración",

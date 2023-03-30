@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:eleventa/globals.dart';
 import 'package:eleventa/modulos/common/app/interface/logger.dart';
 import 'package:eleventa/modulos/common/exception/excepciones.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart' as log;
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:path_provider/path_provider.dart';
@@ -68,12 +68,22 @@ class Logger implements ILogger {
 
     if (!Platform.environment.containsKey('FLUTTER_TEST')) {
       _carpetaLogs = (await getApplicationSupportDirectory()).path;
+      String modo;
+      if (kReleaseMode) {
+        modo = 'Release';
+      } else {
+        modo = 'Development';
+      }
+
+      _logger.info('Iniciando app, modo: $modo');
       _logger.info('Archivo log: $_carpetaLogs/eleventa.log');
     } else {
       _carpetaLogs = '';
     }
 
-    if (config.nivelesRemotos.isNotEmpty) {
+    // Sentry solo estará disponible en modo release
+    if ((config.nivelesRemotos.isNotEmpty) && (kReleaseMode)) {
+      _logger.info('Inicializando Sentry...');
       await SentryFlutter.init(
         (options) {
           options.dsn = appConfig.secrets.tokenLoggingRemoto;
@@ -156,7 +166,7 @@ class Logger implements ILogger {
 
     if (_config.nivelesDeConsola.contains(level) ||
         _config.nivelesDeConsola.contains(NivelDeLog.all)) {
-      _printCosoleLog(entry, level);
+      _imprimirLogAConsola(entry, level);
     }
 
     if (_config.nivelesDeArchivo.contains(level) ||
@@ -165,7 +175,7 @@ class Logger implements ILogger {
     }
   }
 
-  void _printCosoleLog(EntradaDeLog entry, NivelDeLog level) {
+  void _imprimirLogAConsola(EntradaDeLog entry, NivelDeLog level) {
     switch (level) {
       case NivelDeLog.debug:
         _logger.fine(entry.message, entry.exception, entry.stackTrace);

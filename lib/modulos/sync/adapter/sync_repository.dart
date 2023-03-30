@@ -1,12 +1,13 @@
+import 'dart:convert';
+
 import 'package:eleventa/dependencias.dart';
 import 'package:eleventa/modulos/common/app/interface/database.dart';
-import 'package:eleventa/modulos/common/utils/utils.dart';
-import 'package:eleventa/modulos/sync/entity/change.dart';
-import 'package:eleventa/modulos/sync/config.dart';
+import 'package:eleventa/modulos/sync/entity/evento.dart';
 import 'package:eleventa/modulos/sync/entity/queue_entry.dart';
 import 'package:eleventa/modulos/sync/error.dart';
 import 'package:eleventa/modulos/sync/interfaces/sync_repository.dart';
 import 'package:eleventa/modulos/sync/entity/unique_duplicate.dart';
+import 'package:hlc/hlc.dart';
 
 class SyncRepository implements IRepositorioSync {
   late IAdaptadorDeBaseDeDatos _db;
@@ -29,20 +30,24 @@ class SyncRepository implements IRepositorioSync {
     String dataset,
     String column,
     String value,
-    String excluirUID,
+    String uidExcluido,
   ) async {
     var rowId = '';
     var hlc = '';
 
-    var query = 'select dataset,rowId,hlc '
-        'from crdt where dataset = ? and column = ? and value = ? '
-        'and rowId != ?;';
+    var query = '''
+        SELECT c.dataset,c.rowId,c.hlc 
+        FROM crdt c
+        JOIN crdt_campos cc ON c.hlc = cc.crdt_hlc
+        WHERE c.dataset = ? and cc.nombre = ? and cc.valor = ? 
+        and c.rowId != ?;
+        ''';
 
     var dbResult = await _db.query(sql: query, params: [
       dataset,
       column,
       value,
-      excluirUID,
+      uidExcluido,
     ]);
 
     for (var dbRow in dbResult) {
@@ -149,22 +154,6 @@ class SyncRepository implements IRepositorioSync {
   }
 
   @override
-  Future<int> obtenerVersionDeDB() async {
-    var version = 0;
-
-    var query =
-        'SELECT ${syncConfig?.dbVersionField} FROM ${syncConfig?.dbVersionTable};';
-
-    var dbResult = await _db.query(sql: query);
-
-    for (var dbRow in dbResult) {
-      version = dbRow[syncConfig?.dbVersionField] as int;
-    }
-
-    return version;
-  }
-
-  @override
   Future<String> obtenerHLCActual() async {
     var hlc = '';
 
@@ -177,6 +166,21 @@ class SyncRepository implements IRepositorioSync {
     }
 
     return hlc;
+  }
+
+  @override
+  Future<int> obtenerUltimaFechaDeSincronizacion() async {
+    var epoch = 0;
+
+    var query = 'SELECT ultima_sincronizacion FROM syncConfig;';
+
+    var dbResult = await _db.query(sql: query);
+
+    for (var dbRow in dbResult) {
+      epoch = dbRow['ultima_sincronizacion'] as int;
+    }
+
+    return epoch;
   }
 
   @override
@@ -197,144 +201,165 @@ class SyncRepository implements IRepositorioSync {
     return exist;
   }
 
-  @override
-  Future<List<Change>> obtenerCambiosParaRow(String rowId) async {
-    var query = 'select dataset,rowId,column,value,type,hlc,version '
-        'from crdt where rowId = ?';
-    var rowChanges = <Change>[];
-
-    var dbResult = await _db.query(sql: query, params: [rowId]);
-
-    for (var dbRow in dbResult) {
-      var change = Change.load(
-          column: dbRow['column'] as String,
-          value: dbRow['value'] as String,
-          dataset: dbRow['dataset'] as String,
-          rowId: dbRow['rowId'] as String,
-          hlc: dbRow['hlc'] as String,
-          version: dbRow['version'] as int);
-
-      rowChanges.add(change);
-    }
-
-    return rowChanges;
-  }
-
   /// Obtiene los cambios mas actuales que [change]
   ///
   /// un cambio mas nuevo es aquel que tiene el mismo rowId(misma entidad)
   /// afecta a la misma columna(campo) y tiene un hlc mayor(es mas actual)
   @override
-  Future<int> obtenerNumeroDeCambiosMasRecientes(Change change) async {
-    var count = 0;
+  Future<int> obtenerNumeroDeCambiosMasRecientesParaCampo(
+    EventoSync evento,
+    String campo,
+  ) async {
+    var query = '''
+        SELECT count(hlc) as count 
+        FROM crdt c  
+        JOIN crdt_campos cc ON c.hlc = cc.crdt_hlc 
+        WHERE c.rowId = ? AND c.hlc > ? AND cc.nombre = ?;
+        ''';
 
-    var query = 'select count(hlc) as count from crdt where rowId = ? '
-        'and column = ? and hlc > ?';
-
-    var dbResult = await _db
-        .query(sql: query, params: [change.rowId, change.column, change.hlc]);
+    var dbResult = await _db.query(sql: query, params: [
+      evento.rowId,
+      evento.hlc.pack(),
+      campo,
+    ]);
 
     if (dbResult.isNotEmpty) {
-      count = dbResult[0]['count'] as int;
+      return dbResult[0]['count'] as int;
+    } else {
+      return 0;
     }
-
-    return count;
   }
 
   @override
-  Future<List<Change>> obtenerCambiosNoAplicados() async {
-    var changes = <Change>[];
+  Future<List<EventoSync>> obtenerEventosNoAplicados() async {
+    var eventos = <EventoSync>[];
 
-    var query = 'select dataset,rowId,column,value,type,hlc,version from crdt '
-        'where applied = 0';
+    var query = '''
+        SELECT c.dataset,c.rowId,c.hlc,c.version,c.device_id,c.usuario_uid,
+          cc.nombre,cc.valor,cc.tipo
+        FROM crdt c
+        JOIN crdt_campos cc ON c.hlc = cc.crdt_hlc
+        WHERE applied = 0
+      ''';
 
     var dbResult = await _db.query(sql: query);
 
-    for (var dbRow in dbResult) {
-      var change = Change.load(
-          column: dbRow['column'] as String,
-          value: dbRow['value'] as String,
-          dataset: dbRow['dataset'] as String,
-          rowId: dbRow['rowId'] as String,
-          hlc: dbRow['hlc'] as String,
-          version: dbRow['version'] as int);
+    if (dbResult.isNotEmpty) {
+      List<CampoEventoSync> campos = [];
+      var eventoHLC = dbResult[0]['hlc'] as String;
+      EventoSync? evento;
 
-      changes.add(change);
+      for (var dbRow in dbResult) {
+        if (eventoHLC != dbRow['hlc'] as String) {
+          eventos.add(evento!);
+
+          campos = [];
+          eventoHLC = dbRow['hlc'] as String;
+        }
+
+        campos.add(
+          CampoEventoSync.cargar(
+            nombre: dbRow['nombre'] as String,
+            valor: dbRow['valor'] as String,
+            tipo: dbRow['tipo'] as String,
+          ),
+        );
+
+        evento = EventoSync(
+          dataset: dbRow['dataset'] as String,
+          dispositivoID: dbRow['device_id'] as String, //TODO: homologar
+          usuarioUID: dbRow['usuario_uid'] as String,
+          rowId: dbRow['rowId'] as String,
+          version: dbRow['version'] as int,
+          campos: campos,
+        );
+
+        evento.hlc = HLC.unpack(dbRow['hlc'] as String);
+      }
+
+      eventos.add(evento!);
     }
 
-    return changes;
+    return eventos;
   }
 
   @override
-  Future<List<Change>> obtenerTodosLosCambios() async {
-    var changes = <Change>[];
+  Future<EventoSync?> obtenerEventoPorHLC(String hlc) async {
+    EventoSync? evento;
 
-    var query = 'select dataset,rowId,column,value,type,hlc,version from crdt';
-
-    var dbResult = await _db.query(sql: query);
-
-    for (var dbRow in dbResult) {
-      var change = Change.load(
-          column: dbRow['column'] as String,
-          value: dbRow['value'] as String,
-          dataset: dbRow['dataset'] as String,
-          rowId: dbRow['rowId'] as String,
-          hlc: dbRow['hlc'] as String,
-          version: dbRow['version'] as int);
-
-      changes.add(change);
-    }
-
-    return changes;
-  }
-
-  @override
-  Future<Change?> obtenerCambioPorHLC(String hlc) async {
-    Change? change;
-
-    var query = 'select * from crdt where hlc = ?';
+    var query = '''
+        SELECT c.dataset,c.rowId,c.hlc,c.version,c.device_id,c.usuario_uid,
+          cc.nombre,cc.valor,cc.tipo
+        FROM crdt c
+        JOIN crdt_campos cc ON c.hlc = cc.crdt_hlc
+        WHERE applied = 0 and hlc = ?
+      ''';
 
     var dbResult = await _db.query(sql: query, params: [hlc]);
 
-    for (var dbRow in dbResult) {
-      change = Change.load(
-          column: dbRow['column'] as String,
-          value: dbRow['value'] as String,
-          dataset: dbRow['dataset'] as String,
-          rowId: dbRow['rowId'] as String,
-          hlc: dbRow['hlc'] as String,
-          version: dbRow['version'] as int);
+    if (dbResult.isNotEmpty) {
+      List<CampoEventoSync> campos = [];
+
+      for (var dbRow in dbResult) {
+        campos.add(
+          CampoEventoSync.cargar(
+            nombre: dbRow['nombre'] as String,
+            valor: dbRow['valor'] as String,
+            tipo: dbRow['tipo'] as String,
+          ),
+        );
+      }
+
+      evento = EventoSync(
+        dataset: dbResult[0]['dataset'] as String,
+        rowId: dbResult[0]['rowId'] as String,
+        dispositivoID: dbResult[0]['device_id'] as String,
+        usuarioUID: dbResult[0]['usuario_uid'] as String,
+        version: dbResult[0]['version'] as int,
+        //tipo: TipoEventoSync.values[(dbResult[0]['tipo'] as int)],
+        campos: campos,
+      );
+
+      evento.hlc = HLC.unpack(hlc);
     }
 
-    return change;
+    return evento;
   }
 
   @override
-  Future<void> agregarCambio(Change change) async {
-    await _db.command(
-        sql:
-            'insert into crdt(hlc,dataset,rowId,column,value,type,isLocal,sended,applied,version) '
-            'values(?,?,?,?,?,?,?,?,?,?);',
-        params: [
-          change.hlc,
-          change.dataset,
-          change.rowId,
-          change.column,
-          (change.value is bool)
-              ? Utils.db.boolToInt(change.value as bool)
-              : change.value,
-          change.valueType,
-          1,
-          0,
-          0,
-          change.version
-        ]);
+  Future<void> agregarEvento(EventoSync evento) async {
+    await _db.command(sql: '''
+          insert into crdt(hlc,dataset,rowId,device_id,usuario_uid,isLocal,sended,applied,version) 
+          values(?,?,?,?,?,?,?,?,?);''', params: [
+      evento.hlc.pack(),
+      evento.dataset,
+      evento.rowId,
+      evento.dispositivoID,
+      evento.usuarioUID,
+      1,
+      0,
+      0,
+      evento.version,
+    ]);
+
+    //TODO: agregar index al HLC
+    for (var campo in evento.campos) {
+      await _db.command(sql: '''
+          insert into crdt_campos(crdt_hlc,nombre,valor,tipo) 
+          values(?,?,?,?);''', params: [
+        evento.hlc.pack(),
+        campo.nombre,
+        campo.valor,
+        campo.tipo,
+      ]);
+    }
   }
 
   @override
-  Future<void> marcarCambioComoAplicado(Change change) async {
+  Future<void> marcarEventoComoAplicado(EventoSync evento) async {
     await _db.command(
-        sql: 'update crdt set applied = 1 where hlc = ?', params: [change.hlc]);
+        sql: 'update crdt set applied = 1 where hlc = ?',
+        params: [evento.hlc.pack()]);
   }
 
   @override
@@ -352,9 +377,14 @@ class SyncRepository implements IRepositorioSync {
 
   @override
   Future<void> agregarEntradaQueue(QueueEntry entrada) async {
-    var command = 'insert into sync_queue(uid, payload) values(?, ?);';
+    var command =
+        'insert into sync_queue(uid, payload, headers) values(?,?,?);';
 
-    await _db.command(sql: command, params: [entrada.uid, entrada.payload]);
+    await _db.command(sql: command, params: [
+      entrada.uid,
+      entrada.body,
+      jsonEncode(entrada.headers),
+    ]);
   }
 
   @override
@@ -366,11 +396,26 @@ class SyncRepository implements IRepositorioSync {
 
   @override
   Future<List<QueueEntry>> obtenerQueue() async {
-    return (await _db.query(sql: 'select uid, payload from sync_queue'))
-        .map((row) => QueueEntry(
-              uid: row['uid'] as String,
-              payload: row['payload'] as String,
-            ))
+    return (await _db.query(
+            sql: 'select uid, payload, headers from sync_queue'))
+        .map(
+          (row) => QueueEntry(
+            uid: row['uid'] as String,
+            body: row['payload'] as String,
+            headers:
+                (jsonDecode(row['headers'] as String) as Map<String, dynamic>)
+                    .map((k, v) {
+              return MapEntry(k.toString(), v.toString());
+            }),
+          ),
+        )
         .toList();
+  }
+
+  @override
+  Future<void> actualizarFechaDeSincronizacion(int epoch) async {
+    var command = 'update syncConfig set ultima_sincronizacion = ?;';
+
+    await _db.command(sql: command, params: [epoch]);
   }
 }

@@ -40,7 +40,10 @@ class ProcessQueue {
     var entradas = await _repo.obtenerQueue();
 
     for (var entrada in entradas) {
-      await _server.enviarPayload(entrada.payload);
+      await _server.enviarRaw(
+        body: entrada.body,
+        headers: entrada.headers,
+      );
       await _repo.borrarEntradaQueue(entrada.uid);
     }
   }

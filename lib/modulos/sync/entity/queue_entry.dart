@@ -1,9 +1,11 @@
 class QueueEntry {
   final String uid;
-  final String payload;
+  final String body;
+  final Map<String, String> headers;
 
   QueueEntry({
     required this.uid,
-    required this.payload,
+    required this.body,
+    required this.headers,
   });
 }

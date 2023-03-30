@@ -1,13 +1,16 @@
-import 'package:eleventa/modulos/sync/entity/change.dart';
+import 'package:eleventa/modulos/sync/entity/evento.dart';
+
+abstract class IObtenerEventosResponse {
+  late final List<EventoSync> eventos;
+  late final int epochDeSincronizacion;
+}
 
 abstract class IServidorSync {
-  Future<List<Change>> obtenerCambios(
-      String groupId, String merkle, String hash);
+  Future<IObtenerEventosResponse> obtenerEventos(int ultimaSincronizacion);
 
-  Future<void> enviarCambios(List<Change> changes);
-  Future<void> enviarPayload(String payload);
-
-  String changesToJsonPayload(List<Change> changes);
-
-  List<Change> jsonPayloadToChanges(String payload);
+  Future<void> enviarEvento(EventoSync evento);
+  Future<void> enviarRaw({
+    required String body,
+    required Map<String, String> headers,
+  });
 }

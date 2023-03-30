@@ -16,4 +16,5 @@ class VentaDto {
   var subtotal = Moneda(0);
   var total = Moneda(0);
   var totalImpuestos = Moneda(0);
+  String? resumenArticulos = '';
 }

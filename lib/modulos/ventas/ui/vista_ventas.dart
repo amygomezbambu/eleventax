@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:eleventa/globals.dart';
 import 'package:eleventa/modulos/common/app/interface/impresora_tickets.dart';
 import 'package:eleventa/modulos/common/domain/moneda.dart';
@@ -114,7 +117,6 @@ class VistaVentasState extends ConsumerState<VistaVentas> {
     final idVenta = ventaEnProgreso.uid;
     final consultas = ModuloVentas.repositorioConsultaVentas();
 
-    //try {
     await cobrarVenta.exec();
     notifier.crearNuevaVenta();
 
@@ -125,24 +127,17 @@ class VistaVentasState extends ConsumerState<VistaVentas> {
       metricasCobro.req.tipo = TipoEventoTelemetria.cobroRealizado;
       await metricasCobro.exec();
 
-      //TODO: implementar el caso de uso de imprimir ticket de venta
-      var adaptadorImpresion = AdaptadorImpresionWindows();
-      var impresoraTickets = ImpresoraDeTicketsWindows(
-        nombreImpresora: appConfig.nombreImpresora,
-        anchoTicket: AnchoTicket.mm58,
-      );
+     if (Platform.isWindows) {
+        final adaptadorImpresion = AdaptadorImpresionWindows();
+        final impresoraTickets = ImpresoraDeTicketsWindows(
+          nombreImpresora: appConfig.nombreImpresora,
+          anchoTicket: AnchoTicket.mm58,
+        );
 
-      adaptadorImpresion.impresoraTickets = impresoraTickets;
-      await adaptadorImpresion.imprimirTicket(ventaCobrada);
+        adaptadorImpresion.impresoraTickets = impresoraTickets;
+        unawaited(adaptadorImpresion.imprimirTicket(ventaCobrada));
+      }
     }
-    // } catch (e) {
-    //   debugPrint('Error: $e');
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     const SnackBar(
-    //       content: Text('Error al cobrar venta'),
-    //     ),
-    //   );
-    // }
 
     // Enfocamos de nuevo al campo código que es hijo del Focus widget
     if (_focusNode.children.first.canRequestFocus) {

@@ -50,7 +50,9 @@ void main() {
 
     final categoriaDos =
         Categoria.crear(nombre: NombreCategoria('Categoria Dos'));
+
     crearCategoria.req.categoria = categoriaDos;
+
     await crearCategoria.exec();
 
     var categoriaDB = await consultas.obtenerCategoria(categoriaDos.uid);

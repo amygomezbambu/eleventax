@@ -1,7 +1,9 @@
 import 'dart:convert';
 
-import 'package:eleventa/modulos/sync/entity/change.dart';
+import 'package:eleventa/modulos/sync/adapter/enviar_eventos_request.dart';
+import 'package:eleventa/modulos/sync/adapter/obtener_eventos_response.dart';
 import 'package:eleventa/modulos/sync/config.dart';
+import 'package:eleventa/modulos/sync/entity/evento.dart';
 import 'package:eleventa/modulos/sync/error.dart';
 import 'package:eleventa/modulos/sync/interfaces/sync_server.dart';
 import 'package:http/http.dart' show Client, Response;
@@ -13,25 +15,21 @@ class SyncServer implements IServidorSync {
 
   /// Obtiene los cambios de otros nodos que este nodo no tiene aun
   @override
-  Future<List<Change>> obtenerCambios(
-    String groupId,
-    String merkle,
-    String hash,
+  Future<ObtenerEventosResponse> obtenerEventos(
+    int ultimaSincronizacion,
   ) async {
-    List<Change> changes = [];
-    String json =
-        '{ "groupId": "$groupId", "merkle": "$merkle", "hash": "$hash"}';
+    ObtenerEventosResponse respuestaParseada;
 
     try {
-      var response = await _client
-          .post(
+      var response = await _client.get(
         Uri.parse(syncConfig!.getChangesEndpoint),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
+          'sucursal_Id': syncConfig!.groupId,
+          'dispositivo_Id': syncConfig!.deviceId,
+          'ultima_sincronizacion': ultimaSincronizacion.toString(),
         },
-        body: json,
-      )
-          .timeout(
+      ).timeout(
         syncConfig!.timeout,
         onTimeout: () async {
           return Response(
@@ -43,39 +41,35 @@ class SyncServer implements IServidorSync {
 
       if (response.statusCode != 200) {
         throw SyncEx(
-          tipo: TiposSyncEx.errorAlSubirCambios,
-          message:
-              'Error en el envio de cambios a nube\n ${response.body} \n, Stack: $json${StackTrace.current}',
+          tipo: TiposSyncEx.errorAlSubirEventos,
+          message: 'Error en el envio de cambios a nube\n '
+              '${response.body} \n, Stack: ${StackTrace.current}',
         );
       } else {
-        changes = jsonPayloadToChanges(response.body);
+        respuestaParseada = ObtenerEventosResponse(payload: response.body);
       }
     } catch (e, stack) {
       if (e is SyncEx) {
         rethrow;
       } else {
         throw SyncEx(
-            tipo: TiposSyncEx.errorAlSubirCambios,
+            tipo: TiposSyncEx.errorAlSubirEventos,
             message: '$e, Stack: $stack');
       }
     }
 
-    return changes;
+    return respuestaParseada;
   }
 
   /// Envia los cambios al servidor de sincronización
   ///
   @override
-  Future<void> enviarCambios(List<Change> changes) async {
+  Future<void> enviarEvento(EventoSync evento) async {
     try {
+      var request = EnviarEventosRequest(eventos: [evento]);
+
       var response = await _client
-          .post(
-        Uri.parse(syncConfig!.addChangesEndpoint),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: changesToJsonPayload(changes),
-      )
+          .post(request.uri, headers: request.headers, body: request.body)
           .timeout(
         syncConfig!.timeout,
         onTimeout: () async {
@@ -88,17 +82,19 @@ class SyncServer implements IServidorSync {
 
       if (response.statusCode != 200) {
         throw SyncEx(
-          tipo: TiposSyncEx.errorAlSubirCambios,
-          message:
-              'Error en el envio de cambios a nube\n ${response.body} \n ${changesToJsonPayload(changes)}, Stack Trace: ${StackTrace.current}',
+          tipo: TiposSyncEx.errorAlSubirEventos,
+          message: 'Error en el envio de eventos a nube \n'
+              ' ${response.body} \n'
+              ' Stack Trace: ${StackTrace.current}',
         );
       }
     } catch (e) {
       if (e is SyncEx) {
         rethrow;
       } else {
+        //TODO: este else no tiene sentido
         throw SyncEx(
-          tipo: TiposSyncEx.errorAlSubirCambios,
+          tipo: TiposSyncEx.errorAlSubirEventos,
           message: e.toString(),
         );
       }
@@ -106,47 +102,22 @@ class SyncServer implements IServidorSync {
   }
 
   @override
-  String changesToJsonPayload(List<Change> changes) {
-    return '{ "changes": ${jsonEncode(changes)}}';
-  }
-
-  @override
-  List<Change> jsonPayloadToChanges(String payload) {
-    List<Change> changes = [];
-
-    var data = jsonDecode(payload);
-
-    if (data['changesCount'] != 0) {
-      if (data['changes'] != null) {
-        for (var change in data['changes']) {
-          changes.add(Change.load(
-              column: change['column'],
-              value: change['value'],
-              dataset: change['dataset'],
-              rowId: change['rowId'],
-              hlc: change['hlc'],
-              version: int.parse(change['version'])));
-        }
-      }
-    }
-
-    return changes;
-  }
-
-  @override
-  Future<void> enviarPayload(String payload) async {
+  Future<void> enviarRaw({
+    required String body,
+    required Map<String, String> headers,
+  }) async {
+    //TODO: para generar los headers tenemos que guardar tambien los headers o el evento
+    //completo en el queue
     try {
       var response = await _client.post(
         Uri.parse(syncConfig!.addChangesEndpoint),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: payload,
+        headers: headers,
+        body: body,
       );
 
       if (response.statusCode != 200) {
         throw SyncEx(
-            tipo: TiposSyncEx.errorAlSubirCambios,
+            tipo: TiposSyncEx.errorAlSubirEventos,
             message:
                 'Error en el envio de cambios a nube\n ${response.body} \n $json');
       }
@@ -155,7 +126,7 @@ class SyncServer implements IServidorSync {
         rethrow;
       } else {
         throw SyncEx(
-          tipo: TiposSyncEx.errorAlSubirCambios,
+          tipo: TiposSyncEx.errorAlSubirEventos,
           message: e.toString(),
         );
       }
